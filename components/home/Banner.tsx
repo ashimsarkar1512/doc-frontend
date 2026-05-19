@@ -8,7 +8,7 @@ const Banner = () => {
         {/* LegitScript Badge */}
         <div className="relative mb-2 flex items-center justify-center gap-1">
           <Image
-            src="/banner /badge/Vector.png"
+            src="/banner/badge/Vector.png"
             alt="Wreath Left"
             width={40}
             height={20}
@@ -16,14 +16,14 @@ const Banner = () => {
           />
           <div className="relative">
             <Image
-              src="/banner /badge/13220301 1.png"
+              src="/banner/badge/13220301 1.png"
               alt="LegitScript Certified"
               width={80}
               height={80}
             />
           </div>
           <Image
-            src="/banner /badge/Vector (2).png"
+            src="/banner/badge/Vector (2).png"
             alt="Wreath Right"
             width={40}
             height={20}
@@ -35,7 +35,7 @@ const Banner = () => {
         <div className="flex -space-x-3">
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
             <Image
-              src="/banner /avater/Ellipse 1.png"
+              src="/banner/avater/Ellipse 1.png"
               alt="Avatar"
               fill
               className="object-cover"
@@ -43,7 +43,7 @@ const Banner = () => {
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
             <Image
-              src="/banner /avater/Ellipse 2.png"
+              src="/banner/avater/Ellipse 2.png"
               alt="Avatar"
               fill
               className="object-cover"
@@ -51,7 +51,7 @@ const Banner = () => {
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
             <Image
-              src="/banner /avater/Ellipse 3.png"
+              src="/banner/avater/Ellipse 3.png"
               alt="Avatar"
               fill
               className="object-cover"
@@ -59,7 +59,7 @@ const Banner = () => {
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
             <Image
-              src="/banner /avater/Ellipse 4.png"
+              src="/banner/avater/Ellipse 4.png"
               alt="Avatar"
               fill
               className="object-cover"
@@ -67,7 +67,7 @@ const Banner = () => {
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
             <Image
-              src="/banner /avater/Ellipse 5.png"
+              src="/banner/avater/Ellipse 5.png"
               alt="Avatar"
               fill
               className="object-cover"
