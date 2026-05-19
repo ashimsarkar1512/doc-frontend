@@ -2,6 +2,7 @@ import AboutUs from "@/components/home/AboutUs";
 import Assesments from "@/components/home/Assesments";
 import Expert from "@/components/home/Expert";
 import Home from "@/components/home/Home";
+import HowItsWork from "@/components/home/HowItsWork";
 
 
 export default function Page() {
@@ -11,6 +12,7 @@ export default function Page() {
     <Assesments/>
     <AboutUs/>
     <Expert/>
+    <HowItsWork/>
     </main>
   );
 }
