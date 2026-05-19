@@ -11,7 +11,7 @@ const Home = () => {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
-              src="/banner /bannerImage.png"
+              src="/banner/bannerImage.png"
               alt="Woman smiling outdoors"
               fill
               className="object-cover"
