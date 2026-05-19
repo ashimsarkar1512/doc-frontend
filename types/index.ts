@@ -8,6 +8,7 @@ export interface AssessmentCardProps {
   title: string;
   description: string;
   gradient: string;
+  image?: string;
 }
 
 

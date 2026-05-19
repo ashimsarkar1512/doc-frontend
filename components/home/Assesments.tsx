@@ -1,8 +1,8 @@
-
 'use client'
 
 import { AssessmentCardProps, FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback } from "react";
+import Image from "next/image";
 
 //  Constants 
 
@@ -15,6 +15,7 @@ const CARDS = [
     category: "Weight Loss",
     description: "Medically supervised weight management with GLP-1 prescriptions tailored to your body.",
     gradient: "from-stone-900 via-amber-950 to-stone-900",
+    image: "/assessments/assessment1.png",
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const CARDS = [
     category: "Hormone Therapy",
     description: "Comprehensive evaluation of joint and muscle discomfort with custom rehab and pain management.",
     gradient: "from-slate-900 via-teal-950 to-slate-900",
+    image: "/assessments/assessment2.png",
   },
   {
     id: 3,
@@ -29,6 +31,7 @@ const CARDS = [
     category: "Men's Services",
     description: "Expert support and tailored strategies for managing anxiety, stress, and improving well-being.",
     gradient: "from-stone-900 via-orange-950 to-stone-900",
+    image: "/assessments/assessment3.jpg",
   },
   {
     id: 4,
@@ -36,6 +39,7 @@ const CARDS = [
     category: "Skin Services",
     description: "Effective treatments for various skin issues such as acne, rashes, and eczema using Rx.",
     gradient: "from-slate-900 via-blue-950 to-slate-900",
+    image: "/assessments/assessmnet4.png",
   },
   {
     id: 5,
@@ -43,6 +47,7 @@ const CARDS = [
     category: "Regrow Hair",
     description: "Clinically proven treatments to restore thinning hair and promote lasting regrowth.",
     gradient: "from-stone-900 via-yellow-950 to-stone-900",
+    image: "/assessments/assessment5.jpg",
   },
   {
     id: 6,
@@ -50,6 +55,7 @@ const CARDS = [
     category: "Hormone Therapy",
     description: "Personalized hormone replacement therapy to restore vitality, mood, and well-being.",
     gradient: "from-zinc-900 via-rose-950 to-zinc-900",
+    image: "/assessments/assessment2.png",
   },
   {
     id: 7,
@@ -57,6 +63,7 @@ const CARDS = [
     category: "Men's Services",
     description: "Targeted programs for testosterone, ED, and male health using advanced medical protocols.",
     gradient: "from-slate-900 via-indigo-950 to-slate-900",
+    image: "/assessments/assessment3.jpg",
   },
   {
     id: 8,
@@ -64,6 +71,7 @@ const CARDS = [
     category: "Skin Services",
     description: "Laser and Rx-based treatments to reduce wrinkles, dark spots, and improve skin texture.",
     gradient: "from-stone-900 via-red-950 to-stone-900",
+    image: "/assessments/assessmnet4.png",
   },
 ];
 
@@ -102,21 +110,37 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   </button>
 );
 
-const AssessmentCard = ({ title, description, gradient }: AssessmentCardProps) => (
+const AssessmentCard = ({ title, description, gradient, image }: AssessmentCardProps) => (
   <div className={`
     group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient}
     h-[420px] flex flex-col cursor-pointer
     transition-all duration-500 ease-out
     hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1
   `}>
+    {/* Background Image if present */}
+    {image && (
+      <>
+        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+          />
+        </div>
+        {/* Dark Vignette Overlay to maintain contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 pointer-events-none z-10" />
+      </>
+    )}
+
     {/* Noise texture overlay */}
-    <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMSIvPjwvc3ZnPg==')] bg-repeat" />
+    <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMSIvPjwvc3ZnPg==')] bg-repeat z-10" />
 
     {/* Radial gradient glow */}
-    <div className="absolute inset-0 bg-gradient-radial from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+    <div className="absolute inset-0 bg-gradient-radial from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10" />
 
     {/* Content */}
-    <div className="relative z-10 flex flex-col h-full p-6">
+    <div className="relative z-20 flex flex-col h-full p-6">
       <h3 className="text-white font-bold text-xl leading-tight tracking-tight">
         {title}
       </h3>

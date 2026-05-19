@@ -1,4 +1,5 @@
-import React from 'react';
+import Image from "next/image";
+import React from "react";
 
 interface Step {
   number: number;
@@ -9,23 +10,23 @@ interface Step {
 const steps: Step[] = [
   {
     number: 1,
-    title: 'Complete Your Medical Intake',
-    description: 'Share your health history and goals',
+    title: "Complete Your Medical Intake",
+    description: "Share your health history and goals",
   },
   {
     number: 2,
-    title: 'Provider Evaluation',
-    description: 'A licensed medical provider reviews your information',
+    title: "Provider Evaluation",
+    description: "A licensed medical provider reviews your information",
   },
   {
     number: 3,
-    title: 'Personalized Treatment Plan',
-    description: 'Based on your individual needs and clinical assessment',
+    title: "Personalized Treatment Plan",
+    description: "Based on your individual needs and clinical assessment",
   },
   {
     number: 4,
-    title: 'Ongoing Support & Monitoring',
-    description: 'Adjustments made as appropriate over time',
+    title: "Ongoing Support & Monitoring",
+    description: "Adjustments made as appropriate over time",
   },
 ];
 
@@ -33,15 +34,16 @@ const HowItsWork: React.FC = () => {
   return (
     <section className="w-full bg-white py-16 md:py-24 px-4 md:px-8 font-sans">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        
         {/* Left Side: Split Image Banner */}
         <div className="lg:col-span-6 w-full h-full flex items-center justify-center">
           <div className="w-full relative aspect-[4/3] md:aspect-[1.22] rounded-[2rem] overflow-hidden shadow-sm">
             {/* Using an Unsplash placeholder of transformation tracking to match Figma layout */}
-            <img
+
+            <Image
               src="/howItsWork.png"
               alt="Before and after progress illustration"
               className="w-full h-full object-cover object-center"
+              fill
             />
           </div>
         </div>
@@ -78,7 +80,6 @@ const HowItsWork: React.FC = () => {
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );
