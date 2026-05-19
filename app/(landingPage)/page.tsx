@@ -1,4 +1,6 @@
+import AboutUs from "@/components/home/AboutUs";
 import Assesments from "@/components/home/Assesments";
+import Expert from "@/components/home/Expert";
 import Home from "@/components/home/Home";
 
 
@@ -7,6 +9,8 @@ export default function Page() {
     <main>
     <Home/>
     <Assesments/>
+    <AboutUs/>
+    <Expert/>
     </main>
   );
 }

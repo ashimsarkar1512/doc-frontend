@@ -6,8 +6,8 @@ import Banner from './Banner'
 const Home = () => {
   return (
     <div>  {/* Hero Section (Navbar + Banner) */}
-      <div className="p-4 md:p-8">
-        <div className="relative rounded-[2rem] overflow-hidden min-h-[90vh]">
+      <div>
+        <div className="relative rounded-4xl overflow-hidden min-h-[90vh]">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image

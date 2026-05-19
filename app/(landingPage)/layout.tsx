@@ -10,7 +10,7 @@ const LandingPageLayout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </div>
       </div>
-      <Footer />
+ 
     </div>
   );
 };

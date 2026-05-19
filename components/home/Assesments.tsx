@@ -4,7 +4,7 @@
 import { AssessmentCardProps, FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback } from "react";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+//  Constants 
 
 const FILTERS = ["All", "Weight Loss", "Hormone Therapy", "Regrow Hair", "Men's Services", "Skin Services"];
 
@@ -69,8 +69,7 @@ const CARDS = [
 
 const PAGE_SIZE = 4;
 
-// ─── Icons (memoized for performance) ─────────────────────────────────────────
-
+// Icons (memoized for performance) 
 const Icons = {
   ChevronLeft: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -84,7 +83,7 @@ const Icons = {
   ),
 };
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// Sub-components
 
 const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   <button
@@ -172,7 +171,7 @@ const PaginationButton = ({ onClick, disabled, children, ariaLabel } : Paginatio
   </button>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+//  Main Component 
 
 export default function Assessments() {
   const [activeFilter, setActiveFilter] = useState("All");
