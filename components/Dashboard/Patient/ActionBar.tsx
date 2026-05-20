@@ -2,42 +2,60 @@ import React from 'react';
 import { Home, FolderOpen, Bell, Settings, Plus } from 'lucide-react';
 
 interface ActionBarProps {
+  activeDomain: 'dashboard' | 'messages' | 'notifications' | 'settings';
+  onChangeDomain: (domain: 'dashboard' | 'messages' | 'notifications' | 'settings') => void;
   onRequestNewConsultation?: () => void;
 }
 
-export default function ActionBar({ onRequestNewConsultation }: ActionBarProps) {
+export default function ActionBar({
+  activeDomain,
+  onChangeDomain,
+  onRequestNewConsultation
+}: ActionBarProps) {
+  const getButtonClass = (domain: 'dashboard' | 'messages' | 'notifications' | 'settings') => {
+    const base = "w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150";
+    if (activeDomain === domain) {
+      return `${base} bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]`;
+    }
+    return `${base} bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]`;
+  };
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4">
       {/* Left side: Rounded Square Action Controls */}
       <div className="flex items-center gap-3">
         {/* Active Home Control */}
         <button 
+          onClick={() => onChangeDomain('dashboard')}
           aria-label="Home"
-          className="w-11 h-11 bg-[#2563eb] text-white rounded-[14px] flex items-center justify-center shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8] active:scale-95 transition-all duration-150"
+          className={getButtonClass('dashboard')}
         >
           <Home className="h-5 w-5" />
         </button>
 
-        {/* Documents/Files Control */}
+        {/* Documents/Files Control (Messages) */}
         <button 
+          onClick={() => onChangeDomain('messages')}
           aria-label="Folders"
-          className="w-11 h-11 bg-[#eff6ff] text-[#2563eb] rounded-[14px] flex items-center justify-center hover:bg-[#dbeafe] active:scale-95 transition-all duration-150"
+          className={getButtonClass('messages')}
         >
           <FolderOpen className="h-5 w-5" />
         </button>
 
         {/* Notifications Control */}
         <button 
+          onClick={() => onChangeDomain('notifications')}
           aria-label="Notifications"
-          className="w-11 h-11 bg-[#eff6ff] text-[#2563eb] rounded-[14px] flex items-center justify-center hover:bg-[#dbeafe] active:scale-95 transition-all duration-150"
+          className={getButtonClass('notifications')}
         >
           <Bell className="h-5 w-5" />
         </button>
 
         {/* Settings Control */}
         <button 
+          onClick={() => onChangeDomain('settings')}
           aria-label="Settings"
-          className="w-11 h-11 bg-[#eff6ff] text-[#2563eb] rounded-[14px] flex items-center justify-center hover:bg-[#dbeafe] active:scale-95 transition-all duration-150"
+          className={getButtonClass('settings')}
         >
           <Settings className="h-5 w-5" />
         </button>
@@ -54,3 +72,4 @@ export default function ActionBar({ onRequestNewConsultation }: ActionBarProps) 
     </div>
   );
 }
+

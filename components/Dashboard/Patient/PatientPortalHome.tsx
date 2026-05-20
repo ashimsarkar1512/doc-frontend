@@ -6,8 +6,16 @@ import KpiCard from './KpiCard';
 import ActionBar from './ActionBar';
 import TabBar from './TabBar';
 import ConsultationCard from './ConsultationCard';
-import { Consultation, TabType } from '@/types/patientTypes';
+import ConsultationDetails from './ConsultationDetails';
 
+// Domain imports representing scalable micro-frontend boundaries
+import MessageList from './domains/messages/MessageList';
+import ChatWindow from './domains/messages/ChatWindow';
+import NotificationCenter from './domains/notifications/NotificationCenter';
+import SettingsCenter from './domains/settings/SettingsCenter';
+import StripeCheckoutModal from './domains/billing/StripeCheckoutModal';
+
+import { Consultation, TabType } from '@/types/patientTypes';
 
 // Hardcoded stock data for illustration.
 const initialConsultations: Consultation[] = [
@@ -81,6 +89,12 @@ const initialConsultations: Consultation[] = [
 export default function PatientPortalHome() {
   const [consultations] = useState<Consultation[]>(initialConsultations);
   const [activeTab, setActiveTab] = useState<TabType>('Approved');
+  
+  // High scaleable Shell Orchestration Domain State
+  const [activeDomain, setActiveDomain] = useState<'dashboard' | 'messages' | 'notifications' | 'settings'>('dashboard');
+  const [selectedConsultationId, setSelectedConsultationId] = useState<string | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [stripeModalOpen, setStripeModalOpen] = useState(false);
 
   // Filter computations
   const approvedConsults = consultations.filter((c) => c.status === 'Approved');
@@ -92,8 +106,10 @@ export default function PatientPortalHome() {
     return c.status === activeTab;
   });
 
+  const activeConsultation = consultations.find((c) => c.id === selectedConsultationId);
+
   const handleOpenConsultation = (id: string) => {
-    console.log(`Opening consultation: ${id}`);
+    setSelectedConsultationId(id);
   };
 
   const handleRequestConsultation = () => {
@@ -102,6 +118,7 @@ export default function PatientPortalHome() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 w-full flex-1 flex flex-col font-sans">
+      
       {/* Welcome Banner */}
       <div className="flex items-center gap-4 mb-8">
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center shadow-sm select-none border-2 border-white">
@@ -150,35 +167,97 @@ export default function PatientPortalHome() {
       </div>
 
       {/* Action Navigation Controls */}
-      <ActionBar onRequestNewConsultation={handleRequestConsultation} />
-
-      {/* Dynamic Tab bar */}
-      <TabBar
-        activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        approvedCount={approvedConsults.length}
-        pendingCount={pendingConsults.length}
-        declinedCount={declinedConsults.length}
+      <ActionBar 
+        activeDomain={activeDomain}
+        onChangeDomain={(domain) => {
+          setActiveDomain(domain);
+          // Auto reset sub views when switching primary modules
+          setSelectedConsultationId(null);
+          setSelectedChatId(null);
+        }}
+        onRequestNewConsultation={handleRequestConsultation} 
       />
 
-      {/* Dynamic Grid Results */}
-      {filteredList.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {filteredList.map((item) => (
-            <ConsultationCard
-              key={item.id}
-              consultation={item}
-              onOpen={handleOpenConsultation}
+      {/* Primary Domain Dynamic Router */}
+      
+      {/* 1. Dashboard Domain view */}
+      {activeDomain === 'dashboard' && (
+        <div className="flex flex-col gap-6 w-full">
+          {!selectedConsultationId && (
+            <TabBar
+              activeTab={activeTab}
+              onChangeTab={setActiveTab}
+              approvedCount={approvedConsults.length}
+              pendingCount={pendingConsults.length}
+              declinedCount={declinedConsults.length}
             />
-          ))}
-        </div>
-      ) : (
-        <div className="w-full py-16 flex flex-col items-center justify-center bg-white rounded-3xl border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)] mb-12">
-          <HelpCircle className="h-10 w-10 text-gray-300 mb-3" />
-          <h4 className="font-semibold text-gray-800 text-base">No Consultations Found</h4>
-          <p className="text-xs text-gray-400 mt-1">There are no {activeTab.toLowerCase()} consultations listed right now.</p>
+          )}
+
+          {selectedConsultationId && activeConsultation ? (
+            <ConsultationDetails 
+              consultation={activeConsultation} 
+              onBack={() => setSelectedConsultationId(null)} 
+            />
+          ) : filteredList.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {filteredList.map((item) => (
+                <ConsultationCard
+                  key={item.id}
+                  consultation={item}
+                  onOpen={handleOpenConsultation}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full py-16 flex flex-col items-center justify-center bg-white rounded-3xl border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)] mb-12">
+              <HelpCircle className="h-10 w-10 text-gray-300 mb-3" />
+              <h4 className="font-semibold text-gray-800 text-base">No Consultations Found</h4>
+              <p className="text-xs text-gray-400 mt-1">There are no {activeTab.toLowerCase()} consultations listed right now.</p>
+            </div>
+          )}
         </div>
       )}
+
+      {/* 2. Messages & Chat Domain view */}
+      {activeDomain === 'messages' && (
+        <div className="w-full">
+          {selectedChatId ? (
+            <ChatWindow 
+              chatId={selectedChatId}
+              onBack={() => setSelectedChatId(null)}
+              onTriggerPayment={() => setStripeModalOpen(true)}
+            />
+          ) : (
+            <MessageList onSelectChat={setSelectedChatId} />
+          )}
+        </div>
+      )}
+
+      {/* 3. Event Notification Domain view */}
+      {activeDomain === 'notifications' && (
+        <div className="w-full">
+          <NotificationCenter />
+        </div>
+      )}
+
+      {/* 4. Settings Domain view */}
+      {activeDomain === 'settings' && (
+        <div className="w-full">
+          <SettingsCenter />
+        </div>
+      )}
+
+      {/* Stripe Payment Modal Portal sheet */}
+      <StripeCheckoutModal
+        isOpen={stripeModalOpen}
+        onClose={() => setStripeModalOpen(false)}
+        onSuccess={() => {
+          setStripeModalOpen(false);
+          // Set to static simulation alert
+          alert('Payment accepted successfully! Your appointment has been secured.');
+        }}
+      />
+
     </div>
   );
 }
