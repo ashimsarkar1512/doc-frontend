@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Bell, Camera, EyeOff, LockKeyhole } from "lucide-react";
+import { Bell, Camera, Eye, EyeOff, LockKeyhole } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,6 +13,8 @@ const labelClassName = "mb-1.5 block text-xs font-medium text-gray-800";
 export default function DoctorSettings() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [profileImage, setProfileImage] = useState("/doctor/profile-doc.png");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function DoctorSettings() {
               <label className={labelClassName}>Full Name:</label>
               <input
                 className={inputClassName}
-                defaultValue="Dr. Runa Pradhan NP"
+                placeholder="Dr. Runa Pradhan NP"
               />
             </div>
 
@@ -97,7 +99,7 @@ export default function DoctorSettings() {
               <label className={labelClassName}>Role/Title</label>
               <input
                 className={inputClassName}
-                defaultValue="Dr. Runa Pradhan NP"
+                placeholder="Dr. Runa Pradhan NP"
               />
             </div>
 
@@ -107,43 +109,43 @@ export default function DoctorSettings() {
                 <input
                   type="email"
                   className={inputClassName}
-                  defaultValue="runa.pradhannp@gmail.com"
+                  placeholder="runa.pradhannp@gmail.com"
                 />
               </div>
               <div>
                 <label className={labelClassName}>Contact Number</label>
                 <input
                   className={inputClassName}
-                  defaultValue="+1 234 567890"
+                  placeholder="+1 234 567890"
                 />
               </div>
             </div>
 
             <div>
               <label className={labelClassName}>Office</label>
-              <input className={inputClassName} defaultValue="Colorado Springs" />
+              <input className={inputClassName} placeholder="Colorado Springs" />
             </div>
 
             <div>
               <label className={labelClassName}>Address</label>
               <input
                 className={inputClassName}
-                defaultValue="1625 Medical Center Point, Suite 130"
+                placeholder="1625 Medical Center Point, Suite 130"
               />
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
                 <label className={labelClassName}>City</label>
-                <input className={inputClassName} defaultValue="Colorado Springs" />
+                <input className={inputClassName} placeholder="Colorado Springs" />
               </div>
               <div>
                 <label className={labelClassName}>State</label>
-                <input className={inputClassName} defaultValue="CO" />
+                <input className={inputClassName} placeholder="CO" />
               </div>
               <div>
                 <label className={labelClassName}>Zip</label>
-                <input className={inputClassName} defaultValue="80907" />
+                <input className={inputClassName} placeholder="80907" />
               </div>
             </div>
 
@@ -152,7 +154,7 @@ export default function DoctorSettings() {
               <textarea
                 rows={5}
                 className="w-full resize-none rounded-lg border border-transparent bg-[#f0f0f0] px-3 py-3 text-xs leading-relaxed text-gray-700 outline-none transition-colors focus:border-blue-300 focus:bg-white"
-                defaultValue="At the forefront of the UAE's construction revolution, Alpha Build Construction is the digital hub for builders, designers, and visionaries. With over 25 years of experience, we've established ourselves as a leading manufacturer, supplier, and contractor specializing in premium building materials and construction services."
+                placeholder="At the forefront of the UAE's construction revolution, Alpha Build Construction is the digital hub for builders, designers, and visionaries. With over 25 years of experience, we've established ourselves as a leading manufacturer, supplier, and contractor specializing in premium building materials and construction services."
               />
             </div>
           </div>
@@ -185,22 +187,46 @@ export default function DoctorSettings() {
               <label className={labelClassName}>New Password</label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showNewPassword ? "text" : "password"}
                   className={`${inputClassName} pr-10`}
                   placeholder="Enter new password"
                 />
-                <EyeOff className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <button
+                  type="button"
+                  aria-label={showNewPassword ? "Hide new password" : "Show new password"}
+                  aria-pressed={showNewPassword}
+                  onClick={() => setShowNewPassword((value) => !value)}
+                  className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-800"
+                >
+                  {showNewPassword ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
             <div>
               <label className={labelClassName}>Confirm Password</label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   className={`${inputClassName} pr-10`}
                   placeholder="Confirm new password"
                 />
-                <EyeOff className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <button
+                  type="button"
+                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  aria-pressed={showConfirmPassword}
+                  onClick={() => setShowConfirmPassword((value) => !value)}
+                  className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-800"
+                >
+                  {showConfirmPassword ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
           </div>
