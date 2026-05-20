@@ -71,7 +71,7 @@ const sidebarItems: SidebarItem[] = [
   },
 ];
 
-export default function DashboardLayout({
+export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -273,8 +273,8 @@ export default function DashboardLayout({
 
             {/* Dashboard Contextual Title */}
             <div className="flex flex-col">
-              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 leading-tight">Dashboard</h1>
-              <p className="text-xs text-gray-400 font-light mt-0.5 leading-none">Manage your overview</p>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 leading-tight">Admin Dashboard</h1>
+              <p className="text-xs text-gray-400 font-light mt-0.5 leading-none">Manage your healthcare system</p>
             </div>
           </div>
 
