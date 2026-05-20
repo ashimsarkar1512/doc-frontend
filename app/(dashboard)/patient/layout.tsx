@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, User, LogOut, Settings, Menu, X } from 'lucide-react';
 import Footer from '@/components/shared/Footer';
+import Logo from '@/components/ui/Logo';
 
 export default function PatientLayout({
   children,
@@ -33,15 +34,7 @@ export default function PatientLayout({
         <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-1 cursor-pointer">
-            <svg width="30" height="38" viewBox="0 0 40 50" fill="none" stroke="#10b981" strokeWidth="1.6">
-              <path d="M25 5 C10 15 15 25 20 35 C25 45 10 50 10 50" strokeLinecap="round" />
-              <path d="M20 20 C10 25 5 35 5 35" strokeLinecap="round" />
-              <circle cx="28" cy="10" r="2.5" fill="#10b981" stroke="none" />
-            </svg>
-            <div className="flex flex-col ml-1">
-              <span className="font-extrabold text-[20px] tracking-tighter leading-none text-gray-900">WEIGHTLOSSMD</span>
-              <span className="text-[12px] font-serif italic text-emerald-600 text-right leading-none pr-1 mt-1 tracking-wide">& Wellness</span>
-            </div>
+            <Logo/>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -80,7 +73,7 @@ export default function PatientLayout({
                   <p className="text-xs text-gray-400">Signed in as</p>
                   <p className="text-sm font-semibold text-gray-800 truncate">alan@ektahealth.com</p>
                 </div>
-                <Link
+                {/* <Link
                   href="/patient"
                   className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
                   onClick={() => setIsProfileDropdownOpen(false)}
@@ -95,7 +88,7 @@ export default function PatientLayout({
                 >
                   <Settings className="h-4 w-4" />
                   <span>Profile Settings</span>
-                </Link>
+                </Link> */}
                 <button
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50 mt-1"
                   onClick={() => {
