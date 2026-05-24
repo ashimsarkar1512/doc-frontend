@@ -41,7 +41,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         title: "New message from patient",
         description: "Patient Alan Cattach send you a message",
         time: "2h ago",
-        image: "/doctor/doc-1.png",
+        image: "/doctor/doc-1.jpg",
       },
       {
         id: 2,

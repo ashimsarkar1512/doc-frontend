@@ -7,10 +7,10 @@ import { useState, useRef, useEffect } from "react";
 import PaymentRequestModal from "@/components/Dashboard/doctor/PaymentRequestModal";
 
 const patientData: Record<string, { name: string; category: string; consultationId: string; image: string }> = {
-  "001236": { name: "Alan Cattach", category: "Weight Loss", consultationId: "#001236", image: "/doctor/doc-1.png" },
-  "001237": { name: "Jane Cooper", category: "Individual Therapy", consultationId: "#001237", image: "/doctor/doc-2.png" },
-  "001238": { name: "Albert Flores", category: "Anxiety & Stress", consultationId: "#001238", image: "/doctor/doc-3.png" },
-  "001239": { name: "Kristin Watson", category: "Clarity Consult", consultationId: "#001239", image: "/doctor/doc-4.png" },
+  "001236": { name: "Alan Cattach", category: "Weight Loss", consultationId: "#001236", image: "/doctor/doc-1.jpg" },
+  "001237": { name: "Jane Cooper", category: "Individual Therapy", consultationId: "#001237", image: "/doctor/doc-2.jpg" },
+  "001238": { name: "Albert Flores", category: "Anxiety & Stress", consultationId: "#001238", image: "/doctor/doc-3.jpg" },
+  "001239": { name: "Kristin Watson", category: "Clarity Consult", consultationId: "#001239", image: "/doctor/doc-4.jpg" },
 };
 
 type Message = {

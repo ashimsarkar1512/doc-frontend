@@ -8,7 +8,7 @@ export default function DoctorNavbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 md:px-8 md:py-4">
         <Link
-          href="/doctor"
+          href="/"
           className="flex min-w-0 items-center"
           aria-label="Doctor dashboard"
         >

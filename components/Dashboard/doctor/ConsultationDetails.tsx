@@ -68,7 +68,7 @@ export default function ConsultationDetails({ id }: { id: string }) {
 
         {/* Cover Image */}
         <div className="relative w-full h-[240px] md:h-[320px] rounded-xl overflow-hidden mb-5">
-          <Image src="/doctor/doc-1.png" alt="Assessment" fill className="object-cover" />
+          <Image src="/doctor/doc-1.jpg" alt="Assessment" fill className="object-cover" />
         </div>
 
         <p className="text-gray-600 text-sm leading-relaxed">
@@ -193,7 +193,7 @@ export default function ConsultationDetails({ id }: { id: string }) {
             {/* Product 1 */}
             <div className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
               <div className="w-12 h-12 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
-                <Image src="/doctor/doc-1.png" alt="Product" fill className="object-cover opacity-70" />
+                <Image src="/doctor/doc-1.jpg" alt="Product" fill className="object-cover opacity-70" />
               </div>
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-0.5">
@@ -206,7 +206,7 @@ export default function ConsultationDetails({ id }: { id: string }) {
             {/* Product 2 */}
             <div className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
               <div className="w-12 h-12 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
-                <Image src="/doctor/doc-1.png" alt="Product" fill className="object-cover opacity-70" />
+                <Image src="/doctor/doc-2.jpg" alt="Product" fill className="object-cover opacity-70" />
               </div>
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-0.5">

@@ -10,7 +10,7 @@ export default function DoctorTabs() {
   const activeConsultationCards = [
     {
       id: 1,
-      image: "/doctor/doc-1.png",
+      image: "/doctor/doc-1.jpg",
       category: "Weight Loss",
       title: "Weight Loss",
       consultationId: "#001236",
@@ -19,7 +19,7 @@ export default function DoctorTabs() {
     },
     {
       id: 2,
-      image: "/doctor/doc-2.png",
+      image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Individual Therapy",
       consultationId: "#001237",
@@ -28,7 +28,7 @@ export default function DoctorTabs() {
     },
     {
       id: 3,
-      image: "/doctor/doc-3.png",
+      image: "/doctor/doc-3.jpg",
       category: "Hormone Therapy",
       title: "Anxiety & Stress",
       consultationId: "#001238",
@@ -37,7 +37,7 @@ export default function DoctorTabs() {
     },
     {
       id: 4,
-      image: "/doctor/doc-4.png",
+      image: "/doctor/doc-4.jpg",
       category: "Hormone Therapy",
       title: "Clarity Consult",
       consultationId: "#001239",
@@ -46,7 +46,7 @@ export default function DoctorTabs() {
     },
     {
       id: 5,
-      image: "/doctor/doc-1.png",
+      image: "/doctor/doc-1.jpg",
       category: "Hormone Therapy",
       title: "Personal Training",
       consultationId: "#001240",
@@ -55,7 +55,7 @@ export default function DoctorTabs() {
     },
     {
       id: 6,
-      image: "/doctor/doc-2.png",
+      image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Dietary Consultation",
       consultationId: "#001241",
@@ -67,7 +67,7 @@ export default function DoctorTabs() {
   const newRequestCards = [
     {
       id: 7,
-      image: "/doctor/doc-2.png",
+      image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Individual Therapy",
       consultationId: "#001237",
@@ -76,7 +76,7 @@ export default function DoctorTabs() {
     },
     {
       id: 8,
-      image: "/doctor/doc-3.png",
+      image: "/doctor/doc-3.jpg",
       category: "Hormone Therapy",
       title: "Anxiety & Stress",
       consultationId: "#001238",
