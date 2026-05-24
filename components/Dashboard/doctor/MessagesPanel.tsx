@@ -11,7 +11,7 @@ const patients = [
     name: "Alan Cattach",
     category: "Weight Loss",
     consultationId: "#001236",
-    image: "/doctor/doc-1.png",
+    image: "/doctor/doc-1.jpg",
     chatId: "001236",
   },
   {
@@ -19,7 +19,7 @@ const patients = [
     name: "Jane Cooper",
     category: "Individual Therapy",
     consultationId: "#001237",
-    image: "/doctor/doc-2.png",
+    image: "/doctor/doc-2.jpg",
     chatId: "001237",
   },
   {
@@ -27,7 +27,7 @@ const patients = [
     name: "Albert Flores",
     category: "Anxiety & Stress",
     consultationId: "#001238",
-    image: "/doctor/doc-3.png",
+    image: "/doctor/doc-3.jpg",
     chatId: "001238",
   },
   {
@@ -35,7 +35,7 @@ const patients = [
     name: "Kristin Watson",
     category: "Clarity Consult",
     consultationId: "#001239",
-    image: "/doctor/doc-4.png",
+    image: "/doctor/doc-4.jpg",
     chatId: "001239",
   },
 ];
