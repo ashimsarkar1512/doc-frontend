@@ -143,12 +143,14 @@ const LoginPage = () => {
 
                 {/* Action Buttons Section */}
                 <footer className="mt-auto">
-                  <button 
+               <Link href="/verify">
+                   <button 
                     type="submit" 
                     className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     Login <span className="text-base">→</span>
                   </button>
+                 </Link>
 
                   <div className="text-center pt-4">
                     <a 
