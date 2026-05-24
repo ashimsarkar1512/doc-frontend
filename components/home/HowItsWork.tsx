@@ -44,6 +44,7 @@ const HowItsWork: React.FC = () => {
               alt="Before and after progress illustration"
               className="w-full h-full object-cover object-center"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
         </div>

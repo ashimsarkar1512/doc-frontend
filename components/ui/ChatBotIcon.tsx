@@ -19,6 +19,7 @@ const ChatBotIcon = ({
         alt="chat Bot Icon"
         width={width}
         height={height}
+        style={{ width: "auto", height: "auto" }}
       />
     </div>
   )
