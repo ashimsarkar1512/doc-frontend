@@ -18,6 +18,7 @@ const Logo = ({ variant = "dark" }: LogoProps) => {
             ? "invert brightness-0"
             : ""
         }
+        style={{ width: "auto", height: "auto" }}
       />
     </div>
   );

@@ -13,6 +13,7 @@ const Banner = () => {
             width={40}
             height={20}
             className="object-contain"
+            style={{ width: "auto", height: "auto" }}
           />
           <div className="relative">
             <Image
@@ -20,6 +21,7 @@ const Banner = () => {
               alt="LegitScript Certified"
               width={80}
               height={80}
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <Image
@@ -28,6 +30,7 @@ const Banner = () => {
             width={40}
             height={20}
             className="object-contain"
+            style={{ width: "auto", height: "auto" }}
           />
         </div>
 
@@ -39,6 +42,7 @@ const Banner = () => {
               alt="Avatar"
               fill
               className="object-cover"
+              sizes="40px"
             />
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
@@ -47,6 +51,7 @@ const Banner = () => {
               alt="Avatar"
               fill
               className="object-cover"
+              sizes="40px"
             />
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
@@ -55,6 +60,7 @@ const Banner = () => {
               alt="Avatar"
               fill
               className="object-cover"
+              sizes="40px"
             />
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
@@ -63,6 +69,7 @@ const Banner = () => {
               alt="Avatar"
               fill
               className="object-cover"
+              sizes="40px"
             />
           </div>
           <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
@@ -71,6 +78,7 @@ const Banner = () => {
               alt="Avatar"
               fill
               className="object-cover"
+              sizes="40px"
             />
           </div>
         </div>
