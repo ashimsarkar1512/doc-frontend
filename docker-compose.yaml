@@ -1,0 +1,16 @@
+services:
+  public:
+    restart: unless-stopped
+    container_name: doc-frontend
+    image: softvence/doc-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
+    ports:
+      - "3000:3000"
