@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, User, Menu, X } from "lucide-react";
 import Logo from "../ui/Logo";
@@ -13,6 +13,13 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Weight Loss");
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isDark = variant === "dark";
 
@@ -25,9 +32,7 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
     ? "border-black text-black hover:bg-black hover:text-white"
     : "border-white text-white hover:bg-white hover:text-black";
 
-  const borderColor = isDark
-    ? "border-black/20"
-    : "border-white/20";
+  const borderColor = isDark ? "border-black/20" : "border-white/20";
 
   const mobileBg = isDark ? "bg-white/90" : "bg-black/70";
 
@@ -79,9 +84,16 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
   const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
 
   return (
-    <nav className="absolute top-0 w-full z-50 pt-6 px-4 md:px-8">
+    <nav 
+      className={`fixed top-0 left-0 w-full z-50 px-4 md:px-8 transition-all duration-300 ${
+        isScrolled
+          ? isDark 
+            ? "bg-white/90 backdrop-blur-md shadow-sm py-4 border-b border-gray-100" 
+            : "bg-gray-900/90 backdrop-blur-md shadow-md py-4 border-b border-white/10"
+          : "bg-transparent py-6"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-
         {/* Logo */}
         <div className="flex items-center gap-2 cursor-pointer relative z-[60]">
           <Link href="/">
@@ -161,46 +173,60 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
 
                 <div className="flex flex-col md:flex-row gap-8">
                   <ul className="space-y-3 flex-1">
-                    {servicesData[activeTab as keyof typeof servicesData].left.map(
-                      (item, i) => (
-                        <li key={i} className="text-sm text-gray-600 flex gap-2">
-                          <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
-                          {item}
-                        </li>
-                      )
-                    )}
+                    {servicesData[
+                      activeTab as keyof typeof servicesData
+                    ].left.map((item, i) => (
+                      <li key={i} className="text-sm text-gray-600 flex gap-2">
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
+                        {item}
+                      </li>
+                    ))}
                   </ul>
 
                   <ul className="space-y-3 flex-1">
-                    {servicesData[activeTab as keyof typeof servicesData].right.map(
-                      (item, i) => (
-                        <li key={i} className="text-sm text-gray-600 flex gap-2">
-                          <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
-                          {item}
-                        </li>
-                      )
-                    )}
+                    {servicesData[
+                      activeTab as keyof typeof servicesData
+                    ].right.map((item, i) => (
+                      <li key={i} className="text-sm text-gray-600 flex gap-2">
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
+                        {item}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
             )}
           </div>
 
-          <Link href="/blog" className={`${textColor} transition-colors text-xl md:text-base`}>
+          <Link
+            href="/blog"
+            className={`${textColor} transition-colors text-xl md:text-base`}
+          >
             Blog
           </Link>
 
-          <Link href="/about" className={`${textColor} transition-colors text-xl md:text-base`}>
+          <Link
+            href="/about"
+            className={`${textColor} transition-colors text-xl md:text-base`}
+          >
             About
           </Link>
 
-          <Link href="/contact" className={`${textColor} transition-colors text-xl md:text-base`}>
+          <Link
+            href="/contact"
+            className={`${textColor} transition-colors text-xl md:text-base`}
+          >
             Contact
           </Link>
 
           {/* Mobile actions */}
-          <div className={`md:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}>
-            <Link href="/login" className={`${textColor} flex items-center gap-2`}>
+          <div
+            className={`md:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}
+          >
+            <Link
+              href="/login"
+              className={`${textColor} flex items-center gap-2`}
+            >
               <User className="h-5 w-5" />
               Login
             </Link>
@@ -212,8 +238,13 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
         </div>
 
         {/* Desktop actions */}
-        <div className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}>
-          <Link href="/login" className={`${textColor} flex items-center gap-2`}>
+        <div
+          className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}
+        >
+          <Link
+            href="/login"
+            className={`${textColor} flex items-center gap-2`}
+          >
             <User className="h-4 w-4" />
             <span>Login</span>
           </Link>
