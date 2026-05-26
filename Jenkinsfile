@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = "softvence/doc-frontend"
         DOCKER_TAG = "latest"
         CONTAINER_NAME = "doc-frontend"
-        SSH_HOST = ""
+        SSH_HOST = "187.77.23.79"
         SSH_CREDENTIALS_ID = "doc-ssh-creds"
         SERVER_PATH = "/var/projects/doc-frontend"
     }
