@@ -2,6 +2,7 @@ import Image from 'next/image'
 import React from 'react'
 import Navbar from '../shared/Navbar'
 import Banner from './Banner'
+import FloatingActions from './FloatingActions'
 
 const Home = () => {
   return (
@@ -11,7 +12,7 @@ const Home = () => {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
-              src="/banner /bannerImage.png"
+              src="/banner/bannerImage.png"
               alt="Woman smiling outdoors"
               fill
               className="object-cover"
@@ -21,6 +22,7 @@ const Home = () => {
 
           <Navbar />
           <Banner />
+          <FloatingActions />
         </div>
       </div>
 </div>

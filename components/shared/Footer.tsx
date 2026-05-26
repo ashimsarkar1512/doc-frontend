@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn } from 'react-icons/fa6';
+import Logo from '../ui/Logo';
 
 const Footer = () => {
   return (
@@ -60,15 +61,7 @@ const Footer = () => {
             {/* Brand & Description */}
             <div className="md:col-span-4 pr-0 md:pr-12">
               <div className="flex items-center gap-1 cursor-pointer mb-6">
-                <svg width="35" height="45" viewBox="0 0 40 50" fill="none" stroke="white" strokeWidth="1.2" className="opacity-90">
-                  <path d="M25 5 C10 15 15 25 20 35 C25 45 10 50 10 50" strokeLinecap="round" />
-                  <path d="M20 20 C10 25 5 35 5 35" strokeLinecap="round" />
-                  <circle cx="28" cy="10" r="2" fill="white" stroke="none" />
-                </svg>
-                <div className="flex flex-col ml-1">
-                  <span className="font-black text-[26px] tracking-tighter leading-none text-white">WEIGHTLOSSMD</span>
-                  <span className="text-[16px] font-serif italic text-gray-200 text-right leading-none pr-1 mt-2 tracking-wide">& Wellness</span>
-                </div>
+                <Logo variant='light'/>
               </div>
               <p className="text-[14px] text-gray-200 leading-[1.7] font-light">
                 Weight Loss MD is a medical weight loss clinic in Colorado offering GLP-1 Prescription weight loss medications CoolSculpting®, Laser Hair Removal, hormone replacement therapy, men's services, IV Therapy, and more!

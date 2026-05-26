@@ -11,6 +11,7 @@ import {
   UserCheck,
   Users,
   Globe,
+  Settings,
   ChevronDown,
   Menu,
   X,
