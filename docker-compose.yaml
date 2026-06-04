@@ -1,5 +1,5 @@
 services:
-  public:
+  client:
     restart: unless-stopped
     container_name: doc-frontend
     image: softvence/doc-frontend:latest
