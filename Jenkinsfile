@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                cleanWs()
+                deleteDir()
                 checkout scm
             }
         }
@@ -53,11 +53,27 @@ pipeline {
 
         stage('Push Docker Compose File') {
             steps {
-                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: env.SSH_CREDENTIALS_ID,
+                    keyFileVariable: 'SSH_KEY',
+                    usernameVariable: 'SSH_USER'
+                )]) {
                     sh '''
                         echo "Uploading docker-compose.yaml to server..."
-                        ssh -o StrictHostKeyChecking=no "$SSH_HOST" "mkdir -p '$SERVER_PATH'"
-                        scp -o StrictHostKeyChecking=no docker-compose.yaml "$SSH_HOST:$SERVER_PATH/docker-compose.yaml"
+                        chmod 600 "$SSH_KEY"
+                        echo "Connecting to $SSH_USER@$SSH_HOST"
+                        ssh -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o IdentitiesOnly=yes \
+                            -o StrictHostKeyChecking=no \
+                            "$SSH_USER@$SSH_HOST" \
+                            "mkdir -p '$SERVER_PATH'"
+                        scp -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o IdentitiesOnly=yes \
+                            -o StrictHostKeyChecking=no \
+                            docker-compose.yaml \
+                            "$SSH_USER@$SSH_HOST:$SERVER_PATH/docker-compose.yaml"
                         echo "docker-compose.yaml uploaded successfully."
                     '''
                 }
@@ -66,30 +82,27 @@ pipeline {
 
         stage('Deploy New Docker Image') {
             steps {
-                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: env.SSH_CREDENTIALS_ID,
+                    keyFileVariable: 'SSH_KEY',
+                    usernameVariable: 'SSH_USER'
+                )]) {
                     sh '''
                         echo "Pulling and starting latest Docker image on server..."
-                        ssh -o StrictHostKeyChecking=no "$SSH_HOST" "
+                        chmod 600 "$SSH_KEY"
+                        echo "Connecting to $SSH_USER@$SSH_HOST"
+                        ssh -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o IdentitiesOnly=yes \
+                            -o StrictHostKeyChecking=no \
+                            "$SSH_USER@$SSH_HOST" \
+                            "
                             cd '$SERVER_PATH' &&
                             docker compose pull &&
                             docker compose up -d &&
                             docker image prune -f
                         "
                         echo "Deployment completed on server."
-                    '''
-                }
-            }
-        }
-
-        stage("Restart caddy docker container") {
-            steps {
-                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
-                    sh '''
-                        echo "Restarting caddy docker container on server..."
-                        ssh -o StrictHostKeyChecking=no "$SSH_HOST"
-                            cd '$SERVER_PATH' &&
-                            docker restart doc-backend-caddy
-                        echo "Restart completed on server."
                     '''
                 }
             }
@@ -111,3 +124,4 @@ pipeline {
         }
     }
 }
+
