@@ -90,7 +90,7 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
           ? isDark 
             ? "bg-white/90 backdrop-blur-md shadow-sm py-4 border-b border-gray-100" 
             : "bg-gray-900/90 backdrop-blur-md shadow-md py-4 border-b border-white/10"
-          : "bg-transparent py-6"
+          : "bg-transparent py-12"
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
