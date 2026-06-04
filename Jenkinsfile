@@ -80,6 +80,21 @@ pipeline {
                 }
             }
         }
+
+        stage("Restart caddy docker container") {
+            steps {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
+                    sh '''
+                        echo "Restarting caddy docker container on server..."
+                        ssh -o StrictHostKeyChecking=no "$SSH_HOST" "
+                            cd '$SERVER_PATH' &&
+                            docker restart doc-backend-caddy
+                        "
+                        echo "Restart completed on server."
+                    '''
+                }
+            }
+        }
     }
 
     post {
