@@ -65,18 +65,15 @@ const VerifyPage = () => {
 
   return (
     <div className="min-h-screen overflow-y-auto overflow-x-hidden bg-white flex flex-col [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {/* Navbar — fixed with z-index so it stays on top */}
-      <div className="fixed top-0 left-0 right-0 z-50 py-10 bg-white/80 backdrop-blur-sm">
-        <Navbar variant="dark" />
-      </div>
+      <Navbar variant="dark" />
 
-      {/* Main Content — fills viewport height so card is centered, footer below */}
-      <main className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-8 pt-24 pb-8">
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
         <div className="w-full max-w-[620px] flex justify-center">
 
           {/* Verify Card */}
           <div
-            className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full"
+            className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]"
           >
             {/* Background Image */}
             <Image
@@ -155,6 +152,7 @@ const VerifyPage = () => {
                     <span className="text-white/80 font-light">Didn&apos;t receive the code?</span>
                     <button
                       type="button"
+                      onClick={() => router.push('/receive-otp')}
                       className="text-white font-medium hover:text-gray-200 transition-colors underline underline-offset-4"
                     >
                       Resend
