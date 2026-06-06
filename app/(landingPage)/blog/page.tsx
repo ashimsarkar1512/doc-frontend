@@ -12,12 +12,16 @@ export const metadata = {
 const Blogpage = () => {
   return (
     <main className="w-full bg-white min-h-screen">
-      <Navbar variant="dark" />
+      <Navbar 
+        variant="dark" 
+        initialPadding="pt-5 pb-4" // You can set your custom padding here!
+        scrolledPadding="py-2" 
+      />
+      <div className="xl:lg:pt-20 p-9" /> {/* matches navbar height */}
       <BlogHero />
       <BlogList />
       <BlogCTA />
     </main>
   );
 };
-
 export default Blogpage;

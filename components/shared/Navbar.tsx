@@ -7,9 +7,17 @@ import Logo from "../ui/Logo";
 
 interface NavbarProps {
   variant?: "light" | "dark";
+  initialPadding?: string;
+  scrolledPadding?: string;
+  className?: string;
 }
 
-const Navbar = ({ variant = "light" }: NavbarProps) => {
+const Navbar = ({ 
+  variant = "light",
+  initialPadding = "py-12",
+  scrolledPadding = "py-4",
+  className = ""
+}: NavbarProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Weight Loss");
@@ -88,10 +96,10 @@ const Navbar = ({ variant = "light" }: NavbarProps) => {
       className={`fixed top-0 left-0 w-full z-50 px-4 md:px-8 transition-all duration-300 ${
         isScrolled
           ? isDark 
-            ? "bg-white/30 backdrop-blur-md shadow-sm py-4 border-b border-white/20" 
-            : "bg-black/30 backdrop-blur-md shadow-md py-4 border-b border-white/10"
-          : "bg-transparent py-12"
-      }`}
+            ? `bg-white/30 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-white/20` 
+            : `bg-black/30 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
+          : `bg-transparent ${initialPadding}`
+      } ${className}`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
