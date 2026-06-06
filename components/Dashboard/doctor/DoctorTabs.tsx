@@ -13,6 +13,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-1.jpg",
       category: "Weight Loss",
       title: "Weight Loss",
+      patientName: "Jenny Wilson",
       consultationId: "#001236",
       buttonText: "Open Consultation",
       status: "Approved",
@@ -22,6 +23,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Individual Therapy",
+      patientName: "Annette Black",
       consultationId: "#001237",
       buttonText: "Open Consultation",
       status: "Approved",
@@ -31,6 +33,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-3.jpg",
       category: "Hormone Therapy",
       title: "Anxiety & Stress",
+      patientName: "Robert Fox",
       consultationId: "#001238",
       buttonText: "Open Consultation",
       status: "Approved",
@@ -40,6 +43,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-4.jpg",
       category: "Hormone Therapy",
       title: "Clarity Consult",
+      patientName: "Esther Howard",
       consultationId: "#001239",
       buttonText: "View Details",
       status: "Approved",
@@ -49,6 +53,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-1.jpg",
       category: "Hormone Therapy",
       title: "Personal Training",
+      patientName: "Cameron Williamson",
       consultationId: "#001240",
       buttonText: "Open Consultation",
       status: "Approved",
@@ -58,6 +63,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Dietary Consultation",
+      patientName: "Floyd Miles",
       consultationId: "#001241",
       buttonText: "Open Consultation",
       status: "Approved",
@@ -70,6 +76,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-2.jpg",
       category: "Hormone Therapy",
       title: "Individual Therapy",
+      patientName: "Jenny Wilson",
       consultationId: "#001237",
       buttonText: "View Details",
       status: "Pending",
@@ -79,6 +86,7 @@ export default function DoctorTabs() {
       image: "/doctor/doc-3.jpg",
       category: "Hormone Therapy",
       title: "Anxiety & Stress",
+      patientName: "Wade Warren",
       consultationId: "#001238",
       buttonText: "View Details",
       status: "Pending",
@@ -107,47 +115,50 @@ export default function DoctorTabs() {
 
   return (
     <>
+      {/* Tabs */}
       <div className="mb-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible">
         <div className="flex w-max min-w-full gap-2 rounded-2xl bg-gray-50 p-1 md:w-full md:gap-8 md:rounded-none md:border-b md:border-gray-200 md:bg-transparent md:p-0">
-        <button 
-          onClick={() => setActiveTab("Active Consultation")}
-          className={getTabClass("Active Consultation")}
-        >
-          Active Consultation
-          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#10b981] text-xs text-white">
-            5
-          </span>
-        </button>
-        <button 
-          onClick={() => setActiveTab("New Request")}
-          className={getTabClass("New Request")}
-        >
-          New Request
-          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eab308] text-xs text-white">
-            2
-          </span>
-        </button>
-        <button 
-          onClick={() => setActiveTab("Declined Request")}
-          className={getTabClass("Declined Request")}
-        >
-          Declined Request
-          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#ef4444] text-xs text-white">
-            1
-          </span>
-        </button>
-        <button 
-          onClick={() => setActiveTab("History")}
-          className={getTabClass("History")}
-        >
-          History
-        </button>
+          <button
+            onClick={() => setActiveTab("Active Consultation")}
+            className={getTabClass("Active Consultation")}
+          >
+            Active Consultation
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#10b981] text-xs text-white">
+              5
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("New Request")}
+            className={getTabClass("New Request")}
+          >
+            New Request
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eab308] text-xs text-white">
+              2
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("Declined Request")}
+            className={getTabClass("Declined Request")}
+          >
+            Declined Request
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#ef4444] text-xs text-white">
+              1
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("My Order")}
+            className={getTabClass("My Order")}
+          >
+            My Order
+          </button>
         </div>
       </div>
 
+      {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card) => (
           <div key={card.id} className="flex flex-col">
+            {/* Image */}
             <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-gray-50 shadow-sm border border-gray-100/50">
               <Image
                 src={card.image}
@@ -156,34 +167,58 @@ export default function DoctorTabs() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 className="object-cover hover:scale-105 transition-transform duration-500"
               />
-              <div 
+              {/* Status Badge */}
+              <div
                 className={`absolute top-3 left-3 px-3 py-1 rounded-full text-white text-xs font-semibold shadow-sm backdrop-blur-md border ${
-                  card.status === 'Pending' 
-                    ? 'bg-[#eab308]/80 border-[#eab308]' 
-                    : 'bg-white/30 border-white/40'
+                  card.status === "Pending"
+                    ? "bg-[#eab308]/90 border-[#eab308]/60"
+                    : "bg-white/25 border-white/40"
                 }`}
               >
                 {card.status}
               </div>
             </div>
-            
-              <div className="flex flex-col flex-grow">
-                <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full w-fit mb-2">
-                  {card.category}
+
+            {/* Card Body */}
+            <div className="flex flex-col flex-grow">
+              {/* Category */}
+              <span className="bg-blue-50 text-blue-600 text-xs font-medium px-3 py-1 rounded-full w-fit mb-2">
+                {card.category}
+              </span>
+
+              {/* Title */}
+              <h3 className="text-base font-bold text-gray-900 mb-1">
+                {card.title}
+              </h3>
+
+              {/* Patient Name */}
+              <p className="text-gray-500 text-sm mb-4">
+                Patient:{" "}
+                <span className="text-gray-700 font-medium">
+                  {card.patientName}
                 </span>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{card.title}</h3>
-                <p className="text-gray-500 text-sm mb-4">Consultation id: {card.consultationId}</p>
-                
-                <div className="mt-auto">
-                  <Link href={`/doctor?consultationId=${card.consultationId.replace('#', '')}`}>
-                    <button className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-medium py-2.5 px-6 rounded-full w-fit">
-                      {card.buttonText}
-                    </button>
-                  </Link>
-                </div>
+              </p>
+
+              {/* Button */}
+              <div className="mt-auto">
+                <Link
+                  href={`/doctor?consultationId=${card.consultationId.replace("#", "")}`}
+                >
+                  <button className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-medium py-2.5 px-6 rounded-full w-fit">
+                    {card.buttonText}
+                  </button>
+                </Link>
               </div>
+            </div>
           </div>
         ))}
+
+        {/* Empty state */}
+        {cards.length === 0 && (
+          <div className="col-span-full py-16 flex flex-col items-center justify-center text-gray-400">
+            <p className="text-sm font-medium">No records found.</p>
+          </div>
+        )}
       </div>
     </>
   );

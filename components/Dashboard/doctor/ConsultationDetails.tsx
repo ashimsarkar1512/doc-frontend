@@ -223,14 +223,20 @@ export default function ConsultationDetails({ id }: { id: string }) {
               <span>Subtotal</span><span>$96.00</span>
             </div>
             <div className="flex justify-between text-gray-500 font-medium">
-              <span>Incl. VAT</span><span>$2.00</span>
+              <span>Service Duration</span><span>1 month</span>
             </div>
             <div className="flex justify-between text-gray-500 font-medium">
-              <span>Consultation Fees</span><span>+ $50.00</span>
+              <span>Service Fees</span><span>$20.00</span>
+            </div>
+            <div className="flex justify-between text-gray-500 font-medium">
+              <span>Shipping charge</span><span>$10.00</span>
+            </div>
+            <div className="flex justify-between text-gray-500 font-medium">
+              <span>Discount</span><span className="text-green-600">-$15.00</span>
             </div>
             <div className="flex justify-between font-bold text-gray-900 pt-3 border-t border-gray-200 mt-3">
-              <span>Total payable</span>
-              <span className="text-blue-600">$148.00</span>
+              <span>Total</span>
+              <span className="text-blue-600">$151.00</span>
             </div>
             <div className="flex justify-between items-center pt-2">
               <span className="text-gray-500 font-medium">Payment Status:</span>
