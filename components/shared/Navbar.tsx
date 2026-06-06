@@ -167,11 +167,14 @@ const Navbar = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveTab(tab);
+                        if (tab === "Weight Loss") {
+                          window.location.href = "/weight-loss";
+                        }
                       }}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                         activeTab === tab
                           ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-700"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                       }`}
                     >
                       {tab}
