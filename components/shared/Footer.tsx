@@ -92,9 +92,9 @@ const Footer = () => {
             <div className="md:col-span-2">
               <h4 className="font-medium text-white mb-6 text-[17px]">Legal</h4>
               <ul className="space-y-4 text-[15px] text-gray-200 font-light">
-                <li><Link href="/" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">HIPPA Notice of Privacy</Link></li>
+                <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><Link href="/hipaa-notice" className="hover:text-white transition-colors">HIPPA Notice of Privacy</Link></li>
                 <li><Link href="/" className="hover:text-white transition-colors">Marketing and Conditions</Link></li>
               </ul>
             </div>
