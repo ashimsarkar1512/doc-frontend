@@ -16,25 +16,18 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between">
-      <div className="py-6">
-        <Navbar variant="dark" />
-      </div>
+      <Navbar variant="dark" />
 
       {/* Main Content */}
-      <main className="flex-grow flex items-center justify-center px-6 py-12">
+      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
         <div className="w-full max-w-[620px] flex justify-center">
-          
+
           {/* Senior Architected Login Card */}
-          <div 
-            className="relative text-white rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-8 md:p-12"
-            style={{ 
-              width: "100%",
-              maxWidth: "620px",
-              height: "708.66px"
-            }}
+          <div
+            className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]"
           >
             {/* ⚡ Next.js Image Component (z-0) - Fully Optimized & priority loaded */}
-            <Image 
+            <Image
               src="/footer.png"
               alt="Auth Background"
               fill
@@ -42,13 +35,13 @@ const LoginPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-            
+
             {/* Subtle overlay for text contrast (z-10) */}
             <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
 
             {/* Core Interactive Layout Wrapper (z-20) */}
             <div className="relative z-20 flex flex-col justify-between h-full w-full">
-              
+
               {/* Header Content */}
               <header className="text-center mb-4">
                 <div className="flex justify-center mb-3">
@@ -62,26 +55,24 @@ const LoginPage = () => {
 
               {/* Segmented Controls (Auth Selection Tabs) */}
               <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
-                <button 
+                <button
                   type="button"
                   onClick={() => setActiveTab('patient')}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === 'patient' 
-                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]' 
+                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${activeTab === 'patient'
+                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
                       : 'text-white/75 hover:text-white hover:bg-white/5'
-                  }`}
+                    }`}
                 >
                   <User className="h-3.5 w-3.5" />
                   Patient Login
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={() => setActiveTab('doctor')}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === 'doctor' 
-                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]' 
+                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${activeTab === 'doctor'
+                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
                       : 'text-white/75 hover:text-white hover:bg-white/5'
-                  }`}
+                    }`}
                 >
                   <Shield className="h-3.5 w-3.5" />
                   Doctor Login
@@ -91,7 +82,7 @@ const LoginPage = () => {
                   Use Next.js Link instead of button + onClick router.push for direct navigation.
                   This ensures instant page prefetching, right-click capability, and SEO accessibility.
                 */}
-                <Link 
+                <Link
                   href="/"
                   className="flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all duration-300 text-white/75 hover:text-white hover:bg-white/5"
                 >
@@ -100,8 +91,8 @@ const LoginPage = () => {
               </nav>
 
               {/* Login Form */}
-              <form 
-                onSubmit={(e) => e.preventDefault()} 
+              <form
+                onSubmit={(e) => e.preventDefault()}
                 className="flex-grow flex flex-col justify-between mt-2"
               >
                 {/* Form Inputs Container */}
@@ -143,18 +134,18 @@ const LoginPage = () => {
 
                 {/* Action Buttons Section */}
                 <footer className="mt-auto">
-               <Link href="/verify">
-                   <button 
-                    type="submit" 
-                    className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
-                  >
-                    Login <span className="text-base">→</span>
-                  </button>
-                 </Link>
+                  <Link href="/receive-otp">
+                    <button
+                      type="submit"
+                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                    >
+                      Login <span className="text-base">→</span>
+                    </button>
+                  </Link>
 
                   <div className="text-center pt-4">
-                    <a 
-                      href="#" 
+                    <a
+                      href="#"
                       className="text-xs font-light text-white/80 hover:text-white transition-colors underline underline-offset-4"
                     >
                       Forgot Password?
@@ -164,7 +155,7 @@ const LoginPage = () => {
               </form>
 
             </div>
-            
+
           </div>
         </div>
       </main>
