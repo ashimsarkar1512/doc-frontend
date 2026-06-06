@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React from 'react'
 import Navbar from '../shared/Navbar'
 import Banner from './Banner'
-import FloatingActions from './FloatingActions'
+// import FloatingActions from './FloatingActions'
 
 const Home = () => {
   return (
@@ -22,7 +22,7 @@ const Home = () => {
 
           <Navbar />
           <Banner />
-          <FloatingActions />
+          {/* <FloatingActions /> */}
         </div>
       </div>
 </div>
