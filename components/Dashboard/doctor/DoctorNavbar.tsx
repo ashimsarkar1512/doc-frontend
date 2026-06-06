@@ -1,9 +1,40 @@
+"use client";
+
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LayoutDashboard, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DoctorNavbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const menuItems = [
+    {
+      label: "My Portal",
+      href: "/doctor",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "My Profile",
+      href: "/doctor?view=settings",
+      icon: User,
+    },
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 md:px-8 md:py-4">
@@ -27,22 +58,83 @@ export default function DoctorNavbar() {
             </span>
           </div>
 
-          <button
-            type="button"
-            className="flex min-w-0 items-center gap-1 rounded-xl px-1.5 py-1 transition-colors hover:bg-gray-50 sm:px-2"
-            aria-label="Open doctor profile menu"
-          >
-            <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 sm:h-10 sm:w-10">
-              <Image
-                src="/doctor/profile-doc.png"
-                alt="Profile"
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
-            </div>
-            <ChevronDown className="h-4 w-4 flex-shrink-0 text-gray-500" />
-          </button>
+          {/* Profile Button + Dropdown */}
+          <div ref={dropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="flex min-w-0 items-center gap-1 rounded-xl px-1.5 py-1 transition-colors hover:bg-gray-50 sm:px-2"
+              aria-label="Open doctor profile menu"
+              aria-expanded={isOpen}
+            >
+              <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 sm:h-10 sm:w-10">
+                <Image
+                  src="/doctor/profile-doc.png"
+                  alt="Profile"
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              </div>
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <ChevronDown className="h-4 w-4 flex-shrink-0 text-gray-500" />
+              </motion.div>
+            </button>
+
+            {/* Dropdown */}
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className="absolute right-0 top-[calc(100%+10px)] w-52 rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-200/60 overflow-hidden"
+                  style={{ transformOrigin: "top right" }}
+                >
+                  {/* Header */}
+                  <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+                    <p className="text-sm font-bold text-gray-900">My Account</p>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="py-2">
+                    {menuItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <Icon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Divider + Logout */}
+                  <div className="border-t border-gray-100 py-2">
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        // handle logout here
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4 flex-shrink-0" />
+                      <span>Log out</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </nav>
