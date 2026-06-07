@@ -1,33 +1,66 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronDown, User, Menu, X } from "lucide-react";
 import Logo from "../ui/Logo";
+import ServicesMegaMenu, {
+  SERVICE_CATEGORIES,
+} from "./ServicesMegaMenu";
 
 interface NavbarProps {
   variant?: "light" | "dark";
   initialPadding?: string;
   scrolledPadding?: string;
   className?: string;
+  /** Hero overlay: softer header bar + readable controls on top of imagery */
+  overlay?: boolean;
+  /** Position inside a relative hero container instead of viewport-fixed */
+  embedded?: boolean;
 }
 
 const Navbar = ({ 
   variant = "light",
   initialPadding = "py-12",
   scrolledPadding = "py-4",
-  className = ""
+  className = "",
+  overlay = false,
+  embedded = false,
 }: NavbarProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Weight Loss");
+  const [activeCategoryId, setActiveCategoryId] = useState<
+    (typeof SERVICE_CATEGORIES)[number]["id"]
+  >("weight-loss");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDetached, setIsDetached] = useState(false);
+  const servicesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+      if (embedded) setIsDetached(window.scrollY > 72);
+    };
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [embedded]);
+
+  useEffect(() => {
+    if (!isServicesOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        servicesRef.current &&
+        !servicesRef.current.contains(event.target as Node)
+      ) {
+        setIsServicesOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isServicesOpen]);
 
   const isDark = variant === "dark";
 
@@ -44,78 +77,50 @@ const Navbar = ({
 
   const mobileBg = isDark ? "bg-white/90" : "bg-black/70";
 
-  const tabs = [
-    "Weight Loss",
-    "Hormone Therapy",
-    "Regrow Hair",
-    "Men's Services",
-    "Skin Services",
-  ];
-
-  const servicesData = {
-    "Weight Loss": {
-      left: [
-        "GLP-1 Medications",
-        "Phentermine",
-        "Phendimetrazine (Bontril)",
-        "Diethylpropion",
-        "B12 Injections",
-        "Lipotropic Injections",
-      ],
-      right: [
-        "Vitamin C Ascorbic Acid",
-        "Glutathione Intramuscular Injections",
-        "B-Complex Intramuscular Injections",
-        "Vitamin D Intramuscular Injections",
-        "Hydroxocobalamin",
-      ],
-    },
-    "Hormone Therapy": {
-      left: ["Testosterone Therapy", "Estrogen Therapy"],
-      right: ["Thyroid Management"],
-    },
-    "Regrow Hair": {
-      left: ["PRP Therapy", "Minoxidil"],
-      right: ["Finasteride"],
-    },
-    "Men's Services": {
-      left: ["ED Treatment", "Testosterone Check"],
-      right: ["Prostate Health"],
-    },
-    "Skin Services": {
-      left: ["Botox", "Dermal Fillers"],
-      right: ["Chemical Peels"],
-    },
-  };
-
   const toggleServices = () => setIsServicesOpen((p) => !p);
   const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
 
+  const mobileMenuBtnClass = isDark
+    ? "bg-black/5 border-black/15 hover:bg-black/10 active:bg-black/15"
+    : "bg-white/15 border-white/30 hover:bg-white/25 active:bg-white/35 backdrop-blur-md";
+
+  const navPosition = embedded && !isDetached ? "absolute" : "fixed";
+
   return (
     <nav 
-      className={`fixed top-0 left-0 w-full z-50 px-4 md:px-8 transition-all duration-300 ${
+      className={`${navPosition} top-0 left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
         isScrolled
           ? isDark 
-            ? `bg-white/30 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-white/20` 
-            : `bg-black/30 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
-          : `bg-transparent ${initialPadding}`
+            ? `bg-white/90 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-black/10` 
+            : `bg-black/40 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
+          : overlay && !isDark
+            ? `bg-gradient-to-b from-black/45 via-black/15 to-transparent ${initialPadding}`
+            : overlay && isDark
+              ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
+              : `bg-transparent ${initialPadding}`
       } ${className}`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
         {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer relative z-[60]">
-          <Link href="/">
+        <div className="flex items-center flex-shrink-0 min-w-0 relative z-[60]">
+          <Link href="/" className="block py-1">
             <Logo variant={variant} />
           </Link>
         </div>
 
         {/* Mobile menu button */}
-        <div className="md:hidden relative z-[60]">
-          <button onClick={toggleMobileMenu}>
+        <div className="md:hidden relative z-[60] flex-shrink-0 ml-3">
+          <button
+            type="button"
+            onClick={toggleMobileMenu}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            className={`flex items-center justify-center w-11 h-11 rounded-full border transition-colors ${mobileMenuBtnClass}`}
+          >
             {isMobileMenuOpen ? (
-              <X className={`h-7 w-7 ${textColor}`} />
+              <X className={`h-5 w-5 ${textColor}`} strokeWidth={2.25} />
             ) : (
-              <Menu className={`h-7 w-7 ${textColor}`} />
+              <Menu className={`h-5 w-5 ${textColor}`} strokeWidth={2.25} />
             )}
           </button>
         </div>
@@ -141,7 +146,7 @@ const Navbar = ({
           </Link>
 
           {/* Services */}
-          <div className="relative w-full md:w-auto">
+          <div ref={servicesRef} className="relative w-full md:w-auto">
             <div
               className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors`}
               onClick={toggleServices}
@@ -155,63 +160,38 @@ const Navbar = ({
             </div>
 
             {isServicesOpen && (
-              <div className="md:absolute top-full md:left-1/2 md:-translate-x-1/2 mt-4 w-full md:w-[800px] bg-white rounded-2xl shadow-2xl p-6 text-black z-50">
-                <h3 className="text-xl font-semibold mb-4">
-                  Medical Weight Management Program
-                </h3>
-
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveTab(tab);
-                        if (tab === "Weight Loss") {
-                          window.location.href = "/weight-loss";
-                        }
-                      }}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                        activeTab === tab
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+              <>
+                <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-5 z-50">
+                  <ServicesMegaMenu
+                    activeCategoryId={activeCategoryId}
+                    onCategoryChange={setActiveCategoryId}
+                    variant="desktop"
+                  />
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-8">
-                  <ul className="space-y-3 flex-1">
-                    {servicesData[
-                      activeTab as keyof typeof servicesData
-                    ].left.map((item, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex gap-2">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <ul className="space-y-3 flex-1">
-                    {servicesData[
-                      activeTab as keyof typeof servicesData
-                    ].right.map((item, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex gap-2">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="md:hidden mt-4">
+                  <ServicesMegaMenu
+                    activeCategoryId={activeCategoryId}
+                    onCategoryChange={setActiveCategoryId}
+                    variant="mobile"
+                  />
                 </div>
-              </div>
+              </>
             )}
           </div>
 
           <Link
+            href="/lab-testing"
+            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Lab Testing
+          </Link>
+
+          <Link
             href="/blog"
             className={`${textColor} transition-colors text-xl md:text-base`}
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
           </Link>
