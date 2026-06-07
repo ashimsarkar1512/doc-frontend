@@ -110,91 +110,108 @@ export default function ChatView({ chatId }: { chatId: string }) {
   };
 
   return (
-    <div className="flex gap-6 mb-10">
-      {/* Chat Column */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Back Link */}
-        <Link
-          href="/doctor?view=messages"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-800 mb-4 hover:text-blue-600 transition-colors w-fit"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Weight Loss
-        </Link>
+    <>
+      {/* Back Link */}
+      <Link
+        href="/doctor?view=messages"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-800 mb-5 hover:text-blue-600 transition-colors w-fit"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Weight Loss
+      </Link>
 
-        {/* Chat Card */}
-        <div className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm h-[600px]">
+      <div className="flex gap-6 mb-10">
+        {/* Chat Column */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Chat Card */}
+          <div className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm h-[800px]">
           {/* Chat Header */}
           <div className="bg-[#2563eb] px-5 py-4 flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/30 flex-shrink-0">
-              <Image src={patient.image} alt={patient.name} fill sizes="40px" className="object-cover" />
+            <div className="relative">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
+                <Image src={patient.image} alt={patient.name} fill sizes="48px" className="object-cover" />
+              </div>
+              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#22c55e] border-2 border-[#2563eb] rounded-full"></div>
             </div>
             <div>
-              <p className="text-white font-bold text-sm">{patient.name}</p>
-              <p className="text-blue-100 text-xs mt-0.5">
-                Patient · Consultation id: {patient.consultationId}
+              <h2 className="text-white font-bold text-lg leading-tight">{patient.name}</h2>
+              <p className="text-blue-100 text-[11px] mt-0.5 font-medium">
+                Patient - Consultation id: {patient.consultationId}
               </p>
             </div>
           </div>
 
           {/* Messages */}
-          <div ref={messagesRef} className="bg-[#f0f4ff] flex-1 px-5 py-5 space-y-5 min-h-[420px] max-h-[520px] overflow-y-auto">
+          <div ref={messagesRef} className="bg-[#f8fafc] flex-1 px-5 py-6 space-y-6 overflow-y-auto">
             {messages.map((msg) => (
-              <div key={msg.id} className={`flex flex-col ${msg.sender === "doctor" ? "items-end" : "items-start"}`}>
-                {msg.sender === "patient" && (
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 mb-1.5 flex-shrink-0">
-                    <Image src={patient.image} alt={patient.name} fill sizes="32px" className="object-cover" />
+              <div key={msg.id} className={`flex w-full ${msg.sender === "doctor" ? "justify-end" : "justify-start"}`}>
+                <div className={`flex gap-3 max-w-[85%] ${msg.sender === "doctor" ? "flex-row-reverse" : "flex-row"}`}>
+                  
+                  {/* Avatar */}
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden shadow-sm">
+                      <Image 
+                        src={msg.sender === "doctor" ? "/doctor/profile-doc.png" : patient.image} 
+                        alt={msg.sender} 
+                        fill 
+                        sizes="32px" 
+                        className="object-cover" 
+                      />
+                    </div>
                   </div>
-                )}
 
-                {msg.proposal ? (
-                  <div className="max-w-[78%]">
-                    <div className="bg-white rounded-2xl rounded-tr-sm border border-gray-200 shadow-sm overflow-hidden">
-                      <div className="flex items-center gap-2 p-3 border-b border-gray-100">
-                        <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                          <Image src="/doctor/profile-doc.png" alt="Dr" fill sizes="24px" className="object-cover" />
+                  {/* Message Content */}
+                  <div className="flex flex-col min-w-0">
+                    {msg.proposal ? (
+                      <div className="flex flex-col gap-2 w-[380px]">
+                        {msg.text && (
+                          <div
+                            className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm bg-[#e2e8f0] text-gray-700 w-fit self-end rounded-tr-sm`}
+                          >
+                            {msg.text}
+                          </div>
+                        )}
+                        <div className="bg-[#e2e8f0] border border-gray-300/60 rounded-xl overflow-hidden w-full">
+                          <div className="px-4 py-3 border-b border-gray-300/60 bg-[#cbd5e1]/30">
+                            <h4 className="font-bold text-gray-900 text-sm">{msg.proposal.title}</h4>
+                          </div>
+                          <div className="p-4">
+                            <p className="text-xs font-semibold text-gray-900 mb-1">Message:</p>
+                            <p className="text-xs text-gray-700 leading-relaxed mb-4">{msg.proposal.message}</p>
+                            <p className="text-xs font-semibold text-gray-900 mb-2">Proposal Includes:</p>
+                            <div className="flex gap-5 text-xs text-gray-700 mb-5">
+                              <span>Fees: <strong className="text-blue-600 font-semibold">{msg.proposal.fee}</strong></span>
+                              <span>Date: {msg.proposal.date}</span>
+                            </div>
+                            <button className="border border-gray-400 text-gray-800 text-xs font-medium px-4 py-1.5 rounded-lg hover:bg-gray-300 transition-colors w-fit">
+                              Withdraw proposal
+                            </button>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-500">{msg.text}</p>
                       </div>
-                      <div className="p-4">
-                        <h4 className="font-bold text-gray-900 text-sm mb-3">{msg.proposal.title}</h4>
-                        <p className="text-xs font-semibold text-gray-700 mb-1">Message:</p>
-                        <p className="text-xs text-gray-500 leading-relaxed mb-4">{msg.proposal.message}</p>
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Proposal Includes:</p>
-                        <div className="flex gap-5 text-xs text-gray-600 mb-4">
-                          <span>Fees: <strong className="text-blue-600">{msg.proposal.fee}</strong></span>
-                          <span>Date: {msg.proposal.date}</span>
-                        </div>
-                        <button className="border border-gray-300 text-gray-700 text-xs font-medium px-4 py-1.5 rounded-full hover:bg-gray-50 transition-colors">
-                          Withdraw proposal
-                        </button>
+                    ) : (
+                      <div
+                        className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm bg-[#e2e8f0] text-gray-700 ${
+                          msg.sender === "doctor"
+                            ? "rounded-tr-sm"
+                            : "rounded-tl-sm"
+                        }`}
+                      >
+                        {msg.text}
                       </div>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1.5 text-right">{msg.time}</p>
-                  </div>
-                ) : (
-                  <div className="max-w-[78%]">
-                    <div
-                      className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                        msg.sender === "doctor"
-                          ? "bg-white text-gray-800 rounded-tr-sm"
-                          : "bg-[#e8edf8] text-gray-800 rounded-tl-sm"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                    <p className={`text-xs text-gray-400 mt-1.5 ${msg.sender === "doctor" ? "text-right" : "text-left"}`}>
+                    )}
+                    <p className={`text-[10px] text-gray-400 mt-1.5 font-medium ${msg.sender === "doctor" ? "text-right" : "text-left"}`}>
                       {msg.time}
                     </p>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
 
           {/* Input Area */}
-          <div className="bg-white border-t border-gray-100 px-4 py-3 flex items-center gap-3">
-            <button className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
+          <div className="bg-[#f8fafc] border-t border-gray-200 px-4 py-4 flex items-center gap-3">
+            <button className="text-[#2563eb] hover:text-blue-700 transition-colors flex-shrink-0 p-1">
               <Paperclip className="w-5 h-5" />
             </button>
             <input
@@ -204,37 +221,77 @@ export default function ChatView({ chatId }: { chatId: string }) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              className="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none"
+              className="flex-1 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all"
             />
             <button
               onClick={handleSend}
-              className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold px-5 py-2 rounded-full flex items-center gap-2 flex-shrink-0 shadow-sm"
+              className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold px-6 py-3 rounded-lg flex items-center gap-2 flex-shrink-0 shadow-sm"
             >
-              Send <Send className="w-3.5 h-3.5" />
+              Send <Send className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Sidebar */}
-      <div className="w-72 flex-shrink-0 mt-10">
-        <div className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-white">
-          <h3 className="font-bold text-gray-900 text-sm mb-4">File & attachments</h3>
+      <div className="w-80 flex-shrink-0">
+        {/* Service Information Card */}
+        <div className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-[#f8fafc] mb-6">
+          <h3 className="font-bold text-gray-900 text-[15px] mb-5">Service Information</h3>
+          
+          <div className="space-y-3.5 text-xs mb-6">
+            <div className="flex justify-between items-center text-gray-500">
+              <span>Service Started</span>
+              <span className="text-gray-900 font-medium">12 May, 26</span>
+            </div>
+            <div className="flex justify-between items-center text-gray-500">
+              <span>Service Duration</span>
+              <span className="text-gray-900 font-medium">1 month</span>
+            </div>
+            <div className="flex justify-between items-center text-gray-500">
+              <span>Service Fees</span>
+              <span className="text-gray-900 font-medium">$50.00</span>
+            </div>
+            <div className="flex justify-between items-center text-gray-500 pt-2 border-t border-gray-200">
+              <span>Next billing date:</span>
+              <span className="text-gray-900 font-medium">12 Jun, 26</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Link href={`/doctor?consultationId=${chatId}`} className="w-full">
+              <button className="w-full bg-[#3f3f46] hover:bg-[#27272a] transition-colors text-white text-[13px] font-medium py-3 rounded-lg shadow-sm">
+                View Details
+              </button>
+            </Link>
+
+            <button
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="w-full bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-[13px] font-medium py-3 rounded-lg shadow-sm"
+            >
+              Send payment request
+            </button>
+          </div>
+        </div>
+
+        {/* File & attachments Card */}
+        <div className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-[#f8fafc]">
+          <h3 className="font-bold text-gray-900 text-[15px] mb-4">File & attachments</h3>
 
           {/* By Patient */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <p className="text-xs text-gray-500">by {patient.name}:</p>
-              <p className="text-xs text-gray-400">12 May, 26</p>
+          <div className="mb-5">
+            <div className="flex justify-between items-center mb-2.5">
+              <p className="text-[11px] font-medium text-gray-600">by {patient.name}:</p>
+              <p className="text-[11px] text-gray-400 font-medium">12 May, 26</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {["previous_report.pdf", "belly_fat.jpg"].map((file) => (
-                <div key={file} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <div key={file} className="flex items-center justify-between py-1 px-1 rounded hover:bg-[#e2e8f0] transition-colors cursor-pointer group">
                   <div className="flex items-center gap-2 min-w-0">
-                    <FileText className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                    <span className="text-xs text-blue-600 truncate">{file}</span>
+                    <FileText className="w-3.5 h-3.5 text-[#2563eb] flex-shrink-0" />
+                    <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file}</span>
                   </div>
-                  <button className="text-gray-400 hover:text-gray-600 transition-colors ml-2 flex-shrink-0">
+                  <button className="text-[#2563eb] transition-colors flex-shrink-0 p-1">
                     <Download className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -243,41 +300,25 @@ export default function ChatView({ chatId }: { chatId: string }) {
           </div>
 
           {/* By Doctor */}
-          <div className="mb-6 pb-6 border-b border-gray-100">
-            <div className="flex justify-between items-center mb-2">
-              <p className="text-xs text-gray-500">by you:</p>
-              <p className="text-xs text-gray-400">12 May, 26</p>
+          <div>
+            <div className="flex justify-between items-center mb-2.5">
+              <p className="text-[11px] font-medium text-gray-600">by you:</p>
+              <p className="text-[11px] text-gray-400 font-medium">12 May, 26</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {["diet_chart.pdf", "medicine_pres.pdf"].map((file) => (
-                <div key={file} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <div key={file} className="flex items-center justify-between py-1 px-1 rounded hover:bg-[#e2e8f0] transition-colors cursor-pointer group">
                   <div className="flex items-center gap-2 min-w-0">
-                    <FileText className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                    <span className="text-xs text-blue-600 truncate">{file}</span>
+                    <FileText className="w-3.5 h-3.5 text-[#2563eb] flex-shrink-0" />
+                    <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file}</span>
                   </div>
-                  <button className="text-gray-400 hover:text-gray-600 transition-colors ml-2 flex-shrink-0">
+                  <button className="text-[#2563eb] transition-colors flex-shrink-0 p-1">
                     <Download className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Action Buttons */}
-        <div className="flex flex-col gap-6 mt-auto">
-  <Link href={`/doctor?consultationId=${chatId}`} className="w-full">
-    <button className="w-full bg-gray-900 hover:bg-gray-800 transition-colors text-white text-sm font-semibold py-3 rounded-xl">
-      View Details
-    </button>
-  </Link>
-
-  <button
-    onClick={() => setIsPaymentModalOpen(true)}
-    className="w-full bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold py-3 rounded-xl"
-  >
-    Send payment request
-  </button>
-</div>
         </div>
       </div>
 
@@ -288,5 +329,6 @@ export default function ChatView({ chatId }: { chatId: string }) {
         patientName={patient.name}
       />
     </div>
+    </>
   );
 }
