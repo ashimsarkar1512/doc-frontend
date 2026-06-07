@@ -33,10 +33,14 @@ export default function AboutPage() {
     <div className="w-full bg-white text-gray-900 font-sans overflow-x-hidden">
       {blobDefs}
 
-      <Navbar variant="dark" />
+ <Navbar
+        variant="dark" 
+        initialPadding="pt-5 pb-4" // You can set your custom padding here!
+        scrolledPadding="py-2" 
+      />
 
       {/* ABOUT Section */}
-      <div className="px-4 md:px-6 mt-32 pb-8">
+      <div className="px-4 md:px-6 mt-28 pb-8">
         <div className="max-w-7xl mx-auto relative rounded-[2.5rem] overflow-hidden bg-[#F0F4FA] py-16 md:py-20 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[500px]">
           {/* ABOUT Watermark - PNG Image */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden p-5">
