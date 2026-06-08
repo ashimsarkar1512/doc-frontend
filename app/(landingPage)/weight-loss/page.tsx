@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 import { ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 
 export default function WeightLossPage() {
@@ -303,6 +304,8 @@ export default function WeightLossPage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

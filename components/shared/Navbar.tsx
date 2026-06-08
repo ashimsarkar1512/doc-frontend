@@ -197,6 +197,14 @@ const Navbar = ({
           </Link>
 
           <Link
+            href="/eligibility"
+            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Eligibility
+          </Link>
+
+          <Link
             href="/about"
             className={`${textColor} transition-colors text-xl md:text-base`}
           >
