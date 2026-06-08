@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import { CircleCheckBig, Clock, Info, MapPin } from "lucide-react";
+import { CircleCheckBig, Clock, Info, MapPin, ChevronDown } from "lucide-react";
 
 const states = [
   { name: "Alabama", soon: false },
@@ -97,7 +97,7 @@ export default function CoveragePage() {
             <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-5 tracking-tight">
               Where We Provide Care
             </h1>
-            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-2xl mx-auto">
+            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-3xl mx-auto">
               WeightLossMD providers are licensed to practice in your state.
               Care is only available in states where our providers hold an
               active license.
@@ -113,7 +113,7 @@ export default function CoveragePage() {
             Check Availability
           </h2>
 
-          <div className="max-w-md mx-auto flex flex-col items-center gap-4">
+          <div className="max-w-lg mx-auto flex flex-col items-center gap-5">
             {/* State dropdown */}
             <div className="w-full relative">
               <select
@@ -122,7 +122,7 @@ export default function CoveragePage() {
                   setSelectedState(e.target.value);
                   setCheckedState(null);
                 }}
-                className="w-full appearance-none bg-[#f5f6f8] border border-gray-200 rounded-[10px] px-4 py-3 text-[13.5px] text-gray-600 focus:outline-none focus:border-[#2563eb] cursor-pointer"
+                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
               >
                 <option value="">Select your state</option>
                 {states.map((s) => (
@@ -132,7 +132,7 @@ export default function CoveragePage() {
                 ))}
               </select>
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                ▾
+                <ChevronDown className="w-4 h-4 stroke-[2]" />
               </span>
             </div>
 
@@ -156,11 +156,15 @@ export default function CoveragePage() {
               </div>
             )}
 
-            {/* Button */}
+            {/* Button — 46px border-radius, blue gradient */}
             <button
               onClick={handleCheck}
               disabled={!selectedState}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-10 py-3 rounded-full text-[14px] transition-colors"
+              className="  text-white font-semibold px-10 py-3 text-[14px] transition-opacity"
+              style={{
+                borderRadius: "46px",
+                background: "#1D4ED8",
+              }}
             >
               Check Availability
             </button>
