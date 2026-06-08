@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, User, LogOut, Settings, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, Menu, X } from 'lucide-react';
 import Footer from '@/components/shared/Footer';
 import Logo from '@/components/ui/Logo';
+import { useLogout } from '@/Redux/hooks/useLogout';
 
 export default function PatientLayout({
   children,
@@ -18,6 +19,7 @@ export default function PatientLayout({
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  const { logout, isLoading: isLoggingOut } = useLogout();
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -90,14 +92,15 @@ export default function PatientLayout({
                   <span>Profile Settings</span>
                 </Link> */}
                 <button
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50 mt-1"
+                  disabled={isLoggingOut}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50 mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     setIsProfileDropdownOpen(false);
-                    // logout logic
+                    logout();
                   }}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Log Out</span>
+                  <span>{isLoggingOut ? 'Logging out…' : 'Log Out'}</span>
                 </button>
               </div>
             )}
