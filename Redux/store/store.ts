@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
-import baseApi from '../api/baseApi'
+import { baseApi } from '../api/baseApi'
 import authReducer from '../features/auth/authSlice'
 
 export const store = configureStore({
@@ -9,15 +9,11 @@ export const store = configureStore({
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['auth/hydrate'],
-        ignoredPaths: ['auth.user'],
-      },
-    }).concat(baseApi.middleware),
+    getDefaultMiddleware().concat(baseApi.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 })
 
+// Enables refetchOnFocus and refetchOnReconnect behaviours
 setupListeners(store.dispatch)
 
 export type RootState = ReturnType<typeof store.getState>
