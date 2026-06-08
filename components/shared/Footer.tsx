@@ -82,17 +82,17 @@ const Footer = () => {
             <div className="md:col-span-2">
               <h4 className="font-medium text-white mb-6 text-[17px]">Others</h4>
               <ul className="space-y-4 text-[15px] text-gray-200 font-light">
-                <li><Link href="/" className="hover:text-white transition-colors">Medical Team</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">How it works</Link></li>
+                <li><Link href="/medical-team" className="hover:text-white transition-colors">Medical Team</Link></li>
+                <li><Link href="/how-it-works" className="hover:text-white transition-colors">How it works</Link></li>
                 <li><Link href="/" className="hover:text-white transition-colors">FAQ</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Eligibility</Link></li>
+                <li><Link href="/eligibility" className="hover:text-white transition-colors">Eligibility</Link></li>
               </ul>
             </div>
 
             <div className="md:col-span-2">
               {/* <h4 className="font-medium text-white mb-6 text-[17px]">Popular Services</h4> */}
               <ul className="space-y-4 text-[15px] text-gray-200 font-light">
-                <li><Link href="/" className="hover:text-white transition-colors">Coverage</Link></li>
+                <li><Link href="/coverage" className="hover:text-white transition-colors">Coverage</Link></li>
               <li><Link href="/report-side-effect" className="hover:text-white transition-colors">Report Side Effect</Link></li>
                 <li><Link href="/request-your-records" className="hover:text-white transition-colors">Request Records</Link></li>
                 <li><Link href="/shipping-information" className="hover:text-white transition-colors">Shipping Information</Link></li>
