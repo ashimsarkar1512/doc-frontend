@@ -3,6 +3,7 @@
 import { AssessmentCardProps, FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 //  Constants 
 
@@ -153,8 +154,11 @@ const AssessmentCard = ({ title, description, gradient, image }: AssessmentCardP
           {description}
         </p>
 
-        <button
+        <Link
+          href="/assessment"
+          onClick={(e) => e.stopPropagation()}
           className="
+            inline-block
             opacity-0 -translate-y-2
             group-hover:opacity-100 group-hover:translate-y-0
             transition-all duration-400 ease-out
@@ -166,13 +170,9 @@ const AssessmentCard = ({ title, description, gradient, image }: AssessmentCardP
             shadow-lg shadow-blue-900/30
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
           "
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log(`Starting assessment: ${title}`);
-          }}
         >
           Start Assessment
-        </button>
+        </Link>
       </div>
     </div>
   </div>

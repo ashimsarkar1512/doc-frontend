@@ -93,7 +93,7 @@ const ForgotPasswordPage = () => {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="flex-grow flex flex-col mt-4">
-                <div className="space-y-5 flex-grow flex flex-col justify-center">
+                <div className="space-y-5 flex-grow flex flex-col justify-center mt-16">
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-gray-200">
                       Email Address
@@ -112,7 +112,7 @@ const ForgotPasswordPage = () => {
                   </div>
                 </div>
 
-                <footer className="mt-auto">
+                <footer className="mb-18">
                   <button
                     type="submit"
                     disabled={isLoading}
