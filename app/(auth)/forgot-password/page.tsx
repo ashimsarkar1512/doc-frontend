@@ -92,7 +92,7 @@ const ForgotPasswordPage = () => {
               </header>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between mt-4">
+              <form onSubmit={handleSubmit} className="flex-grow flex flex-col mt-4">
                 <div className="space-y-5 flex-grow flex flex-col justify-center">
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-gray-200">
@@ -128,7 +128,7 @@ const ForgotPasswordPage = () => {
                     )}
                   </button>
 
-                  <div className="text-center pt-4">
+                  {/* <div className="text-center pt-4">
                     <button
                       type="button"
                       onClick={() => router.push('/login')}
@@ -136,7 +136,7 @@ const ForgotPasswordPage = () => {
                     >
                       Back to Login
                     </button>
-                  </div>
+                  </div> */}
                 </footer>
               </form>
             </div>
