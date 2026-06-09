@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 
 export default function WeightLossPage() {
   const [openFaq, setOpenFaq] = useState<number>(0);
@@ -154,64 +154,93 @@ export default function WeightLossPage() {
           Our Weight Loss Services
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
-          {services.map((service, index) => (
-            <div key={index} className="flex flex-col h-full bg-white">
-              <div
-                className={`w-full aspect-[4/3] rounded-[24px] overflow-hidden relative mb-5 ${
-                  service.fullBleed
-                    ? "bg-[#1a4a8a]"
-                    : "bg-gradient-to-b from-[#0c1f3f] via-[#4a9fd4] to-white"
-                }`}
-              >
-                <Image
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+        {services.map((service, index) => (
+          <div key={index} className="flex flex-col h-full">
+            
+            {/* Image Container Card with Perfect Gradient Match */}
+            <div
+              className={`w-full relative flex items-end justify-center overflow-hidden rounded-[32px] mb-5 aspect-[4/3] sm:h-[320px] ${
+                service.fullBleed ? "bg-[#1a4a8a]" : ""
+              }`}
+              style={
+                service.fullBleed
+                  ? {}
+                  : {
+                      // Deep clean studio blue fading directly into white at the bottom baseline
+                      background:
+                        "linear-gradient(180deg, #164095 0%, #3886FF 55%, #A3C7FF 85%, #FFFFFF 100%)",
+                    }
+              }
+            >
+              {service.fullBleed ? (
+                <img
                   src={service.image}
                   alt={service.title}
-                  fill
-                  quality={100}
-                  unoptimized
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className={
-                    service.fullBleed
-                      ? "object-cover object-center"
-                      : "object-contain object-center p-4 md:p-5 mix-blend-screen contrast-[1.15] brightness-[1.05]"
-                  }
+                  className="object-cover w-full h-full"
                 />
-              </div>
+              ) : (
+                /* Product Image Wrapper */
+                <div className="relative w-full h-[88%] flex items-end justify-center px-6 pb-2">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="object-contain max-h-full w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.15)]"
+                  />
+                </div>
+              )}
+            </div>
 
-              <h3 className="text-[15px] font-bold text-gray-900 mb-2">{service.title}</h3>
-              <p className="text-[12px] text-gray-500 leading-[1.7] flex-grow mb-5 font-light">
+            {/* Typography & Actions */}
+            <div className="flex flex-col flex-1 px-1">
+              <h3 className="text-[17px] font-bold text-[#111827] mb-2 tracking-tight">
+                {service.title}
+              </h3>
+              <p className="text-[13.5px] text-[#6B7280] leading-[1.5] flex-grow mb-5 font-normal">
                 {service.desc}
               </p>
 
-              <div className="mt-auto">
-                <button className="bg-[#2563eb] hover:bg-blue-700 text-white text-[13px] font-medium px-6 py-2.5 rounded-full transition-all duration-200">
+              <div>
+                <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] active:scale-95 text-white text-[14px] font-medium px-6 py-2.5 rounded-full transition-all duration-150 shadow-sm">
                   Get Started
                 </button>
               </div>
             </div>
-          ))}
-        </div>
+
+          </div>
+        ))}
+      </div>
       </section>
 
       {/* ── FAQ SECTION ── */}
-      <section className="max-w-[1000px] mx-auto px-4 sm:px-6 mt-24 mb-24 w-full">
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-24 mb-24 w-full">
         <h2 className="text-[28px] md:text-[32px] font-bold text-gray-900 mb-8 text-center tracking-tight">Popular Facts & Questions</h2>
 
         {/* Tabs */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {faqTabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveFaqTab(tab)}
-              className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-colors ${activeFaqTab === tab
-                  ? "bg-[#2563eb] text-white"
-                  : "bg-[#f2f4f7] text-gray-600 hover:bg-gray-200"
+        <div className="flex items-center justify-center gap-2 sm:gap-4 mb-10 w-full">
+          <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[#e5e7eb] text-gray-700 hover:bg-gray-300 transition-colors flex-shrink-0">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          
+          <div className="flex items-center gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x px-1">
+            {faqTabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveFaqTab(tab)}
+                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-[14px] font-medium transition-colors snap-center ${
+                  activeFaqTab === tab
+                    ? "bg-[#2563eb] text-white"
+                    : "bg-[#e5e7eb] text-gray-700 hover:bg-gray-300"
                 }`}
-            >
-              {tab}
-            </button>
-          ))}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[#e5e7eb] text-gray-700 hover:bg-gray-300 transition-colors flex-shrink-0">
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Accordion */}
@@ -246,23 +275,33 @@ export default function WeightLossPage() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <div className="w-full rounded-[24px] bg-gradient-to-r from-[#2c3e50] via-[#34495e] to-[#2c3e50] flex flex-col md:flex-row items-center justify-between p-8 md:p-12 shadow-xl">
-          <div className="flex items-center gap-6 mb-6 md:mb-0">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-white font-bold text-xl shrink-0">
-              {/* Simple logo mark */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
+        <div
+          className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+          }}
+        >
+          <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
+            <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
+              <Image
+                src="/weight-loss.png"
+                alt="Weight Loss MD Logo"
+                fill
+                className="object-contain"
+              />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
               Contact Us at Weight Loss MD<br className="hidden md:block" /> Today
             </h2>
           </div>
 
-          <button className="bg-[#2563eb] hover:bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full transition-colors text-[15px] whitespace-nowrap shadow-lg">
-            Book a consultation
-          </button>
+          <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <button className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+              Book a consultation
+            </button>
+          </div>
         </div>
       </section>
 

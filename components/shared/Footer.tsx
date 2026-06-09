@@ -55,8 +55,8 @@ const Footer = () => {
         </div>
 
         {/* Constrain content to match the width above */}
-        <div className="relative z-10 max-w-[1300px] mx-auto px-6 md:px-12 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12 mb-10">
+        <div className="relative z-10 max-w-9xl mx-auto px-6 md:px-12 py-16">
+          <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10">
             
             {/* Brand & Description */}
             <div className="md:col-span-4 pr-0 md:pr-12">
@@ -80,12 +80,22 @@ const Footer = () => {
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="font-medium text-white mb-6 text-[17px]">Popular Services</h4>
+              <h4 className="font-medium text-white mb-6 text-[17px]">Others</h4>
               <ul className="space-y-4 text-[15px] text-gray-200 font-light">
-                <li><Link href="/" className="hover:text-white transition-colors">Hormone Therapy</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">CoolSculpting®</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Weight Loss</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Sildenafil & Tadalafil</Link></li>
+                <li><Link href="/medical-team" className="hover:text-white transition-colors">Medical Team</Link></li>
+                <li><Link href="/how-it-works" className="hover:text-white transition-colors">How it works</Link></li>
+                <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+                <li><Link href="/eligibility" className="hover:text-white transition-colors">Eligibility</Link></li>
+              </ul>
+            </div>
+
+            <div className="md:col-span-2">
+              {/* <h4 className="font-medium text-white mb-6 text-[17px]">Popular Services</h4> */}
+              <ul className="space-y-4 text-[15px] text-gray-200 font-light">
+                <li><Link href="/coverage" className="hover:text-white transition-colors">Coverage</Link></li>
+              <li><Link href="/report-side-effect" className="hover:text-white transition-colors">Report Side Effect</Link></li>
+                <li><Link href="/request-your-records" className="hover:text-white transition-colors">Request Records</Link></li>
+                <li><Link href="/shipping-information" className="hover:text-white transition-colors">Shipping Information</Link></li>
               </ul>
             </div>
 
@@ -97,7 +107,7 @@ const Footer = () => {
                 <li><Link href="/hipaa-notice" className="hover:text-white transition-colors">HIPPA Notice of Privacy</Link></li>
                 <li><Link href="/marketing-and-conditions" className="hover:text-white transition-colors">Marketing and Conditions</Link></li>
                 <li><Link href="/billing-and-cancellation" className="hover:text-white transition-colors">Billing & Cancellation</Link></li>
-                <li><Link href="/report-side-effect" className="hover:text-white transition-colors">Report Side Effect</Link></li>
+                
               </ul>
             </div>
 

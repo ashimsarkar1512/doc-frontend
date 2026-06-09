@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Quicksand } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { ReduxProvider } from "@/providers/redux.provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +13,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,11 +34,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Toaster richColors position="top-right" />
-        <div className="flex-1">{children}</div>
+        <ReduxProvider>
+          <Toaster richColors position="top-right" />
+          <div className="flex-1">{children}</div>
+        </ReduxProvider>
 
         {/* Live chat widget start */}
         <Script id="livechat-widget" strategy="lazyOnload">
@@ -57,6 +66,7 @@ export default function RootLayout({
           </a>
         </noscript>
         {/* Live chat widget end */}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

@@ -7,18 +7,16 @@ interface LogoProps {
 
 const Logo = ({ variant = "dark" }: LogoProps) => {
   return (
-    <div>
+    <div className="flex items-center">
       <Image
         src="/logo.png"
-        alt="logo"
+        alt="Weight Loss MD"
         width={180}
         height={80}
-        className={
-          variant === "light"
-            ? "invert brightness-0"
-            : ""
-        }
-        style={{ width: "auto", height: "auto" }}
+        priority
+        className={`h-9 sm:h-10 md:h-11 w-auto max-w-[132px] sm:max-w-[150px] md:max-w-[180px] object-contain object-left ${
+          variant === "light" ? "invert brightness-0 drop-shadow-sm" : ""
+        }`}
       />
     </div>
   );

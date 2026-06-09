@@ -6,10 +6,12 @@ import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLogout } from "@/Redux/hooks/useLogout";
 
 export default function DoctorNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { logout, isLoading: isLoggingOut } = useLogout();
 
   // Close on outside click
   useEffect(() => {
@@ -121,14 +123,15 @@ export default function DoctorNavbar() {
                   {/* Divider + Logout */}
                   <div className="border-t border-gray-100 py-2">
                     <button
+                      disabled={isLoggingOut}
                       onClick={() => {
                         setIsOpen(false);
-                        // handle logout here
+                        logout();
                       }}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LogOut className="h-4 w-4 flex-shrink-0" />
-                      <span>Log out</span>
+                      <span>{isLoggingOut ? 'Logging out…' : 'Log out'}</span>
                     </button>
                   </div>
                 </motion.div>

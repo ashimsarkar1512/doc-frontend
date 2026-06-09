@@ -3,30 +3,63 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { User, Shield, Eye, EyeOff, Loader2 } from 'lucide-react';
+
 import Navbar from '@/components/shared/Navbar';
 import Footer from '@/components/shared/Footer';
 import Logo from '@/components/ui/Logo';
-import { User, Shield, Eye, EyeOff } from 'lucide-react';
+
+import { useLoginMutation } from '@/Redux/api/authApi';
+import { setOtpPending } from '@/Redux/features/auth/authSlice';
+import { useAppDispatch } from '@/Redux/store/hooks';
 
 const LoginPage = () => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const [activeTab, setActiveTab] = useState<'patient' | 'doctor'>('patient');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await login({ email, password }).unwrap();
+
+      if (res.data.status === 'OTP_REQUIRED') {
+        // Store userId in Redux so the next page can call send-otp
+        dispatch(
+          setOtpPending({
+            userId: res.data.userId,
+            challengeId: null,
+            method: 'EMAIL',
+            purpose: 'LOGIN',
+          })
+        );
+        toast.success(res.message);
+        router.push('/receive-otp');
+      }
+    } catch (err: unknown) {
+      const message =
+        (err as { data?: { message?: string } })?.data?.message ??
+        'Login failed. Please check your credentials.';
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between">
       <Navbar variant="dark" />
 
-      {/* Main Content */}
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
         <div className="w-full max-w-[620px] flex justify-center">
-
-          {/* Senior Architected Login Card */}
-          <div
-            className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]"
-          >
-            {/* ⚡ Next.js Image Component (z-0) - Fully Optimized & priority loaded */}
+          <div className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]">
             <Image
               src="/footer.png"
               alt="Auth Background"
@@ -35,14 +68,10 @@ const LoginPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-
-            {/* Subtle overlay for text contrast (z-10) */}
             <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
 
-            {/* Core Interactive Layout Wrapper (z-20) */}
             <div className="relative z-20 flex flex-col justify-between h-full w-full">
-
-              {/* Header Content */}
+              {/* Header */}
               <header className="text-center mb-4">
                 <div className="flex justify-center mb-3">
                   <Logo variant="light" />
@@ -53,15 +82,16 @@ const LoginPage = () => {
                 </p>
               </header>
 
-              {/* Segmented Controls (Auth Selection Tabs) */}
+              {/* Tabs */}
               <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
                 <button
                   type="button"
                   onClick={() => setActiveTab('patient')}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${activeTab === 'patient'
+                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
+                    activeTab === 'patient'
                       ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
                       : 'text-white/75 hover:text-white hover:bg-white/5'
-                    }`}
+                  }`}
                 >
                   <User className="h-3.5 w-3.5" />
                   Patient Login
@@ -69,19 +99,15 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('doctor')}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${activeTab === 'doctor'
+                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
+                    activeTab === 'doctor'
                       ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
                       : 'text-white/75 hover:text-white hover:bg-white/5'
-                    }`}
+                  }`}
                 >
                   <Shield className="h-3.5 w-3.5" />
                   Doctor Login
                 </button>
-                {/* 
-                  💡 Senior Developer Best Practice: 
-                  Use Next.js Link instead of button + onClick router.push for direct navigation.
-                  This ensures instant page prefetching, right-click capability, and SEO accessibility.
-                */}
                 <Link
                   href="/"
                   className="flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all duration-300 text-white/75 hover:text-white hover:bg-white/5"
@@ -90,12 +116,8 @@ const LoginPage = () => {
                 </Link>
               </nav>
 
-              {/* Login Form */}
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="flex-grow flex flex-col justify-between mt-2"
-              >
-                {/* Form Inputs Container */}
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between mt-2">
                 <div className="space-y-5 flex-grow flex flex-col justify-center">
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-gray-200">Email Address</label>
@@ -113,7 +135,7 @@ const LoginPage = () => {
                     <label className="block text-xs font-semibold text-gray-200">Password</label>
                     <div className="relative">
                       <input
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -124,7 +146,7 @@ const LoginPage = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors duration-200"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                       >
                         {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
                       </button>
@@ -132,20 +154,25 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons Section */}
                 <footer className="mt-auto">
-                  <Link href="/receive-otp">
-                    <button
-                      type="submit"
-                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
-                    >
-                      Login <span className="text-base">→</span>
-                    </button>
-                  </Link>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Signing in…
+                      </>
+                    ) : (
+                      <>Login <span className="text-base">→</span></>
+                    )}
+                  </button>
 
                   <div className="text-center pt-4">
                     <a
-                      href="#"
+                      href="/forgot-password"
                       className="text-xs font-light text-white/80 hover:text-white transition-colors underline underline-offset-4"
                     >
                       Forgot Password?
@@ -153,9 +180,7 @@ const LoginPage = () => {
                   </div>
                 </footer>
               </form>
-
             </div>
-
           </div>
         </div>
       </main>

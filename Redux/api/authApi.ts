@@ -1,0 +1,187 @@
+import { baseApi } from './baseApi'
+import type { User } from '../features/auth/authSlice'
+
+// ─── Request / Response Types ─────────────────────────────────────────────────
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+/** Step-1 response: credentials ok, OTP required */
+export interface LoginResponse {
+  success: boolean
+  message: string
+  data: {
+    userId: string
+    status: 'OTP_REQUIRED' | 'ACTIVE'
+  }
+}
+
+export interface SendOtpRequest {
+  userId: string
+  purpose: 'LOGIN' | 'REGISTER' | 'RESET_PASSWORD' | 'FORGOT_PASSWORD'
+  method: 'EMAIL' | 'PHONE'
+}
+
+export interface SendOtpResponse {
+  success: boolean
+  message: string
+  data: {
+    challengeId: string
+    userId: string
+    purpose: string
+    method: string
+    expiresAt: string
+  }
+}
+
+export interface VerifyOtpRequest {
+  challengeId: string
+  otp: string
+}
+
+export interface ResendOtpRequest {
+  challengeId: string
+  userId: string
+  purpose: 'LOGIN' | 'REGISTER' | 'RESET_PASSWORD' | 'FORGOT_PASSWORD'
+}
+
+export interface ResendOtpResponse {
+  success: boolean
+  message: string
+  data: {
+    challengeId: string
+    userId: string
+    purpose: string
+    method: string
+    expiresAt: string
+  }
+}
+
+export interface VerifyOtpResponse {
+  success: boolean
+  message: string
+  data: {
+    accessToken: string
+    tokenType: string
+    user: User
+  }
+}
+
+// ─── Auth API ─────────────────────────────────────────────────────────────────
+
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    /**
+     * Step 1 — POST /auth/login
+     * Validates email + password.
+     * On success the API returns { userId, status: "OTP_REQUIRED" }.
+     */
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+
+    /**
+     * Step 2 — POST /auth/send-otp
+     * Sends an OTP to the user's email or phone.
+     * Returns a challengeId used in step 3.
+     */
+    sendOtp: builder.mutation<SendOtpResponse, SendOtpRequest>({
+      query: (payload) => ({
+        url: '/auth/send-otp',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * Step 3 — POST /auth/verify-otp
+     * Verifies the OTP. On success returns accessToken + user object.
+     */
+    verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
+      query: (payload) => ({
+        url: '/auth/verify-otp',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * POST /auth/resend-otp
+     * Resends OTP using existing challengeId.
+     */
+    resendOtp: builder.mutation<ResendOtpResponse, ResendOtpRequest>({
+      query: (payload) => ({
+        url: '/auth/resend-otp',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * POST /auth/forgot-password
+     * Checks if account exists. Returns userId to proceed with OTP.
+     */
+    forgotPassword: builder.mutation<
+      { success: boolean; message: string; data: { userId: string } },
+      { email: string }
+    >({
+      query: (payload) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * POST /auth/reset-password
+     */
+    resetPassword: builder.mutation<
+      { success: boolean; message: string },
+      { challengeId: string; newPassword: string; confirmPassword: string }
+    >({
+      query: (payload) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * GET /auth/me — fetch current authenticated user.
+     */
+    getCurrentUser: builder.query<{ data: User }, void>({
+      query: () => '/auth/me',
+      providesTags: ['Auth'],
+    }),
+
+    /**
+     * POST /auth/logout
+     */
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+  }),
+})
+
+export const {
+  useLoginMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useGetCurrentUserQuery,
+  useLogoutMutation,
+} = authApi
+
+export default authApi

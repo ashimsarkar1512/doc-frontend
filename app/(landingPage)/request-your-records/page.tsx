@@ -1,15 +1,15 @@
 import React from 'react';
 import Navbar from '@/components/shared/Navbar';
-import HeroSection from '@/components/ReportSideEffect/HeroSection';
-import ReportForm from '@/components/ReportSideEffect/ReportForm';
-import ContactInfoCards from '@/components/ReportSideEffect/ContactInfoCards';
+import HeroSection from '@/components/RequestYourRecords/HeroSection';
+import RecordsRequestForm from '@/components/RequestYourRecords/RecordsRequestForm';
+import InfoCards from '@/components/RequestYourRecords/InfoCards';
 
 export const metadata = {
-  title: "Report a Side Effect - Weight Loss MD",
-  description: "Report any adverse reactions to your medication securely.",
+  title: "Request Your Records - Weight Loss MD",
+  description: "Request access, copies, or corrections to your medical records under HIPAA.",
 };
 
-const ReportSideEffectPage = () => {
+const RequestYourRecordsPage = () => {
   return (
     <main className="min-h-screen bg-white">
       <Navbar 
@@ -24,10 +24,10 @@ const ReportSideEffectPage = () => {
 
         <div className="w-full flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
-            <ReportForm />
+            <RecordsRequestForm />
           </div>
           <div className="w-full md:w-[480px] shrink-0">
-            <ContactInfoCards />
+            <InfoCards />
           </div>
         </div>
 
@@ -36,4 +36,4 @@ const ReportSideEffectPage = () => {
   );
 };
 
-export default ReportSideEffectPage;
+export default RequestYourRecordsPage;
