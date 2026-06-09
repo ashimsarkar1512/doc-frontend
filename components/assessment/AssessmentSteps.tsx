@@ -86,7 +86,7 @@ export default function AssessmentSteps() {
             style={{ width: `${progress}%` }}
           />
          
-          {/* Progress Thumb / Indicator (মোটা বারের সাথে ম্যাচ করে সাইজ বড় করা হয়েছে এবং ওভারফ্লো ফিক্সড) */}
+          
           <div 
             className="absolute top-0 bottom-0 w-3.5 bg-black rounded-full transition-all duration-500 ease-out"
             style={{ left: `calc(${progress}% - 7px)` }}
