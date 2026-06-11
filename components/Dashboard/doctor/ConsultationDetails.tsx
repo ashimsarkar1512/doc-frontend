@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import RequestRefillModal from "./RequestRefillModal";
+import AssessmentDeclineModal from "./AssessmentDeclineModal";
 
 function QuestionCheckbox({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
   const [checked, setChecked] = useState(defaultChecked);
@@ -38,6 +40,9 @@ function QuestionRadio({ label, name, defaultChecked = false }: { label: string;
 
 
 export default function ConsultationDetails({ id }: { id: string }) {
+  const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+
   return (
     <div className="mb-12">
       {/* Back Link */}
@@ -251,10 +256,37 @@ export default function ConsultationDetails({ id }: { id: string }) {
         <button className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm">
           Approve & Provide Consultation
         </button>
-        <button className="bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-semibold py-2.5 px-8 rounded-full shadow-sm">
+        <button
+          onClick={() => setIsRefillModalOpen(true)}
+          className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm"
+        >
+          Request Refill Information
+        </button>
+        <button
+          onClick={() => setIsDeclineModalOpen(true)}
+          className="bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-semibold py-2.5 px-8 rounded-full shadow-sm"
+        >
           Decline
         </button>
       </div>
+
+      {/* Request Refill Modal */}
+      <RequestRefillModal
+        isOpen={isRefillModalOpen}
+        onClose={() => setIsRefillModalOpen(false)}
+        patientName="Alan Gattuso"
+        consultationId={id}
+        submittedDate="15 May, 2026"
+      />
+
+      {/* Assessment Decline Modal */}
+      <AssessmentDeclineModal
+        isOpen={isDeclineModalOpen}
+        onClose={() => setIsDeclineModalOpen(false)}
+        patientName="Alan Gattuso"
+        consultationId={id}
+        submittedDate="15 May, 2026"
+      />
     </div>
   );
 }

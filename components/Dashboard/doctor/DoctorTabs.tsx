@@ -146,10 +146,10 @@ export default function DoctorTabs() {
             </span>
           </button>
           <button
-            onClick={() => setActiveTab("My Order")}
-            className={getTabClass("My Order")}
+            onClick={() => setActiveTab("History")}
+            className={getTabClass("History")}
           >
-            My Order
+            History
           </button>
         </div>
       </div>
