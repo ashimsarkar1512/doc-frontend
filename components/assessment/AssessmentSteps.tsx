@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const TOTAL_STEPS = 17;
-
-// ─── Static step content ───────────────────────────────────────────────────
+const TOTAL_STEPS = 16;
 
 const INTRO = {
   title: "Weight Loss Assessment",
@@ -36,8 +34,6 @@ const PROFILE_INPUTS = {
   ],
 };
 
-// ─── Single-select questions ───────────────────────────────────────────────
-
 const QUESTIONS: {
   step: number;
   title: string;
@@ -52,8 +48,6 @@ const QUESTIONS: {
     question: "How much weight are you looking to lose?",
     options: ["< 20 lbs", "21-50 lbs", "51+ lbs", "Not sure yet"],
   },
-
-  // ── STEP 10: GLP-1 allergy ────────────────────────────────────────────────
   {
     step: 10,
     title: "Weight Loss / GLP-1 Assessment",
@@ -64,8 +58,6 @@ const QUESTIONS: {
       "Unfortunately, I am allergic to GLP-1 medication",
     ],
   },
-
-  // ── STEP 15: Account check (final step) ─────────────────────────────────
   {
     step: 15,
     title: "Weight Loss / GLP-1 Assessment",
@@ -76,8 +68,6 @@ const QUESTIONS: {
       "No, I don't have an account. Create one.",
     ],
   },
-
-  // ── STEP 14: Anything else for healthcare provider ──────────────────────
   {
     step: 14,
     title: "Weight Loss / GLP-1 Assessment",
@@ -85,8 +75,6 @@ const QUESTIONS: {
     subtitle: "Include any additional details about the conditions you've already reported.",
     options: ["Yes", "No"],
   },
-
-  // ── STEP 13: Do you take any medications ────────────────────────────────
   {
     step: 13,
     title: "Weight Loss / GLP-1 Assessment",
@@ -96,8 +84,6 @@ const QUESTIONS: {
       "I don't take any medications",
     ],
   },
-
-  // ── STEP 11: Currently taking GLP-1 ──────────────────────────────────────
   {
     step: 11,
     title: "Weight Loss / GLP-1 Assessment",
@@ -109,15 +95,13 @@ const QUESTIONS: {
   },
 ];
 
-// ─── Multi-select questions ────────────────────────────────────────────────
-
 const MULTI_QUESTIONS: {
   step: number;
   title: string;
   question: string;
   subtitle?: string;
   options: string[];
-  noneOption?: string; // if present, selecting this deselects all others
+  noneOption?: string;
   multi: true;
 }[] = [
   {
@@ -135,8 +119,6 @@ const MULTI_QUESTIONS: {
     ],
     multi: true,
   },
-
-  // ── STEP 6: Heart conditions ─────────────────────────────────────────────
   {
     step: 6,
     title: "Weight Loss / GLP-1 Assessment",
@@ -158,8 +140,6 @@ const MULTI_QUESTIONS: {
     noneOption: "No, I have not been diagnosed with any of these heart conditions",
     multi: true,
   },
-
-  // ── STEP 7: Hormone, kidney, liver conditions ─────────────────────────────
   {
     step: 7,
     title: "Weight Loss / GLP-1 Assessment",
@@ -187,8 +167,6 @@ const MULTI_QUESTIONS: {
     noneOption: "No, I have not been diagnosed with any of these conditions",
     multi: true,
   },
-
-  // ── STEP 8: Gastrointestinal conditions or procedures ─────────────────────
   {
     step: 8,
     title: "Weight Loss / GLP-1 Assessment",
@@ -206,8 +184,6 @@ const MULTI_QUESTIONS: {
     noneOption: "No, I have not been diagnosed with any of these conditions or procedures",
     multi: true,
   },
-
-  // ── STEP 12: Current medications ─────────────────────────────────────────
   {
     step: 12,
     title: "Weight Loss / GLP-1 Assessment",
@@ -226,8 +202,6 @@ const MULTI_QUESTIONS: {
     noneOption: "None of the above",
     multi: true,
   },
-
-  // ── STEP 9: Additional conditions ─────────────────────────────────────────
   {
     step: 9,
     title: "Weight Loss / GLP-1 Assessment",
@@ -250,8 +224,6 @@ const MULTI_QUESTIONS: {
   },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────
-
 export default function AssessmentSteps() {
   const [currentStep, setCurrentStep] = useState(1);
   const [answers, setAnswers]         = useState<Record<string, string>>({});
@@ -261,8 +233,20 @@ export default function AssessmentSteps() {
   const [loginMode, setLoginMode]       = useState(false);
   const [loginEmail, setLoginEmail]     = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [registerMode, setRegisterMode] = useState(false);
+  const [registerEmail, setRegisterEmail]       = useState("");
+  const [registerPhone, setRegisterPhone]       = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirm, setRegisterConfirm]   = useState("");
+  const [shippingMode, setShippingMode] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState({ line1: "", city: "", state: "", zip: "" });
+  const [completedMode, setCompletedMode] = useState(false);
   const [otpMode, setOtpMode]           = useState(false);
+  const [otpVerifyMode, setOtpVerifyMode] = useState(false);
   const [otpChannel, setOtpChannel]     = useState("");
+  const [otpDigits, setOtpDigits]       = useState<string[]>(["", "", "", "", "", ""]);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const router = useRouter();
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
@@ -310,38 +294,54 @@ export default function AssessmentSteps() {
   const bmi          = calculateBMI(profileInputValues.weight, profileInputValues.height);
   const healthyRange = calculateHealthyWeightRange(profileInputValues.height);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
+  // ── OTP handlers ─────────────────────────────────────────────────────────
+
+  const handleOtpChange = (index: number, value: string) => {
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const newDigits = [...otpDigits];
+    newDigits[index] = digit;
+    setOtpDigits(newDigits);
+    if (digit && index < 5) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const newDigits = ["", "", "", "", "", ""];
+    pasted.split("").forEach((char, i) => { newDigits[i] = char; });
+    setOtpDigits(newDigits);
+    const nextEmpty = newDigits.findIndex((d) => d === "");
+    otpRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
+  };
+
+  // ── General handlers ─────────────────────────────────────────────────────
 
   const handleSelect = (option: string) => {
     setAnswers((prev) => ({ ...prev, [String(currentStep)]: option }));
   };
 
-  /** Handles toggling a multi-select option.
-   *  - If the toggled option is the "none" sentinel, it clears all others.
-   *  - If any other option is toggled while the "none" sentinel is selected,
-   *    the sentinel is automatically deselected.
-   */
   const handleMultiToggle = (option: string) => {
     const noneOption = currentMultiQuestion?.noneOption;
     setMultiAnswers((prev) => {
       const current = prev[currentStep] ?? [];
       const exists  = current.includes(option);
-
       if (exists) {
-        // deselect
         return { ...prev, [currentStep]: current.filter((o) => o !== option) };
       }
-
-      // selecting the "none" option clears everything else
       if (noneOption && option === noneOption) {
         return { ...prev, [currentStep]: [noneOption] };
       }
-
-      // selecting any other option removes the "none" sentinel if present
       const withoutNone = noneOption
         ? current.filter((o) => o !== noneOption)
         : current;
-
       return { ...prev, [currentStep]: [...withoutNone, option] };
     });
   };
@@ -364,23 +364,29 @@ export default function AssessmentSteps() {
 
   const isNextDisabled = () => {
     if (currentStep === PROFILE_INPUTS.step) {
-      return (
-        !profileInputValues.age ||
-        !profileInputValues.height ||
-        !profileInputValues.weight
-      );
+      return !profileInputValues.age || !profileInputValues.height || !profileInputValues.weight;
     }
-    // Step 11: if "Yes" selected, dosage text is required
     if (currentStep === 11) {
       if (!selectedAnswer) return true;
-      const isYes = selectedAnswer.startsWith("Yes");
-      if (isYes && !glp1Dosage.trim()) return true;
+      if (selectedAnswer.startsWith("Yes") && !glp1Dosage.trim()) return true;
       return false;
     }
     if (currentMultiQuestion) return selectedMultiAnswers.length === 0;
     if (currentQuestion)      return !selectedAnswer;
     return false;
   };
+
+  // ── Masked email ─────────────────────────────────────────────────────────
+
+  const activeEmail = registerMode ? registerEmail : loginEmail;
+
+  const maskedEmail = activeEmail
+    ? activeEmail.replace(
+        /^(.{2})(.+?)(@.+)$/,
+        (_: string, a: string, b: string, c: string) =>
+          a + "*".repeat(Math.min(b.length, 6)) + c
+      )
+    : "ex******@email.com";
 
   // ── Page title ────────────────────────────────────────────────────────────
 
@@ -398,7 +404,7 @@ export default function AssessmentSteps() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white flex items-start justify-center px-4 pt-10 sm:pt-16">
+    <div className="min-h-screen bg-white flex items-start justify-center px-4 pt-10 ">
       <div className="w-full max-w-[700px]">
 
         {/* ── Header ── */}
@@ -448,7 +454,7 @@ export default function AssessmentSteps() {
 
         {/* ── STEP 3: Profile intro card ── */}
         {currentStep === PROFILE_INTRO.step && (
-          <div className="rounded-xl p-4 sm:p-4 mb-5" style={{ backgroundColor: "#EFEFEF" }}>
+          <div className="rounded-xl p-4 sm:p-4 mb-3" style={{ backgroundColor: "#EFEFEF" }}>
             <div className="relative w-full aspect-[1.94/1] rounded-lg overflow-hidden mb-5">
               <Image
                 src={PROFILE_INTRO.image}
@@ -459,13 +465,13 @@ export default function AssessmentSteps() {
               />
             </div>
             <div className="pb-1">
-              <h2 className="text-[#202020] text-[20px] font-bold leading-snug mb-5">
+              <h2 className="text-[#202020] text-xl font-bold leading-snug mb-5">
                 {PROFILE_INTRO.heading}
               </h2>
-              <p className="text-[#2E2E2E] text-[20px] leading-[1.46] tracking-[0.01em] mb-5">
+              <p className="text-[#2E2E2E] text-lg leading-[1.46] tracking-[0.01em] mb-5">
                 {PROFILE_INTRO.body}
               </p>
-              <p className="text-[#2E2E2E] text-[20px] leading-snug tracking-[0.01em]">
+              <p className="text-[#2E2E2E] text-lg leading-snug tracking-[0.01em]">
                 {PROFILE_INTRO.prompt}
               </p>
             </div>
@@ -478,7 +484,6 @@ export default function AssessmentSteps() {
             <p className="text-gray-900 text-[17px] font-semibold mb-6 leading-snug">
               {PROFILE_INPUTS.question}
             </p>
-
             <div className="flex flex-col gap-4 mb-6">
               {PROFILE_INPUTS.fields.map((field) => (
                 <div key={field.name}>
@@ -495,8 +500,6 @@ export default function AssessmentSteps() {
                 </div>
               ))}
             </div>
-
-            {/* Health Snapshot */}
             {bmi && healthyRange && (
               <div className="rounded-xl p-4 mt-4" style={{ backgroundColor: "#E8DDD5" }}>
                 <h3 className="text-gray-800 text-[16px] font-semibold mb-2">
@@ -521,76 +524,47 @@ export default function AssessmentSteps() {
           </div>
         )}
 
-        {/* ── Multi-select question card (steps 5, 6, …) ── */}
+        {/* ── Multi-select question card ── */}
         {currentMultiQuestion && (
           <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
             <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
               {currentMultiQuestion.question}
             </p>
-
             {currentMultiQuestion.subtitle && (
               <p className="text-gray-500 text-[14px] mb-5">
                 {currentMultiQuestion.subtitle}
               </p>
             )}
-
-            {/* Add top margin only when there's no subtitle */}
             {!currentMultiQuestion.subtitle && <div className="mb-5" />}
-
             <div className="flex flex-col gap-3">
               {currentMultiQuestion.options.map((option) => {
-                const isChecked  = selectedMultiAnswers.includes(option);
-                const isNoneOpt  = option === currentMultiQuestion.noneOption;
-
+                const isChecked = selectedMultiAnswers.includes(option);
+                const isNoneOpt = option === currentMultiQuestion.noneOption;
                 return (
                   <button
                     key={option}
                     onClick={() => handleMultiToggle(option)}
                     className={`
                       flex items-center gap-4 w-full px-4 py-3.5
-                      rounded-xl border text-left
-                      transition-all duration-150
-                      ${isChecked
-                        ? "bg-white border-blue-500 shadow-sm"
-                        : "bg-white border-transparent hover:border-gray-300"
-                      }
+                      rounded-xl border text-left transition-all duration-150
+                      ${isChecked ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"}
                       ${isNoneOpt ? "mt-1" : ""}
                     `}
                   >
-                    {/* Checkbox indicator */}
                     <span
                       className={`
                         flex-shrink-0 w-7 h-7 rounded-md border-2
-                        flex items-center justify-center
-                        transition-colors duration-150
-                        ${isChecked
-                          ? "border-blue-600 bg-blue-600"
-                          : "border-gray-400 bg-gray-300"
-                        }
+                        flex items-center justify-center transition-colors duration-150
+                        ${isChecked ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"}
                       `}
                     >
                       {isChecked && (
-                        <svg
-                          className="w-4 h-4 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       )}
                     </span>
-
-                    <span
-                      className={`text-[15px] font-medium ${
-                        isNoneOpt ? "text-gray-600 italic" : "text-gray-800"
-                      }`}
-                    >
+                    <span className={`text-[15px] font-medium ${isNoneOpt ? "text-gray-600 italic" : "text-gray-800"}`}>
                       {option}
                     </span>
                   </button>
@@ -601,23 +575,20 @@ export default function AssessmentSteps() {
         )}
 
         {/* ── Single-select question card ── */}
-        {currentQuestion && !(currentStep === 15 && (loginMode || otpMode)) && (
+        {currentQuestion && !(currentStep === 15 && (loginMode || registerMode || otpMode || otpVerifyMode)) && (
           <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
             <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
               {currentQuestion.question}
             </p>
-
             {currentQuestion.subtitle && (
               <p className="text-gray-500 text-[14px] mb-5">
                 {currentQuestion.subtitle}
               </p>
             )}
-
             {!currentQuestion.subtitle && <div className="mb-5" />}
-
             <div className="flex flex-col gap-3">
               {currentQuestion.options.map((option) => {
-                const isSelected = selectedAnswer === option;
+                const isSelected  = selectedAnswer === option;
                 const isYesOption = currentStep === 11 && option.startsWith("Yes");
                 return (
                   <div key={option} className="flex flex-col">
@@ -625,39 +596,24 @@ export default function AssessmentSteps() {
                       onClick={() => handleSelect(option)}
                       className={`
                         flex items-center gap-4 w-full px-4 py-3.5
-                        rounded-xl border text-left
-                        transition-all duration-150
-                        ${isSelected
-                          ? "bg-white border-blue-500 shadow-sm"
-                          : "bg-white border-transparent hover:border-gray-300"
-                        }
+                        rounded-xl border text-left transition-all duration-150
+                        ${isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"}
                       `}
                     >
-                      {/* Radio dot */}
                       <span
                         className={`
                           flex-shrink-0 w-7 h-7 rounded-full border-2
-                          flex items-center justify-center
-                          transition-colors duration-150
-                          ${isSelected
-                            ? "border-blue-600 bg-blue-600"
-                            : "border-gray-400 bg-gray-300"
-                          }
+                          flex items-center justify-center transition-colors duration-150
+                          ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"}
                         `}
                       >
-                        {isSelected && (
-                          <span className="w-2.5 h-2.5 rounded-full bg-white" />
-                        )}
+                        {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                       </span>
-                      <span className="text-gray-800 text-[15px] font-medium">
-                        {option}
-                      </span>
+                      <span className="text-gray-800 text-[15px] font-medium">{option}</span>
                     </button>
 
-                    {/* ── Step 11 conditional sub-form (shown when "Yes" is selected) ── */}
                     {isYesOption && isSelected && (
                       <div className="mt-3 flex flex-col gap-4 px-1">
-                        {/* Dosage text input */}
                         <div>
                           <label className="block text-gray-700 text-[14px] font-medium mb-2">
                             Which medication dosage are you currently taking:
@@ -670,20 +626,12 @@ export default function AssessmentSteps() {
                             className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
                           />
                         </div>
-
-                        {/* File upload */}
                         <div>
                           <p className="text-gray-700 text-[14px] font-medium mb-2">
                             Upload Documentation: (If available)
                           </p>
                           <label className="inline-flex items-center gap-2 cursor-pointer px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[14px] font-semibold transition-all duration-150 shadow-sm">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2.5}
-                            >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4" />
                             </svg>
                             Upload
@@ -699,23 +647,16 @@ export default function AssessmentSteps() {
                               }}
                             />
                           </label>
-
-                          {/* Uploaded file list */}
                           {glp1Files.length > 0 && (
                             <ul className="mt-3 flex flex-col gap-2">
                               {glp1Files.map((file, idx) => (
-                                <li
-                                  key={idx}
-                                  className="flex items-center gap-2 text-[13px] text-blue-700"
-                                >
+                                <li key={idx} className="flex items-center gap-2 text-[13px] text-blue-700">
                                   <svg className="w-4 h-4 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v13a2 2 0 01-2 2z" />
                                   </svg>
                                   <span className="truncate max-w-[260px]">{file.name}</span>
                                   <button
-                                    onClick={() =>
-                                      setGlp1Files((prev) => prev.filter((_, i) => i !== idx))
-                                    }
+                                    onClick={() => setGlp1Files((prev) => prev.filter((_, i) => i !== idx))}
                                     className="ml-1 text-red-500 hover:text-red-700 transition-colors"
                                     aria-label="Remove file"
                                   >
@@ -735,19 +676,15 @@ export default function AssessmentSteps() {
           </div>
         )}
 
-        {/* ── Step 15: Login form (replaces radio card when loginMode is true) ── */}
-        {currentStep === 15 && loginMode && !otpMode && (
+        {/* ── Step 15: Login form ── */}
+        {currentStep === 15 && loginMode && !otpMode && !otpVerifyMode && (
           <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
             <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
               Login account
             </h2>
-
             <div className="flex flex-col gap-5">
-              {/* Email */}
               <div>
-                <label className="block text-gray-800 text-[15px] font-medium mb-2">
-                  Email:
-                </label>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Email:</label>
                 <input
                   type="email"
                   placeholder="example@email.com"
@@ -756,12 +693,8 @@ export default function AssessmentSteps() {
                   className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
                 />
               </div>
-
-              {/* Password */}
               <div>
-                <label className="block text-gray-800 text-[15px] font-medium mb-2">
-                  Password:
-                </label>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
                 <input
                   type="password"
                   placeholder="••••••••••"
@@ -774,9 +707,59 @@ export default function AssessmentSteps() {
           </div>
         )}
 
+        {/* ── Step 15: Register form ── */}
+        {currentStep === 15 && registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
+          <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+            <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
+              Register a new account
+            </h2>
+            <div className="flex flex-col gap-5">
+              <div>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Email:</label>
+                <input
+                  type="email"
+                  placeholder="example@email.com"
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
+                  className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Phone number:</label>
+                <input
+                  type="tel"
+                  placeholder="+012 3456789"
+                  value={registerPhone}
+                  onChange={(e) => setRegisterPhone(e.target.value)}
+                  className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••"
+                  value={registerPassword}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
+                  className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-800 text-[15px] font-medium mb-2">Confirm Password:</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••"
+                  value={registerConfirm}
+                  onChange={(e) => setRegisterConfirm(e.target.value)}
+                  className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
-        {/* ── Step 15: OTP channel picker ── */}
-        {currentStep === 15 && otpMode && (
+
+        {currentStep === 15 && otpMode && !otpVerifyMode && (
           <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
             <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
               Receive OTP Code
@@ -786,14 +769,9 @@ export default function AssessmentSteps() {
             </p>
             <div className="flex flex-col gap-3">
               {[
-                {
-                  key: "email",
-                  label: "Email: " + (loginEmail
-                    ? loginEmail.replace(/^(.{2})(.+?)(@.+)$/, (_: string, a: string, b: string, c: string) => a + "*".repeat(Math.min(b.length, 6)) + c)
-                    : "ex******@email.com"),
-                },
+                { key: "email", label: "Email: " + maskedEmail },
                 { key: "phone", label: "Phone: +123********90" },
-              ].map(({ key, label }: { key: string; label: string }) => {
+              ].map(({ key, label }) => {
                 const isSelected = otpChannel === key;
                 return (
                   <button
@@ -801,12 +779,12 @@ export default function AssessmentSteps() {
                     onClick={() => setOtpChannel(key)}
                     className={[
                       "flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150",
-                      isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
+                      isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300",
                     ].join(" ")}
                   >
                     <span className={[
                       "flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150",
-                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300",
                     ].join(" ")}>
                       {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                     </span>
@@ -817,9 +795,169 @@ export default function AssessmentSteps() {
             </div>
           </div>
         )}
+
+        {/* ── Step 15: Verify Authentication (OTP input) ── */}
+        {currentStep === 15 && otpVerifyMode && !shippingMode && (
+          <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+            <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">
+              Verify Authentication
+            </h2>
+            <p className="text-gray-700 text-[15px] leading-relaxed mb-6">
+              Enter the 6 digit authentication code we&apos;ve sent you at your email{" "}
+              <span className="font-medium">{maskedEmail}</span>
+            </p>
+            <div className="grid grid-cols-6 gap-2 mb-6">
+              {otpDigits.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => { otpRefs.current[index] = el; }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                  onPaste={handleOtpPaste}
+                  className="
+                    w-full h-12 rounded-xl bg-gray-300 border-2 border-transparent
+                    text-center text-[18px] font-semibold text-gray-800
+                    focus:outline-none focus:border-blue-500 focus:bg-white
+                    transition-all duration-150 caret-blue-600
+                  "
+                  placeholder="–"
+                />
+              ))}
+            </div>
+            <p className="text-gray-600 text-[14px]">
+              Didn&apos;t receive the code?{" "}
+              <button
+                onClick={() => {
+                  setOtpDigits(["", "", "", "", "", ""]);
+                  otpRefs.current[0]?.focus();
+                }}
+                className="text-gray-800 font-semibold underline underline-offset-2 hover:text-blue-600 transition-colors duration-150"
+              >
+                Resend
+              </button>
+            </p>
+          </div>
+        )}
+
+        {/* ── Step 15: Shipping Address (after register + OTP verify) ── */}
+        {currentStep === 15 && shippingMode && (
+          <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+            <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
+              Almost there! Just a few more informations.
+            </h2>
+            <p className="text-gray-600 text-[15px] mb-5">
+              Your account has been created and you are login in.
+            </p>
+            <div className="rounded-xl bg-white p-4 flex flex-col gap-4">
+              <p className="text-gray-800 text-[15px] font-semibold">Shipping address</p>
+              <div>
+                <label className="block text-gray-700 text-[14px] mb-1">Address line 1</label>
+                <input
+                  type="text"
+                  placeholder="4140 Parker Rd. Allentown"
+                  value={shippingAddress.line1}
+                  onChange={(e) => setShippingAddress((p) => ({ ...p, line1: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-gray-700 text-[14px] mb-1">City:</label>
+                  <input
+                    type="text"
+                    placeholder="Allentown"
+                    value={shippingAddress.city}
+                    onChange={(e) => setShippingAddress((p) => ({ ...p, city: e.target.value }))}
+                    className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-[14px] mb-1">State:</label>
+                  <input
+                    type="text"
+                    placeholder="NM"
+                    value={shippingAddress.state}
+                    onChange={(e) => setShippingAddress((p) => ({ ...p, state: e.target.value }))}
+                    className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-[14px] mb-1">Zip:</label>
+                  <input
+                    type="text"
+                    placeholder="31134"
+                    value={shippingAddress.zip}
+                    onChange={(e) => setShippingAddress((p) => ({ ...p, zip: e.target.value }))}
+                    className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 16: You are all set! ── */}
+        {currentStep === 16 && (
+          <div className="rounded-2xl p-5 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+            <div className="relative w-full rounded-xl overflow-hidden mb-6">
+              <Image
+                src="/last-step-16.png"
+                alt="You are all set"
+                width={700}
+                height={450}
+                className="w-full h-auto object-contain rounded-xl"
+              />
+            </div>
+            <div className="px-1 pb-2 text-center">
+              <h2 className="text-gray-900 text-[20px] font-bold mb-3">
+                You are all set!
+              </h2>
+              <p className="text-gray-700 text-[16px] leading-relaxed">
+                Your assessment is done and ready to submit for review.
+                <br />
+                Choose the products and add to cart before submission.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* ── Footer buttons ── */}
         <div className="flex items-center justify-between px-1 pb-10">
-          {currentStep === 1 ? (
+
+          {/* ── STEP 16 ── */}
+          {currentStep === 16 && (
+            <>
+              <button
+                onClick={() => {
+                  if (registerMode) {
+                    // came from shipping → go back to shipping
+                    setShippingMode(true);
+                    setCurrentStep(15);
+                  } else {
+                    // came from login OTP verify → go back to OTP verify
+                    setOtpVerifyMode(true);
+                    setCurrentStep(15);
+                  }
+                }}
+                className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => router.push("/products")}
+                className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
+              >
+                Browser products
+              </button>
+            </>
+          )}
+
+          {/* ── STEP 1 ── */}
+          {currentStep === 1 && (
             <>
               <button
                 onClick={handleCancel}
@@ -834,33 +972,101 @@ export default function AssessmentSteps() {
                 Start Assessment
               </button>
             </>
-          ) : currentStep === 15 ? (
+          )}
+
+          {/* ── STEP 15 ── */}
+          {currentStep === 15 && (
             <>
               <button
-                onClick={() => { if (otpMode) { setOtpMode(false); } else { setLoginMode(false); handlePrevious(); } }}
+                onClick={() => {
+                  if (otpVerifyMode) {
+                    setOtpVerifyMode(false);
+                    setOtpMode(true);
+                    setOtpChannel("");
+                    setOtpDigits(["", "", "", "", "", ""]);
+                  } else if (shippingMode) {
+                    setShippingMode(false);
+                    setOtpVerifyMode(true);
+                    setOtpDigits(["", "", "", "", "", ""]);
+                  } else if (otpMode) {
+                    // go back to whichever form triggered OTP
+                    setOtpMode(false);
+                    if (registerMode) {
+                      // stay in registerMode — form reappears
+                    } else {
+                      // stay in loginMode — form reappears
+                    }
+                  } else if (loginMode) {
+                    setLoginMode(false);
+                  } else if (registerMode) {
+                    setRegisterMode(false);
+                  } else {
+                    handlePrevious();
+                  }
+                }}
                 className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
               >
                 Previous
               </button>
 
-              {/* Login form → proceed to OTP */}
-              {loginMode && !otpMode && (
+              {/* Shipping mode: Save & Continue */}
+              {shippingMode && (
                 <button
-                  onClick={() => { if (loginEmail.trim() && loginPassword.trim()) setOtpMode(true); }}
-                  disabled={!loginEmail.trim() || !loginPassword.trim()}
+                  onClick={() => {
+                    setShippingMode(false);
+                    setCurrentStep(16);
+                  }}
+                  disabled={
+                    !shippingAddress.line1.trim() ||
+                    !shippingAddress.city.trim() ||
+                    !shippingAddress.state.trim() ||
+                    !shippingAddress.zip.trim()
+                  }
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !loginEmail.trim() || !loginPassword.trim()
+                    !shippingAddress.line1.trim() ||
+                    !shippingAddress.city.trim() ||
+                    !shippingAddress.state.trim() ||
+                    !shippingAddress.zip.trim()
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Login account
+                  Save &amp; Continue
                 </button>
               )}
-              {/* OTP screen → Send code */}
-              {otpMode && (
+
+              {/* OTP verify mode: Verify Authentication button */}
+              {otpVerifyMode && !shippingMode && (
                 <button
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => {
+                    if (registerMode) {
+                      setOtpVerifyMode(false);
+                      setShippingMode(true);
+                    } else {
+                      setOtpVerifyMode(false);
+                      setCurrentStep(16);
+                    }
+                  }}
+                  disabled={otpDigits.some((d) => d === "")}
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    otpDigits.some((d) => d === "")
+                      ? "bg-blue-300 text-white cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  }`}
+                >
+                  Verify Authentication
+                </button>
+              )}
+
+              {/* OTP channel picker: Send code */}
+              {otpMode && !otpVerifyMode && (
+                <button
+                  onClick={() => {
+                    if (otpChannel) {
+                      setOtpMode(false);
+                      setOtpVerifyMode(true);
+                    }
+                  }}
                   disabled={!otpChannel}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
                     !otpChannel
@@ -872,8 +1078,48 @@ export default function AssessmentSteps() {
                 </button>
               )}
 
-              {/* Selection mode — not yet in login form */}
-              {!loginMode && selectedAnswer === "Yes, I already have an account" && (
+              {/* Login form: Login account */}
+              {loginMode && !otpMode && !otpVerifyMode && (
+                <button
+                  onClick={() => {
+                    if (loginEmail.trim() && loginPassword.trim()) setOtpMode(true);
+                  }}
+                  disabled={!loginEmail.trim() || !loginPassword.trim()}
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    !loginEmail.trim() || !loginPassword.trim()
+                      ? "bg-blue-300 text-white cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  }`}
+                >
+                  Login account
+                </button>
+              )}
+
+              {/* Register form: Register button */}
+              {registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
+                <button
+                  onClick={() => setOtpMode(true)}
+                  disabled={
+                    !registerEmail.trim() ||
+                    !registerPhone.trim() ||
+                    !registerPassword.trim() ||
+                    !registerConfirm.trim()
+                  }
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    !registerEmail.trim() ||
+                    !registerPhone.trim() ||
+                    !registerPassword.trim() ||
+                    !registerConfirm.trim()
+                      ? "bg-blue-300 text-white cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  }`}
+                >
+                  Register
+                </button>
+              )}
+
+              {/* Selection mode */}
+              {!loginMode && !registerMode && !otpMode && !otpVerifyMode && selectedAnswer === "Yes, I already have an account" && (
                 <button
                   onClick={() => setLoginMode(true)}
                   className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
@@ -881,15 +1127,15 @@ export default function AssessmentSteps() {
                   Login account
                 </button>
               )}
-              {!loginMode && selectedAnswer === "No, I don't have an account. Create one." && (
+              {!loginMode && !registerMode && !otpMode && !otpVerifyMode && selectedAnswer === "No, I don't have an account. Create one." && (
                 <button
-                  onClick={() => router.push("/register")}
+                  onClick={() => setRegisterMode(true)}
                   className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
                 >
                   Create account
                 </button>
               )}
-              {!loginMode && !selectedAnswer && (
+              {!loginMode && !registerMode && !otpMode && !otpVerifyMode && !selectedAnswer && (
                 <button
                   disabled
                   className="px-7 py-2.5 rounded-full bg-blue-300 text-white text-sm font-semibold tracking-wide cursor-not-allowed"
@@ -898,7 +1144,10 @@ export default function AssessmentSteps() {
                 </button>
               )}
             </>
-          ) : (
+          )}
+
+          {/* ── ALL OTHER STEPS ── */}
+          {currentStep !== 1 && currentStep !== 15 && currentStep !== 16 && (
             <>
               <button
                 onClick={handlePrevious}
@@ -922,8 +1171,8 @@ export default function AssessmentSteps() {
               </button>
             </>
           )}
-        </div>
 
+        </div>
       </div>
     </div>
   );
