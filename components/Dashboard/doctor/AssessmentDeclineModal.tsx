@@ -1,0 +1,89 @@
+"use client";
+
+import { useState } from "react";
+import { X } from "lucide-react";
+
+interface AssessmentDeclineModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  patientName: string;
+  consultationId: string;
+  submittedDate: string;
+}
+
+export default function AssessmentDeclineModal({
+  isOpen,
+  onClose,
+  patientName,
+  consultationId,
+  submittedDate,
+}: AssessmentDeclineModalProps) {
+  const [reason, setReason] = useState("");
+
+  const handleDecline = () => {
+    console.log("Assessment Declined:", { reason });
+    // Handle decline logic here
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center p-6 border-b border-gray-200">
+          <h2 className="text-xl font-bold text-gray-900">Assessment Decline Reason</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Patient Info */}
+          <div>
+            <p className="text-gray-900 font-semibold mb-1">Patient: {patientName}</p>
+            <p className="text-sm text-gray-500 space-x-4">
+              <span>Consultation id: #{consultationId}</span>
+              <span>Submitted: {submittedDate}</span>
+            </p>
+          </div>
+
+          {/* Decline Reason */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-3">
+              Describe Reason:
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Write you r opinion....."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm text-gray-700 placeholder:text-gray-400"
+              rows={8}
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDecline}
+            className="flex-1 bg-[#e07856] hover:bg-[#d46745] text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+          >
+            Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
