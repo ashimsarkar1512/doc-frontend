@@ -2,7 +2,12 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/Redux/store/hooks";
+import { setOtpPending, setCredentials } from "@/Redux/features/auth/authSlice";
+import { useLoginMutation, useSendOtpMutation, useVerifyOtpMutation, useResendOtpMutation } from "@/Redux/api/authApi";
+import { useGetAssessmentByIdQuery } from "@/Redux/features/patient/assesmentcategory";
 
 const TOTAL_STEPS = 16;
 
@@ -227,6 +232,11 @@ const MULTI_QUESTIONS: {
 export default function AssessmentSteps() {
   const [currentStep, setCurrentStep] = useState(1);
   const [answers, setAnswers]         = useState<Record<string, string>>({});
+
+  const params = useParams();
+  const assessmentId = params?.id as string | undefined;
+  const { data: assessmentData } = useGetAssessmentByIdQuery(assessmentId!, { skip: !assessmentId });
+  const assessment = assessmentData?.data;
   const [multiAnswers, setMultiAnswers] = useState<Record<number, string[]>>({});
   const [glp1Dosage, setGlp1Dosage]     = useState("");
   const [glp1Files, setGlp1Files]       = useState<File[]>([]);
@@ -248,6 +258,13 @@ export default function AssessmentSteps() {
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const otpPending = useAppSelector((state) => state.auth.otpPending);
+
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+  const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
+  const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
 
@@ -293,6 +310,57 @@ export default function AssessmentSteps() {
 
   const bmi          = calculateBMI(profileInputValues.weight, profileInputValues.height);
   const healthyRange = calculateHealthyWeightRange(profileInputValues.height);
+
+  // ── Auth API handlers ─────────────────────────────────────────────────────
+
+  const handleLoginSubmit = async () => {
+    try {
+      const res = await login({ email: loginEmail, password: loginPassword }).unwrap();
+      dispatch(setOtpPending({ userId: res.data.userId, challengeId: null, method: "EMAIL", purpose: "LOGIN" }));
+      toast.success(res.message);
+      setOtpMode(true);
+    } catch (err: unknown) {
+      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Login failed.");
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!otpPending?.userId) return;
+    try {
+      const res = await sendOtp({ userId: otpPending.userId, purpose: "LOGIN", method: otpChannel as "EMAIL" | "PHONE" }).unwrap();
+      dispatch(setOtpPending({ userId: otpPending.userId, challengeId: res.data.challengeId, method: otpChannel as "EMAIL" | "PHONE", purpose: "LOGIN" }));
+      toast.success(res.message);
+      setOtpMode(false);
+      setOtpVerifyMode(true);
+    } catch (err: unknown) {
+      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Failed to send OTP.");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpPending?.challengeId) return;
+    try {
+      const res = await verifyOtp({ challengeId: otpPending.challengeId, otp: otpDigits.join("") }).unwrap();
+      dispatch(setCredentials({ user: res.data.user, accessToken: res.data.accessToken }));
+      toast.success(res.message);
+      setOtpVerifyMode(false);
+      setCurrentStep(16);
+    } catch (err: unknown) {
+      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Invalid OTP.");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!otpPending?.userId || !otpPending?.challengeId) return;
+    try {
+      const res = await resendOtp({ challengeId: otpPending.challengeId, userId: otpPending.userId, purpose: "LOGIN" }).unwrap();
+      toast.success(res.message);
+      setOtpDigits(["", "", "", "", "", ""]);
+      otpRefs.current[0]?.focus();
+    } catch (err: unknown) {
+      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Failed to resend OTP.");
+    }
+  };
 
   // ── OTP handlers ─────────────────────────────────────────────────────────
 
@@ -392,7 +460,7 @@ export default function AssessmentSteps() {
 
   const pageTitle =
     currentStep === 1
-      ? INTRO.title
+      ? (assessment?.title ?? INTRO.title)
       : currentStep === PROFILE_INTRO.step
         ? PROFILE_INTRO.title
         : currentStep === PROFILE_INPUTS.step
@@ -437,16 +505,17 @@ export default function AssessmentSteps() {
           <div className="rounded-2xl p-5 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
             <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-6">
               <Image
-                src={INTRO.image}
-                alt="Weight Loss Visual"
+                src={assessment?.thumbnail ?? INTRO.image}
+                alt={assessment?.title ?? "Assessment Visual"}
                 fill
+                unoptimized
                 className="object-cover"
                 priority
               />
             </div>
             <div className="px-1 pb-1">
               <p className="text-gray-800 text-[17px] font-normal leading-relaxed tracking-wide">
-                {INTRO.description}
+                {assessment?.description ?? INTRO.description}
               </p>
             </div>
           </div>
@@ -831,10 +900,8 @@ export default function AssessmentSteps() {
             <p className="text-gray-600 text-[14px]">
               Didn&apos;t receive the code?{" "}
               <button
-                onClick={() => {
-                  setOtpDigits(["", "", "", "", "", ""]);
-                  otpRefs.current[0]?.focus();
-                }}
+                onClick={handleResendOtp}
+                disabled={isResending}
                 className="text-gray-800 font-semibold underline underline-offset-2 hover:text-blue-600 transition-colors duration-150"
               >
                 Resend
@@ -1038,60 +1105,45 @@ export default function AssessmentSteps() {
               {/* OTP verify mode: Verify Authentication button */}
               {otpVerifyMode && !shippingMode && (
                 <button
-                  onClick={() => {
-                    if (registerMode) {
-                      setOtpVerifyMode(false);
-                      setShippingMode(true);
-                    } else {
-                      setOtpVerifyMode(false);
-                      setCurrentStep(16);
-                    }
-                  }}
-                  disabled={otpDigits.some((d) => d === "")}
+                  onClick={handleVerifyOtp}
+                  disabled={otpDigits.some((d) => d === "") || isVerifyingOtp}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    otpDigits.some((d) => d === "")
+                    otpDigits.some((d) => d === "") || isVerifyingOtp
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Verify Authentication
+                  {isVerifyingOtp ? "Verifying…" : "Verify Authentication"}
                 </button>
               )}
 
               {/* OTP channel picker: Send code */}
               {otpMode && !otpVerifyMode && (
                 <button
-                  onClick={() => {
-                    if (otpChannel) {
-                      setOtpMode(false);
-                      setOtpVerifyMode(true);
-                    }
-                  }}
-                  disabled={!otpChannel}
+                  onClick={handleSendOtp}
+                  disabled={!otpChannel || isSendingOtp}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !otpChannel
+                    !otpChannel || isSendingOtp
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Send code
+                  {isSendingOtp ? "Sending…" : "Send code"}
                 </button>
               )}
 
               {/* Login form: Login account */}
               {loginMode && !otpMode && !otpVerifyMode && (
                 <button
-                  onClick={() => {
-                    if (loginEmail.trim() && loginPassword.trim()) setOtpMode(true);
-                  }}
-                  disabled={!loginEmail.trim() || !loginPassword.trim()}
+                  onClick={handleLoginSubmit}
+                  disabled={!loginEmail.trim() || !loginPassword.trim() || isLoginLoading}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !loginEmail.trim() || !loginPassword.trim()
+                    !loginEmail.trim() || !loginPassword.trim() || isLoginLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Login account
+                  {isLoginLoading ? "Signing in…" : "Login account"}
                 </button>
               )}
 
