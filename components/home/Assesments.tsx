@@ -112,7 +112,7 @@ const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: 
           group-hover:opacity-100 group-hover:translate-y-0
           bg-blue-600 hover:bg-blue-700 active:scale-95
           text-white text-base font-bold
-          px-6 py-3.5 rounded-full shadow-lg
+          w-full py-3.5 rounded-full shadow-lg text-center
           transition-all duration-300 ease-out
           focus:outline-none focus:ring-2 focus:ring-blue-400
         "

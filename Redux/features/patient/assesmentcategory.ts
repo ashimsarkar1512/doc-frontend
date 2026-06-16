@@ -16,20 +16,24 @@ export interface QuestionOption {
   id: string
   label: string
   placeholder: string | null
-  inputType: string | null
-  subQuestions: Question[]
+  inputType: 'text' | 'number' | 'file' | string | null
+  subQuestions?: Question[]
 }
 
 export interface Question {
-  id: string
+  id: string;
+  assessmentId: string;
   type: 'INFORMATION_ONLY' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'INPUT'
-  heading: string
-  media: string
-  questionText: string
+  heading: string | null;
+  media: string | null;
+  questionText: string | null;
   description: string | null
   contentAlignment: 'LEFT' | 'CENTER' | 'RIGHT'
   isRequired: boolean
   options: QuestionOption[]
+  parentOptionId: string | null;
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface AssessmentDetail {
@@ -41,6 +45,11 @@ export interface AssessmentDetail {
   category: { id: string; name: string }
   questions: Question[]
   totalQuestions: number
+}
+
+interface AssessmentDetailResponse {
+  success?: boolean
+  data?: AssessmentDetail
 }
 
 export interface Category {
@@ -79,8 +88,10 @@ const patientApi = baseApi.injectEndpoints({
         params: name ? { name } : undefined,
       }),
     }),
-    getAssessmentById: builder.query<{ success: boolean; data: AssessmentDetail }, string>({
+    getAssessmentById: builder.query<AssessmentDetail, string>({
       query: (id) => `/admin/assessments/${id}`,
+      transformResponse: (response: AssessmentDetail | AssessmentDetailResponse) =>
+        'data' in response && response.data ? response.data : response as AssessmentDetail,
     }),
   }),
 })
