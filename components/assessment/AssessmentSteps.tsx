@@ -33,14 +33,14 @@ interface SubQuestion {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getMediaUrl(media: string | null): string | null {
-  if (!media) return null;
+function getMediaUrl(media: string | null | undefined): string | null {
+  if (!media || !media.trim()) return null;
   if (media.startsWith("http")) return media;
   return `https://pre-storage.weightlossmdcherrycreek.com/testing/${media}`;
 }
 
 function getQuestionTitle(question: Question) {
-  return question.questionText || question.heading || "Please review this step";
+  return (question.questionText?.trim()) || (question.heading?.trim()) || "";
 }
 
 function getQuestionOptions(question: Question): Option[] {
@@ -55,9 +55,7 @@ function sortQuestionsByCreationOrder(questions: Question[]) {
   return [...questions].sort((a, b) => {
     const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    if (aTime && bTime && aTime !== bTime) return aTime - bTime;
-    if (aTime !== bTime) return bTime - aTime;
-    return 0;
+    return aTime - bTime;
   });
 }
 
@@ -93,16 +91,17 @@ function SubQuestionInput({
   const [isDragging, setIsDragging] = useState(false);
 
   const resolvedInputType: "text" | "number" | "file" =
-    sub.type === "INPUT" && sub.options?.[0]?.inputType
-      ? (sub.options[0].inputType as "text" | "number")
-      : (sub.type as "text" | "number" | "file");
+    sub.options?.[0]?.inputType === "file" ? "file" :
+    sub.options?.[0]?.inputType === "number" ? "number" :
+    sub.options?.[0]?.inputType === "text" ? "text" :
+    sub.type === "INPUT" ? "text" : "text";
 
   const resolvedLabel = sub.label || sub.heading || sub.questionText || sub.options?.[0]?.label || "";
   const resolvedPlaceholder =
     sub.placeholder ?? sub.options?.[0]?.placeholder ?? (resolvedInputType === "number" ? "Enter a number..." : "Write here...");
 
   // ── FILE ──
-  if (resolvedInputType === "file" || sub.options?.[0]?.inputType === "file") {
+  if (resolvedInputType === "file") {
     const addFiles = (incoming: File[]) => onFileChange([...fileValue, ...incoming]);
     return (
       <div className="mt-4">
@@ -241,7 +240,23 @@ function DynamicQuestion({
       ? "text-right"
       : "text-left";
 
-  const mediaUrl = getMediaUrl(question.media);
+  const mediaUrl = getMediaUrl(question.media ?? null);
+
+  const title = getQuestionTitle(question);
+
+  // ── Shared media + title block ──
+  const renderHeader = (alt: string) => (
+    <>
+      {mediaUrl && (
+        <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+          <Image src={mediaUrl} alt={alt} fill unoptimized className="object-cover" />
+        </div>
+      )}
+      {question.heading?.trim() && question.type !== "INFORMATION_ONLY" && (
+        <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
+      )}
+    </>
+  );
 
   // ── INFORMATION_ONLY ──
   if (question.type === "INFORMATION_ONLY") {
@@ -249,14 +264,14 @@ function DynamicQuestion({
       <div className="rounded-2xl p-5 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
         {mediaUrl && (
           <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={question.heading || "Info image"} fill unoptimized className="object-cover" />
+            <Image src={mediaUrl} alt={question.heading?.trim() || "Info"} fill unoptimized className="object-cover" />
           </div>
         )}
         <div className={`px-1 pb-1 ${alignClass}`}>
-          {question.heading && (
+          {question.heading?.trim() && (
             <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">{question.heading}</h2>
           )}
-          {question.description && (
+          {question.description?.trim() && (
             <p className="text-gray-700 text-[16px] leading-relaxed">{question.description}</p>
           )}
         </div>
@@ -268,70 +283,64 @@ function DynamicQuestion({
   if (question.type === "SINGLE_CHOICE") {
     return (
       <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={question.questionText || "Question image"} fill unoptimized className="object-cover" />
+        {renderHeader(title || "Question")}
+        {title && (
+          <p className="text-gray-900 text-[17px] font-semibold mb-5 leading-snug">
+            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </p>
+        )}
+        {options.length === 0 ? (
+          <p className="text-gray-400 text-[14px] italic">No options available.</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {options.map((option) => {
+              const isSelected = singleAnswer === option.id;
+              const subQuestions = getOptionSubQuestions(option);
+              return (
+                <div key={option.id} className="flex flex-col">
+                  <button
+                    onClick={() => onSingleSelect(option.id)}
+                    className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+                      isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
+                    }`}
+                  >
+                    <span className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
+                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                    }`}>
+                      {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
+                    </span>
+                    <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
+                  </button>
+                  {isSelected && option.inputType && option.inputType !== "file" && (
+                    <div className="mt-3 px-1">
+                      <input
+                        type={option.inputType}
+                        placeholder={option.placeholder || "Write here..."}
+                        value={inputAnswers[option.id] || ""}
+                        onChange={(e) => onInputChange(option.id, e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
+                      />
+                    </div>
+                  )}
+                  {isSelected && subQuestions.length > 0 && (
+                    <div className="mt-2 px-1 flex flex-col gap-3">
+                      {subQuestions.map((sub) => (
+                        <SubQuestionInput
+                          key={sub.id}
+                          sub={sub}
+                          value={subAnswers[sub.id] || ""}
+                          fileValue={subFileAnswers[sub.id] || []}
+                          onChange={(val) => onSubAnswerChange(sub.id, val)}
+                          onFileChange={(files) => onSubFileChange(sub.id, files)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
-        {question.heading && (
-          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
-        )}
-        <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
-          {getQuestionTitle(question)}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </p>
-        <div className="mb-5" />
-
-        <div className="flex flex-col gap-3">
-          {options.map((option) => {
-            const isSelected = singleAnswer === option.id;
-            const subQuestions = getOptionSubQuestions(option);
-            return (
-              <div key={option.id} className="flex flex-col">
-                <button
-                  onClick={() => onSingleSelect(option.id)}
-                  className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                    isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
-                  }`}
-                >
-                  <span className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                    isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                  }`}>
-                    {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
-                  </span>
-                  <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
-                </button>
-
-                {isSelected && option.inputType && (
-                  <div className="mt-3 px-1">
-                    <input
-                      type={option.inputType}
-                      placeholder={option.placeholder || "Write here..."}
-                      value={inputAnswers[option.id] || ""}
-                      onChange={(e) => onInputChange(option.id, e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                    />
-                  </div>
-                )}
-
-                {isSelected && subQuestions.length > 0 && (
-                  <div className="mt-2 px-1 flex flex-col gap-3">
-                    {subQuestions.map((sub) => (
-                      <SubQuestionInput
-                        key={sub.id}
-                        sub={sub}
-                        value={subAnswers[sub.id] || ""}
-                        fileValue={subFileAnswers[sub.id] || []}
-                        onChange={(val) => onSubAnswerChange(sub.id, val)}
-                        onFileChange={(files) => onSubFileChange(sub.id, files)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
       </div>
     );
   }
@@ -340,77 +349,72 @@ function DynamicQuestion({
   if (question.type === "MULTIPLE_CHOICE") {
     return (
       <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={question.questionText || "Question image"} fill unoptimized className="object-cover" />
-          </div>
+        {renderHeader(title || "Question")}
+        {title && (
+          <p className="text-gray-900 text-[17px] font-semibold leading-snug mb-1">
+            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </p>
         )}
-        {question.heading && (
-          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
-        )}
-        <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
-          {getQuestionTitle(question)}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </p>
-        {question.description && (
+        {question.description?.trim() && (
           <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
         )}
-        {!question.description && <div className="mb-5" />}
-
-        <div className="flex flex-col gap-3">
-          {options.map((option) => {
-            const isChecked = multiAnswers.includes(option.id);
-            const subQuestions = getOptionSubQuestions(option);
-            return (
-              <div key={option.id} className="flex flex-col">
-                <button
-                  onClick={() => onMultiToggle(option.id)}
-                  className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                    isChecked ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
-                  }`}
-                >
-                  <span className={`flex-shrink-0 w-7 h-7 rounded-md border-2 flex items-center justify-center transition-colors duration-150 ${
-                    isChecked ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                  }`}>
-                    {isChecked && (
-                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </span>
-                  <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
-                </button>
-
-                {isChecked && option.inputType && (
-                  <div className="mt-3 px-1">
-                    <input
-                      type={option.inputType}
-                      placeholder={option.placeholder || "Write here..."}
-                      value={inputAnswers[option.id] || ""}
-                      onChange={(e) => onInputChange(option.id, e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                    />
-                  </div>
-                )}
-
-                {isChecked && subQuestions.length > 0 && (
-                  <div className="mt-2 px-1 flex flex-col gap-3">
-                    {subQuestions.map((sub) => (
-                      <SubQuestionInput
-                        key={sub.id}
-                        sub={sub}
-                        value={subAnswers[sub.id] || ""}
-                        fileValue={subFileAnswers[sub.id] || []}
-                        onChange={(val) => onSubAnswerChange(sub.id, val)}
-                        onFileChange={(files) => onSubFileChange(sub.id, files)}
+        <div className="mb-5" />
+        {options.length === 0 ? (
+          <p className="text-gray-400 text-[14px] italic">No options available.</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {options.map((option) => {
+              const isChecked = multiAnswers.includes(option.id);
+              const subQuestions = getOptionSubQuestions(option);
+              return (
+                <div key={option.id} className="flex flex-col">
+                  <button
+                    onClick={() => onMultiToggle(option.id)}
+                    className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+                      isChecked ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
+                    }`}
+                  >
+                    <span className={`flex-shrink-0 w-7 h-7 rounded-md border-2 flex items-center justify-center transition-colors duration-150 ${
+                      isChecked ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                    }`}>
+                      {isChecked && (
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
+                  </button>
+                  {isChecked && option.inputType && option.inputType !== "file" && (
+                    <div className="mt-3 px-1">
+                      <input
+                        type={option.inputType}
+                        placeholder={option.placeholder || "Write here..."}
+                        value={inputAnswers[option.id] || ""}
+                        onChange={(e) => onInputChange(option.id, e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
                       />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                    </div>
+                  )}
+                  {isChecked && subQuestions.length > 0 && (
+                    <div className="mt-2 px-1 flex flex-col gap-3">
+                      {subQuestions.map((sub) => (
+                        <SubQuestionInput
+                          key={sub.id}
+                          sub={sub}
+                          value={subAnswers[sub.id] || ""}
+                          fileValue={subFileAnswers[sub.id] || []}
+                          onChange={(val) => onSubAnswerChange(sub.id, val)}
+                          onFileChange={(files) => onSubFileChange(sub.id, files)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -419,51 +423,41 @@ function DynamicQuestion({
   if (question.type === "INPUT") {
     return (
       <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={question.questionText || "Question image"} fill unoptimized className="object-cover" />
-          </div>
+        {renderHeader(title || "Question")}
+        {title && (
+          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </p>
         )}
-        {question.heading && (
-          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
-        )}
-        <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
-          {getQuestionTitle(question)}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </p>
-        {question.description && (
+        {question.description?.trim() && (
           <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
         )}
-        {!question.description && <div className="mb-5" />}
-
-        <div className="flex flex-col gap-4">
-          {options.map((option) => (
-            <div key={option.id}>
-              <label className="block text-gray-800 text-[15px] font-medium mb-2">{option.label}</label>
-              {option.inputType === null || option.inputType === "text" ? (
+        <div className="mb-5" />
+        {options.length === 0 ? (
+          <p className="text-gray-400 text-[14px] italic">No input fields available.</p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {options.map((option) => (
+              <div key={option.id}>
+                {option.label?.trim() && (
+                  <label className="block text-gray-800 text-[15px] font-medium mb-2">{option.label}</label>
+                )}
                 <input
-                  type="text"
-                  placeholder={option.placeholder || "Enter here..."}
+                  type={option.inputType === "number" ? "number" : "text"}
+                  placeholder={option.placeholder?.trim() || (option.inputType === "number" ? "Enter number..." : "Enter here...")}
                   value={inputAnswers[option.id] || ""}
                   onChange={(e) => onInputChange(option.id, e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
                 />
-              ) : option.inputType === "number" ? (
-                <input
-                  type="number"
-                  placeholder={option.placeholder || "Enter number..."}
-                  value={inputAnswers[option.id] || ""}
-                  onChange={(e) => onInputChange(option.id, e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                />
-              ) : null}
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
 
+  // ── Unknown type fallback ──
   return null;
 }
 
@@ -633,18 +627,24 @@ export default function AssessmentSteps() {
 
   // ── isNextDisabled ────────────────────────────────────────────────────────
   const isNextDisabled = (): boolean => {
-    if (currentDynQuestion) {
-      const qId = currentDynQuestion.id;
-      if (currentDynQuestion.type === "INFORMATION_ONLY") return false;
-      if (!currentDynQuestion.isRequired) return false;
+    if (!currentDynQuestion) return false;
+    if (!currentDynQuestion.isRequired) return false;
+    if (currentDynQuestion.type === "INFORMATION_ONLY") return false;
 
-      if (currentDynQuestion.type === "SINGLE_CHOICE") return !dynSingleAnswers[qId];
-      if (currentDynQuestion.type === "MULTIPLE_CHOICE") return (dynMultiAnswers[qId] ?? []).length === 0;
-      if (currentDynQuestion.type === "INPUT") {
-        const opts = getQuestionOptions(currentDynQuestion);
-        if (opts.length === 0) return false;
-        return opts.every((opt) => !(dynInputAnswers[qId]?.[opt.id] ?? "").trim());
-      }
+    const qId = currentDynQuestion.id;
+    const opts = getQuestionOptions(currentDynQuestion);
+
+    if (currentDynQuestion.type === "SINGLE_CHOICE") {
+      if (opts.length === 0) return false;
+      return !dynSingleAnswers[qId];
+    }
+    if (currentDynQuestion.type === "MULTIPLE_CHOICE") {
+      if (opts.length === 0) return false;
+      return (dynMultiAnswers[qId] ?? []).length === 0;
+    }
+    if (currentDynQuestion.type === "INPUT") {
+      if (opts.length === 0) return false;
+      return opts.every((opt) => !(dynInputAnswers[qId]?.[opt.id] ?? "").trim());
     }
     return false;
   };
