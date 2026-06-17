@@ -12,24 +12,12 @@ import {
   useVerifyOtpMutation,
   useResendOtpMutation,
 } from "@/Redux/api/authApi";
-import { useGetAssessmentByIdQuery, type AssessmentDetail, type Question, type QuestionOption as Option } from "@/Redux/features/patient/assesmentcategory";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface SubQuestion {
-  id: string;
-  questionText: string | null;
-  heading: string | null;
-  type: "text" | "number" | "file" | "INFORMATION_ONLY" | "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "INPUT";
-  inputType?: "text" | "number" | null;
-  placeholder?: string | null;
-  label?: string | null;
-  options?: Option[];
-  description?: string | null;
-  media?: string | null;
-  contentAlignment?: "LEFT" | "CENTER" | "RIGHT";
-  isRequired?: boolean;
-}
+import {
+  useGetAssessmentByIdQuery,
+  type AssessmentDetail,
+  type Question,
+  type QuestionOption as Option,
+} from "@/Redux/features/patient/assesmentcategory";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -40,7 +28,7 @@ function getMediaUrl(media: string | null | undefined): string | null {
 }
 
 function getQuestionTitle(question: Question) {
-  return (question.questionText?.trim()) || (question.heading?.trim()) || "";
+  return question.questionText?.trim() || question.heading?.trim() || "";
 }
 
 function getQuestionOptions(question: Question): Option[] {
@@ -59,14 +47,27 @@ function sortQuestionsByCreationOrder(questions: Question[]) {
   });
 }
 
-// ─── Sub-question input renderer ──────────────────────────────────────────────
+/** Normalise the inputType field — backend sometimes sends "file upload" with a space */
+function isFileInputType(inputType: string | null | undefined): boolean {
+  if (!inputType) return false;
+  return inputType.toLowerCase().replace(/\s+/g, "") === "fileupload" || inputType.toLowerCase() === "file";
+}
+
+// ─── File helpers ─────────────────────────────────────────────────────────────
 
 function getFileIcon(name: string) {
   const ext = name.split(".").pop()?.toLowerCase();
-  if (ext === "pdf") return { bg: "bg-red-50", text: "text-red-600", label: "PDF" };
-  if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext ?? "")) return { bg: "bg-blue-50", text: "text-blue-600", label: "IMG" };
-  if (["doc", "docx"].includes(ext ?? "")) return { bg: "bg-indigo-50", text: "text-indigo-600", label: "DOC" };
-  return { bg: "bg-gray-100", text: "text-gray-600", label: (ext ?? "FILE").toUpperCase().slice(0, 4) };
+  if (ext === "pdf")
+    return { bg: "bg-red-50", text: "text-red-600", label: "PDF" };
+  if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext ?? ""))
+    return { bg: "bg-blue-50", text: "text-blue-600", label: "IMG" };
+  if (["doc", "docx"].includes(ext ?? ""))
+    return { bg: "bg-indigo-50", text: "text-indigo-600", label: "DOC" };
+  return {
+    bg: "bg-gray-100",
+    text: "text-gray-600",
+    label: (ext ?? "FILE").toUpperCase().slice(0, 4),
+  };
 }
 
 function formatBytes(bytes: number) {
@@ -75,164 +76,200 @@ function formatBytes(bytes: number) {
   return (bytes / (1024 * 1024)).toFixed(1) + " MB";
 }
 
-function SubQuestionInput({
-  sub,
-  value,
-  fileValue,
-  onChange,
+// ─── Flat answer stores (works at any nesting depth) ─────────────────────────
+// Keys are questionId or optionId strings.
+// textAnswers  : questionId/optionId → string value
+// fileAnswers  : questionId/optionId → File[]
+// singleChoice : questionId → selected optionId
+// multiChoice  : questionId → string[] of selected optionIds
+
+interface AnswerStore {
+  text: Record<string, string>;
+  files: Record<string, File[]>;
+  single: Record<string, string>;
+  multi: Record<string, string[]>;
+}
+
+// ─── FileUploadField ──────────────────────────────────────────────────────────
+
+function FileUploadField({
+  label,
+  description,
+  files,
   onFileChange,
 }: {
-  sub: SubQuestion;
-  value: string;
-  fileValue: File[];
-  onChange: (val: string) => void;
+  label?: string;
+  description?: string;
+  files: File[];
   onFileChange: (files: File[]) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
 
-  const resolvedInputType: "text" | "number" | "file" =
-    sub.options?.[0]?.inputType === "file" ? "file" :
-    sub.options?.[0]?.inputType === "number" ? "number" :
-    sub.options?.[0]?.inputType === "text" ? "text" :
-    sub.type === "INPUT" ? "text" : "text";
+  const addFiles = (incoming: File[]) => onFileChange([...files, ...incoming]);
 
-  const resolvedLabel = sub.label || sub.heading || sub.questionText || sub.options?.[0]?.label || "";
-  const resolvedPlaceholder =
-    sub.placeholder ?? sub.options?.[0]?.placeholder ?? (resolvedInputType === "number" ? "Enter a number..." : "Write here...");
-
-  // ── FILE ──
-  if (resolvedInputType === "file") {
-    const addFiles = (incoming: File[]) => onFileChange([...fileValue, ...incoming]);
-    return (
-      <div className="mt-4">
-        {resolvedLabel && (
-          <p className="text-gray-800 text-[15px] font-semibold mb-3">{resolvedLabel}</p>
-        )}
-        {/* Drop zone */}
-        <label
-          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setIsDragging(false);
-            addFiles(Array.from(e.dataTransfer.files));
-          }}
-          className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${
-            isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50/40"
-          }`}
-        >
-          <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-1">
-            <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4" />
-            </svg>
-          </div>
-          <p className="text-gray-700 text-[14px] font-medium">
-            <span className="text-blue-600 font-semibold">Click to upload</span> or drag & drop
-          </p>
-          <p className="text-gray-400 text-[12px]">PDF, JPG, PNG, DOC up to 10MB each</p>
-          <input
-            type="file"
-            multiple
-            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-            className="hidden"
-            onChange={(e) => { addFiles(Array.from(e.target.files ?? [])); e.target.value = ""; }}
-          />
-        </label>
-
-        {/* File list */}
-        {fileValue.length > 0 && (
-          <ul className="mt-3 flex flex-col gap-2">
-            {fileValue.map((file, idx) => {
-              const icon = getFileIcon(file.name);
-              return (
-                <li key={idx} className="flex items-center gap-3 bg-white rounded-xl px-3 py-2.5 border border-gray-200">
-                  <div className={`flex-shrink-0 w-9 h-9 rounded-lg ${icon.bg} flex items-center justify-center`}>
-                    <span className={`text-[10px] font-bold ${icon.text}`}>{icon.label}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 text-[13px] font-medium truncate">{file.name}</p>
-                    <p className="text-gray-400 text-[11px]">{formatBytes(file.size)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => onFileChange(fileValue.filter((_, i) => i !== idx))}
-                    className="flex-shrink-0 w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
-                    aria-label="Remove"
-                  >
-                    <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-    );
-  }
-
-  // ── TEXT / NUMBER ──
   return (
-    <div className="mt-4">
-      {resolvedLabel && (
-        <p className="text-gray-800 text-[15px] font-semibold mb-2">{resolvedLabel}</p>
+    <div className="mt-2">
+      {label && (
+        <p className="text-gray-800 text-[15px] font-semibold mb-1">{label}</p>
       )}
-      <div className="relative">
-        {resolvedInputType === "number" && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-            </svg>
-          </div>
-        )}
-        {resolvedInputType === "text" && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </div>
-        )}
+      {description && (
+        <p className="text-gray-500 text-[13px] mb-3">{description}</p>
+      )}
+      <label
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          addFiles(Array.from(e.dataTransfer.files));
+        }}
+        className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${
+          isDragging
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50/40"
+        }`}
+      >
+        <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-1">
+          <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4" />
+          </svg>
+        </div>
+        <p className="text-gray-700 text-[14px] font-medium">
+          <span className="text-blue-600 font-semibold">Click to upload</span> or drag &amp; drop
+        </p>
+        <p className="text-gray-400 text-[12px]">PDF, JPG, PNG, DOC up to 10MB each</p>
         <input
-          type={resolvedInputType}
-          placeholder={resolvedPlaceholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-150"
+          type="file"
+          multiple
+          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+          className="hidden"
+          onChange={(e) => {
+            addFiles(Array.from(e.target.files ?? []));
+            e.target.value = "";
+          }}
         />
-      </div>
+      </label>
+
+      {files.length > 0 && (
+        <ul className="mt-3 flex flex-col gap-2">
+          {files.map((file, idx) => {
+            const icon = getFileIcon(file.name);
+            return (
+              <li key={idx} className="flex items-center gap-3 bg-white rounded-xl px-3 py-2.5 border border-gray-200">
+                <div className={`flex-shrink-0 w-9 h-9 rounded-lg ${icon.bg} flex items-center justify-center`}>
+                  <span className={`text-[10px] font-bold ${icon.text}`}>{icon.label}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-800 text-[13px] font-medium truncate">{file.name}</p>
+                  <p className="text-gray-400 text-[11px]">{formatBytes(file.size)}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onFileChange(files.filter((_, i) => i !== idx))}
+                  className="flex-shrink-0 w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
+                  aria-label="Remove"
+                >
+                  <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
 
-// ─── Dynamic Question Renderer ────────────────────────────────────────────────
+// ─── Recursive Option renderer ────────────────────────────────────────────────
+// Renders one option button, and if selected renders its subQuestions recursively.
 
-function DynamicQuestion({
+function RenderOption({
+  option,
+  isSelected,
+  isCheckbox,
+  onToggle,
+  answers,
+  setAnswers,
+  depth,
+}: {
+  option: Option;
+  isSelected: boolean;
+  isCheckbox: boolean;
+  onToggle: () => void;
+  answers: AnswerStore;
+  setAnswers: React.Dispatch<React.SetStateAction<AnswerStore>>;
+  depth: number;
+}) {
+  const subQuestions = getOptionSubQuestions(option);
+
+  return (
+    <div className="flex flex-col">
+      {/* Option button */}
+      <button
+        onClick={onToggle}
+        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+          isSelected
+            ? "bg-white border-blue-500 shadow-sm"
+            : "bg-white border-transparent hover:border-gray-300"
+        }`}
+      >
+        <span
+          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${
+            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+          }`}
+        >
+          {isSelected && (
+            isCheckbox ? (
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <span className="w-2.5 h-2.5 rounded-full bg-white" />
+            )
+          )}
+        </span>
+        <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
+      </button>
+
+      {/* SubQuestions — recursive, shown only when selected */}
+      {isSelected && subQuestions.length > 0 && (
+        <div className="mt-2 ml-4 pl-4 border-l-2 border-gray-300 flex flex-col gap-3">
+          {subQuestions.map((sub) => (
+            <RenderQuestion
+              key={sub.id}
+              question={sub}
+              answers={answers}
+              setAnswers={setAnswers}
+              depth={depth + 1}
+              isNested
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Recursive Question renderer ──────────────────────────────────────────────
+
+function RenderQuestion({
   question,
-  singleAnswer,
-  multiAnswers,
-  inputAnswers,
-  subAnswers,
-  subFileAnswers,
-  onSingleSelect,
-  onMultiToggle,
-  onInputChange,
-  onSubAnswerChange,
-  onSubFileChange,
+  answers,
+  setAnswers,
+  depth = 0,
+  isNested = false,
 }: {
   question: Question;
-  singleAnswer: string;
-  multiAnswers: string[];
-  inputAnswers: Record<string, string>;
-  subAnswers: Record<string, string>;
-  subFileAnswers: Record<string, File[]>;
-  onSingleSelect: (optionId: string) => void;
-  onMultiToggle: (optionId: string) => void;
-  onInputChange: (optionId: string, value: string) => void;
-  onSubAnswerChange: (subId: string, value: string) => void;
-  onSubFileChange: (subId: string, files: File[]) => void;
+  answers: AnswerStore;
+  setAnswers: React.Dispatch<React.SetStateAction<AnswerStore>>;
+  depth?: number;
+  isNested?: boolean;
 }) {
   const options = getQuestionOptions(question);
+  const title = getQuestionTitle(question);
+  const mediaUrl = getMediaUrl(question.media ?? null);
   const alignClass =
     question.contentAlignment === "CENTER"
       ? "text-center"
@@ -240,39 +277,24 @@ function DynamicQuestion({
       ? "text-right"
       : "text-left";
 
-  const mediaUrl = getMediaUrl(question.media ?? null);
-
-  const title = getQuestionTitle(question);
-
-  // ── Shared media + title block ──
-  const renderHeader = (alt: string) => (
-    <>
-      {mediaUrl && (
-        <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-          <Image src={mediaUrl} alt={alt} fill unoptimized className="object-cover" />
-        </div>
-      )}
-      {question.heading?.trim() && question.type !== "INFORMATION_ONLY" && (
-        <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
-      )}
-    </>
-  );
-
-  // ── INFORMATION_ONLY ──
+  // ── INFORMATION_ONLY (only at top level, nested ones are unusual but handled) ──
   if (question.type === "INFORMATION_ONLY") {
+    const wrapperClass = isNested
+      ? "rounded-xl p-4 mb-3 bg-gray-100"
+      : "rounded-2xl p-5 mb-7";
     return (
-      <div className="rounded-2xl p-5 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
         {mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={question.heading?.trim() || "Info"} fill unoptimized className="object-cover" />
+          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-4">
+            <Image src={mediaUrl} alt={title || "Info"} fill unoptimized className="object-cover" />
           </div>
         )}
         <div className={`px-1 pb-1 ${alignClass}`}>
           {question.heading?.trim() && (
-            <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">{question.heading}</h2>
+            <h2 className="text-gray-900 text-[18px] font-bold mb-2 leading-snug">{question.heading}</h2>
           )}
           {question.description?.trim() && (
-            <p className="text-gray-700 text-[16px] leading-relaxed">{question.description}</p>
+            <p className="text-gray-700 text-[15px] leading-relaxed">{question.description}</p>
           )}
         </div>
       </div>
@@ -281,135 +303,216 @@ function DynamicQuestion({
 
   // ── SINGLE_CHOICE ──
   if (question.type === "SINGLE_CHOICE") {
+    const selectedId = answers.single[question.id] ?? "";
+    const wrapperClass = isNested
+      ? "rounded-xl p-4 bg-gray-100"
+      : "rounded-2xl p-6 mb-7";
+
     return (
-      <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {renderHeader(title || "Question")}
-        {title && (
-          <p className="text-gray-900 text-[17px] font-semibold mb-5 leading-snug">
-            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
-          </p>
-        )}
-        {options.length === 0 ? (
-          <p className="text-gray-400 text-[14px] italic">No options available.</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {options.map((option) => {
-              const isSelected = singleAnswer === option.id;
-              const subQuestions = getOptionSubQuestions(option);
-              return (
-                <div key={option.id} className="flex flex-col">
-                  <button
-                    onClick={() => onSingleSelect(option.id)}
-                    className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                      isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
-                    }`}
-                  >
-                    <span className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                    }`}>
-                      {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
-                    </span>
-                    <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
-                  </button>
-                  {isSelected && option.inputType && option.inputType !== "file" && (
-                    <div className="mt-3 px-1">
-                      <input
-                        type={option.inputType}
-                        placeholder={option.placeholder || "Write here..."}
-                        value={inputAnswers[option.id] || ""}
-                        onChange={(e) => onInputChange(option.id, e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                      />
-                    </div>
-                  )}
-                  {isSelected && subQuestions.length > 0 && (
-                    <div className="mt-2 px-1 flex flex-col gap-3">
-                      {subQuestions.map((sub) => (
-                        <SubQuestionInput
-                          key={sub.id}
-                          sub={sub}
-                          value={subAnswers[sub.id] || ""}
-                          fileValue={subFileAnswers[sub.id] || []}
-                          onChange={(val) => onSubAnswerChange(sub.id, val)}
-                          onFileChange={(files) => onSubFileChange(sub.id, files)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+        {!isNested && mediaUrl && (
+          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
           </div>
         )}
+        {!isNested && question.heading?.trim() && (
+          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
+        )}
+        {title && (
+          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+            {title}
+            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </p>
+        )}
+        {question.description?.trim() && (
+          <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
+        )}
+        <div className={title || question.description ? "mt-4" : ""}>
+          {options.length === 0 ? (
+            <p className="text-gray-400 text-[14px] italic">No options available.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {options.map((option) => (
+                <RenderOption
+                  key={option.id}
+                  option={option}
+                  isSelected={selectedId === option.id}
+                  isCheckbox={false}
+                  onToggle={() =>
+                    setAnswers((prev) => ({
+                      ...prev,
+                      single: { ...prev.single, [question.id]: option.id },
+                    }))
+                  }
+                  answers={answers}
+                  setAnswers={setAnswers}
+                  depth={depth}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   // ── MULTIPLE_CHOICE ──
   if (question.type === "MULTIPLE_CHOICE") {
+    const selectedIds = answers.multi[question.id] ?? [];
+    const wrapperClass = isNested
+      ? "rounded-xl p-4 bg-gray-100"
+      : "rounded-2xl p-6 mb-7";
+
     return (
-      <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {renderHeader(title || "Question")}
+      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+        {!isNested && mediaUrl && (
+          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
+          </div>
+        )}
+        {!isNested && question.heading?.trim() && (
+          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
+        )}
         {title && (
-          <p className="text-gray-900 text-[17px] font-semibold leading-snug mb-1">
-            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+            {title}
+            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
           </p>
         )}
         {question.description?.trim() && (
           <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
         )}
-        <div className="mb-5" />
+        <div className={title || question.description ? "mt-4" : ""}>
+          {options.length === 0 ? (
+            <p className="text-gray-400 text-[14px] italic">No options available.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {options.map((option) => (
+                <RenderOption
+                  key={option.id}
+                  option={option}
+                  isSelected={selectedIds.includes(option.id)}
+                  isCheckbox
+                  onToggle={() =>
+                    setAnswers((prev) => {
+                      const current = prev.multi[question.id] ?? [];
+                      return {
+                        ...prev,
+                        multi: {
+                          ...prev.multi,
+                          [question.id]: current.includes(option.id)
+                            ? current.filter((id) => id !== option.id)
+                            : [...current, option.id],
+                        },
+                      };
+                    })
+                  }
+                  answers={answers}
+                  setAnswers={setAnswers}
+                  depth={depth}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── INPUT ──
+  if (question.type === "INPUT") {
+    const wrapperClass = isNested
+      ? "rounded-xl p-4 bg-gray-100"
+      : "rounded-2xl p-6 mb-7";
+
+    return (
+      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+        {!isNested && mediaUrl && (
+          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
+          </div>
+        )}
+        {title && (
+          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+            {title}
+            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </p>
+        )}
+        {question.description?.trim() && (
+          <p className="text-gray-500 text-[14px] mb-4">{question.description}</p>
+        )}
+
         {options.length === 0 ? (
-          <p className="text-gray-400 text-[14px] italic">No options available.</p>
+          // No options defined: render a plain text input keyed by questionId
+          <div className={title || question.description ? "mt-3" : ""}>
+            <input
+              type="text"
+              placeholder="Write here..."
+              value={answers.text[question.id] ?? ""}
+              onChange={(e) =>
+                setAnswers((prev) => ({
+                  ...prev,
+                  text: { ...prev.text, [question.id]: e.target.value },
+                }))
+              }
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-150"
+            />
+          </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className={`flex flex-col gap-4 ${title || question.description ? "mt-3" : ""}`}>
             {options.map((option) => {
-              const isChecked = multiAnswers.includes(option.id);
-              const subQuestions = getOptionSubQuestions(option);
+              if (isFileInputType(option.inputType)) {
+                return (
+                  <FileUploadField
+                    key={option.id}
+                    label={option.label ?? undefined}
+                    files={answers.files[option.id] ?? []}
+                    onFileChange={(files) =>
+                      setAnswers((prev) => ({
+                        ...prev,
+                        files: { ...prev.files, [option.id]: files },
+                      }))
+                    }
+                  />
+                );
+              }
+
+              const isNumber = option.inputType === "number";
               return (
-                <div key={option.id} className="flex flex-col">
-                  <button
-                    onClick={() => onMultiToggle(option.id)}
-                    className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                      isChecked ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
-                    }`}
-                  >
-                    <span className={`flex-shrink-0 w-7 h-7 rounded-md border-2 flex items-center justify-center transition-colors duration-150 ${
-                      isChecked ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                    }`}>
-                      {isChecked && (
-                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <div key={option.id}>
+                  {option.label?.trim() && (
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      {option.label}
+                    </label>
+                  )}
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                      {isNumber ? (
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       )}
-                    </span>
-                    <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
-                  </button>
-                  {isChecked && option.inputType && option.inputType !== "file" && (
-                    <div className="mt-3 px-1">
-                      <input
-                        type={option.inputType}
-                        placeholder={option.placeholder || "Write here..."}
-                        value={inputAnswers[option.id] || ""}
-                        onChange={(e) => onInputChange(option.id, e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                      />
                     </div>
-                  )}
-                  {isChecked && subQuestions.length > 0 && (
-                    <div className="mt-2 px-1 flex flex-col gap-3">
-                      {subQuestions.map((sub) => (
-                        <SubQuestionInput
-                          key={sub.id}
-                          sub={sub}
-                          value={subAnswers[sub.id] || ""}
-                          fileValue={subFileAnswers[sub.id] || []}
-                          onChange={(val) => onSubAnswerChange(sub.id, val)}
-                          onFileChange={(files) => onSubFileChange(sub.id, files)}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    <input
+                      type={isNumber ? "number" : "text"}
+                      placeholder={
+                        option.placeholder?.trim() ||
+                        (isNumber ? "Enter a number..." : "Write here...")
+                      }
+                      value={answers.text[option.id] ?? ""}
+                      onChange={(e) =>
+                        setAnswers((prev) => ({
+                          ...prev,
+                          text: { ...prev.text, [option.id]: e.target.value },
+                        }))
+                      }
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-150"
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -419,46 +522,64 @@ function DynamicQuestion({
     );
   }
 
-  // ── INPUT ──
-  if (question.type === "INPUT") {
-    return (
-      <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-        {renderHeader(title || "Question")}
-        {title && (
-          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
-            {title}{question.isRequired && <span className="text-red-500 ml-1">*</span>}
-          </p>
-        )}
-        {question.description?.trim() && (
-          <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
-        )}
-        <div className="mb-5" />
-        {options.length === 0 ? (
-          <p className="text-gray-400 text-[14px] italic">No input fields available.</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {options.map((option) => (
-              <div key={option.id}>
-                {option.label?.trim() && (
-                  <label className="block text-gray-800 text-[15px] font-medium mb-2">{option.label}</label>
-                )}
-                <input
-                  type={option.inputType === "number" ? "number" : "text"}
-                  placeholder={option.placeholder?.trim() || (option.inputType === "number" ? "Enter number..." : "Enter here...")}
-                  value={inputAnswers[option.id] || ""}
-                  onChange={(e) => onInputChange(option.id, e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  return null;
+}
+
+// ─── Validation helper (recursive) ───────────────────────────────────────────
+// Returns true if required fields in this question (and any visible subquestions) are missing.
+
+function isMissingRequired(question: Question, answers: AnswerStore): boolean {
+  if (!question.isRequired) return false;
+  if (question.type === "INFORMATION_ONLY") return false;
+
+  const options = getQuestionOptions(question);
+
+  if (question.type === "SINGLE_CHOICE") {
+    if (options.length === 0) return false;
+    const selectedId = answers.single[question.id];
+    if (!selectedId) return true;
+    // Check subquestions of selected option
+    const selectedOpt = options.find((o) => o.id === selectedId);
+    if (selectedOpt) {
+      for (const sub of getOptionSubQuestions(selectedOpt)) {
+        if (isMissingRequired(sub, answers)) return true;
+      }
+    }
+    return false;
   }
 
-  // ── Unknown type fallback ──
-  return null;
+  if (question.type === "MULTIPLE_CHOICE") {
+    if (options.length === 0) return false;
+    const selected = answers.multi[question.id] ?? [];
+    if (selected.length === 0) return true;
+    // Check subquestions of all selected options
+    for (const optId of selected) {
+      const opt = options.find((o) => o.id === optId);
+      if (opt) {
+        for (const sub of getOptionSubQuestions(opt)) {
+          if (isMissingRequired(sub, answers)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  if (question.type === "INPUT") {
+    if (options.length === 0) {
+      // Plain input keyed by questionId
+      return !(answers.text[question.id] ?? "").trim();
+    }
+    for (const option of options) {
+      if (isFileInputType(option.inputType)) {
+        if (!(answers.files[option.id]?.length)) return true;
+      } else {
+        if (!(answers.text[option.id] ?? "").trim()) return true;
+      }
+    }
+    return false;
+  }
+
+  return false;
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -472,30 +593,26 @@ export default function AssessmentSteps() {
   );
   const assessment: AssessmentDetail | undefined = assessmentData;
 
-  // Dynamic questions from API (filter out top-level only, no parentOptionId)
-  const dynamicQuestions: Question[] = sortQuestionsByCreationOrder(
+  // Only top-level questions become steps
+  const topLevelQuestions: Question[] = sortQuestionsByCreationOrder(
     (assessment?.questions ?? []).filter((q) => !q.parentOptionId)
   );
 
   // ── Step layout ──────────────────────────────────────────────────────────
-  // Step 1..N     → Dynamic questions (N = dynamicQuestions.length)
-  // Step N+1      → Auth step (static)
-  // Step N+2      → Completion (static)
-
-  const INTRO_STEP = -1; // disabled
   const DYNAMIC_START = 1;
-  const AUTH_STEP = DYNAMIC_START + dynamicQuestions.length;
+  const AUTH_STEP = DYNAMIC_START + topLevelQuestions.length;
   const COMPLETION_STEP = AUTH_STEP + 1;
   const TOTAL_STEPS = COMPLETION_STEP;
 
   const [currentStep, setCurrentStep] = useState(1);
 
-  // ── Dynamic question answer state ─────────────────────────────────────────
-  const [dynSingleAnswers, setDynSingleAnswers] = useState<Record<string, string>>({});
-  const [dynMultiAnswers, setDynMultiAnswers] = useState<Record<string, string[]>>({});
-  const [dynInputAnswers, setDynInputAnswers] = useState<Record<string, Record<string, string>>>({});
-  const [dynSubAnswers, setDynSubAnswers] = useState<Record<string, Record<string, string>>>({});
-  const [dynSubFileAnswers, setDynSubFileAnswers] = useState<Record<string, Record<string, File[]>>>({});
+  // ── Flat answer store ─────────────────────────────────────────────────────
+  const [answers, setAnswers] = useState<AnswerStore>({
+    text: {},
+    files: {},
+    single: {},
+    multi: {},
+  });
 
   // ── Auth state ────────────────────────────────────────────────────────────
   const [authChoice, setAuthChoice] = useState<string>("");
@@ -508,7 +625,12 @@ export default function AssessmentSteps() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirm, setRegisterConfirm] = useState("");
   const [shippingMode, setShippingMode] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState({ line1: "", city: "", state: "", zip: "" });
+  const [shippingAddress, setShippingAddress] = useState({
+    line1: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
   const [otpMode, setOtpMode] = useState(false);
   const [otpVerifyMode, setOtpVerifyMode] = useState(false);
   const [otpChannel, setOtpChannel] = useState("");
@@ -526,17 +648,18 @@ export default function AssessmentSteps() {
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
 
-  // ── Current dynamic question ──────────────────────────────────────────────
   const currentDynQuestion: Question | undefined =
     currentStep >= DYNAMIC_START && currentStep < AUTH_STEP
-      ? dynamicQuestions[currentStep - DYNAMIC_START]
+      ? topLevelQuestions[currentStep - DYNAMIC_START]
       : undefined;
 
   // ── Auth helpers ──────────────────────────────────────────────────────────
   const activeEmail = registerMode ? registerEmail : loginEmail;
   const maskedEmail = activeEmail
-    ? activeEmail.replace(/^(.{2})(.+?)(@.+)$/, (_: string, a: string, b: string, c: string) =>
-        a + "*".repeat(Math.min(b.length, 6)) + c
+    ? activeEmail.replace(
+        /^(.{2})(.+?)(@.+)$/,
+        (_: string, a: string, b: string, c: string) =>
+          a + "*".repeat(Math.min(b.length, 6)) + c
       )
     : "ex******@email.com";
 
@@ -544,49 +667,82 @@ export default function AssessmentSteps() {
   const handleLoginSubmit = async () => {
     try {
       const res = await login({ email: loginEmail, password: loginPassword }).unwrap();
-      dispatch(setOtpPending({ userId: res.data.userId, challengeId: null, method: "EMAIL", purpose: "LOGIN" }));
+      dispatch(
+        setOtpPending({
+          userId: res.data.userId,
+          challengeId: null,
+          method: "EMAIL",
+          purpose: "LOGIN",
+        })
+      );
       toast.success(res.message);
       setOtpMode(true);
     } catch (err: unknown) {
-      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Login failed.");
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Login failed."
+      );
     }
   };
 
   const handleSendOtp = async () => {
     if (!otpPending?.userId) return;
     try {
-      const res = await sendOtp({ userId: otpPending.userId, purpose: "LOGIN", method: otpChannel as "EMAIL" | "PHONE" }).unwrap();
-      dispatch(setOtpPending({ userId: otpPending.userId, challengeId: res.data.challengeId, method: otpChannel as "EMAIL" | "PHONE", purpose: "LOGIN" }));
+      const res = await sendOtp({
+        userId: otpPending.userId,
+        purpose: "LOGIN",
+        method: otpChannel as "EMAIL" | "PHONE",
+      }).unwrap();
+      dispatch(
+        setOtpPending({
+          userId: otpPending.userId,
+          challengeId: res.data.challengeId,
+          method: otpChannel as "EMAIL" | "PHONE",
+          purpose: "LOGIN",
+        })
+      );
       toast.success(res.message);
       setOtpMode(false);
       setOtpVerifyMode(true);
     } catch (err: unknown) {
-      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Failed to send OTP.");
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Failed to send OTP."
+      );
     }
   };
 
   const handleVerifyOtp = async () => {
     if (!otpPending?.challengeId) return;
     try {
-      const res = await verifyOtp({ challengeId: otpPending.challengeId, otp: otpDigits.join("") }).unwrap();
+      const res = await verifyOtp({
+        challengeId: otpPending.challengeId,
+        otp: otpDigits.join(""),
+      }).unwrap();
       dispatch(setCredentials({ user: res.data.user, accessToken: res.data.accessToken }));
       toast.success(res.message);
       setOtpVerifyMode(false);
       setCurrentStep(COMPLETION_STEP);
     } catch (err: unknown) {
-      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Invalid OTP.");
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Invalid OTP."
+      );
     }
   };
 
   const handleResendOtp = async () => {
     if (!otpPending?.userId || !otpPending?.challengeId) return;
     try {
-      const res = await resendOtp({ challengeId: otpPending.challengeId, userId: otpPending.userId, purpose: "LOGIN" }).unwrap();
+      const res = await resendOtp({
+        challengeId: otpPending.challengeId,
+        userId: otpPending.userId,
+        purpose: "LOGIN",
+      }).unwrap();
       toast.success(res.message);
       setOtpDigits(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } catch (err: unknown) {
-      toast.error((err as { data?: { message?: string } })?.data?.message ?? "Failed to resend OTP.");
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Failed to resend OTP."
+      );
     }
   };
 
@@ -625,48 +781,10 @@ export default function AssessmentSteps() {
     else router.back();
   };
 
-  // ── isNextDisabled ────────────────────────────────────────────────────────
   const isNextDisabled = (): boolean => {
     if (!currentDynQuestion) return false;
-    if (!currentDynQuestion.isRequired) return false;
-    if (currentDynQuestion.type === "INFORMATION_ONLY") return false;
-
-    const qId = currentDynQuestion.id;
-    const opts = getQuestionOptions(currentDynQuestion);
-
-    if (currentDynQuestion.type === "SINGLE_CHOICE") {
-      if (opts.length === 0) return false;
-      return !dynSingleAnswers[qId];
-    }
-    if (currentDynQuestion.type === "MULTIPLE_CHOICE") {
-      if (opts.length === 0) return false;
-      return (dynMultiAnswers[qId] ?? []).length === 0;
-    }
-    if (currentDynQuestion.type === "INPUT") {
-      if (opts.length === 0) return false;
-      return opts.every((opt) => !(dynInputAnswers[qId]?.[opt.id] ?? "").trim());
-    }
-    return false;
+    return isMissingRequired(currentDynQuestion, answers);
   };
-
-  // ── Dynamic answer handlers ───────────────────────────────────────────────
-  const handleDynSingle = (qId: string, optionId: string) =>
-    setDynSingleAnswers((prev) => ({ ...prev, [qId]: optionId }));
-
-  const handleDynMulti = (qId: string, optionId: string) =>
-    setDynMultiAnswers((prev) => {
-      const current = prev[qId] ?? [];
-      return { ...prev, [qId]: current.includes(optionId) ? current.filter((o) => o !== optionId) : [...current, optionId] };
-    });
-
-  const handleDynInput = (qId: string, optionId: string, value: string) =>
-    setDynInputAnswers((prev) => ({ ...prev, [qId]: { ...(prev[qId] ?? {}), [optionId]: value } }));
-
-  const handleDynSubAnswer = (qId: string, subId: string, value: string) =>
-    setDynSubAnswers((prev) => ({ ...prev, [qId]: { ...(prev[qId] ?? {}), [subId]: value } }));
-
-  const handleDynSubFile = (qId: string, subId: string, files: File[]) =>
-    setDynSubFileAnswers((prev) => ({ ...prev, [qId]: { ...(prev[qId] ?? {}), [subId]: files } }));
 
   // ── Page title ────────────────────────────────────────────────────────────
   const pageTitle = assessment?.title ?? "Weight Loss Assessment";
@@ -692,11 +810,16 @@ export default function AssessmentSteps() {
         {/* ── Header ── */}
         <div className="flex items-center justify-between mb-3 px-1">
           <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">{pageTitle}</h1>
-          <span className="text-sm font-medium text-gray-600">Step {currentStep} of {TOTAL_STEPS}</span>
+          <span className="text-sm font-medium text-gray-600">
+            Step {currentStep} of {TOTAL_STEPS}
+          </span>
         </div>
 
         {/* ── Progress bar ── */}
-        <div className="relative w-full h-3 rounded-full mb-6" style={{ backgroundColor: "#EBEBEB" }}>
+        <div
+          className="relative w-full h-3 rounded-full mb-6"
+          style={{ backgroundColor: "#EBEBEB" }}
+        >
           <div
             className="absolute left-0 top-0 h-full bg-blue-600 rounded-l-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
@@ -707,21 +830,14 @@ export default function AssessmentSteps() {
           />
         </div>
 
-
-        {/* ── DYNAMIC QUESTIONS (step 1 to AUTH_STEP - 1) ── */}
+        {/* ── DYNAMIC QUESTIONS ── */}
         {currentDynQuestion && (
-          <DynamicQuestion
+          <RenderQuestion
             question={currentDynQuestion}
-            singleAnswer={dynSingleAnswers[currentDynQuestion.id] ?? ""}
-            multiAnswers={dynMultiAnswers[currentDynQuestion.id] ?? []}
-            inputAnswers={dynInputAnswers[currentDynQuestion.id] ?? {}}
-            subAnswers={dynSubAnswers[currentDynQuestion.id] ?? {}}
-            subFileAnswers={dynSubFileAnswers[currentDynQuestion.id] ?? {}}
-            onSingleSelect={(optId) => handleDynSingle(currentDynQuestion.id, optId)}
-            onMultiToggle={(optId) => handleDynMulti(currentDynQuestion.id, optId)}
-            onInputChange={(optId, val) => handleDynInput(currentDynQuestion.id, optId, val)}
-            onSubAnswerChange={(subId, val) => handleDynSubAnswer(currentDynQuestion.id, subId, val)}
-            onSubFileChange={(subId, files) => handleDynSubFile(currentDynQuestion.id, subId, files)}
+            answers={answers}
+            setAnswers={setAnswers}
+            depth={0}
+            isNested={false}
           />
         )}
 
@@ -738,19 +854,26 @@ export default function AssessmentSteps() {
                   Login or create an account to submit the assessment for approval
                 </p>
                 <div className="flex flex-col gap-3">
-                  {["Yes, I already have an account", "No, I don't have an account. Create one."].map((option) => {
+                  {[
+                    "Yes, I already have an account",
+                    "No, I don't have an account. Create one.",
+                  ].map((option) => {
                     const isSelected = authChoice === option;
                     return (
                       <button
                         key={option}
                         onClick={() => setAuthChoice(option)}
                         className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                          isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
+                          isSelected
+                            ? "bg-white border-blue-500 shadow-sm"
+                            : "bg-white border-transparent hover:border-gray-300"
                         }`}
                       >
-                        <span className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                          isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                        }`}>
+                        <span
+                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
+                            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                          }`}
+                        >
                           {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                         </span>
                         <span className="text-gray-800 text-[15px] font-medium">{option}</span>
@@ -832,12 +955,16 @@ export default function AssessmentSteps() {
                         key={key}
                         onClick={() => setOtpChannel(key)}
                         className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                          isSelected ? "bg-white border-blue-500 shadow-sm" : "bg-white border-transparent hover:border-gray-300"
+                          isSelected
+                            ? "bg-white border-blue-500 shadow-sm"
+                            : "bg-white border-transparent hover:border-gray-300"
                         }`}
                       >
-                        <span className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                          isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                        }`}>
+                        <span
+                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
+                            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                          }`}
+                        >
                           {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                         </span>
                         <span className="text-gray-800 text-[15px] font-medium">{label}</span>
@@ -889,8 +1016,12 @@ export default function AssessmentSteps() {
             {/* Shipping Address */}
             {shippingMode && (
               <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">Almost there! Just a few more details.</h2>
-                <p className="text-gray-600 text-[15px] mb-5">Your account has been created and you are logged in.</p>
+                <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
+                  Almost there! Just a few more details.
+                </h2>
+                <p className="text-gray-600 text-[15px] mb-5">
+                  Your account has been created and you are logged in.
+                </p>
                 <div className="rounded-xl bg-white p-4 flex flex-col gap-4">
                   <p className="text-gray-800 text-[15px] font-semibold">Shipping address</p>
                   <div>
@@ -915,7 +1046,9 @@ export default function AssessmentSteps() {
                           type="text"
                           placeholder={field.placeholder}
                           value={shippingAddress[field.key]}
-                          onChange={(e) => setShippingAddress((p) => ({ ...p, [field.key]: e.target.value }))}
+                          onChange={(e) =>
+                            setShippingAddress((p) => ({ ...p, [field.key]: e.target.value }))
+                          }
                           className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
                         />
                       </div>
@@ -958,8 +1091,13 @@ export default function AssessmentSteps() {
             <>
               <button
                 onClick={() => {
-                  if (registerMode) { setShippingMode(true); setCurrentStep(AUTH_STEP); }
-                  else { setOtpVerifyMode(true); setCurrentStep(AUTH_STEP); }
+                  if (registerMode) {
+                    setShippingMode(true);
+                    setCurrentStep(AUTH_STEP);
+                  } else {
+                    setOtpVerifyMode(true);
+                    setCurrentStep(AUTH_STEP);
+                  }
                 }}
                 className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
               >
@@ -979,12 +1117,24 @@ export default function AssessmentSteps() {
             <>
               <button
                 onClick={() => {
-                  if (otpVerifyMode) { setOtpVerifyMode(false); setOtpMode(true); setOtpChannel(""); setOtpDigits(["", "", "", "", "", ""]); }
-                  else if (shippingMode) { setShippingMode(false); setOtpVerifyMode(true); setOtpDigits(["", "", "", "", "", ""]); }
-                  else if (otpMode) { setOtpMode(false); }
-                  else if (loginMode) { setLoginMode(false); }
-                  else if (registerMode) { setRegisterMode(false); }
-                  else { handlePrevious(); }
+                  if (otpVerifyMode) {
+                    setOtpVerifyMode(false);
+                    setOtpMode(true);
+                    setOtpChannel("");
+                    setOtpDigits(["", "", "", "", "", ""]);
+                  } else if (shippingMode) {
+                    setShippingMode(false);
+                    setOtpVerifyMode(true);
+                    setOtpDigits(["", "", "", "", "", ""]);
+                  } else if (otpMode) {
+                    setOtpMode(false);
+                  } else if (loginMode) {
+                    setLoginMode(false);
+                  } else if (registerMode) {
+                    setRegisterMode(false);
+                  } else {
+                    handlePrevious();
+                  }
                 }}
                 className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
               >
@@ -994,9 +1144,15 @@ export default function AssessmentSteps() {
               {shippingMode && (
                 <button
                   onClick={() => { setShippingMode(false); setCurrentStep(COMPLETION_STEP); }}
-                  disabled={!shippingAddress.line1.trim() || !shippingAddress.city.trim() || !shippingAddress.state.trim() || !shippingAddress.zip.trim()}
+                  disabled={
+                    !shippingAddress.line1.trim() ||
+                    !shippingAddress.city.trim() ||
+                    !shippingAddress.state.trim() ||
+                    !shippingAddress.zip.trim()
+                  }
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !shippingAddress.line1.trim() || !shippingAddress.city.trim() || !shippingAddress.state.trim() || !shippingAddress.zip.trim()
+                    !shippingAddress.line1.trim() || !shippingAddress.city.trim() ||
+                    !shippingAddress.state.trim() || !shippingAddress.zip.trim()
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
@@ -1050,9 +1206,15 @@ export default function AssessmentSteps() {
               {registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
                 <button
                   onClick={() => setOtpMode(true)}
-                  disabled={!registerEmail.trim() || !registerPhone.trim() || !registerPassword.trim() || !registerConfirm.trim()}
+                  disabled={
+                    !registerEmail.trim() ||
+                    !registerPhone.trim() ||
+                    !registerPassword.trim() ||
+                    !registerConfirm.trim()
+                  }
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !registerEmail.trim() || !registerPhone.trim() || !registerPassword.trim() || !registerConfirm.trim()
+                    !registerEmail.trim() || !registerPhone.trim() ||
+                    !registerPassword.trim() || !registerConfirm.trim()
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
@@ -1092,8 +1254,8 @@ export default function AssessmentSteps() {
             </>
           )}
 
-          {/* ── ALL OTHER STEPS (dynamic questions) ── */}
-          {currentStep !== INTRO_STEP && currentStep !== AUTH_STEP && currentStep !== COMPLETION_STEP && (
+          {/* ── DYNAMIC QUESTION STEP buttons ── */}
+          {currentStep !== AUTH_STEP && currentStep !== COMPLETION_STEP && (
             <>
               <button
                 onClick={handlePrevious}
