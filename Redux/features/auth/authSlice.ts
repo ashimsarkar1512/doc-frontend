@@ -19,7 +19,7 @@ export interface OtpPendingData {
   userId: string
   challengeId: string | null
   method: 'EMAIL' | 'PHONE'
-  purpose: 'LOGIN' | 'REGISTER' | 'FORGOT_PASSWORD'
+  purpose: 'LOGIN' | 'REGISTER' | 'RESET_PASSWORD' | 'FORGOT_PASSWORD'
 }
 
 export interface AuthState {
