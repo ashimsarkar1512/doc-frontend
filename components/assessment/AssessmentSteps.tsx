@@ -5,12 +5,16 @@ import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/Redux/store/hooks";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 import { setOtpPending, setCredentials } from "@/Redux/features/auth/authSlice";
 import {
+  useRegisterMutation,
   useLoginMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
   useResendOtpMutation,
+  useUpdateProfileMutation,
 } from "@/Redux/api/authApi";
 import {
   useGetAssessmentByIdQuery,
@@ -20,6 +24,7 @@ import {
 } from "@/Redux/features/patient/assesmentcategory";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
 
 function getMediaUrl(media: string | null | undefined): string | null {
   if (!media || !media.trim()) return null;
@@ -619,14 +624,17 @@ export default function AssessmentSteps() {
   const [loginMode, setLoginMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [registerMode, setRegisterMode] = useState(false);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPhone, setRegisterPhone] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirm, setRegisterConfirm] = useState("");
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
   const [shippingMode, setShippingMode] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
-    line1: "",
+    address: "",
     city: "",
     state: "",
     zip: "",
@@ -642,9 +650,11 @@ export default function AssessmentSteps() {
   const otpPending = useAppSelector((state) => state.auth.otpPending);
 
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
   const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
   const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
+  const [updateProfile, { isLoading: isSavingAddress }] = useUpdateProfileMutation();
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
 
@@ -663,6 +673,13 @@ export default function AssessmentSteps() {
       )
     : "ex******@email.com";
 
+  // mask phone: show first 3 and last 2 digits, rest as *
+  const maskedPhone = registerPhone
+    ? registerPhone.replace(/(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/, (_, start, mid, end) =>
+        start + "*".repeat(mid.length) + end
+      )
+    : "+***********";
+
   // ── Auth API handlers ─────────────────────────────────────────────────────
   const handleLoginSubmit = async () => {
     try {
@@ -676,10 +693,41 @@ export default function AssessmentSteps() {
         })
       );
       toast.success(res.message);
+      setLoginMode(false);
       setOtpMode(true);
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ?? "Login failed."
+      );
+    }
+  };
+
+  const handleRegisterSubmit = async () => {
+    if (registerPassword !== registerConfirm) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    try {
+      const res = await register({
+        email: registerEmail,
+        phone: registerPhone,
+        password: registerPassword,
+        confirmPassword: registerConfirm,
+      }).unwrap();
+      dispatch(
+        setOtpPending({
+          userId: res.data.userId,
+          challengeId: null,
+          method: "EMAIL",
+          purpose: "REGISTER",
+        })
+      );
+      toast.success(res.message);
+      setRegisterMode(false);
+      setOtpMode(true);
+    } catch (err: unknown) {
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Registration failed."
       );
     }
   };
@@ -689,7 +737,7 @@ export default function AssessmentSteps() {
     try {
       const res = await sendOtp({
         userId: otpPending.userId,
-        purpose: "LOGIN",
+        purpose: otpPending.purpose,
         method: otpChannel as "EMAIL" | "PHONE",
       }).unwrap();
       dispatch(
@@ -697,7 +745,7 @@ export default function AssessmentSteps() {
           userId: otpPending.userId,
           challengeId: res.data.challengeId,
           method: otpChannel as "EMAIL" | "PHONE",
-          purpose: "LOGIN",
+          purpose: otpPending.purpose,
         })
       );
       toast.success(res.message);
@@ -720,7 +768,11 @@ export default function AssessmentSteps() {
       dispatch(setCredentials({ user: res.data.user, accessToken: res.data.accessToken }));
       toast.success(res.message);
       setOtpVerifyMode(false);
-      setCurrentStep(COMPLETION_STEP);
+      if (otpPending?.purpose === "REGISTER") {
+        setShippingMode(true);
+      } else {
+        setCurrentStep(COMPLETION_STEP);
+      }
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ?? "Invalid OTP."
@@ -729,14 +781,37 @@ export default function AssessmentSteps() {
   };
 
   const handleResendOtp = async () => {
-    if (!otpPending?.userId || !otpPending?.challengeId) return;
+    if (!otpPending?.userId) {
+      toast.error("Session expired. Please log in again.");
+      return;
+    }
+
     try {
-      const res = await resendOtp({
-        challengeId: otpPending.challengeId,
-        userId: otpPending.userId,
-        purpose: "LOGIN",
-      }).unwrap();
-      toast.success(res.message);
+      // If challengeId is available, use resend-otp endpoint
+      if (otpPending.challengeId) {
+        const res = await resendOtp({
+          challengeId: otpPending.challengeId,
+          userId: otpPending.userId,
+          purpose: otpPending.purpose,
+        }).unwrap();
+        toast.success(res.message);
+      } else {
+        // Fallback: send a fresh OTP using the stored channel
+        const res = await sendOtp({
+          userId: otpPending.userId,
+          purpose: otpPending.purpose,
+          method: (otpPending.method || otpChannel || "EMAIL") as "EMAIL" | "PHONE",
+        }).unwrap();
+        dispatch(
+          setOtpPending({
+            userId: otpPending.userId,
+            challengeId: res.data.challengeId,
+            method: (otpPending.method || otpChannel || "EMAIL") as "EMAIL" | "PHONE",
+            purpose: otpPending.purpose,
+          })
+        );
+        toast.success(res.message);
+      }
       setOtpDigits(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } catch (err: unknown) {
@@ -901,13 +976,32 @@ export default function AssessmentSteps() {
                   </div>
                   <div>
                     <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
-                    <input
-                      type="password"
-                      placeholder="••••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="••••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className="w-full px-4 py-3.5 pr-12 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword((p) => !p)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-150"
+                        tabIndex={-1}
+                      >
+                        {showLoginPassword ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -918,23 +1012,110 @@ export default function AssessmentSteps() {
               <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
                 <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">Register a new account</h2>
                 <div className="flex flex-col gap-5">
-                  {[
-                    { label: "Email:", type: "email", placeholder: "example@email.com", value: registerEmail, onChange: setRegisterEmail },
-                    { label: "Phone number:", type: "tel", placeholder: "+012 3456789", value: registerPhone, onChange: setRegisterPhone },
-                    { label: "Password:", type: "password", placeholder: "••••••••••", value: registerPassword, onChange: setRegisterPassword },
-                    { label: "Confirm Password:", type: "password", placeholder: "••••••••••", value: registerConfirm, onChange: setRegisterConfirm },
-                  ].map((field) => (
-                    <div key={field.label}>
-                      <label className="block text-gray-800 text-[15px] font-medium mb-2">{field.label}</label>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Email:</label>
+                    <input
+                      type="email"
+                      placeholder="example@email.com"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                    />
+                  </div>
+
+                  {/* Phone number with country code */}
+                  <div>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Phone number:</label>
+                    <PhoneInput
+                      defaultCountry="us"
+                      value={registerPhone}
+                      onChange={(phone) => setRegisterPhone(phone)}
+                      style={{ width: "100%" }}
+                      inputStyle={{
+                        width: "100%",
+                        height: "52px",
+                        fontSize: "15px",
+                        backgroundColor: "#e5e7eb",
+                        border: "1px solid transparent",
+                        borderRadius: "0.75rem",
+                        color: "#1f2937",
+                        paddingLeft: "8px",
+                      }}
+                      countrySelectorStyleProps={{
+                        buttonStyle: {
+                          height: "52px",
+                          backgroundColor: "#e5e7eb",
+                          border: "1px solid transparent",
+                          borderRadius: "0.75rem 0 0 0.75rem",
+                          paddingLeft: "10px",
+                          paddingRight: "8px",
+                        },
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
+                    <div className="relative">
                       <input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="w-full px-4 py-3.5 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                        type={showRegisterPassword ? "text" : "password"}
+                        placeholder="••••••••••"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        className="w-full px-4 py-3.5 pr-12 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegisterPassword((p) => !p)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-150"
+                        tabIndex={-1}
+                      >
+                        {showRegisterPassword ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Confirm Password:</label>
+                    <div className="relative">
+                      <input
+                        type={showRegisterConfirm ? "text" : "password"}
+                        placeholder="••••••••••"
+                        value={registerConfirm}
+                        onChange={(e) => setRegisterConfirm(e.target.value)}
+                        className="w-full px-4 py-3.5 pr-12 rounded-xl border border-transparent bg-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegisterConfirm((p) => !p)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-150"
+                        tabIndex={-1}
+                      >
+                        {showRegisterConfirm ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             )}
@@ -947,7 +1128,7 @@ export default function AssessmentSteps() {
                 <div className="flex flex-col gap-3">
                   {[
                     { key: "EMAIL", label: "Email: " + maskedEmail },
-                    { key: "PHONE", label: "Phone: +123********90" },
+                    { key: "PHONE", label: "Phone: " + maskedPhone },
                   ].map(({ key, label }) => {
                     const isSelected = otpChannel === key;
                     return (
@@ -1029,8 +1210,8 @@ export default function AssessmentSteps() {
                     <input
                       type="text"
                       placeholder="4140 Parker Rd. Allentown"
-                      value={shippingAddress.line1}
-                      onChange={(e) => setShippingAddress((p) => ({ ...p, line1: e.target.value }))}
+                      value={shippingAddress.address}
+                      onChange={(e) => setShippingAddress((p) => ({ ...p, address: e.target.value }))}
                       className="w-full px-4 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
                     />
                   </div>
@@ -1091,12 +1272,11 @@ export default function AssessmentSteps() {
             <>
               <button
                 onClick={() => {
-                  if (registerMode) {
+                  setCurrentStep(AUTH_STEP);
+                  if (authChoice === "No, I don't have an account. Create one.") {
                     setShippingMode(true);
-                    setCurrentStep(AUTH_STEP);
                   } else {
                     setOtpVerifyMode(true);
-                    setCurrentStep(AUTH_STEP);
                   }
                 }}
                 className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
@@ -1128,10 +1308,19 @@ export default function AssessmentSteps() {
                     setOtpDigits(["", "", "", "", "", ""]);
                   } else if (otpMode) {
                     setOtpMode(false);
+                    setOtpChannel("");
+                    // Restore the form they came from
+                    if (authChoice === "Yes, I already have an account") {
+                      setLoginMode(true);
+                    } else {
+                      setRegisterMode(true);
+                    }
                   } else if (loginMode) {
                     setLoginMode(false);
+                    setAuthChoice("");
                   } else if (registerMode) {
                     setRegisterMode(false);
+                    setAuthChoice("");
                   } else {
                     handlePrevious();
                   }
@@ -1143,21 +1332,37 @@ export default function AssessmentSteps() {
 
               {shippingMode && (
                 <button
-                  onClick={() => { setShippingMode(false); setCurrentStep(COMPLETION_STEP); }}
-                  disabled={
-                    !shippingAddress.line1.trim() ||
-                    !shippingAddress.city.trim() ||
-                    !shippingAddress.state.trim() ||
-                    !shippingAddress.zip.trim()
-                  }
+                  onClick={async () => {
+                    try {
+                      // Build payload with only non-empty fields (all optional)
+                      const payload: Record<string, string> = {};
+                      if (shippingAddress.address.trim()) payload.address = shippingAddress.address.trim();
+                      if (shippingAddress.city.trim()) payload.city = shippingAddress.city.trim();
+                      if (shippingAddress.state.trim()) payload.state = shippingAddress.state.trim();
+                      if (shippingAddress.zip.trim()) payload.zipCode = shippingAddress.zip.trim();
+
+                      if (Object.keys(payload).length > 0) {
+                        await updateProfile(payload).unwrap();
+                        toast.success("Address saved successfully.");
+                      }
+
+                      setShippingMode(false);
+                      setCurrentStep(COMPLETION_STEP);
+                    } catch (err: unknown) {
+                      toast.error(
+                        (err as { data?: { message?: string } })?.data?.message ??
+                          "Failed to save address."
+                      );
+                    }
+                  }}
+                  disabled={isSavingAddress}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !shippingAddress.line1.trim() || !shippingAddress.city.trim() ||
-                    !shippingAddress.state.trim() || !shippingAddress.zip.trim()
+                    isSavingAddress
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Save &amp; Continue
+                  {isSavingAddress ? "Saving…" : "Save & Continue"}
                 </button>
               )}
 
@@ -1205,21 +1410,22 @@ export default function AssessmentSteps() {
 
               {registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
                 <button
-                  onClick={() => setOtpMode(true)}
+                  onClick={handleRegisterSubmit}
                   disabled={
                     !registerEmail.trim() ||
                     !registerPhone.trim() ||
                     !registerPassword.trim() ||
-                    !registerConfirm.trim()
+                    !registerConfirm.trim() ||
+                    isRegisterLoading
                   }
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
                     !registerEmail.trim() || !registerPhone.trim() ||
-                    !registerPassword.trim() || !registerConfirm.trim()
+                    !registerPassword.trim() || !registerConfirm.trim() || isRegisterLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  Register
+                  {isRegisterLoading ? "Creating account…" : "Create account"}
                 </button>
               )}
 
