@@ -161,7 +161,9 @@ const Navbar = ({
 
             {isServicesOpen && (
               <>
+              {/* desktop  */}
                 <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-5 z-50">
+                
                   <ServicesMegaMenu
                     activeCategoryId={activeCategoryId}
                     onCategoryChange={setActiveCategoryId}
@@ -169,6 +171,7 @@ const Navbar = ({
                   />
                 </div>
 
+                {/* mobile  */}
                 <div className="md:hidden mt-4">
                   <ServicesMegaMenu
                     activeCategoryId={activeCategoryId}

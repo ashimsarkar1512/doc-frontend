@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useGetCategoryNamesQuery } from "@/Redux/features/navbarServices/navbarServicesApi";
 
 export const SERVICE_CATEGORIES = [
   {
@@ -73,11 +74,7 @@ export const SERVICE_CATEGORIES = [
     id: "sleep",
     label: "Sleep",
     image: "/service.jpg",
-    items: [
-      "Sleep Evaluation",
-      "Insomnia Support",
-      "Sleep Hygiene Coaching",
-    ],
+    items: ["Sleep Evaluation", "Insomnia Support", "Sleep Hygiene Coaching"],
   },
   {
     id: "supplements",
@@ -105,6 +102,10 @@ const ServicesMegaMenu = ({
   onCategoryChange,
   variant = "desktop",
 }: ServicesMegaMenuProps) => {
+  const {data}= useGetCategoryNamesQuery({})
+  console.log("iam the navitem name", data)
+  console.log(activeCategoryId);
+  console.log(onCategoryChange);
   const activeCategory =
     SERVICE_CATEGORIES.find((c) => c.id === activeCategoryId) ??
     SERVICE_CATEGORIES[0];
@@ -155,7 +156,9 @@ const ServicesMegaMenu = ({
                     onCategoryChange(category.id);
                   }}
                   className={`rounded-full font-medium transition-colors whitespace-nowrap ${
-                    isDesktop ? "px-5 py-2 text-[14px]" : "px-4 py-2 text-[13px]"
+                    isDesktop
+                      ? "px-5 py-2 text-[14px]"
+                      : "px-4 py-2 text-[13px]"
                   } ${
                     isActive
                       ? "bg-[#2b5ce7] text-white"
@@ -189,14 +192,8 @@ const ServicesMegaMenu = ({
           })}
         </div>
 
-        {/* Service list */}
-        <div
-          className={
-            isDesktop
-              ? "px-8 min-h-[300px]"
-              : "order-3"
-          }
-        >
+        {/* Service list  right side */}
+        <div className={isDesktop ? "px-8 min-h-[300px]" : "order-3"}>
           <ul className="space-y-3.5">
             {activeCategory.items.map((item) => (
               <li
