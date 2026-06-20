@@ -40,8 +40,9 @@ const LoginPage = () => {
             challengeId: null,
             method: "EMAIL",
             purpose: "LOGIN",
-            email,
-          }),
+            email: res.data.email || email,
+            phone: res.data.phone || "",
+          } as any),
         );
         toast.success(res.message);
         router.push("/receive-otp");
