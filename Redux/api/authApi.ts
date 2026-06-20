@@ -1,5 +1,5 @@
-import { baseApi } from './baseApi'
 import type { User } from '../features/auth/authSlice'
+import { baseApi } from './baseApi'
 
 // ─── Request / Response Types ─────────────────────────────────────────────────
 
@@ -87,9 +87,15 @@ export interface RegisterResponse {
   }
 }
 
-// ─── Update Profile ───────────────────────────────────────────────────────────
+// ─── Profile Types ────────────────────────────────────────────────────────────
 
 export interface UpdateProfileRequest {
+  avatarId?: string
+  name?: string
+  bio?: string
+  title?: string
+  specialty?: string
+  officeLocation?: string
   address?: string
   city?: string
   state?: string
@@ -98,8 +104,70 @@ export interface UpdateProfileRequest {
 
 export interface UpdateProfileResponse {
   success: boolean
+  statusCode: number
   message: string
   data: User
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ChangePasswordResponse {
+  success: boolean
+  statusCode: number
+  message: string
+}
+
+export interface ToggleMfaResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: { mfaEnabled: boolean }
+}
+
+export interface CommunicationPreferences {
+  emailNotifications: boolean
+  smsNotifications: boolean
+  pushNotifications: boolean
+}
+
+export interface CommunicationPreferencesResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: CommunicationPreferences & { id?: string; userId?: string; createdAt?: string; updatedAt?: string }
+}
+
+export interface Session {
+  sessionId: string
+  isCurrentSession: boolean
+  lastLogin: string
+  ipAddress: string
+  sessionDue: string
+}
+
+export interface DeviceSession {
+  deviceName: string
+  isActiveNow: boolean
+  sessionCount: number
+  sessions: Session[]
+}
+
+export interface SessionsResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: DeviceSession[]
+}
+
+export interface UploadAttachmentResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: { id: string; url: string }
 }
 
 // ─── Auth API ─────────────────────────────────────────────────────────────────
@@ -202,7 +270,7 @@ export const authApi = baseApi.injectEndpoints({
      */
     getCurrentUser: builder.query<{ data: User }, void>({
       query: () => '/auth/me',
-      providesTags: ['Auth'],
+      providesTags: ['Auth', 'User'],
     }),
 
     /**
@@ -213,11 +281,11 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/logout',
         method: 'POST',
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ['Auth', 'User'],
     }),
 
     /**
-     * PATCH /auth/me — update current user's profile (address, city, state, zipCode, etc.)
+     * PATCH /auth/me — update current user's profile
      */
     updateProfile: builder.mutation<UpdateProfileResponse, UpdateProfileRequest>({
       query: (payload) => ({
@@ -225,7 +293,68 @@ export const authApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
+      invalidatesTags: ['Auth', 'User'],
+    }),
+
+    /**
+     * POST /attachments/upload — upload profile image
+     */
+    uploadAttachment: builder.mutation<UploadAttachmentResponse, FormData>({
+      query: (formData) => ({
+        url: '/attachments/upload',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+
+    /**
+     * POST /auth/me/change-password — change current user's password
+     */
+    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
+      query: (payload) => ({
+        url: '/auth/me/change-password',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
+    /**
+     * POST /auth/me/toggle-mfa — toggle MFA on/off
+     */
+    toggleMfa: builder.mutation<ToggleMfaResponse, void>({
+      query: () => ({
+        url: '/auth/me/toggle-mfa',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Auth', 'User'],
+    }),
+
+    /**
+     * GET /auth/me/preferences — get communication preferences
+     */
+    getCommunicationPreferences: builder.query<CommunicationPreferencesResponse, void>({
+      query: () => '/auth/me/preferences',
+      providesTags: ['Auth'],
+    }),
+
+    /**
+     * PATCH /auth/me/preferences — update communication preferences
+     */
+    updateCommunicationPreferences: builder.mutation<CommunicationPreferencesResponse, Partial<CommunicationPreferences>>({
+      query: (payload) => ({
+        url: '/auth/me/preferences',
+        method: 'PATCH',
+        body: payload,
+      }),
       invalidatesTags: ['Auth'],
+    }),
+
+    /**
+     * GET /auth/sessions — get active sessions
+     */
+    getSessions: builder.query<SessionsResponse, void>({
+      query: () => '/auth/sessions',
+      providesTags: ['Auth'],
     }),
   }),
 })
@@ -241,6 +370,12 @@ export const {
   useGetCurrentUserQuery,
   useLogoutMutation,
   useUpdateProfileMutation,
+  useUploadAttachmentMutation,
+  useChangePasswordMutation,
+  useToggleMfaMutation,
+  useGetCommunicationPreferencesQuery,
+  useUpdateCommunicationPreferencesMutation,
+  useGetSessionsQuery,
 } = authApi
 
 export default authApi

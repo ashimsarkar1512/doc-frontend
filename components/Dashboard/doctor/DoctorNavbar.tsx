@@ -1,22 +1,33 @@
 "use client";
 
-import Image from "next/image";
-import { ChevronDown, LayoutDashboard, User, LogOut } from "lucide-react";
-import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLogout } from "@/Redux/hooks/useLogout";
+import { useAppSelector } from "@/Redux/store/hooks";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, LayoutDashboard, LogOut, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 export default function DoctorNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { logout, isLoading: isLoggingOut } = useLogout();
+  const user = useAppSelector((state) => state.auth.user);
+
+  const getDisplayName = () => {
+    if (user?.profile?.name) return user.profile.name;
+    if (user?.email) return user.email.split("@")[0];
+    return "Doctor";
+  };
 
   // Close on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -53,7 +64,7 @@ export default function DoctorNavbar() {
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
           <div className="hidden min-w-0 text-right min-[380px]:block">
             <span className="block max-w-[150px] truncate text-xs font-semibold text-gray-700 sm:max-w-none sm:text-sm">
-              Dr. Runa Pradhan NP
+              {getDisplayName()}
             </span>
             <span className="hidden text-[11px] text-gray-400 sm:block">
               Doctor
@@ -99,7 +110,9 @@ export default function DoctorNavbar() {
                 >
                   {/* Header */}
                   <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-                    <p className="text-sm font-bold text-gray-900">My Account</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      My Account
+                    </p>
                   </div>
 
                   {/* Menu Items */}
@@ -131,7 +144,7 @@ export default function DoctorNavbar() {
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LogOut className="h-4 w-4 flex-shrink-0" />
-                      <span>{isLoggingOut ? 'Logging out…' : 'Log out'}</span>
+                      <span>{isLoggingOut ? "Logging out…" : "Log out"}</span>
                     </button>
                   </div>
                 </motion.div>

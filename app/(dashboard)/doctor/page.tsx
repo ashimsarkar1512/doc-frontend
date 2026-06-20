@@ -165,8 +165,8 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed"> 
-      <DoctorNavbar /> 
+    <div className="min-h-screen bg-white flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
+      <DoctorNavbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-28">
         {/* Welcome Section */}

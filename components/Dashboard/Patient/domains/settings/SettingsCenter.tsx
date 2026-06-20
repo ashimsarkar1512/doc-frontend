@@ -1,235 +1,620 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Camera, ShieldCheck, Mail, KeyRound } from 'lucide-react';
+import {
+  useChangePasswordMutation,
+  useGetCommunicationPreferencesQuery,
+  useGetCurrentUserQuery,
+  useGetSessionsQuery,
+  useToggleMfaMutation,
+  useUpdateCommunicationPreferencesMutation,
+  useUpdateProfileMutation,
+  useUploadAttachmentMutation,
+} from "@/Redux/api/authApi";
+import { Camera, Lock, Mail, ShieldCheck, Smartphone } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function SettingsCenter() {
-  const [fullName, setFullName] = useState('Alan Cattoch');
-  const [email, setEmail] = useState('alan.cattoch@gmail.com');
-  const [phone, setPhone] = useState('+1 (234) 567-890');
-  const [address, setAddress] = useState('San Diego, CA');
-  const [city, setCity] = useState('Manhattan');
-  const [state, setState] = useState('NY');
-  const [zip, setZip] = useState('10019');
-  const [bio, setBio] = useState('As the founder of the Health and Wellness clinic, I strive to achieve peak physical performance...');
-  
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [emailNotif, setEmailNotif] = useState(true);
+  const { data: currentUserData, refetch } = useGetCurrentUserQuery();
+  const user = currentUserData?.data;
+
+  const [updateProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateProfileMutation();
+  const [uploadAttachment, { isLoading: isUploadingImage }] =
+    useUploadAttachmentMutation();
+  const [changePassword, { isLoading: isChangingPassword }] =
+    useChangePasswordMutation();
+  const [toggleMfa, { isLoading: isTogglingMfa }] = useToggleMfaMutation();
+  const { data: preferencesData } = useGetCommunicationPreferencesQuery();
+  const [updatePreferences, { isLoading: isUpdatingPreferences }] =
+    useUpdateCommunicationPreferencesMutation();
+  const { data: sessionsData } = useGetSessionsQuery();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Profile form state
+  const [fullName, setFullName] = useState("");
+  const [bio, setBio] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
+  const [avatarId, setAvatarId] = useState<string | undefined>();
+
+  // Password form state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Preferences state
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [smsNotifications, setSmsNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
+
+  // MFA state
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFullName(user.profile?.name || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBio(user.profile?.bio || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAddress(user.profile?.address || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCity(user.profile?.city || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState(user.profile?.state || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setZip(user.profile?.zipCode || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAvatarId(user.profile?.avatarId);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTwoFactorAuth(user.mfaEnabled);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (preferencesData?.data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEmailNotifications(preferencesData.data.emailNotifications);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSmsNotifications(preferencesData.data.smsNotifications);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPushNotifications(preferencesData.data.pushNotifications);
+    }
+  }, [preferencesData]);
+
+  const getDisplayName = () => {
+    if (user?.profile?.name) return user.profile.name;
+    if (user?.email) return user.email.split("@")[0];
+    return "User";
+  };
+
+  const getInitials = () => {
+    const name = getDisplayName();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const result = await uploadAttachment(formData).unwrap();
+      setAvatarId(result.data.id);
+      toast.success("Profile picture updated");
+    } catch (error) {
+      toast.error("Failed to upload image");
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile({
+        avatarId,
+        name: fullName,
+        bio,
+        address,
+        city,
+        state,
+        zipCode: zip,
+      }).unwrap();
+      toast.success("Profile updated successfully");
+      refetch();
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      }).unwrap();
+      toast.success("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error("Failed to update password");
+    }
+  };
+
+  const handleToggleMfa = async () => {
+    try {
+      await toggleMfa().unwrap();
+      setTwoFactorAuth(!twoFactorAuth);
+      toast.success("Two-factor authentication updated");
+      refetch();
+    } catch (error) {
+      toast.error("Failed to update two-factor authentication");
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      await updatePreferences({
+        emailNotifications,
+        smsNotifications,
+        pushNotifications,
+      }).unwrap();
+      toast.success("Preferences updated");
+    } catch (error) {
+      toast.error("Failed to update preferences");
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200 mb-12">
-      
       {/* Title */}
       <div>
-        <h3 className="text-xl font-bold text-gray-900 leading-none">Settings</h3>
+        <h3 className="text-xl font-bold text-gray-900 leading-none">
+          Settings
+        </h3>
       </div>
 
       {/* Main Stack */}
       <div className="flex flex-col gap-6">
-        
         {/* 1. Account Information */}
-        <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col gap-5">
-          <div className="border-b border-gray-50 pb-3">
-            <h4 className="text-base font-bold text-gray-900 leading-tight">Account Information</h4>
-            <p className="text-[11px] text-gray-400 mt-0.5 font-light">Manage your profile details and bio information.</p>
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
+          <div className="mb-6 flex items-center gap-3">
+            <h4 className="text-lg font-bold text-gray-900">
+              Account Information
+            </h4>
           </div>
 
           {/* Avatar Upload */}
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center border-2 border-white shadow-sm group">
-              AC
-              <button className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+          <div className="mb-6">
+            <p className="mb-4 text-sm font-semibold text-gray-700">
+              Profile Picture
+            </p>
+            <div className="relative inline-block">
+              <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-gray-100 bg-gray-50 shadow-sm">
+                <div className="flex h-full w-full items-center justify-center bg-[#2e5e54] text-3xl font-bold text-white">
+                  {getInitials()}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#2563eb] text-white shadow-md transition hover:bg-blue-700"
+              >
                 <Camera className="h-4 w-4" />
               </button>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-800">Upload New Profile Picture</span>
-              <span className="text-[10px] text-gray-400 font-light mt-0.5">JPG, PNG or GIF up to 2MB.</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
           </div>
 
           {/* Core Inputs Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Full Name</label>
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-900">
+                Full Name
+              </label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
+                className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-500 outline-none cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  value={user?.phone || ""}
+                  disabled
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-500 outline-none cursor-not-allowed"
+                />
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Contact Number</label>
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Address</label>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-900">
+                Address
+              </label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
+                className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  State
+                </label>
+                <input
+                  type="text"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  Zip
+                </label>
+                <input
+                  type="text"
+                  value={zip}
+                  onChange={(e) => setZip(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-900">
+                About
+              </label>
+              <textarea
+                rows={4}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                className="w-full resize-none rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">City</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">State</label>
-              <input
-                type="text"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Zip</label>
-              <input
-                type="text"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">About Bio</label>
-            <textarea
-              value={bio}
-              rows={3}
-              onChange={(e) => setBio(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400 resize-none font-light leading-relaxed"
-            />
-          </div>
-
-          <button className="self-start px-5 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm">
-            Save Profile Changes
+          <button
+            onClick={handleSaveProfile}
+            disabled={isUpdatingProfile || isUploadingImage}
+            className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
           </button>
         </div>
 
         {/* 2. Password Management */}
-        <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col gap-5">
-          <div className="border-b border-gray-50 pb-3 flex items-center gap-2">
-            <KeyRound className="h-5 w-5 text-rose-500" />
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
+          <div className="mb-6 flex items-start gap-3">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500">
+              <Lock className="h-5 w-5" />
+            </div>
             <div>
-              <h4 className="text-base font-bold text-gray-900 leading-tight">Password Management</h4>
-              <p className="text-[11px] text-gray-400 mt-0.5 font-light">Update passwords for security guidelines.</p>
+              <h4 className="text-lg font-bold text-gray-900">
+                Password Management
+              </h4>
+              <p className="text-sm text-gray-500">Update your password</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">New Password</label>
-              <input
-                type="password"
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-900">
+                Current Password
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Confirm Password</label>
-              <input
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-150 rounded-[12px] px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Password Requirements Container */}
-          <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-4 flex flex-col gap-2">
-            <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4" />
-              <span>Password Requirements:</span>
-            </span>
-            <ul className="text-[11px] text-amber-700/80 space-y-1 pl-1 list-disc list-inside font-light">
-              <li>At least 8 characters long</li>
-              <li>Include uppercase and lowercase letters</li>
-              <li>Include at least one number</li>
-              <li>Include at least one special character</li>
+          <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
+            <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-700">
+              <span>⚠️</span>
+              Password Requirements:
+            </p>
+            <ul className="space-y-2 text-xs text-yellow-700">
+              <li>• At least 8 characters long</li>
+              <li>• Include uppercase and lowercase letters</li>
+              <li>• Include at least one number</li>
+              <li>• Include at least one special character</li>
             </ul>
           </div>
 
-          <button className="self-start px-5 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm">
-            Update Password
+          <button
+            onClick={handleUpdatePassword}
+            disabled={isChangingPassword}
+            className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isChangingPassword ? "Updating..." : "Update Password"}
           </button>
         </div>
 
-        {/* 3. Notification Settings */}
-        <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col gap-5">
-          <div className="border-b border-gray-50 pb-3 flex items-center gap-2">
-            <Mail className="h-5 w-5 text-blue-500" />
+        {/* 3. Security & Device */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
+          <div className="mb-5 flex items-start gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
             <div>
-              <h4 className="text-base font-bold text-gray-900 leading-tight">Notification Settings</h4>
-              <p className="text-[11px] text-gray-400 mt-0.5 font-light">Manage your email alert preferences.</p>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Security & Device
+              </h4>
+              <p className="text-sm text-gray-500">
+                The security checkup of your account
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between py-2 pl-1">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-bold text-gray-800">Email Notifications</span>
-              <span className="text-[10px] text-gray-400 font-light">Receive real-time notifications via email.</span>
+          {/* 2 Step Verification */}
+          <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
+            <div>
+              <p className="font-medium text-gray-900">Two-step Verification</p>
+              <p className="text-sm text-gray-500">
+                {twoFactorAuth
+                  ? "Two-factor authentication is enabled"
+                  : "Two-factor authentication is disabled"}
+              </p>
             </div>
-            
-            {/* Custom Toggle Switch */}
             <button
-              onClick={() => setEmailNotif(!emailNotif)}
-              className={`w-11 h-6 rounded-full transition-all duration-200 focus:outline-none flex items-center p-1 ${
-                emailNotif ? 'bg-[#2563eb]' : 'bg-gray-250'
+              onClick={handleToggleMfa}
+              disabled={isTogglingMfa}
+              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${
+                twoFactorAuth ? "bg-[#2563eb]" : "bg-gray-200"
               }`}
             >
-              <div
-                className={`bg-white w-4 h-4 rounded-full shadow-md transition-all duration-200 transform ${
-                  emailNotif ? 'translate-x-5' : 'translate-x-0'
+              <span
+                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                  twoFactorAuth ? "translate-x-7" : "translate-x-1"
                 }`}
               />
             </button>
           </div>
 
-          <button className="self-start px-5 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm">
-            Save Settings
-          </button>
+          {/* Device Sessions */}
+          {sessionsData?.data && sessionsData.data.length > 0 && (
+            <div className="rounded-xl border border-[#F1D38A] bg-[#FFFBEF] p-4">
+              <h3 className="mb-4 font-semibold text-[#C46A0A]">
+                Your Device & active sessions
+              </h3>
+              {sessionsData.data.map((device, idx) => (
+                <div
+                  key={idx}
+                  className="mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+                >
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Smartphone className="h-5 w-5 text-[#C46A0A]" />
+                      <span className="font-medium text-[#A95600]">
+                        {device.deviceName}
+                        {device.isActiveNow ? " - Active now" : ""}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 text-sm text-[#C46A0A]"
+                    >
+                      {device.sessionCount} sessions on {device.deviceName}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-y-4 text-sm text-[#A95600]">
+                    {device.sessions.map((session, sIdx) => (
+                      <>
+                        <div
+                          key={`${idx}-${sIdx}-1`}
+                          className="flex items-center gap-2"
+                        >
+                          <p>Last login:</p>
+                          <p>{new Date(session.lastLogin).toLocaleString()}</p>
+                        </div>
+                        <div
+                          key={`${idx}-${sIdx}-2`}
+                          className="flex items-center gap-2"
+                        >
+                          <p>IP Address:</p>
+                          <p>{session.ipAddress}</p>
+                        </div>
+                        <div
+                          key={`${idx}-${sIdx}-3`}
+                          className="flex items-center gap-2"
+                        >
+                          <p>Session Due:</p>
+                          <p>{session.sessionDue}</p>
+                        </div>
+                      </>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-      </div>
+        {/* 4. Communication Preferences */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
+          <div className="mb-6 flex items-start gap-3">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-50 text-purple-500">
+              <Mail className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold text-gray-900">
+                Communication Preferences
+              </h4>
+              <p className="text-sm text-gray-500">
+                Manage your communication preferences
+              </p>
+            </div>
+          </div>
 
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-gray-900">
+                  Email Notifications
+                </p>
+                <p className="text-xs text-gray-500">
+                  Receive notifications via email
+                </p>
+              </div>
+              <button
+                onClick={() => setEmailNotifications(!emailNotifications)}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  emailNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    emailNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-gray-900">SMS Notifications</p>
+                <p className="text-xs text-gray-500">
+                  Receive notifications via SMS
+                </p>
+              </div>
+              <button
+                onClick={() => setSmsNotifications(!smsNotifications)}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  smsNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    smsNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-gray-900">
+                  Push Notifications
+                </p>
+                <p className="text-xs text-gray-500">
+                  Receive push notifications
+                </p>
+              </div>
+              <button
+                onClick={() => setPushNotifications(!pushNotifications)}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  pushNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    pushNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={handleSavePreferences}
+            disabled={isUpdatingPreferences}
+            className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isUpdatingPreferences ? "Saving..." : "Save Settings"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

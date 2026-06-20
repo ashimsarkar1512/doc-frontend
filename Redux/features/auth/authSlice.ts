@@ -7,11 +7,26 @@ export interface User {
   email: string
   phone: string | null
   status: string
+  role: string
   emailVerifiedAt: string | null
   phoneVerifiedAt: string | null
   mfaEnabled: boolean
   lastLoginAt: string | null
   roles: string[]
+  createdAt?: string
+  updatedAt?: string
+  profile?: {
+    avatarId?: string
+    name?: string
+    bio?: string
+    title?: string
+    specialty?: string
+    officeLocation?: string
+    address?: string
+    city?: string
+    state?: string
+    zipCode?: string
+  }
 }
 
 /** Stored during the OTP flow so all three pages share the same context */
@@ -20,6 +35,8 @@ export interface OtpPendingData {
   challengeId: string | null
   method: 'EMAIL' | 'PHONE'
   purpose: 'LOGIN' | 'REGISTER' | 'RESET_PASSWORD' | 'FORGOT_PASSWORD'
+  email: string
+  phone: string
 }
 
 export interface AuthState {
@@ -30,9 +47,10 @@ export interface AuthState {
   otpPending: OtpPendingData | null
 }
 
-// ─── Token persistence ────────────────────────────────────────────────────────
+// ─── Token persistence ─────────────────────────────────────────────────────────
 
 const TOKEN_KEY = 'authToken'
+const USER_KEY = 'authUser'
 
 export const tokenStorage = {
   get: (): string | null => {
@@ -51,6 +69,7 @@ export const tokenStorage = {
     if (typeof window === 'undefined') return
     // Clear localStorage
     localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(USER_KEY)
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('accessToken')
@@ -59,6 +78,24 @@ export const tokenStorage = {
     cookiesToClear.forEach((name) => {
       document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`
     })
+  },
+}
+
+export const userStorage = {
+  get: (): User | null => {
+    if (typeof window === 'undefined') return null
+    const userStr = localStorage.getItem(USER_KEY)
+    return userStr ? JSON.parse(userStr) : null
+  },
+
+  set: (user: User): void => {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(USER_KEY, JSON.stringify(user))
+  },
+
+  remove: (): void => {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(USER_KEY)
   },
 }
 
@@ -80,17 +117,17 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Client-side hydration only — restores token from localStorage after page refresh.
-     * User object stays null until /auth/me is called.
+     * Client-side hydration only — restores token and user from localStorage after page refresh.
      */
-    hydrateToken: (state, action: PayloadAction<string>) => {
-      state.token = action.payload
-      state.isAuthenticated = true
+    hydrateAuth: (state, action: PayloadAction<{ token: string; user: User | null }>) => {
+      state.token = action.payload.token
+      state.user = action.payload.user
+      state.isAuthenticated = !!action.payload.token
     },
 
     /**
      * Step 1 — login succeeded, OTP is required.
-     * Stores userId so the next page can call send-otp.
+     * Stores userId and user email/phone so the next page can call send-otp.
      */
     setOtpPending: (state, action: PayloadAction<OtpPendingData>) => {
       state.otpPending = action.payload
@@ -108,6 +145,7 @@ const authSlice = createSlice({
       state.isAuthenticated = true
       state.otpPending = null
       tokenStorage.set(action.payload.accessToken)
+      userStorage.set(action.payload.user)
     },
 
     /**
@@ -119,6 +157,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false
       state.otpPending = null
       tokenStorage.remove()
+      userStorage.remove()
     },
 
     /**
@@ -127,11 +166,12 @@ const authSlice = createSlice({
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload }
+        userStorage.set(state.user)
       }
     },
   },
 })
 
-export const { hydrateToken, setOtpPending, setCredentials, clearAuth, updateUser } =
+export const { hydrateAuth, setOtpPending, setCredentials, clearAuth, updateUser } =
   authSlice.actions
 export default authSlice.reducer

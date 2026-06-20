@@ -1,28 +1,28 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { User, Shield, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Shield, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
-import Navbar from '@/components/shared/Navbar';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
+import Footer from "@/components/shared/Footer";
+import Navbar from "@/components/shared/Navbar";
+import Logo from "@/components/ui/Logo";
 
-import { useLoginMutation } from '@/Redux/api/authApi';
-import { setOtpPending } from '@/Redux/features/auth/authSlice';
-import { useAppDispatch } from '@/Redux/store/hooks';
+import { useLoginMutation } from "@/Redux/api/authApi";
+import { setOtpPending } from "@/Redux/features/auth/authSlice";
+import { useAppDispatch } from "@/Redux/store/hooks";
 
 const LoginPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [activeTab, setActiveTab] = useState<'patient' | 'doctor'>('patient');
+  const [activeTab, setActiveTab] = useState<"patient" | "doctor">("patient");
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [login, { isLoading }] = useLoginMutation();
 
@@ -32,23 +32,24 @@ const LoginPage = () => {
     try {
       const res = await login({ email, password }).unwrap();
 
-      if (res.data.status === 'OTP_REQUIRED') {
-        // Store userId in Redux so the next page can call send-otp
+      if (res.data.status === "OTP_REQUIRED") {
+        // Store userId and email in Redux so the next page can call send-otp
         dispatch(
           setOtpPending({
             userId: res.data.userId,
             challengeId: null,
-            method: 'EMAIL',
-            purpose: 'LOGIN',
-          })
+            method: "EMAIL",
+            purpose: "LOGIN",
+            email,
+          }),
         );
         toast.success(res.message);
-        router.push('/receive-otp');
+        router.push("/receive-otp");
       }
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Login failed. Please check your credentials.';
+        "Login failed. Please check your credentials.";
       toast.error(message);
     }
   };
@@ -76,7 +77,9 @@ const LoginPage = () => {
                 <div className="flex justify-center mb-3">
                   <Logo variant="light" />
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white mt-4">Welcome Back</h2>
+                <h2 className="text-2xl font-bold tracking-tight text-white mt-4">
+                  Welcome Back
+                </h2>
                 <p className="text-xs text-white/70 mt-1 font-light">
                   Sign in to your account to continue
                 </p>
@@ -86,11 +89,11 @@ const LoginPage = () => {
               <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('patient')}
+                  onClick={() => setActiveTab("patient")}
                   className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === 'patient'
-                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
-                      : 'text-white/75 hover:text-white hover:bg-white/5'
+                    activeTab === "patient"
+                      ? "bg-white text-[#0A3D3A] shadow-md scale-[1.02]"
+                      : "text-white/75 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   <User className="h-3.5 w-3.5" />
@@ -98,11 +101,11 @@ const LoginPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('doctor')}
+                  onClick={() => setActiveTab("doctor")}
                   className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === 'doctor'
-                      ? 'bg-white text-[#0A3D3A] shadow-md scale-[1.02]'
-                      : 'text-white/75 hover:text-white hover:bg-white/5'
+                    activeTab === "doctor"
+                      ? "bg-white text-[#0A3D3A] shadow-md scale-[1.02]"
+                      : "text-white/75 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   <Shield className="h-3.5 w-3.5" />
@@ -117,10 +120,15 @@ const LoginPage = () => {
               </nav>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between mt-2">
+              <form
+                onSubmit={handleSubmit}
+                className="flex-grow flex flex-col justify-between mt-2"
+              >
                 <div className="space-y-5 flex-grow flex flex-col justify-center">
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-gray-200">Email Address</label>
+                    <label className="block text-xs font-semibold text-gray-200">
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       required
@@ -132,10 +140,12 @@ const LoginPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-gray-200">Password</label>
+                    <label className="block text-xs font-semibold text-gray-200">
+                      Password
+                    </label>
                     <div className="relative">
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -146,9 +156,15 @@ const LoginPage = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors duration-200"
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
                       >
-                        {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4.5 w-4.5" />
+                        ) : (
+                          <Eye className="h-4.5 w-4.5" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -166,7 +182,9 @@ const LoginPage = () => {
                         Signing in…
                       </>
                     ) : (
-                      <>Login <span className="text-base">→</span></>
+                      <>
+                        Login <span className="text-base">→</span>
+                      </>
                     )}
                   </button>
 
