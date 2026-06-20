@@ -6,8 +6,11 @@ import Link from "next/link";
 import { useState } from "react";
 import RequestRefillModal from "./RequestRefillModal";
 import AssessmentDeclineModal from "./AssessmentDeclineModal";
+import { useSearchParams } from "next/navigation";
+import { useGetConsultationByIdQuery } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
 
 function QuestionCheckbox({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
+
   const [checked, setChecked] = useState(defaultChecked);
   return (
     <label className="flex items-start gap-3 text-sm text-gray-700 cursor-pointer group">
@@ -39,9 +42,26 @@ function QuestionRadio({ label, name, defaultChecked = false }: { label: string;
 }
 
 
-export default function ConsultationDetails({ id }: { id: string }) {
+// main component here 
+
+export default function ConsultationDetails() {
+
   const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
   const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+
+    const searchParams = useSearchParams();
+
+  const id = searchParams.get("consultationId"); // 👈 THIS IS YOUR ID
+
+  console.log(id);
+  console.log(id)
+
+  const { data, isLoading } = useGetConsultationByIdQuery(id);
+  console.log(data)
+
+  if (isLoading) return <p>Loading...</p>;
+
+
 
   return (
     <div className="mb-12">
