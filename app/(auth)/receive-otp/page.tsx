@@ -35,7 +35,7 @@ const ReceiveOtpPage = () => {
 
   const otpPending = useAppSelector((state) => state.auth.otpPending);
 
-console.log(otpPending)
+// console.log(otpPending)
 
 
   const [selectedMethod, setSelectedMethod] = useState<"EMAIL" | "PHONE">(

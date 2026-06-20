@@ -15,6 +15,8 @@ export interface LoginResponse {
   data: {
     userId: string
     status: 'OTP_REQUIRED' | 'ACTIVE'
+    phone?: string
+    email?: string
   }
 }
 
