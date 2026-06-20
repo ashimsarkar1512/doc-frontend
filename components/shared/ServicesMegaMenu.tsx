@@ -204,9 +204,9 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
 
   const productList: ProductItem[] = productsRes?.data ?? [];
 
-  const activeCategory = categoryList.find(
-    (category) => category.id === currentCategoryId
-  );
+  // const activeCategory = categoryList.find(
+  //   (category) => category.id === currentCategoryId
+  // );
 
   const handleCategoryHover = (id: string) => {
     setHoveredCategoryId(id);
@@ -236,7 +236,8 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
         Medical Weight Management Program
       </h3>
 
-      <div
+
+      <div 
         className={
           isDesktop
             ? "grid grid-cols-[190px_minmax(0,1fr)_220px] gap-0 items-start"

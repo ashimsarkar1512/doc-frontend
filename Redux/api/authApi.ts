@@ -69,10 +69,55 @@ export interface VerifyOtpResponse {
   }
 }
 
+// ─── Register ─────────────────────────────────────────────────────────────────
+
+export interface RegisterRequest {
+  email: string
+  phone: string
+  password: string
+  confirmPassword: string
+}
+
+export interface RegisterResponse {
+  success: boolean
+  message: string
+  data: {
+    userId: string
+    status: string
+  }
+}
+
+// ─── Update Profile ───────────────────────────────────────────────────────────
+
+export interface UpdateProfileRequest {
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+}
+
+export interface UpdateProfileResponse {
+  success: boolean
+  message: string
+  data: User
+}
+
 // ─── Auth API ─────────────────────────────────────────────────────────────────
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    /**
+     * POST /auth/register
+     * Registers a new user. On success returns userId + PENDING_VERIFICATION status.
+     */
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
+      query: (payload) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
+
     /**
      * Step 1 — POST /auth/login
      * Validates email + password.
@@ -170,10 +215,23 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Auth'],
     }),
+
+    /**
+     * PATCH /auth/me — update current user's profile (address, city, state, zipCode, etc.)
+     */
+    updateProfile: builder.mutation<UpdateProfileResponse, UpdateProfileRequest>({
+      query: (payload) => ({
+        url: '/auth/me',
+        method: 'PATCH',
+        body: payload,
+      }),
+      invalidatesTags: ['Auth'],
+    }),
   }),
 })
 
 export const {
+  useRegisterMutation,
   useLoginMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
@@ -182,6 +240,7 @@ export const {
   useResetPasswordMutation,
   useGetCurrentUserQuery,
   useLogoutMutation,
+  useUpdateProfileMutation,
 } = authApi
 
 export default authApi
