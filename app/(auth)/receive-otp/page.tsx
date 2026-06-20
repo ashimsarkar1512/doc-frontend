@@ -166,41 +166,41 @@ const ReceiveOtpPage = () => {
                   </label>
 
                   {/* Phone Option */}
-                  <label
-                    className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
-                      selectedMethod === "PHONE"
-                        ? "bg-white/20 border-white/40 shadow-lg"
-                        : "bg-white/10 border-white/10 hover:bg-white/15"
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                  {otpPending?.phone && (
+                    <label
+                      className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
                         selectedMethod === "PHONE"
-                          ? "border-[#2563eb] bg-white"
-                          : "border-white/50 bg-white/20"
+                          ? "bg-white/20 border-white/40 shadow-lg"
+                          : "bg-white/10 border-white/10 hover:bg-white/15"
                       }`}
                     >
-                      {selectedMethod === "PHONE" && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
-                      )}
-                    </div>
-                    <input
-                      type="radio"
-                      name="otp-method"
-                      value="PHONE"
-                      checked={selectedMethod === "PHONE"}
-                      onChange={() => setSelectedMethod("PHONE")}
-                      className="hidden"
-                    />
-                    
-                    <div className="">
-                      {otpPending?.phone && (
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                          selectedMethod === "PHONE"
+                            ? "border-[#2563eb] bg-white"
+                            : "border-white/50 bg-white/20"
+                        }`}
+                      >
+                        {selectedMethod === "PHONE" && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+                        )}
+                      </div>
+                      <input
+                        type="radio"
+                        name="otp-method"
+                        value="PHONE"
+                        checked={selectedMethod === "PHONE"}
+                        onChange={() => setSelectedMethod("PHONE")}
+                        className="hidden"
+                      />
+                      
+                      <div className="">
                         <span className="text-lg text-white/70">
                           {maskPhone(otpPending.phone)}
                         </span>
-                      )}
-                    </div>
-                  </label>
+                      </div>
+                    </label>
+                  )}
                 </div>
 
                 <footer className="mt-8 space-y-4 text-center">

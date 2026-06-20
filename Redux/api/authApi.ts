@@ -243,7 +243,7 @@ export const authApi = baseApi.injectEndpoints({
      * Checks if account exists. Returns userId to proceed with OTP.
      */
     forgotPassword: builder.mutation<
-      { success: boolean; message: string; data: { userId: string } },
+      { success: boolean; message: string; data: { userId: string; phone?: string; email?: string } },
       { email: string }
     >({
       query: (payload) => ({
