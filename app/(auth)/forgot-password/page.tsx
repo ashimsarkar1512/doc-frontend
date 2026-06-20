@@ -34,7 +34,7 @@ const ForgotPasswordPage = () => {
           challengeId: null,
           method: 'EMAIL',
           purpose: 'FORGOT_PASSWORD',
-        })
+        } as any)
       );
 
       // Show the exact API message

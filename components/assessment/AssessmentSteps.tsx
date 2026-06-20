@@ -690,7 +690,7 @@ export default function AssessmentSteps() {
           challengeId: null,
           method: "EMAIL",
           purpose: "LOGIN",
-        })
+        } as any)
       );
       toast.success(res.message);
       setLoginMode(false);
@@ -720,7 +720,7 @@ export default function AssessmentSteps() {
           challengeId: null,
           method: "EMAIL",
           purpose: "REGISTER",
-        })
+        } as any)
       );
       toast.success(res.message);
       setRegisterMode(false);
@@ -746,7 +746,7 @@ export default function AssessmentSteps() {
           challengeId: res.data.challengeId,
           method: otpChannel as "EMAIL" | "PHONE",
           purpose: otpPending.purpose,
-        })
+        } as any)
       );
       toast.success(res.message);
       setOtpMode(false);
@@ -808,7 +808,7 @@ export default function AssessmentSteps() {
             challengeId: res.data.challengeId,
             method: (otpPending.method || otpChannel || "EMAIL") as "EMAIL" | "PHONE",
             purpose: otpPending.purpose,
-          })
+          } as any)
         );
         toast.success(res.message);
       }

@@ -15,8 +15,10 @@ import MessageList from "./domains/messages/MessageList";
 import NotificationCenter from "./domains/notifications/NotificationCenter";
 import SettingsCenter from "./domains/settings/SettingsCenter";
 
+
 import { useAppSelector } from "@/Redux/store/hooks";
 import { Consultation, TabType } from "@/types/patientTypes";
+import { useGetDashboardStatsQuery } from "@/Redux/features/patient/dashboard/dashboardApi";
 
 // Hardcoded stock data for illustration.
 const initialConsultations: Consultation[] = [
@@ -98,6 +100,10 @@ const initialConsultations: Consultation[] = [
 
 export default function PatientPortalHome() {
   const user = useAppSelector((state) => state.auth.user);
+  const { data: statsResponse } = useGetDashboardStatsQuery();
+  console.log("statsResponse",statsResponse)
+  const stats = statsResponse?.data;
+  
   const [consultations] = useState<Consultation[]>(initialConsultations);
   const [activeTab, setActiveTab] = useState<TabType>("Approved");
 
@@ -169,7 +175,7 @@ export default function PatientPortalHome() {
       {/* KPI Cards Grid - Uniform and elegant flat styling */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <KpiCard
-          value={`0${pendingConsults.length}`}
+          value={stats?.TotalPending?.toString().padStart(2, "0") || "00"}
           label="Pending Requests"
           icon={Shield}
           bgColor="bg-[#FFF9E6]"
@@ -177,7 +183,7 @@ export default function PatientPortalHome() {
           borderColor="border-[#FEF0CF]"
         />
         <KpiCard
-          value={`0${approvedConsults.length}`}
+          value={stats?.TotalApproved?.toString().padStart(2, "0") || "00"}
           label="Total Approved"
           icon={CheckCircle}
           bgColor="bg-[#E2F6EC]"
@@ -185,7 +191,7 @@ export default function PatientPortalHome() {
           borderColor="border-[#D1FAE5]"
         />
         <KpiCard
-          value={`0${declinedConsults.length}`}
+          value={stats?.TotalDeclined?.toString().padStart(2, "0") || "00"}
           label="Total Declined"
           icon={AlertCircle}
           bgColor="bg-[#FBECE9]"
@@ -193,7 +199,7 @@ export default function PatientPortalHome() {
           borderColor="border-[#FEE2E2]"
         />
         <KpiCard
-          value="$1250"
+          value={`$${stats?.TotalPayment || 0}`}
           label="Total Paid"
           icon={Shield}
           bgColor="bg-[#E1EBFD]"
@@ -223,9 +229,9 @@ export default function PatientPortalHome() {
             <TabBar
               activeTab={activeTab}
               onChangeTab={setActiveTab}
-              approvedCount={approvedConsults.length}
-              pendingCount={pendingConsults.length}
-              declinedCount={declinedConsults.length}
+              approvedCount={stats?.TotalApproved || 0}
+              pendingCount={stats?.TotalPending || 0}
+              declinedCount={stats?.TotalDeclined || 0}
             />
           )}
 
