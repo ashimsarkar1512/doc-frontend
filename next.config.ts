@@ -4,12 +4,14 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "i.pinimg.com",
+        protocol: "http",
+        // hostname: "i.pinimg.com",
+        hostname: "**",
       },
       {
         protocol: "https",
-        hostname: "pre-storage.weightlossmdcherrycreek.com",
+        // hostname: "pre-storage.weightlossmdcherrycreek.com",
+         hostname: "**",
       },
     ],
   },
