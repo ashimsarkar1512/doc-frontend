@@ -34,6 +34,8 @@ const ForgotPasswordPage = () => {
           challengeId: null,
           method: 'EMAIL',
           purpose: 'FORGOT_PASSWORD',
+          email: res.data.email || email,
+          phone: res.data.phone || "",
         } as any)
       );
 
