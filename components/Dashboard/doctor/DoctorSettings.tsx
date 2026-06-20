@@ -1,50 +1,35 @@
 "use client";
 
+import {
+  useChangePasswordMutation,
+  useGetCommunicationPreferencesQuery,
+  useGetCurrentUserQuery,
+  useGetSessionsQuery,
+  useToggleMfaMutation,
+  useUpdateCommunicationPreferencesMutation,
+  useUpdateProfileMutation,
+  useUploadAttachmentMutation,
+} from "@/Redux/api/authApi";
+import {
+  Camera,
+  ChevronDown,
+  Eye,
+  EyeOff,
+  Laptop,
+  LockKeyhole,
+  MessageSquare,
+  Shield,
+  Smartphone,
+} from "lucide-react";
 import Image from "next/image";
-import { Bell, Camera, Eye, EyeOff, LockKeyhole, Shield, MessageSquare, Smartphone, Laptop, ChevronRight, ChevronDown } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const inputClassName =
   "h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
 
 const labelClassName = "mb-2 block text-sm font-semibold text-gray-900";
-
-export default function DoctorSettings() {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [smsNotifications, setSmsNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [twoFactorVerification, setTwoFactorVerification] = useState(true);
-  const [profileImage, setProfileImage] = useState("/doctor/profile-doc.png");
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    return () => {
-      if (profileImage.startsWith("blob:")) {
-        URL.revokeObjectURL(profileImage);
-      }
-    };
-  }, [profileImage]);
-
-  const handleProfileImageChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    const nextImage = URL.createObjectURL(file);
-
-    setProfileImage((currentImage) => {
-      if (currentImage.startsWith("blob:")) {
-        URL.revokeObjectURL(currentImage);
-      }
-
-      return nextImage;
-    });
-  };
 
 const ToggleSwitch = ({
   enabled,
@@ -77,18 +62,191 @@ const ToggleSwitch = ({
   </button>
 );
 
+export default function DoctorSettings() {
+  const { data: currentUserData, refetch } = useGetCurrentUserQuery();
+  const user = currentUserData?.data;
+
+  const [updateProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateProfileMutation();
+  const [uploadAttachment, { isLoading: isUploadingImage }] =
+    useUploadAttachmentMutation();
+  const [changePassword, { isLoading: isChangingPassword }] =
+    useChangePasswordMutation();
+  const [toggleMfa, { isLoading: isTogglingMfa }] = useToggleMfaMutation();
+  const { data: preferencesData } = useGetCommunicationPreferencesQuery();
+  const [updatePreferences, { isLoading: isUpdatingPreferences }] =
+    useUpdateCommunicationPreferencesMutation();
+  const { data: sessionsData } = useGetSessionsQuery();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Profile state
+  const [fullName, setFullName] = useState("");
+  const [title, setTitle] = useState("");
+  const [specialty, setSpecialty] = useState("");
+  const [officeLocation, setOfficeLocation] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarId, setAvatarId] = useState<string | undefined>();
+  const [profileImage, setProfileImage] = useState("/doctor/profile-doc.png");
+
+  // Password state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Preferences state
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [smsNotifications, setSmsNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
+
+  // MFA state
+  const [twoFactorVerification, setTwoFactorVerification] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFullName(user.profile?.name || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTitle(user.profile?.title || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSpecialty(user.profile?.specialty || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setOfficeLocation(user.profile?.officeLocation || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAddress(user.profile?.address || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCity(user.profile?.city || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState(user.profile?.state || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setZip(user.profile?.zipCode || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBio(user.profile?.bio || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAvatarId(user.profile?.avatarId);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTwoFactorVerification(user.mfaEnabled);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (preferencesData?.data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEmailNotifications(preferencesData.data.emailNotifications);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSmsNotifications(preferencesData.data.smsNotifications);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPushNotifications(preferencesData.data.pushNotifications);
+    }
+  }, [preferencesData]);
+
+  const handleProfileImageChange = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const result = await uploadAttachment(formData).unwrap();
+      setAvatarId(result.data.id);
+      const nextImage = URL.createObjectURL(file);
+      setProfileImage(nextImage);
+      toast.success("Profile picture updated");
+    } catch (error) {
+      toast.error("Failed to upload image");
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile({
+        avatarId,
+        name: fullName,
+        bio,
+        title,
+        specialty,
+        officeLocation,
+        address,
+        city,
+        state,
+        zipCode: zip,
+      }).unwrap();
+      toast.success("Profile updated successfully");
+      refetch();
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      }).unwrap();
+      toast.success("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error("Failed to update password");
+    }
+  };
+
+  const handleToggleMfa = async () => {
+    try {
+      await toggleMfa().unwrap();
+      setTwoFactorVerification(!twoFactorVerification);
+      toast.success("2FA setting updated");
+      refetch();
+    } catch (error) {
+      toast.error("Failed to update 2FA setting");
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      await updatePreferences({
+        emailNotifications,
+        smsNotifications,
+        pushNotifications,
+      }).unwrap();
+      toast.success("Preferences updated");
+    } catch (error) {
+      toast.error("Failed to update preferences");
+    }
+  };
+
   return (
     <section className="space-y-6 pb-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">Manage your account and preferences</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Manage your account and preferences
+        </p>
       </div>
 
       {/* Account Information */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <div className="mb-6 flex items-center gap-3">
-
-          <h2 className="text-lg font-bold text-gray-900">Account Information</h2>
+          <h2 className="text-lg font-bold text-gray-900">
+            Account Information
+          </h2>
         </div>
 
         {/* Profile Picture */}
@@ -102,7 +260,7 @@ const ToggleSwitch = ({
             <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-gray-100 bg-gray-50 shadow-sm">
               <Image
                 src={profileImage}
-                alt="Dr. Runa Pradhan"
+                alt="Profile"
                 fill
                 unoptimized={profileImage.startsWith("blob:")}
                 sizes="112px"
@@ -114,7 +272,8 @@ const ToggleSwitch = ({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#2563eb] text-white shadow-md transition hover:bg-blue-700"
+              disabled={isUploadingImage}
+              className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#2563eb] text-white shadow-md transition hover:bg-blue-700 disabled:opacity-50"
             >
               <Camera className="h-4 w-4" />
             </button>
@@ -135,7 +294,8 @@ const ToggleSwitch = ({
             <label className={labelClassName}>Full Name</label>
             <input
               className={inputClassName}
-              defaultValue="Dr. Runa Pradhan NP"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               placeholder="Full Name"
             />
           </div>
@@ -144,8 +304,19 @@ const ToggleSwitch = ({
             <label className={labelClassName}>Role/Title</label>
             <input
               className={inputClassName}
-              defaultValue="Dr. Runa Pradhan NP"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Role/Title"
+            />
+          </div>
+
+          <div>
+            <label className={labelClassName}>Specialty</label>
+            <input
+              className={inputClassName}
+              value={specialty}
+              onChange={(e) => setSpecialty(e.target.value)}
+              placeholder="Specialty"
             />
           </div>
 
@@ -155,7 +326,8 @@ const ToggleSwitch = ({
               <input
                 type="email"
                 className={inputClassName}
-                defaultValue="runa.pradhannp@gmail.com"
+                value={user?.email || ""}
+                disabled
                 placeholder="Email"
               />
             </div>
@@ -163,7 +335,8 @@ const ToggleSwitch = ({
               <label className={labelClassName}>Contact Number</label>
               <input
                 className={inputClassName}
-                defaultValue="+1 234 56780"
+                value={user?.phone || ""}
+                disabled
                 placeholder="Contact Number"
               />
             </div>
@@ -173,7 +346,8 @@ const ToggleSwitch = ({
             <label className={labelClassName}>Office</label>
             <input
               className={inputClassName}
-              defaultValue="Colorado Springs"
+              value={officeLocation}
+              onChange={(e) => setOfficeLocation(e.target.value)}
               placeholder="Office"
             />
           </div>
@@ -182,7 +356,8 @@ const ToggleSwitch = ({
             <label className={labelClassName}>Address</label>
             <input
               className={inputClassName}
-              defaultValue="1625 Medical Center Point, Suite 130"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               placeholder="Address"
             />
           </div>
@@ -192,7 +367,8 @@ const ToggleSwitch = ({
               <label className={labelClassName}>City</label>
               <input
                 className={inputClassName}
-                defaultValue="Colorado Springs"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 placeholder="City"
               />
             </div>
@@ -200,7 +376,8 @@ const ToggleSwitch = ({
               <label className={labelClassName}>State</label>
               <input
                 className={inputClassName}
-                defaultValue="CO"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
                 placeholder="State"
               />
             </div>
@@ -208,7 +385,8 @@ const ToggleSwitch = ({
               <label className={labelClassName}>Zip</label>
               <input
                 className={inputClassName}
-                defaultValue="80907"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
                 placeholder="Zip"
               />
             </div>
@@ -219,14 +397,19 @@ const ToggleSwitch = ({
             <textarea
               rows={4}
               className="w-full resize-none rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              defaultValue="At the forefront of the UAE's construction evolution, AlphaKaid Construction is the digital hub for builders, designers, and visionaries. With over 25 years of experience, we've established ourselves as a leading manufacturer, supplier, and contractor specializing in premium building materials and construction services."
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
               placeholder="About"
             />
           </div>
         </div>
 
-        <button className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700">
-          Save Profile Changes
+        <button
+          onClick={handleSaveProfile}
+          disabled={isUpdatingProfile || isUploadingImage}
+          className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
         </button>
       </div>
 
@@ -237,44 +420,73 @@ const ToggleSwitch = ({
             <LockKeyhole className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Password Management</h2>
-            <p className="text-sm text-gray-500">Update passwords for admin and other roles</p>
+            <h2 className="text-lg font-bold text-gray-900">
+              Password Management
+            </h2>
+            <p className="text-sm text-gray-500">Update your password</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-4">
           <div>
-            <label className={labelClassName}>New Password</label>
+            <label className={labelClassName}>Current Password</label>
             <div className="relative">
               <input
-                type={showNewPassword ? "text" : "password"}
+                type="password"
                 className={`${inputClassName} pr-10`}
-                placeholder="Enter new password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
               />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showNewPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
-              </button>
             </div>
           </div>
-          <div>
-            <label className={labelClassName}>Confirm Password</label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                className={`${inputClassName} pr-10`}
-                placeholder="Confirm new password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showConfirmPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
-              </button>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className={labelClassName}>New Password</label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  className={`${inputClassName} pr-10`}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showNewPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className={labelClassName}>Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className={`${inputClassName} pr-10`}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirmPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -292,134 +504,109 @@ const ToggleSwitch = ({
           </ul>
         </div>
 
-        <button className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700">
-          Update Password
+        <button
+          onClick={handleUpdatePassword}
+          disabled={isChangingPassword}
+          className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isChangingPassword ? "Updating..." : "Update Password"}
         </button>
       </div>
 
       {/* Security & Device */}
- {/* Security & Device */}
-<div className="rounded-xl border border-gray-200 bg-white p-6">
-  <div className="mb-5 flex items-start gap-3">
-    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-      <Shield className="h-5 w-5" />
-    </div>
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <div className="mb-5 flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Shield className="h-5 w-5" />
+          </div>
 
-    <div>
-      <h2 className="text-lg font-semibold text-gray-900">
-        Security & Device
-      </h2>
-      <p className="text-sm text-gray-500">
-        The security checkup of your account
-      </p>
-    </div>
-  </div>
-
-  {/* 2 Step Verification */}
-  <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
-    <div>
-      <p className="font-medium text-gray-900">
-        2 Step Verification
-      </p>
-
-      <p className="text-sm text-gray-500">
-        Activated on phone 123********89 since 20 May, 2026
-      </p>
-    </div>
-
-    <ToggleSwitch
-      enabled={twoFactorVerification}
-      onChange={() =>
-        setTwoFactorVerification(!twoFactorVerification)
-      }
-    />
-  </div>
-
-  {/* Device Sessions */}
-  <div className="rounded-xl border border-[#F1D38A] bg-[#FFFBEF] p-4">
-    <h3 className="mb-4 font-semibold text-[#C46A0A]">
-      Your Device & active sessions
-    </h3>
-
-    {/* Windows */}
-    <div className="mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Laptop className="h-5 w-5 text-[#C46A0A]" />
-
-          <span className="font-medium text-[#A95600]">
-            Windows device - Active now
-          </span>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Security & Device
+            </h2>
+            <p className="text-sm text-gray-500">
+              The security checkup of your account
+            </p>
+          </div>
         </div>
 
-        <button
-          type="button"
-          className="flex items-center gap-2 text-sm text-[#C46A0A]"
-        >
-          2 sessions on Windows computer(s)
-          <ChevronDown className="h-4 w-4" />
-        </button>
+        {/* 2 Step Verification */}
+        <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
+          <div>
+            <p className="font-medium text-gray-900">2 Step Verification</p>
+            <p className="text-sm text-gray-500">
+              {twoFactorVerification ? "Enabled" : "Disabled"}
+            </p>
+          </div>
+          <ToggleSwitch
+            enabled={twoFactorVerification}
+            onChange={handleToggleMfa}
+          />
+        </div>
+
+        {/* Device Sessions */}
+        <div className="rounded-xl border border-[#F1D38A] bg-[#FFFBEF] p-4">
+          <h3 className="mb-4 font-semibold text-[#C46A0A]">
+            Your Device & active sessions
+          </h3>
+
+          {sessionsData?.data?.map((device, idx) => (
+            <div
+              key={idx}
+              className="mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {device.deviceName.toLowerCase().includes("windows") ? (
+                    <Laptop className="h-5 w-5 text-[#C46A0A]" />
+                  ) : (
+                    <Smartphone className="h-5 w-5 text-[#C46A0A]" />
+                  )}
+                  <span className="font-medium text-[#A95600]">
+                    {device.deviceName}{" "}
+                    {device.isActiveNow ? "- Active now" : ""}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 text-sm text-[#C46A0A]"
+                >
+                  {device.sessionCount} sessions
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-y-4 text-sm text-[#A95600]">
+                {device.sessions.map((session, sIdx) => (
+                  <>
+                    <div
+                      key={`${idx}-${sIdx}-1`}
+                      className="flex items-center gap-2"
+                    >
+                      <p>Last login:</p>
+                      <p>{new Date(session.lastLogin).toLocaleString()}</p>
+                    </div>
+                    <div
+                      key={`${idx}-${sIdx}-2`}
+                      className="flex items-center gap-2"
+                    >
+                      <p>IP Address:</p>
+                      <p>{session.ipAddress}</p>
+                    </div>
+                    <div
+                      key={`${idx}-${sIdx}-3`}
+                      className="flex items-center gap-2"
+                    >
+                      <p>Session Due:</p>
+                      <p>{session.sessionDue}</p>
+                    </div>
+                  </>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-
-      <div className="grid grid-cols-3 gap-y-4 text-sm text-[#A95600]">
-        <div className="flex items-center gap-2">
-          <p>Last login:</p>
-          <p>May 27 - 09:14 am</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <p>IP Address:</p>
-          <p>192.168.1.45</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <p>Session Due:</p>
-          <p>12m 34s</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <p>Last login:</p>
-          <p>May 25 - 11:24 pm</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <p>IP Address:</p>
-          <p>192.168.0.43</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <p>Session Due:</p>
-          <p>45m 34s</p>
-        </div>
-      </div>
-    </div>
-
-    {/* iOS */}
-    <div className="rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Smartphone className="h-5 w-5 text-[#C46A0A]" />
-
-          <span className="font-medium text-[#A95600]">
-            iOS device
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className="flex items-center gap-2 text-sm text-[#C46A0A]"
-        >
-          1 sessions on iOS iPhone(s)
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-
-    <button className="mt-5 rounded-full bg-[#2956D7] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#2048bc]">
-      Update Password
-    </button>
-  </div>
-</div>
 
       {/* Communication Preferences */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
@@ -428,8 +615,12 @@ const ToggleSwitch = ({
             <MessageSquare className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Communication Preferences</h2>
-            <p className="text-sm text-gray-500">Manage your communication preferences</p>
+            <h2 className="text-lg font-bold text-gray-900">
+              Communication Preferences
+            </h2>
+            <p className="text-sm text-gray-500">
+              Manage your communication preferences
+            </p>
           </div>
         </div>
 
@@ -437,30 +628,49 @@ const ToggleSwitch = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold text-gray-900">Email Notifications</p>
-              <p className="text-xs text-gray-500">Receive notifications via email</p>
+              <p className="text-xs text-gray-500">
+                Receive notifications via email
+              </p>
             </div>
-            <ToggleSwitch enabled={emailNotifications} onChange={() => setEmailNotifications(!emailNotifications)} />
+            <ToggleSwitch
+              enabled={emailNotifications}
+              onChange={() => setEmailNotifications(!emailNotifications)}
+            />
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold text-gray-900">SMS Notifications</p>
-              <p className="text-xs text-gray-500">Receive notifications via SMS</p>
+              <p className="text-xs text-gray-500">
+                Receive notifications via SMS
+              </p>
             </div>
-            <ToggleSwitch enabled={smsNotifications} onChange={() => setSmsNotifications(!smsNotifications)} />
+            <ToggleSwitch
+              enabled={smsNotifications}
+              onChange={() => setSmsNotifications(!smsNotifications)}
+            />
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold text-gray-900">Push Notifications</p>
-              <p className="text-xs text-gray-500">Receive vo push notification</p>
+              <p className="text-xs text-gray-500">
+                Receive push notifications
+              </p>
             </div>
-            <ToggleSwitch enabled={pushNotifications} onChange={() => setPushNotifications(!pushNotifications)} />
+            <ToggleSwitch
+              enabled={pushNotifications}
+              onChange={() => setPushNotifications(!pushNotifications)}
+            />
           </div>
         </div>
 
-        <button className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700">
-          Save Settings
+        <button
+          onClick={handleSavePreferences}
+          disabled={isUpdatingPreferences}
+          className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isUpdatingPreferences ? "Saving..." : "Save Settings"}
         </button>
       </div>
     </section>

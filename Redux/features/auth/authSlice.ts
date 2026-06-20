@@ -7,11 +7,26 @@ export interface User {
   email: string
   phone: string | null
   status: string
+  role: string
   emailVerifiedAt: string | null
   phoneVerifiedAt: string | null
   mfaEnabled: boolean
   lastLoginAt: string | null
   roles: string[]
+  createdAt?: string
+  updatedAt?: string
+  profile?: {
+    avatarId?: string
+    name?: string
+    bio?: string
+    title?: string
+    specialty?: string
+    officeLocation?: string
+    address?: string
+    city?: string
+    state?: string
+    zipCode?: string
+  }
 }
 
 /** Stored during the OTP flow so all three pages share the same context */
