@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ChevronDown, LogOut, Settings, Menu, X } from 'lucide-react';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
-import { useLogout } from '@/Redux/hooks/useLogout';
+import Footer from "@/components/shared/Footer";
+import Logo from "@/components/ui/Logo";
+import { useLogout } from "@/Redux/hooks/useLogout";
+import { useAppSelector } from "@/Redux/store/hooks";
+import { ChevronDown, LogOut, Menu, Settings, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useState } from "react";
 
 export default function PatientLayout({
   children,
@@ -18,15 +19,33 @@ export default function PatientLayout({
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-  const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  const toggleProfileDropdown = () =>
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
   const { logout, isLoading: isLoggingOut } = useLogout();
+  const user = useAppSelector((state) => state.auth.user);
+
+  const getDisplayName = () => {
+    if (user?.profile?.name) return user.profile.name;
+    if (user?.email) return user.email.split("@")[0];
+    return "User";
+  };
+
+  const getInitials = () => {
+    const name = getDisplayName();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Our Services', href: '#services' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Home", href: "/" },
+    { name: "Our Services", href: "#services" },
+    { name: "Blog", href: "/blog" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -36,7 +55,7 @@ export default function PatientLayout({
         <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-1 cursor-pointer">
-            <Logo/>
+            <Logo />
           </Link>
 
           {/* Desktop Nav Links */}
@@ -58,11 +77,13 @@ export default function PatientLayout({
               onClick={toggleProfileDropdown}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-all select-none"
             >
-              <span className="text-sm font-semibold text-gray-900">Alan Catrech</span>
+              <span className="text-sm font-semibold text-gray-900">
+                {getDisplayName()}
+              </span>
               <div className="relative w-9 h-9 rounded-full overflow-hidden bg-emerald-100 border border-emerald-200">
                 {/* Fallback initials if image path is complex, or beautiful styled icon */}
                 <div className="w-full h-full flex items-center justify-center bg-[#2e5e54] text-white font-bold text-sm">
-                  AC
+                  {getInitials()}
                 </div>
               </div>
               <ChevronDown className="h-4 w-4 text-gray-400 transition-transform duration-200" />
@@ -73,7 +94,9 @@ export default function PatientLayout({
               <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="px-4 py-2 border-b border-gray-50">
                   <p className="text-xs text-gray-400">Signed in as</p>
-                  <p className="text-sm font-semibold text-gray-800 truncate">alan@ektahealth.com</p>
+                  <p className="text-sm font-semibold text-gray-800 truncate">
+                    {user?.email}
+                  </p>
                 </div>
                 {/* <Link
                   href="/patient"
@@ -100,15 +123,22 @@ export default function PatientLayout({
                   }}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>{isLoggingOut ? 'Logging out…' : 'Log Out'}</span>
+                  <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
                 </button>
               </div>
             )}
           </div>
 
           {/* Mobile Hamburguer Toggle */}
-          <button onClick={toggleMobileMenu} className="md:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
 
@@ -130,11 +160,13 @@ export default function PatientLayout({
             <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-full bg-[#2e5e54] text-white flex items-center justify-center font-bold text-sm">
-                  AC
+                  {getInitials()}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Alan Catrech</p>
-                  <p className="text-xs text-gray-400">alan@ektahealth.com</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {getDisplayName()}
+                  </p>
+                  <p className="text-xs text-gray-400">{user?.email}</p>
                 </div>
               </div>
               <Link
@@ -150,9 +182,7 @@ export default function PatientLayout({
       </header>
 
       {/* --- Dynamic Content Area --- */}
-      <main className="flex-1 flex flex-col">
-        {children}
-      </main>
+      <main className="flex-1 flex flex-col">{children}</main>
 
       {/* --- Footer Component --- */}
       <Footer />

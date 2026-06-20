@@ -1,25 +1,46 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
-import Navbar from '@/components/shared/Navbar';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
+import Footer from "@/components/shared/Footer";
+import Navbar from "@/components/shared/Navbar";
+import Logo from "@/components/ui/Logo";
 
-import { useSendOtpMutation } from '@/Redux/api/authApi';
-import { setOtpPending } from '@/Redux/features/auth/authSlice';
-import { useAppDispatch, useAppSelector } from '@/Redux/store/hooks';
+import { useSendOtpMutation } from "@/Redux/api/authApi";
+import { setOtpPending } from "@/Redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/store/hooks";
+
+const maskEmail = (email: string) => {
+  if (!email) return "";
+  const [name, domain] = email.split("@");
+  if (!domain) return email;
+  const visibleChars = name.length > 4 ? name.slice(0, 4) : name;
+  return `${visibleChars}****@${domain}`;
+};
+
+const maskPhone = (phone: string) => {
+  if (!phone) return "";
+  if (phone.length < 4) return phone;
+  const visibleChars = phone.slice(-4);
+  return `****${visibleChars}`;
+};
 
 const ReceiveOtpPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   const otpPending = useAppSelector((state) => state.auth.otpPending);
-  const [selectedMethod, setSelectedMethod] = useState<'EMAIL' | 'PHONE'>('EMAIL');
+
+console.log(otpPending)
+
+
+  const [selectedMethod, setSelectedMethod] = useState<"EMAIL" | "PHONE">(
+    "EMAIL",
+  );
 
   const [sendOtp, { isLoading }] = useSendOtpMutation();
 
@@ -27,8 +48,8 @@ const ReceiveOtpPage = () => {
     e.preventDefault();
 
     if (!otpPending?.userId) {
-      toast.error('Session expired. Please log in again.');
-      router.push('/login');
+      toast.error("Session expired. Please log in again.");
+      router.push("/login");
       return;
     }
 
@@ -45,16 +66,18 @@ const ReceiveOtpPage = () => {
           userId: otpPending.userId,
           challengeId: res.data.challengeId,
           method: selectedMethod,
-          purpose: otpPending.purpose ?? 'LOGIN',
-        })
+          purpose: otpPending.purpose ?? "LOGIN",
+          email: otpPending.email,
+          phone: otpPending.phone,
+        }),
       );
 
       toast.success(res.message);
-      router.push('/verify');
+      router.push("/verify");
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Failed to send OTP. Please try again.';
+        "Failed to send OTP. Please try again.";
       toast.error(message);
     }
   };
@@ -100,22 +123,27 @@ const ReceiveOtpPage = () => {
                 </p>
               </header>
 
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between">
+              <form
+                onSubmit={handleSubmit}
+                className="flex-grow flex flex-col justify-between"
+              >
                 <div className="flex flex-col space-y-4 py-4 w-full max-w-md mx-auto">
                   {/* Email Option */}
                   <label
                     className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
-                      selectedMethod === 'EMAIL'
-                        ? 'bg-white/20 border-white/40 shadow-lg'
-                        : 'bg-white/10 border-white/10 hover:bg-white/15'
+                      selectedMethod === "EMAIL"
+                        ? "bg-white/20 border-white/40 shadow-lg"
+                        : "bg-white/10 border-white/10 hover:bg-white/15"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                        selectedMethod === 'EMAIL' ? 'border-[#2563eb] bg-white' : 'border-white/50 bg-white/20'
+                        selectedMethod === "EMAIL"
+                          ? "border-[#2563eb] bg-white"
+                          : "border-white/50 bg-white/20"
                       }`}
                     >
-                      {selectedMethod === 'EMAIL' && (
+                      {selectedMethod === "EMAIL" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
                       )}
                     </div>
@@ -123,29 +151,36 @@ const ReceiveOtpPage = () => {
                       type="radio"
                       name="otp-method"
                       value="EMAIL"
-                      checked={selectedMethod === 'EMAIL'}
-                      onChange={() => setSelectedMethod('EMAIL')}
+                      checked={selectedMethod === "EMAIL"}
+                      onChange={() => setSelectedMethod("EMAIL")}
                       className="hidden"
                     />
-                    <span className="text-sm sm:text-base font-medium text-white">
-                      Email
-                    </span>
+                  
+                    <div className="">
+                      {otpPending?.email && (
+                        <span className="text-lg text-white/70">
+                          {maskEmail(otpPending.email)}
+                        </span>
+                      )}
+                    </div>
                   </label>
 
                   {/* Phone Option */}
                   <label
                     className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
-                      selectedMethod === 'PHONE'
-                        ? 'bg-white/20 border-white/40 shadow-lg'
-                        : 'bg-white/10 border-white/10 hover:bg-white/15'
+                      selectedMethod === "PHONE"
+                        ? "bg-white/20 border-white/40 shadow-lg"
+                        : "bg-white/10 border-white/10 hover:bg-white/15"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                        selectedMethod === 'PHONE' ? 'border-[#2563eb] bg-white' : 'border-white/50 bg-white/20'
+                        selectedMethod === "PHONE"
+                          ? "border-[#2563eb] bg-white"
+                          : "border-white/50 bg-white/20"
                       }`}
                     >
-                      {selectedMethod === 'PHONE' && (
+                      {selectedMethod === "PHONE" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
                       )}
                     </div>
@@ -153,13 +188,18 @@ const ReceiveOtpPage = () => {
                       type="radio"
                       name="otp-method"
                       value="PHONE"
-                      checked={selectedMethod === 'PHONE'}
-                      onChange={() => setSelectedMethod('PHONE')}
+                      checked={selectedMethod === "PHONE"}
+                      onChange={() => setSelectedMethod("PHONE")}
                       className="hidden"
                     />
-                    <span className="text-sm sm:text-base font-medium text-white">
-                      Phone
-                    </span>
+                    
+                    <div className="">
+                      {otpPending?.phone && (
+                        <span className="text-lg text-white/70">
+                          {maskPhone(otpPending.phone)}
+                        </span>
+                      )}
+                    </div>
                   </label>
                 </div>
 
@@ -175,7 +215,9 @@ const ReceiveOtpPage = () => {
                         Sending…
                       </>
                     ) : (
-                      <>Send Code <ArrowRight className="h-5 w-5" /></>
+                      <>
+                        Send Code <ArrowRight className="h-5 w-5" />
+                      </>
                     )}
                   </button>
                 </footer>

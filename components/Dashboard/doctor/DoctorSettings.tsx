@@ -42,21 +42,21 @@ const ToggleSwitch = ({
     type="button"
     onClick={onChange}
     className={`
-      relative inline-flex h-6 w-12
+      relative inline-flex h-8 w-14
       items-center
       rounded-full
-      border border-[#2956D8]
-      bg-[#D7DDF0]
       transition-colors duration-300
+      ${enabled ? "bg-[#2563eb]" : "bg-gray-200"}
     `}
   >
     <span
       className={`
-        inline-block h-5 w-5
+        inline-block h-6 w-6
         transform rounded-full
-        bg-[#2956D8]
+        bg-white
+        shadow
         transition-all duration-300 ease-in-out
-        ${enabled ? "translate-x-6" : "translate-x-1"}
+        ${enabled ? "translate-x-7" : "translate-x-1"}
       `}
     />
   </button>
