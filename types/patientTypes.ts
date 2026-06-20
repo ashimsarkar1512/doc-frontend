@@ -1,12 +1,13 @@
 export interface Consultation {
   id: string;
+  code?: string;
   title: string;
   category: string;
-  status: 'Approved' | 'Pending' | 'Declined';
+  status: 'DRAFT' | 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'REFIL_REQUESTED' | 'REJECTED';
   image: string;
 }
 
-export type TabType = 'Approved' | 'Pending' | 'Declined' | 'History';
+export type TabType = 'DRAFT' | 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'REFIL_REQUESTED' | 'REJECTED' | 'My Orders';
 
 export interface KpiCardProps {
   value: string | number;

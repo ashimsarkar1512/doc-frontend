@@ -9,94 +9,95 @@ import KpiCard from "./KpiCard";
 import TabBar from "./TabBar";
 
 // Domain imports representing scalable micro-frontend boundaries
+import MyOrdersDomain from "./domains/orders/MyOrdersDomain";
 import StripeCheckoutModal from "./domains/billing/StripeCheckoutModal";
 import ChatWindow from "./domains/messages/ChatWindow";
 import MessageList from "./domains/messages/MessageList";
+import { useGetDashboardStatsQuery } from "@/Redux/features/patient/dashboard/dashboardApi";
+import { useGetMyAssessmentsQuery } from "@/Redux/features/patient/assessmentSubmission/assessmentSubmissionApi";
+import { useAppSelector } from "@/Redux/store/hooks";
+import { Consultation, TabType } from "@/types/patientTypes";
 import NotificationCenter from "./domains/notifications/NotificationCenter";
 import SettingsCenter from "./domains/settings/SettingsCenter";
 
 
-import { useAppSelector } from "@/Redux/store/hooks";
-import { Consultation, TabType } from "@/types/patientTypes";
-import { useGetDashboardStatsQuery } from "@/Redux/features/patient/dashboard/dashboardApi";
-
 // Hardcoded stock data for illustration.
-const initialConsultations: Consultation[] = [
-  {
-    id: "#001216",
-    title: "Weight Loss",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001217",
-    title: "Individual Therapy",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001218",
-    title: "Anxiety & Stress",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001219",
-    title: "Clarity Consult",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001210",
-    title: "Personal Training",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001211",
-    title: "Dietary Consultation",
-    category: "Hormone Therapy",
-    status: "Approved",
-    image:
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=600&auto=format&fit=crop",
-  },
-  // Pending Consultations
-  {
-    id: "#001231",
-    title: "Testosterone Check",
-    category: "Hormone Therapy",
-    status: "Pending",
-    image:
-      "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "#001232",
-    title: "Fat Burner Injection",
-    category: "Hormone Therapy",
-    status: "Pending",
-    image:
-      "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600&auto=format&fit=crop",
-  },
-  // Declined Consultations
-  {
-    id: "#001241",
-    title: "PRP Hair Regrowth",
-    category: "Regrow Hair",
-    status: "Declined",
-    image:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=600&auto=format&fit=crop",
-  },
-];
+  // const initialConsultations: Consultation[] = [
+  //   {
+  //     id: "#001216",
+  //     title: "Weight Loss",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001217",
+  //     title: "Individual Therapy",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001218",
+  //     title: "Anxiety & Stress",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001219",
+  //     title: "Clarity Consult",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001210",
+  //     title: "Personal Training",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001211",
+  //     title: "Dietary Consultation",
+  //     category: "Hormone Therapy",
+  //     status: "Approved",
+  //     image:
+  //       "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   // Pending Consultations
+  //   {
+  //     id: "#001231",
+  //     title: "Testosterone Check",
+  //     category: "Hormone Therapy",
+  //     status: "Pending",
+  //     image:
+  //       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: "#001232",
+  //     title: "Fat Burner Injection",
+  //     category: "Hormone Therapy",
+  //     status: "Pending",
+  //     image:
+  //       "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600&auto=format&fit=crop",
+  //   },
+  //   // Declined Consultations
+  //   {
+  //     id: "#001241",
+  //     title: "PRP Hair Regrowth",
+  //     category: "Regrow Hair",
+  //     status: "Declined",
+  //     image:
+  //       "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=600&auto=format&fit=crop",
+  //   },
+  // ];
 
 export default function PatientPortalHome() {
   const user = useAppSelector((state) => state.auth.user);
@@ -104,8 +105,29 @@ export default function PatientPortalHome() {
   console.log("statsResponse",statsResponse)
   const stats = statsResponse?.data;
   
-  const [consultations] = useState<Consultation[]>(initialConsultations);
-  const [activeTab, setActiveTab] = useState<TabType>("Approved");
+  const [activeTab, setActiveTab] = useState<TabType>("ACCEPTED");
+
+  const getApiStatus = (tab: TabType) => {
+    if (tab === "My Orders") return undefined; // Don't filter, or just don't fetch
+    return tab; // Because TabType now exactly matches the API status strings
+  };
+
+  const { data: assessmentsResponse } = useGetMyAssessmentsQuery({
+    status: getApiStatus(activeTab)
+  }, { skip: activeTab === "My Orders" });
+  const submissions = assessmentsResponse?.data?.submissions || [];
+  const counts = assessmentsResponse?.data?.counts || {};
+
+  const mappedConsultations: Consultation[] = submissions.map((sub) => ({
+    id: sub.id,
+    code: sub.submissionCode,
+    title: sub.assessment?.title || "Unknown",
+    category: sub.assessment?.category?.name || "Unknown",
+    status: sub.status as any, // Using exact status strings
+    image: sub.assessment?.thumbnail || "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop",
+  }));
+
+  const filteredList = mappedConsultations;
 
   // High scaleable Shell Orchestration Domain State
   const [activeDomain, setActiveDomain] = useState<
@@ -117,17 +139,7 @@ export default function PatientPortalHome() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [stripeModalOpen, setStripeModalOpen] = useState(false);
 
-  // Filter computations
-  const approvedConsults = consultations.filter((c) => c.status === "Approved");
-  const pendingConsults = consultations.filter((c) => c.status === "Pending");
-  const declinedConsults = consultations.filter((c) => c.status === "Declined");
-
-  const filteredList = consultations.filter((c) => {
-    if (activeTab === "History") return true;
-    return c.status === activeTab;
-  });
-
-  const activeConsultation = consultations.find(
+  const activeConsultation = mappedConsultations.find(
     (c) => c.id === selectedConsultationId,
   );
 
@@ -229,13 +241,13 @@ export default function PatientPortalHome() {
             <TabBar
               activeTab={activeTab}
               onChangeTab={setActiveTab}
-              approvedCount={stats?.TotalApproved || 0}
-              pendingCount={stats?.TotalPending || 0}
-              declinedCount={stats?.TotalDeclined || 0}
+              counts={counts}
             />
           )}
 
-          {selectedConsultationId && activeConsultation ? (
+          {activeTab === "My Orders" ? (
+            <MyOrdersDomain />
+          ) : selectedConsultationId && activeConsultation ? (
             <ConsultationDetails
               consultation={activeConsultation}
               onBack={() => setSelectedConsultationId(null)}
@@ -283,7 +295,7 @@ export default function PatientPortalHome() {
       {/* 3. Event Notification Domain view */}
       {activeDomain === "notifications" && (
         <div className="w-full">
-          <NotificationCenter />
+          <NotificationCenter/>
         </div>
       )}
 

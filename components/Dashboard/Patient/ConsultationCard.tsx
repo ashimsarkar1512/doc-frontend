@@ -9,10 +9,13 @@ interface ConsultationCardProps {
 }
 
 export default function ConsultationCard({ consultation, onOpen }: ConsultationCardProps) {
-  const statusColors = {
-    Approved: 'bg-[#10b981]/90',
-    Pending: 'bg-[#f59e0b]/90',
-    Declined: 'bg-[#ef4444]/90'
+  const statusColors: Record<string, string> = {
+    ACCEPTED: 'bg-[#10b981]/90',
+    PENDING: 'bg-[#f59e0b]/90',
+    REJECTED: 'bg-[#ef4444]/90',
+    DRAFT: 'bg-[#6b7280]/90',
+    REVIEWED: 'bg-[#3b82f6]/90',
+    REFIL_REQUESTED: 'bg-[#8b5cf6]/90',
   };
 
   return (
@@ -47,7 +50,7 @@ export default function ConsultationCard({ consultation, onOpen }: ConsultationC
         
         {/* Subtitle / ID */}
         <p className="text-xs text-gray-400 font-light mb-6">
-          Consultation id: {consultation.id}
+          Consultation id: {consultation.code || consultation.id}
         </p>
 
         {/* Action Button */}
