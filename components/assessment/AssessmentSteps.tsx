@@ -589,6 +589,7 @@ function isMissingRequired(question: Question, answers: AnswerStore): boolean {
   return false;
 }
 
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AssessmentSteps() {
@@ -900,6 +901,11 @@ export default function AssessmentSteps() {
         assessmentId,
         answers: finalAnswers,
       }).unwrap();
+
+      const submissionId = res?.data?.id || res?.data?.submissionId || (typeof res?.data === "string" ? res?.data : null);
+      if (submissionId) {
+        localStorage.setItem("submissionId", submissionId);
+      }
 
       toast.success(res?.message || "Assessment submitted successfully!");
 
@@ -1374,7 +1380,7 @@ export default function AssessmentSteps() {
                 Previous
               </button>
               <button
-                onClick={() => router.push("/products")}
+                onClick={() => router.push(`/products${assessment?.category?.id ? `?categoryId=${assessment.category.id}` : ""}`)}
                 className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
               >
                 Browse products
