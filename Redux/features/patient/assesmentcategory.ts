@@ -93,8 +93,15 @@ const patientApi = baseApi.injectEndpoints({
       transformResponse: (response: AssessmentDetail | AssessmentDetailResponse) =>
         'data' in response && response.data ? response.data : response as AssessmentDetail,
     }),
+    submitAssessment: builder.mutation<any, any>({
+      query: (body) => ({
+        url: '/patient/assessment-submissions',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
-export const { useGetCategoriesNamesQuery, useGetCategoriesQuery, useGetAssessmentByIdQuery } = patientApi
+export const { useGetCategoriesNamesQuery, useGetCategoriesQuery, useGetAssessmentByIdQuery, useSubmitAssessmentMutation } = patientApi
 export default patientApi

@@ -15,9 +15,11 @@ import {
   useVerifyOtpMutation,
   useResendOtpMutation,
   useUpdateProfileMutation,
+  useUploadAttachmentMutation,
 } from "@/Redux/api/authApi";
 import {
   useGetAssessmentByIdQuery,
+  useSubmitAssessmentMutation,
   type AssessmentDetail,
   type Question,
   type QuestionOption as Option,
@@ -655,6 +657,8 @@ export default function AssessmentSteps() {
   const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
   const [updateProfile, { isLoading: isSavingAddress }] = useUpdateProfileMutation();
+  const [submitAssessment, { isLoading: isSubmitting }] = useSubmitAssessmentMutation();
+  const [uploadAttachment] = useUploadAttachmentMutation();
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
 
@@ -771,6 +775,7 @@ export default function AssessmentSteps() {
       if (otpPending?.purpose === "REGISTER") {
         setShippingMode(true);
       } else {
+        await submitAssessmentAnswers();
         setCurrentStep(COMPLETION_STEP);
       }
     } catch (err: unknown) {
@@ -818,6 +823,91 @@ export default function AssessmentSteps() {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ?? "Failed to resend OTP."
       );
+    }
+  };
+
+  const submitAssessmentAnswers = async () => {
+    if (!assessmentId) return;
+
+    try {
+      const finalAnswers: any[] = [];
+
+      const collectAnswers = async (questions: Question[]) => {
+        for (const q of questions) {
+          if (q.type === "INFORMATION_ONLY") continue;
+
+          const qAns: any = { questionId: q.id };
+
+          if (q.type === "SINGLE_CHOICE") {
+            const selectedId = answers.single[q.id];
+            if (selectedId) {
+              qAns.selectedOptionIds = [selectedId];
+              finalAnswers.push(qAns);
+              const opt = q.options?.find((o) => o.id === selectedId);
+              if (opt?.subQuestions?.length) await collectAnswers(opt.subQuestions);
+            }
+          } else if (q.type === "MULTIPLE_CHOICE") {
+            const selectedIds = answers.multi[q.id] || [];
+            if (selectedIds.length > 0) {
+              qAns.selectedOptionIds = selectedIds;
+              finalAnswers.push(qAns);
+              for (const optId of selectedIds) {
+                const opt = q.options?.find((o) => o.id === optId);
+                if (opt?.subQuestions?.length) await collectAnswers(opt.subQuestions);
+              }
+            }
+          } else if (q.type === "INPUT") {
+            if (!q.options || q.options.length === 0) {
+              const val = answers.text[q.id];
+              if (val) {
+                qAns.textResponse = val;
+                finalAnswers.push(qAns);
+              }
+            } else {
+              let textParts: string[] = [];
+              for (const opt of q.options) {
+                if (isFileInputType(opt.inputType)) {
+                  const files = answers.files[opt.id] || [];
+                  for (const file of files) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("context", "ASSESSMENT_FILE");
+                    try {
+                      const res = await uploadAttachment(formData).unwrap();
+                      if (res.data?.id) textParts.push(res.data.id);
+                      else if (res.data?.url) textParts.push(res.data.url);
+                    } catch (e) {
+                      console.error("File upload failed", e);
+                    }
+                  }
+                } else {
+                  const val = answers.text[opt.id];
+                  if (val) textParts.push(val);
+                }
+              }
+              if (textParts.length > 0) {
+                qAns.textResponse = textParts.join(", ");
+                finalAnswers.push(qAns);
+              }
+            }
+          }
+        }
+      };
+
+      await collectAnswers(topLevelQuestions);
+
+      const res = await submitAssessment({
+        assessmentId,
+        answers: finalAnswers,
+      }).unwrap();
+
+      toast.success(res?.message || "Assessment submitted successfully!");
+
+    } catch (err: unknown) {
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ?? "Assessment submission failed."
+      );
+      throw err;
     }
   };
 
@@ -1346,37 +1436,38 @@ export default function AssessmentSteps() {
                         toast.success("Address saved successfully.");
                       }
 
+                      await submitAssessmentAnswers();
                       setShippingMode(false);
                       setCurrentStep(COMPLETION_STEP);
                     } catch (err: unknown) {
                       toast.error(
                         (err as { data?: { message?: string } })?.data?.message ??
-                          "Failed to save address."
+                          "Failed to save address or submit assessment."
                       );
                     }
                   }}
-                  disabled={isSavingAddress}
+                  disabled={isSavingAddress || isSubmitting}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    isSavingAddress
+                    isSavingAddress || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  {isSavingAddress ? "Saving…" : "Save & Continue"}
+                  {isSavingAddress || isSubmitting ? "Saving…" : "Save & Continue"}
                 </button>
               )}
 
               {otpVerifyMode && !shippingMode && (
                 <button
                   onClick={handleVerifyOtp}
-                  disabled={otpDigits.some((d) => d === "") || isVerifyingOtp}
+                  disabled={otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting}
                   className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    otpDigits.some((d) => d === "") || isVerifyingOtp
+                    otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   }`}
                 >
-                  {isVerifyingOtp ? "Verifying…" : "Verify Authentication"}
+                  {isVerifyingOtp || isSubmitting ? "Verifying…" : "Verify Authentication"}
                 </button>
               )}
 
