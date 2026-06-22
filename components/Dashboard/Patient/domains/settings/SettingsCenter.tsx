@@ -107,13 +107,18 @@ export default function SettingsCenter() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("context", "PROFILE_PICTURE");
+    formData.append("files", file);
 
     try {
       const result = await uploadAttachment(formData).unwrap();
-      setAvatarId(result.data.id);
+      const newAvatarId = result.data.id;
+      setAvatarId(newAvatarId);
+      // Immediately save avatarId to profile so it persists
+      await updateProfile({ avatarId: newAvatarId }).unwrap();
       toast.success("Profile picture updated");
-    } catch (error) {
+      refetch();
+    } catch {
       toast.error("Failed to upload image");
     }
   };
@@ -200,23 +205,36 @@ export default function SettingsCenter() {
             </h4>
           </div>
 
-          {/* Avatar Upload */}
           <div className="mb-6">
             <p className="mb-4 text-sm font-semibold text-gray-700">
               Profile Picture
             </p>
             <div className="relative inline-block">
               <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-gray-100 bg-gray-50 shadow-sm">
-                <div className="flex h-full w-full items-center justify-center bg-[#2e5e54] text-3xl font-bold text-white">
-                  {getInitials()}
-                </div>
+                {user?.profile?.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.profile.avatar}
+                    alt={getDisplayName()}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-[#2e5e54] text-3xl font-bold text-white">
+                    {getInitials()}
+                  </div>
+                )}
               </div>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#2563eb] text-white shadow-md transition hover:bg-blue-700"
+                disabled={isUploadingImage || isUpdatingProfile}
+                className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#2563eb] text-white shadow-md transition hover:bg-blue-700 disabled:opacity-50"
               >
-                <Camera className="h-4 w-4" />
+                {isUploadingImage ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
               </button>
               <input
                 ref={fileInputRef}
