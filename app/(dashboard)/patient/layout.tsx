@@ -4,10 +4,21 @@ import Footer from "@/components/shared/Footer";
 import Logo from "@/components/ui/Logo";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useAppSelector } from "@/Redux/store/hooks";
-import { ChevronDown, LogOut, Menu, Settings, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Menu,
+  Settings,
+  X,
+  Home,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function PatientLayout({
   children,
@@ -17,10 +28,9 @@ export default function PatientLayout({
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-  const toggleProfileDropdown = () =>
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
   const { logout, isLoading: isLoggingOut } = useLogout();
   const user = useAppSelector((state) => state.auth.user);
 
@@ -39,6 +49,21 @@ export default function PatientLayout({
       .toUpperCase()
       .slice(0, 2);
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!isProfileDropdownOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target as Node)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isProfileDropdownOpen]);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -71,65 +96,114 @@ export default function PatientLayout({
             ))}
           </nav>
 
-          {/* Desktop Patient Profile Details */}
-          <div className="hidden md:flex items-center gap-3 relative">
+          {/* Desktop Patient Profile */}
+          <div ref={profileRef} className="hidden md:flex items-center gap-3 relative">
             <button
-              onClick={toggleProfileDropdown}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-all select-none"
+              onClick={() => setIsProfileDropdownOpen((p) => !p)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-all select-none focus:outline-none"
+              aria-label="Open profile menu"
+              aria-expanded={isProfileDropdownOpen}
             >
-              <span className="text-sm font-semibold text-gray-900">
+              {/* Avatar */}
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-200 flex-shrink-0">
+                {user?.profile?.avatar ? (
+                  <Image
+                    src={user.profile.avatar}
+                    alt={getDisplayName()}
+                    fill
+                    sizes="36px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                    {getInitials()}
+                  </div>
+                )}
+              </div>
+
+              <span className="text-sm font-semibold text-gray-900 max-w-[120px] truncate">
                 {getDisplayName()}
               </span>
-              <div className="relative w-9 h-9 rounded-full overflow-hidden bg-emerald-100 border border-emerald-200">
-                {/* Fallback initials if image path is complex, or beautiful styled icon */}
-                <div className="w-full h-full flex items-center justify-center bg-[#2e5e54] text-white font-bold text-sm">
-                  {getInitials()}
-                </div>
-              </div>
-              <ChevronDown className="h-4 w-4 text-gray-400 transition-transform duration-200" />
+
+              <motion.div
+                animate={{ rotate: isProfileDropdownOpen ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </motion.div>
             </button>
 
             {/* Profile Dropdown Menu */}
-            {isProfileDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-4 py-2 border-b border-gray-50">
-                  <p className="text-xs text-gray-400">Signed in as</p>
-                  <p className="text-sm font-semibold text-gray-800 truncate">
-                    {user?.email}
-                  </p>
-                </div>
-                {/* <Link
-                  href="/patient"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
-                  onClick={() => setIsProfileDropdownOpen(false)}
+            <AnimatePresence>
+              {isProfileDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className="absolute right-0 top-[calc(100%+12px)] w-60 bg-white rounded-2xl shadow-2xl shadow-gray-300/40 border border-gray-100 overflow-hidden"
+                  style={{ transformOrigin: "top right" }}
                 >
-                  <User className="h-4 w-4" />
-                  <span>My Portal</span>
-                </Link>
-                <Link
-                  href="/patient/profile"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
-                  onClick={() => setIsProfileDropdownOpen(false)}
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Profile Settings</span>
-                </Link> */}
-                <button
-                  disabled={isLoggingOut}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50 mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => {
-                    setIsProfileDropdownOpen(false);
-                    logout();
-                  }}
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
-                </button>
-              </div>
-            )}
+                  {/* User info header */}
+                  <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex items-start gap-3">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
+                      {user?.profile?.avatar ? (
+                        <Image
+                          src={user.profile.avatar}
+                          alt={getDisplayName()}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                          {getInitials()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-gray-900 truncate">
+                        {getDisplayName()}
+                      </p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <Mail className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Home link */}
+                  <div className="py-2">
+                    <Link
+                      href="/"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                    >
+                      <Home className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span>Home</span>
+                    </Link>
+                  </div>
+
+                  {/* Logout */}
+                  <div className="border-t border-gray-100 py-2">
+                    <button
+                      disabled={isLoggingOut}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        logout();
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 flex-shrink-0" />
+                      <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Mobile Hamburguer Toggle */}
+          {/* Mobile Hamburger Toggle */}
           <button
             onClick={toggleMobileMenu}
             className="md:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
@@ -143,42 +217,79 @@ export default function PatientLayout({
         </div>
 
         {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden w-full bg-white border-b border-gray-150 px-6 py-4 space-y-3 animate-in slide-in-from-top duration-200">
-            <nav className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-base font-medium text-gray-600 hover:text-emerald-600 block py-1.5"
-                  onClick={toggleMobileMenu}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-[#2e5e54] text-white flex items-center justify-center font-bold text-sm">
-                  {getInitials()}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {getDisplayName()}
-                  </p>
-                  <p className="text-xs text-gray-400">{user?.email}</p>
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="md:hidden w-full bg-white border-b border-gray-150 overflow-hidden"
+            >
+              <div className="px-6 py-4 space-y-3">
+                <nav className="flex flex-col gap-3">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className="text-base font-medium text-gray-600 hover:text-emerald-600 block py-1.5"
+                      onClick={toggleMobileMenu}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </nav>
+                <div className="border-t border-gray-100 pt-4 space-y-3">
+                  {/* User info */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-emerald-200">
+                      {user?.profile?.avatar ? (
+                        <Image
+                          src={user.profile.avatar}
+                          alt={getDisplayName()}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                          {getInitials()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {getDisplayName()}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/"
+                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors"
+                    onClick={toggleMobileMenu}
+                  >
+                    <Home className="h-4 w-4" />
+                    Home
+                  </Link>
+
+                  <button
+                    disabled={isLoggingOut}
+                    onClick={() => {
+                      toggleMobileMenu();
+                      logout();
+                    }}
+                    className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors disabled:opacity-50"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    {isLoggingOut ? "Logging out…" : "Log Out"}
+                  </button>
                 </div>
               </div>
-              <Link
-                href="/patient/profile"
-                className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-lg"
-                onClick={toggleMobileMenu}
-              >
-                <Settings className="h-5 w-5" />
-              </Link>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* --- Dynamic Content Area --- */}

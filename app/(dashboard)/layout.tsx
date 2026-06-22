@@ -86,7 +86,7 @@ export default function DashboardLayout({
     <div className="flex h-screen bg-[#f8fafc] font-sans overflow-hidden">
       {/* --- Sidebar Component --- */}
       {/* Desktop Sidebar */}
-  
+
 
       {/* Mobile Sidebar Slide-out Drawer */}
       {isMobileOpen && (
@@ -129,10 +129,9 @@ export default function DashboardLayout({
                         onClick={() => setWebsiteExpanded(!websiteExpanded)}
                         className={`
                           w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          ${
-                            isItemActive
-                              ? "bg-blue-50/50 text-blue-600"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          ${isItemActive
+                            ? "bg-blue-50/50 text-blue-600"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                           }
                         `}
                       >
@@ -157,10 +156,9 @@ export default function DashboardLayout({
                                 onClick={toggleMobile}
                                 className={`
                                   block py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150
-                                  ${
-                                    isSubActive
-                                      ? "text-blue-600 bg-blue-50/30"
-                                      : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                                  ${isSubActive
+                                    ? "text-blue-600 bg-blue-50/30"
+                                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                                   }
                                 `}
                               >
@@ -181,10 +179,9 @@ export default function DashboardLayout({
                     onClick={toggleMobile}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                      ${
-                        isItemActive
-                          ? "bg-blue-50 text-blue-600 shadow-sm"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ${isItemActive
+                        ? "bg-blue-50 text-blue-600 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }
                     `}
                   >
@@ -202,7 +199,7 @@ export default function DashboardLayout({
 
       {/* --- Main Window Wrapper --- */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-      
+
 
         {/* --- Dynamic Content Area --- */}
         <main className="flex-1 overflow-y-auto bg-[#f8fafc]">{children}</main>
