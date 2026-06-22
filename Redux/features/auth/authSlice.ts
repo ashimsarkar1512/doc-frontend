@@ -17,6 +17,7 @@ export interface User {
   updatedAt?: string
   profile?: {
     avatarId?: string
+    avatar?: string
     name?: string
     bio?: string
     title?: string
