@@ -5,18 +5,21 @@ import Home from "@/components/home/Home";
 import HowItsWork from "@/components/home/HowItsWork";
 import QNA from "@/components/home/QNA";
 import TestiMonial from "@/components/home/TestiMonial";
+import { HomepageContentProvider } from "@/providers/HomepageContentProvider";
 
 
 export default function Page() {
   return (
-    <main>
-    <Home/>
-    <Assesments/>
-    <AboutUs/>
-    <Expert/>
-    <HowItsWork/>
-    <TestiMonial/>
-    <QNA/>
-    </main>
+    <HomepageContentProvider>
+      <main>
+        <Home/>
+        <Assesments/>
+        <AboutUs/>
+        <Expert/>
+        <HowItsWork/>
+        <TestiMonial/>
+        <QNA/>
+      </main>
+    </HomepageContentProvider>
   );
 }

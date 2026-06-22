@@ -4,7 +4,7 @@ import Logo from "@/components/ui/Logo";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, LayoutDashboard, LogOut, User } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, User, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -21,6 +21,15 @@ export default function DoctorNavbar() {
     return "Doctor";
   };
 
+  const getInitials = () => {
+    const name = getDisplayName();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
   // Close on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -37,9 +46,9 @@ export default function DoctorNavbar() {
 
   const menuItems = [
     {
-      label: "My Portal",
-      href: "/doctor",
-      icon: LayoutDashboard,
+      label: "Home",
+      href: "/",
+      icon: Home,
     },
     {
       label: "My Profile",
@@ -81,13 +90,19 @@ export default function DoctorNavbar() {
               aria-expanded={isOpen}
             >
               <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 sm:h-10 sm:w-10">
-                <Image
-                  src="/doctor/profile-doc.png"
-                  alt="Profile"
-                  fill
-                  sizes="40px"
-                  className="object-cover"
-                />
+                {user?.profile?.avatar ? (
+                  <Image
+                    src={user.profile.avatar}
+                    alt={getDisplayName()}
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                    {getInitials()}
+                  </div>
+                )}
               </div>
               <motion.div
                 animate={{ rotate: isOpen ? 180 : 0 }}
@@ -110,9 +125,10 @@ export default function DoctorNavbar() {
                 >
                   {/* Header */}
                   <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-                    <p className="text-sm font-bold text-gray-900">
-                      My Account
+                    <p className="text-sm font-bold text-gray-900 truncate">
+                      {getDisplayName()}
                     </p>
+                    <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
                   </div>
 
                   {/* Menu Items */}

@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { useHomepageContent } from "@/providers/HomepageContentProvider";
 
 interface Review {
   id: string;
@@ -79,6 +81,14 @@ const reviews: Review[] = [
 ];
 
 const TestiMonial: React.FC = () => {
+  const { content, isLoading } = useHomepageContent();
+
+  const title = content?.testimonialTitle || "Read from Hundreds of success stories";
+  const subtitle = content?.testimonialSubtitle || "Client's Testimonial";
+  const description = content?.testimonialDescription || "See how Weight Loss MD has helped people feel stronger, healthier, and more balanced.";
+  const buttonLink = content?.testimonialButtonLink || "#";
+  const buttonNewTab = content?.testimonialButtonNewTab ?? false;
+
   // Initialize Embla with Autoplay plugin configured for 4 seconds intervals
   const [emblaRef] = useEmblaCarousel(
     {
@@ -121,9 +131,13 @@ const TestiMonial: React.FC = () => {
         </div>
 
         {/* Main Title Section */}
-        <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight max-w-3xl">
-          Read from Hundreds of success stories
-        </h2>
+        {isLoading ? (
+          <div className="h-10 w-1/2 bg-[#222426]/60 animate-pulse rounded-xl mb-16" />
+        ) : (
+          <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight max-w-3xl">
+            {title}
+          </h2>
+        )}
 
         {/* Grid Structure: Fixed Callout Card + Carousel Slider */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -134,17 +148,21 @@ const TestiMonial: React.FC = () => {
 
             <div className="relative z-10 flex flex-col gap-4">
               <h3 className="text-2xl font-bold tracking-tight">
-                Client's Testimonial
+                {subtitle}
               </h3>
               <p className="text-sm text-gray-400 leading-relaxed max-w-xs font-normal">
-                See how Weight Loss MD has helped people feel stronger,
-                healthier, and more balanced.
+                {description}
               </p>
             </div>
 
-            <button className="relative z-10 w-fit bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10">
+            <Link 
+              href={buttonLink}
+              target={buttonNewTab ? "_blank" : "_self"}
+              rel={buttonNewTab ? "noopener noreferrer" : undefined}
+              className="relative z-10 w-fit bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10 text-center"
+            >
               Book intake session
-            </button>
+            </Link>
           </div>
 
           {/* Dynamic Carousel Slide Viewport */}

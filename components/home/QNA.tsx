@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useHomepageContent } from "@/providers/HomepageContentProvider";
 
 interface FAQItem {
   id: string;
@@ -9,7 +10,7 @@ interface FAQItem {
   answer: string;
 }
 
-const faqData: FAQItem[] = [
+const defaultFaqData: FAQItem[] = [
   {
     id: '1',
     question: 'What weight loss treatments do you offer?',
@@ -43,12 +44,31 @@ const faqData: FAQItem[] = [
 ];
 
 const QNA: React.FC = () => {
+  const { content, isLoading } = useHomepageContent();
+  
   // Track open state using unique ID string or null for clean closing control
   const [openId, setOpenId] = useState<string | null>('1');
 
   const toggleFAQ = (id: string) => {
     setOpenId(openId === id ? null : id);
   };
+
+  const apiFaqs = content?.faqs || [];
+  
+  const faqDataToDisplay = apiFaqs.length > 0
+    ? [...apiFaqs].sort((a, b) => a.order - b.order).map(faq => ({
+        id: faq.id,
+        question: faq.question,
+        answer: faq.answer,
+      }))
+    : defaultFaqData;
+
+  // Set the first item as open by default when data loads
+  React.useEffect(() => {
+    if (faqDataToDisplay.length > 0 && !openId && !isLoading) {
+      setOpenId(faqDataToDisplay[0].id);
+    }
+  }, [faqDataToDisplay, openId, isLoading]);
 
   return (
     <section className="w-full bg-[#121314] py-20 px-4 md:px-8 font-sans text-white">
@@ -64,44 +84,50 @@ const QNA: React.FC = () => {
           
           {/* Left Column: Interactive Accordion Stack */}
           <div className="lg:col-span-7 flex flex-col gap-3 w-full">
-            {faqData.map((item) => {
-              const isOpen = openId === item.id;
-              
-              return (
-                <div
-                  key={item.id}
-                  className="bg-[#222426]/60 rounded-xl overflow-hidden border border-gray-800/30 transition-colors duration-300"
-                >
-                  {/* Trigger Banner */}
-                  <button
-                    onClick={() => toggleFAQ(item.id)}
-                    className="w-full flex items-center justify-between p-5 text-left transition-colors duration-200 hover:bg-gray-800/20 group"
-                    aria-expanded={isOpen}
-                  >
-                    <span className="text-sm md:text-base font-medium text-gray-100 group-hover:text-white tracking-tight transition-colors">
-                      {item.question}
-                    </span>
-                    {/* State Symbol Indicator */}
-                    <span className="text-xl font-light text-gray-400 select-none ml-4 flex-shrink-0">
-                      {isOpen ? '−' : '+'}
-                    </span>
-                  </button>
-
-                  {/* Clean Hardware-Accelerated Dynamic Expanding Wrap */}
+            {isLoading ? (
+               [1, 2, 3, 4, 5].map((i) => (
+                 <div key={i} className="h-16 bg-[#222426]/60 animate-pulse rounded-xl" />
+               ))
+            ) : (
+              faqDataToDisplay.map((item) => {
+                const isOpen = openId === item.id;
+                
+                return (
                   <div
-                    className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
-                      isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                    }`}
+                    key={item.id}
+                    className="bg-[#222426]/60 rounded-xl overflow-hidden border border-gray-800/30 transition-colors duration-300"
                   >
-                    <div className="overflow-hidden">
-                      <p className="px-5 pb-5 text-xs md:text-sm text-gray-400 leading-relaxed font-normal">
-                        {item.answer}
-                      </p>
+                    {/* Trigger Banner */}
+                    <button
+                      onClick={() => toggleFAQ(item.id)}
+                      className="w-full flex items-center justify-between p-5 text-left transition-colors duration-200 hover:bg-gray-800/20 group"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="text-sm md:text-base font-medium text-gray-100 group-hover:text-white tracking-tight transition-colors">
+                        {item.question}
+                      </span>
+                      {/* State Symbol Indicator */}
+                      <span className="text-xl font-light text-gray-400 select-none ml-4 flex-shrink-0">
+                        {isOpen ? '−' : '+'}
+                      </span>
+                    </button>
+
+                    {/* Clean Hardware-Accelerated Dynamic Expanding Wrap */}
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="px-5 pb-5 text-xs md:text-sm text-gray-400 leading-relaxed font-normal whitespace-pre-wrap">
+                          {item.answer}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
           {/* Right Column: Featured Callout Action Frame */}

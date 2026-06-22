@@ -52,6 +52,142 @@ interface AssessmentDetailResponse {
   data?: AssessmentDetail
 }
 
+export interface Product {
+  id: string
+  name: string
+  description: string
+  price: string
+  image: string
+}
+
+export interface ProductCategoryData {
+  categoryId: string
+  categoryName: string
+  assessments: { id: string; title: string }[]
+  products: Product[]
+}
+
+export interface ProductsResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: ProductCategoryData[]
+}
+
+// ─── Cart Types ───────────────────────────────────────────────────────────────
+
+export interface CartProductImage {
+  id: string
+  fileUrl: string
+  fileName: string
+  fileType: string
+  fileSize: number
+}
+
+export interface CartProductVariant {
+  id: string
+  size?: string
+  price?: string
+}
+
+export interface CartProduct {
+  id: string
+  name: string
+  description: string
+  variants: CartProductVariant[]
+  images: CartProductImage[]
+}
+
+export interface CartItem {
+  id: string
+  quantity: number
+  size: string | null
+  unitPrice: string
+  itemTotal: string
+  product: CartProduct
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Cart {
+  id: string
+  totalItem: number
+  totalPrice: string
+  items: CartItem[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CartResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: Cart
+}
+
+export interface CartSummary {
+  subtotal: string
+  serviceDuration: string
+  serviceFees: string
+  shippingCharge: string
+  discount: string
+  discountMeta: string | null
+  total: string
+}
+
+export interface CartSummaryResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: CartSummary
+}
+
+export interface AddToCartRequest {
+  productId: string
+}
+
+export interface UpdateCartItemRequest {
+  id: string
+  quantity?: number
+  size?: string
+}
+
+export interface CheckoutRequest {
+  submissionId: string
+  shippingInfo: {
+    fullName: string
+    contactNumber: string
+    address: string
+    city: string
+    state: string
+    zip: string
+  }
+  paymentInfo: {
+    method: string
+    cardHolderName: string
+    cardNumber: string
+    expiredDate: string
+    cvv: string
+  }
+  complianceConfirmation: {
+    agreedToTermsAndPrivacy: boolean
+    certifiedInfoAccurate: boolean
+    understoodFalseInfoConsequences: boolean
+    understoodRecommendationsBasis: boolean
+    understoodAdditionalInfoMayBeRequested: boolean
+  }
+  discountCode?: string
+  isRecurring: boolean
+  billingCycle: string
+}
+
+export interface CheckoutResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: any
+}
+
 export interface Category {
   id: string
   name: string
@@ -93,8 +229,72 @@ const patientApi = baseApi.injectEndpoints({
       transformResponse: (response: AssessmentDetail | AssessmentDetailResponse) =>
         'data' in response && response.data ? response.data : response as AssessmentDetail,
     }),
+    submitAssessment: builder.mutation<any, any>({
+      query: (body) => ({
+        url: '/patient/assessment-submissions',
+        method: 'POST',
+        body,
+      }),
+    }),
+    getProductsByCategoryId: builder.query<ProductsResponse, string>({
+      query: (categoryId) => ({
+        url: '/patient/products',
+        params: { categoryId },
+      }),
+    }),
+    addToCart: builder.mutation<CartResponse, AddToCartRequest>({
+      query: (body) => ({
+        url: '/patient/cart/add-cart',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+    getMyCart: builder.query<CartResponse, void>({
+      query: () => '/patient/cart/my-carts',
+      providesTags: ['Cart'],
+    }),
+    getCartSummary: builder.query<CartSummaryResponse, void>({
+      query: () => '/patient/cart/summary',
+      providesTags: ['Cart'],
+    }),
+    removeFromCart: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (id) => ({
+        url: `/patient/cart/remove-cart/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+    updateCartItem: builder.mutation<CartResponse, UpdateCartItemRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/patient/cart/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+    checkout: builder.mutation<CheckoutResponse, CheckoutRequest>({
+      query: (body) => ({
+        url: '/patient/payment/checkout',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
   }),
 })
 
-export const { useGetCategoriesNamesQuery, useGetCategoriesQuery, useGetAssessmentByIdQuery } = patientApi
+export const {
+  useGetCategoriesNamesQuery,
+  useGetCategoriesQuery,
+  useGetAssessmentByIdQuery,
+  useSubmitAssessmentMutation,
+  useGetProductsByCategoryIdQuery,
+  useAddToCartMutation,
+  useGetMyCartQuery,
+  useGetCartSummaryQuery,
+  useRemoveFromCartMutation,
+  useUpdateCartItemMutation,
+  useCheckoutMutation,
+} = patientApi
 export default patientApi
