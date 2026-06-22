@@ -169,7 +169,7 @@ export interface UploadAttachmentResponse {
   success: boolean
   statusCode: number
   message: string
-  data: { id: string; url: string }
+  data: { id: string; fileUrl: string; fileName: string; fileType: string; fileSize: number }
 }
 
 // ─── Auth API ─────────────────────────────────────────────────────────────────
@@ -314,7 +314,7 @@ export const authApi = baseApi.injectEndpoints({
      */
     changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
       query: (payload) => ({
-        url: '/auth/me/change-password',
+        url: '/auth/change-password',
         method: 'POST',
         body: payload,
       }),
