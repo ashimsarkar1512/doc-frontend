@@ -67,18 +67,16 @@ export interface SideEffectReportResponse {
   updatedAt: string;
 }
 
-// Doctors API commonly wraps list in data.data
 export interface DoctorsApiResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: {
-    data: Doctor[];
-    meta?: {
-      total: number;
-      page: number;
-      limit: number;
-    };
+  data: Doctor[];
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages?: number;
   };
 }
 
