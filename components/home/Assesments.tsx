@@ -1,7 +1,7 @@
 'use client'
 
 import { FilterButtonProps, PaginationButtonProps } from "@/types";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useGetCategoriesNamesQuery, useGetCategoriesQuery, type Assessment } from "@/Redux/features/patient/assesmentcategory";
 
@@ -147,6 +147,16 @@ export default function Assessments() {
   const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // Auto-scroll to this section when navigated via /#assessments
+  useEffect(() => {
+    if (window.location.hash === "#assessments") {
+      const el = document.getElementById("assessments");
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      }
+    }
+  }, []);
+
   const { data: categoryNamesData } = useGetCategoriesNamesQuery();
   const { data: categoriesData, isLoading } = useGetCategoriesQuery(activeFilter);
 
@@ -189,7 +199,7 @@ export default function Assessments() {
   }, [currentPage, totalPages, handlePageChange]);
 
   return (
-    <section className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6">
+    <section id="assessments" className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
