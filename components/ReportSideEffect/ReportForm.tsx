@@ -140,15 +140,12 @@ const ReportForm = () => {
 
   const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesNamesQuery();
   const { data: providersData, isLoading: providersLoading } = useGetActiveProvidersQuery({});
+  console.log(providersData , 'providersData');
 
   const categories: Category[] = categoriesData?.data ?? [];
 
-  // Handle both data.data (paginated) and data (flat array) shapes
   // API returns fullName, map to name for CustomDropdown
-  const rawProviders: Doctor[] =
-    (providersData?.data as unknown as { data?: Doctor[] })?.data ??
-    (providersData?.data as unknown as Doctor[]) ??
-    [];
+  const rawProviders: Doctor[] = providersData?.data ?? [];
   const providers = rawProviders.map((doc) => ({ id: doc.id, name: doc.fullName }));
 
   const severities: SeverityOption[] = [
