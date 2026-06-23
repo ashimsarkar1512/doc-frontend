@@ -130,7 +130,8 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   };
 
   const getContent = () => {
-    if (consultationId) return <ConsultationDetails id={consultationId} />;
+    // if (consultationId) return <ConsultationDetails id={consultationId} />;
+    if (consultationId) return <ConsultationDetails  />;
     if (isMessages && chatId) return <ChatView chatId={chatId} />;
     if (isMessages) return <MessagesPanel />;
     if (isSettings) return <DoctorSettings />;

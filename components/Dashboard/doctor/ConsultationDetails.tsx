@@ -594,7 +594,7 @@ export default function ConsultationDetails() {
         isOpen={isRefillModalOpen}
         onClose={() => setIsRefillModalOpen(false)}
         patientName={patientName}
-        consultationId={id}
+        consultationId={id ?? ""}
         submittedDate={detailesData?.submittedAt}
       />
 
@@ -603,7 +603,7 @@ export default function ConsultationDetails() {
         isOpen={isDeclineModalOpen}
         onClose={() => setIsDeclineModalOpen(false)}
         patientName={patientName}
-        consultationId={id}
+        consultationId={id ?? ""}
         submittedDate={detailesData?.submittedAt}
       />
     </div>
