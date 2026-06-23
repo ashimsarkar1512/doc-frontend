@@ -872,7 +872,7 @@ export default function AssessmentSteps() {
                     formData.append("context", "ASSESSMENT_FILE");
                     try {
                       const res = await uploadAttachment(formData).unwrap();
-                      const fileId = res.data?.id || res.data?.fileUrl || res.data?.url;
+                      const fileId = res.data?.id || res.data?.fileUrl;
                       if (fileId) textParts.push(fileId);
                       else {
                         console.error("Upload succeeded but no file ID returned", res);
