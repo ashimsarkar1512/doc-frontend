@@ -213,6 +213,29 @@ export interface CategoryNamesResponse {
   data: { id: string; name: string }[]
 }
 
+export interface AssessmentSubmissionResponse {
+  success: boolean
+  statusCode: number
+  message: string
+  data: {
+    submissionId: string
+    submissionCode: string
+    status: string
+    isEditable: boolean
+    assessment: {
+      id: string
+      title: string
+      thumbnail: string | null
+      category: string
+    }
+    reviewedBy: string | null
+    doctorNotes: string | null
+    questions: any[]
+    complianceConfirmation: any
+    paymentSummary: any
+  }
+}
+
 const patientApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCategoriesNames: builder.query<CategoryNamesResponse, void>({
@@ -281,6 +304,16 @@ const patientApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+    getMyAssessmentSubmissionById: builder.query<AssessmentSubmissionResponse, string>({
+      query: (id) => `/patient/assessment-submissions/my-assessment/${id}`,
+    }),
+    editAssessmentSubmission: builder.mutation<any, { id: string; answers: any[] }>({
+      query: ({ id, answers }) => ({
+        url: `/patient/assessment-submissions/${id}`,
+        method: 'PATCH', // Assuming PATCH based on common REST, though user said PUT/PATCH. The user used PUT/PATCH, I'll use PATCH.
+        body: { answers },
+      }),
+    }),
   }),
 })
 
@@ -296,5 +329,7 @@ export const {
   useRemoveFromCartMutation,
   useUpdateCartItemMutation,
   useCheckoutMutation,
+  useGetMyAssessmentSubmissionByIdQuery,
+  useEditAssessmentSubmissionMutation,
 } = patientApi
 export default patientApi
