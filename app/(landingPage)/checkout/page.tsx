@@ -120,31 +120,43 @@ export default function CheckoutPage() {
       .replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
-  const handleSubmit = async () => {
-    try {
-      const submissionId = localStorage.getItem("submissionId");
-      if (!submissionId) {
-        toast.error("Valid assessment submission not found. Please complete the assessment.");
-        return;
-      }
+  const formatCardNumber = (val: string) => {
+    const v = val.replace(/\D/g, "");
+    return v.replace(/(\d{4})/g, "$1 ").trim().substring(0, 19);
+  };
+  const formatExpiry = (val: string) => {
+    const v = val.replace(/\D/g, "");
+    if (v.length >= 3) return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
+    return v.substring(0, 4);
+  };
+  const formatCVV = (val: string) => val.replace(/\D/g, "").substring(0, 4);
+  const formatZip = (val: string) => val.replace(/\D/g, "").substring(0, 5);
+  const formatPhone = (val: string) => {
+    const v = val.replace(/\D/g, "");
+    if (v.length <= 3) return v;
+    if (v.length <= 6) return `(${v.substring(0, 3)}) ${v.substring(3)}`;
+    return `(${v.substring(0, 3)}) ${v.substring(3, 6)}-${v.substring(6, 10)}`;
+  };
 
-      await checkout({
-        submissionId, // Pass the dynamically fetched submissionId
-        shippingInfo,
-        paymentInfo,
-        complianceConfirmation,
-        discountCode: couponApplied ? couponInput.trim() : undefined,
-        isRecurring: recurring,
-        billingCycle: summary?.serviceDuration || "MONTHLY",
-      }).unwrap();
-
-      router.push("/previewdetails");
-      toast.success("Checkout successful");
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Checkout failed");
-      console.error("Checkout failed:", error);
-      // Optional: Add error handling UI here
+  const handleSubmit = () => {
+    const submissionId = localStorage.getItem("submissionId");
+    if (!submissionId) {
+      toast.error("Valid assessment submission not found. Please complete the assessment.");
+      return;
     }
+
+    const checkoutPayload = {
+      submissionId,
+      shippingInfo,
+      paymentInfo,
+      complianceConfirmation,
+      discountCode: couponApplied ? couponInput.trim() : undefined,
+      isRecurring: recurring,
+      billingCycle: summary?.serviceDuration || "MONTHLY",
+    };
+    
+    localStorage.setItem("checkoutPayload", JSON.stringify(checkoutPayload));
+    router.push("/previewdetails");
   };
 
   return (
@@ -153,7 +165,7 @@ export default function CheckoutPage() {
 
       <div className="pt-32 pb-16 max-w-[1320px] mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row gap-10 items-start">
-          
+
           {/* LEFT: Checkout Form */}
           <div className="flex-1 min-w-0 w-full">
             <h1 className="text-[26px] font-bold text-gray-900 mb-1">Checkout</h1>
@@ -162,70 +174,70 @@ export default function CheckoutPage() {
             {/* Shipping Info */}
             <div className="mb-10">
               <h2 className="text-[18px] font-bold text-gray-900 mb-4">Shipping Info:</h2>
-              
+
               <div className="flex flex-col gap-4">
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Full Name:</label>
-                  <input 
-                    type="text" 
-                    value={shippingInfo.fullName} 
-                    onChange={(e) => setShippingInfo({...shippingInfo, fullName: e.target.value})}
+                  <input
+                    type="text"
+                    value={shippingInfo.fullName}
+                    onChange={(e) => setShippingInfo({ ...shippingInfo, fullName: e.target.value })}
                     placeholder="e.g. John Doe"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Contact Number</label>
-                  <input 
-                    type="text" 
-                    value={shippingInfo.contactNumber} 
-                    onChange={(e) => setShippingInfo({...shippingInfo, contactNumber: e.target.value})}
-                    placeholder="e.g. +1 (555) 000-0000"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                  <input
+                    type="text"
+                    value={shippingInfo.contactNumber}
+                    onChange={(e) => setShippingInfo({ ...shippingInfo, contactNumber: formatPhone(e.target.value) })}
+                    placeholder="e.g. (555) 000-0000"
+                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Address</label>
-                  <input 
-                    type="text" 
-                    value={shippingInfo.address} 
-                    onChange={(e) => setShippingInfo({...shippingInfo, address: e.target.value})}
+                  <input
+                    type="text"
+                    value={shippingInfo.address}
+                    onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
                     placeholder="e.g. 123 Main St, Apt 4B"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                   />
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <label className="block text-gray-800 text-[14px] font-medium mb-1.5">City</label>
-                    <input 
-                      type="text" 
-                      value={shippingInfo.city} 
-                      onChange={(e) => setShippingInfo({...shippingInfo, city: e.target.value})}
+                    <input
+                      type="text"
+                      value={shippingInfo.city}
+                      onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
                       placeholder="e.g. New York"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     />
                   </div>
                   <div className="flex-1">
                     <label className="block text-gray-800 text-[14px] font-medium mb-1.5">State</label>
-                    <input 
-                      type="text" 
-                      value={shippingInfo.state} 
-                      onChange={(e) => setShippingInfo({...shippingInfo, state: e.target.value})}
+                    <input
+                      type="text"
+                      value={shippingInfo.state}
+                      onChange={(e) => setShippingInfo({ ...shippingInfo, state: e.target.value })}
                       placeholder="e.g. NY"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     />
                   </div>
                   <div className="flex-1">
                     <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Zip</label>
-                    <input 
-                      type="text" 
-                      value={shippingInfo.zip} 
-                      onChange={(e) => setShippingInfo({...shippingInfo, zip: e.target.value})}
+                    <input
+                      type="text"
+                      value={shippingInfo.zip}
+                      onChange={(e) => setShippingInfo({ ...shippingInfo, zip: formatZip(e.target.value) })}
                       placeholder="e.g. 10001"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     />
                   </div>
                 </div>
@@ -237,10 +249,10 @@ export default function CheckoutPage() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
                 <h2 className="text-[18px] font-bold text-gray-900">Payment Info:</h2>
                 <div className="flex items-center gap-1.5 text-gray-500 text-[14px]">
-                  Payment powered by: 
+                  Payment powered by:
                   <div className="flex items-center text-[#2A8F3F] font-bold text-[18px] tracking-tight ml-1">
                     <svg className="w-5 h-5 mr-0.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C9.5 2 7 4 7 6.5C7 7.5 7.5 8.5 8 9.5C6 9 4 9 2.5 10.5C1.5 11.5 1.5 13.5 3 15C4.5 16.5 6.5 16.5 7.5 15.5C8.5 14.5 9 13.5 9.5 12C9.5 14 9.5 16 9.5 18H14.5C14.5 16 14.5 14 14.5 12C15 13.5 15.5 14.5 16.5 15.5C17.5 16.5 19.5 16.5 21 15C22.5 13.5 22.5 11.5 21.5 10.5C20 9 18 9 16 9.5C16.5 8.5 17 7.5 17 6.5C17 4 14.5 2 12 2Z"/>
+                      <path d="M12 2C9.5 2 7 4 7 6.5C7 7.5 7.5 8.5 8 9.5C6 9 4 9 2.5 10.5C1.5 11.5 1.5 13.5 3 15C4.5 16.5 6.5 16.5 7.5 15.5C8.5 14.5 9 13.5 9.5 12C9.5 14 9.5 16 9.5 18H14.5C14.5 16 14.5 14 14.5 12C15 13.5 15.5 14.5 16.5 15.5C17.5 16.5 19.5 16.5 21 15C22.5 13.5 22.5 11.5 21.5 10.5C20 9 18 9 16 9.5C16.5 8.5 17 7.5 17 6.5C17 4 14.5 2 12 2Z" />
                     </svg>
                     clover
                   </div>
@@ -251,9 +263,9 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Payment Method</label>
                   <div className="relative">
-                    <select 
+                    <select
                       value={paymentInfo.method}
-                      onChange={(e) => setPaymentInfo({...paymentInfo, method: e.target.value})}
+                      onChange={(e) => setPaymentInfo({ ...paymentInfo, method: e.target.value })}
                       className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 appearance-none outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     >
                       <option value="CLOVER">Default card</option>
@@ -261,48 +273,48 @@ export default function CheckoutPage() {
                     <ChevronDown className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Card Holder Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={paymentInfo.cardHolderName}
-                    onChange={(e) => setPaymentInfo({...paymentInfo, cardHolderName: e.target.value})}
+                    onChange={(e) => setPaymentInfo({ ...paymentInfo, cardHolderName: e.target.value })}
                     placeholder="e.g. John Doe"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Card Number</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={paymentInfo.cardNumber}
-                    onChange={(e) => setPaymentInfo({...paymentInfo, cardNumber: e.target.value})}
+                    onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: formatCardNumber(e.target.value) })}
                     placeholder="e.g. 4111 1111 1111 1111"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                   />
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Expired Date</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={paymentInfo.expiredDate}
-                      onChange={(e) => setPaymentInfo({...paymentInfo, expiredDate: e.target.value})}
+                      onChange={(e) => setPaymentInfo({ ...paymentInfo, expiredDate: formatExpiry(e.target.value) })}
                       placeholder="MM/YY"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     />
                   </div>
                   <div className="flex-1">
                     <label className="block text-gray-800 text-[14px] font-medium mb-1.5">CVV</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={paymentInfo.cvv}
-                      onChange={(e) => setPaymentInfo({...paymentInfo, cvv: e.target.value})}
+                      onChange={(e) => setPaymentInfo({ ...paymentInfo, cvv: formatCVV(e.target.value) })}
                       placeholder="123"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors" 
+                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     />
                   </div>
                 </div>
@@ -321,47 +333,47 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-3 mb-6">
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={complianceConfirmation.agreedToTermsAndPrivacy} 
-                    onChange={(e) => setComplianceConfirmation({...complianceConfirmation, agreedToTermsAndPrivacy: e.target.checked})} 
-                    className="w-4 h-4 accent-blue-600 shrink-0" 
+                  <input
+                    type="checkbox"
+                    checked={complianceConfirmation.agreedToTermsAndPrivacy}
+                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, agreedToTermsAndPrivacy: e.target.checked })}
+                    className="w-4 h-4 accent-blue-600 shrink-0"
                   />
                   <span className="text-gray-700 text-[14px]">I have reviewed and agree to the <span className="font-bold underline">Terms of Service and Privacy Policy.</span></span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={complianceConfirmation.certifiedInfoAccurate} 
-                    onChange={(e) => setComplianceConfirmation({...complianceConfirmation, certifiedInfoAccurate: e.target.checked})} 
-                    className="w-4 h-4 accent-blue-600 shrink-0" 
+                  <input
+                    type="checkbox"
+                    checked={complianceConfirmation.certifiedInfoAccurate}
+                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, certifiedInfoAccurate: e.target.checked })}
+                    className="w-4 h-4 accent-blue-600 shrink-0"
                   />
                   <span className="text-gray-700 text-[14px]">I certify that all information provided is accurate and complete.</span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={complianceConfirmation.understoodFalseInfoConsequences} 
-                    onChange={(e) => setComplianceConfirmation({...complianceConfirmation, understoodFalseInfoConsequences: e.target.checked})} 
-                    className="w-4 h-4 accent-blue-600 shrink-0" 
+                  <input
+                    type="checkbox"
+                    checked={complianceConfirmation.understoodFalseInfoConsequences}
+                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodFalseInfoConsequences: e.target.checked })}
+                    className="w-4 h-4 accent-blue-600 shrink-0"
                   />
                   <span className="text-gray-700 text-[14px]">I understand that providing false or misleading information may result in denial of treatment.</span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={complianceConfirmation.understoodRecommendationsBasis} 
-                    onChange={(e) => setComplianceConfirmation({...complianceConfirmation, understoodRecommendationsBasis: e.target.checked})} 
-                    className="w-4 h-4 accent-blue-600 shrink-0" 
+                  <input
+                    type="checkbox"
+                    checked={complianceConfirmation.understoodRecommendationsBasis}
+                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodRecommendationsBasis: e.target.checked })}
+                    className="w-4 h-4 accent-blue-600 shrink-0"
                   />
                   <span className="text-gray-700 text-[14px]">I understand that treatment recommendations are based on the information I have provided.</span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={complianceConfirmation.understoodAdditionalInfoMayBeRequested} 
-                    onChange={(e) => setComplianceConfirmation({...complianceConfirmation, understoodAdditionalInfoMayBeRequested: e.target.checked})} 
-                    className="w-4 h-4 accent-blue-600 shrink-0" 
+                  <input
+                    type="checkbox"
+                    checked={complianceConfirmation.understoodAdditionalInfoMayBeRequested}
+                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodAdditionalInfoMayBeRequested: e.target.checked })}
+                    className="w-4 h-4 accent-blue-600 shrink-0"
                   />
                   <span className="text-gray-700 text-[14px]">I understand that additional information may be requested before treatment is approved.</span>
                 </label>
@@ -591,9 +603,8 @@ export default function CheckoutPage() {
                   <div key={label} className="flex justify-between">
                     <span className="text-gray-500 text-[13px]">{label}</span>
                     <span
-                      className={`text-[13px] font-medium ${
-                        accent ? "text-red-500" : "text-gray-800"
-                      }`}
+                      className={`text-[13px] font-medium ${accent ? "text-red-500" : "text-gray-800"
+                        }`}
                     >
                       {value}
                     </span>
@@ -615,11 +626,10 @@ export default function CheckoutPage() {
               <label className="flex items-start gap-2.5 mb-5 cursor-pointer select-none">
                 <div
                   onClick={() => setRecurring((v) => !v)}
-                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${
-                    recurring
+                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${recurring
                       ? "bg-blue-600 border-blue-600"
                       : "bg-white border-blue-400"
-                  }`}
+                    }`}
                 >
                   {recurring && (
                     <svg

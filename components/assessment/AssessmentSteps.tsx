@@ -130,11 +130,10 @@ function FileUploadField({
           setIsDragging(false);
           addFiles(Array.from(e.dataTransfer.files));
         }}
-        className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${
-          isDragging
+        className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${isDragging
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50/40"
-        }`}
+          }`}
       >
         <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-1">
           <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
@@ -216,16 +215,14 @@ function RenderOption({
       {/* Option button */}
       <button
         onClick={onToggle}
-        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-          isSelected
+        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
             ? "bg-white border-blue-500 shadow-sm"
             : "bg-white border-transparent hover:border-gray-300"
-        }`}
+          }`}
       >
         <span
-          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${
-            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-          }`}
+          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+            }`}
         >
           {isSelected && (
             isCheckbox ? (
@@ -281,8 +278,8 @@ function RenderQuestion({
     question.contentAlignment === "CENTER"
       ? "text-center"
       : question.contentAlignment === "RIGHT"
-      ? "text-right"
-      : "text-left";
+        ? "text-right"
+        : "text-left";
 
   // ── INFORMATION_ONLY (only at top level, nested ones are unusual but handled) ──
   if (question.type === "INFORMATION_ONLY") {
@@ -672,17 +669,17 @@ export default function AssessmentSteps() {
   const activeEmail = registerMode ? registerEmail : loginEmail;
   const maskedEmail = activeEmail
     ? activeEmail.replace(
-        /^(.{2})(.+?)(@.+)$/,
-        (_: string, a: string, b: string, c: string) =>
-          a + "*".repeat(Math.min(b.length, 6)) + c
-      )
+      /^(.{2})(.+?)(@.+)$/,
+      (_: string, a: string, b: string, c: string) =>
+        a + "*".repeat(Math.min(b.length, 6)) + c
+    )
     : "ex******@email.com";
 
   // mask phone: show first 3 and last 2 digits, rest as *
   const maskedPhone = registerPhone
     ? registerPhone.replace(/(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/, (_, start, mid, end) =>
-        start + "*".repeat(mid.length) + end
-      )
+      start + "*".repeat(mid.length) + end
+    )
     : "+***********";
 
   // ── Auth API handlers ─────────────────────────────────────────────────────
@@ -871,14 +868,22 @@ export default function AssessmentSteps() {
                   const files = answers.files[opt.id] || [];
                   for (const file of files) {
                     const formData = new FormData();
-                    formData.append("file", file);
+                    formData.append("files", file);
                     formData.append("context", "ASSESSMENT_FILE");
                     try {
                       const res = await uploadAttachment(formData).unwrap();
-                      if (res.data?.id) textParts.push(res.data.id);
-                      else if (res.data?.url) textParts.push(res.data.url);
-                    } catch (e) {
+                      const fileId = res.data?.id || res.data?.fileUrl || res.data?.url;
+                      if (fileId) textParts.push(fileId);
+                      else {
+                        console.error("Upload succeeded but no file ID returned", res);
+                        toast.error("File uploaded but could not get file ID. Please try again.");
+                        throw new Error("No file ID returned from upload");
+                      }
+                    } catch (e: unknown) {
+                      const errMsg = (e as { data?: { message?: string } })?.data?.message ?? "File upload failed";
                       console.error("File upload failed", e);
+                      toast.error(errMsg);
+                      throw e;
                     }
                   }
                 } else {
@@ -1034,16 +1039,14 @@ export default function AssessmentSteps() {
                       <button
                         key={option}
                         onClick={() => setAuthChoice(option)}
-                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                          isSelected
+                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
                             ? "bg-white border-blue-500 shadow-sm"
                             : "bg-white border-transparent hover:border-gray-300"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                          }`}
+                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                            }`}
                         >
                           {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                         </span>
@@ -1231,16 +1234,14 @@ export default function AssessmentSteps() {
                       <button
                         key={key}
                         onClick={() => setOtpChannel(key)}
-                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-                          isSelected
+                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
                             ? "bg-white border-blue-500 shadow-sm"
                             : "bg-white border-transparent hover:border-gray-300"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
-                            isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                          }`}
+                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
+                            }`}
                         >
                           {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                         </span>
@@ -1448,16 +1449,15 @@ export default function AssessmentSteps() {
                     } catch (err: unknown) {
                       toast.error(
                         (err as { data?: { message?: string } })?.data?.message ??
-                          "Failed to save address or submit assessment."
+                        "Failed to save address or submit assessment."
                       );
                     }
                   }}
                   disabled={isSavingAddress || isSubmitting}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    isSavingAddress || isSubmitting
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${isSavingAddress || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                    }`}
                 >
                   {isSavingAddress || isSubmitting ? "Saving…" : "Save & Continue"}
                 </button>
@@ -1467,11 +1467,10 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleVerifyOtp}
                   disabled={otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                    }`}
                 >
                   {isVerifyingOtp || isSubmitting ? "Verifying…" : "Verify Authentication"}
                 </button>
@@ -1481,11 +1480,10 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleSendOtp}
                   disabled={!otpChannel || isSendingOtp}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !otpChannel || isSendingOtp
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!otpChannel || isSendingOtp
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                    }`}
                 >
                   {isSendingOtp ? "Sending…" : "Send code"}
                 </button>
@@ -1495,11 +1493,10 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleLoginSubmit}
                   disabled={!loginEmail.trim() || !loginPassword.trim() || isLoginLoading}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !loginEmail.trim() || !loginPassword.trim() || isLoginLoading
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!loginEmail.trim() || !loginPassword.trim() || isLoginLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                    }`}
                 >
                   {isLoginLoading ? "Signing in…" : "Login account"}
                 </button>
@@ -1515,12 +1512,11 @@ export default function AssessmentSteps() {
                     !registerConfirm.trim() ||
                     isRegisterLoading
                   }
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                    !registerEmail.trim() || !registerPhone.trim() ||
-                    !registerPassword.trim() || !registerConfirm.trim() || isRegisterLoading
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!registerEmail.trim() || !registerPhone.trim() ||
+                      !registerPassword.trim() || !registerConfirm.trim() || isRegisterLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                    }`}
                 >
                   {isRegisterLoading ? "Creating account…" : "Create account"}
                 </button>
@@ -1569,11 +1565,10 @@ export default function AssessmentSteps() {
               <button
                 onClick={handleNext}
                 disabled={isNextDisabled()}
-                className={`px-8 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
-                  isNextDisabled()
+                className={`px-8 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${isNextDisabled()
                     ? "bg-blue-300 text-white cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
+                  }`}
               >
                 Next
               </button>
