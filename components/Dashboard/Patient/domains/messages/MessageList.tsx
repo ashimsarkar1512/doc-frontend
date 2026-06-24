@@ -1,43 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, ChevronRight } from 'lucide-react';
-
-interface ChatThread {
-  id: string;
-  doctorName: string;
-  category: string;
-  consultationId: string;
-  avatar: string;
-  isActive: boolean;
-}
-
-const mockThreads: ChatThread[] = [
-  {
-    id: 'chat-1',
-    doctorName: 'Dr. Jeffrey Richter MD',
-    category: 'Weight Loss',
-    consultationId: '#001256',
-    avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=150&auto=format&fit=crop',
-    isActive: true,
-  },
-  {
-    id: 'chat-2',
-    doctorName: 'Dr. Runa Pradhan NP',
-    category: 'Individual Therapy',
-    consultationId: '#001257',
-    avatar: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?q=80&w=150&auto=format&fit=crop',
-    isActive: true,
-  },
-  {
-    id: 'chat-3',
-    doctorName: 'Dr. Nicole Sheeder NP',
-    category: 'Anxiety & Stress',
-    consultationId: '#001258',
-    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=150&auto=format&fit=crop',
-    isActive: false,
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { Search, ChevronRight, User } from 'lucide-react';
+import { useGetConversationsQuery } from '@/Redux/api/messageApi';
+import { useSocket } from '@/providers/SocketProvider';
 
 interface MessageListProps {
   onSelectChat: (id: string) => void;
@@ -45,11 +11,43 @@ interface MessageListProps {
 
 export default function MessageList({ onSelectChat }: MessageListProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { data, isLoading } = useGetConversationsQuery({ search: searchQuery });
+  const { socket } = useSocket();
+  const [conversations, setConversations] = useState<any[]>([]);
 
-  const filteredThreads = mockThreads.filter((t) =>
-    t.doctorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    if (data?.data) {
+      setConversations(data.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUserOnline = ({ userId }: { userId: string }) => {
+      setConversations(prev => prev.map(conv => {
+        if (conv.patientId === userId) return { ...conv, isPatientOnline: true };
+        if (conv.providerId === userId) return { ...conv, isProviderOnline: true };
+        return conv;
+      }));
+    };
+
+    const handleUserOffline = ({ userId }: { userId: string }) => {
+      setConversations(prev => prev.map(conv => {
+        if (conv.patientId === userId) return { ...conv, isPatientOnline: false };
+        if (conv.providerId === userId) return { ...conv, isProviderOnline: false };
+        return conv;
+      }));
+    };
+
+    socket.on('user_online', handleUserOnline);
+    socket.on('user_offline', handleUserOffline);
+
+    return () => {
+      socket.off('user_online', handleUserOnline);
+      socket.off('user_offline', handleUserOffline);
+    };
+  }, [socket]);
 
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200">
@@ -65,7 +63,7 @@ export default function MessageList({ onSelectChat }: MessageListProps) {
         </span>
         <input
           type="text"
-          placeholder="Search jobs..."
+          placeholder="Search by name or category..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-11 pr-4 py-3 bg-white border border-gray-150 rounded-[14px] text-sm text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400 shadow-sm shadow-black/5"
@@ -74,47 +72,64 @@ export default function MessageList({ onSelectChat }: MessageListProps) {
 
       {/* Message Chat List */}
       <div className="bg-white rounded-3xl border border-gray-150 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col divide-y divide-gray-100">
-        {filteredThreads.length > 0 ? (
-          filteredThreads.map((thread) => (
-            <button
-              key={thread.id}
-              onClick={() => onSelectChat(thread.id)}
-              className="w-full flex items-center justify-between p-5 hover:bg-gray-50/50 text-left transition-all duration-150 group"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                {/* Avatar with indicator */}
-                <div className="relative flex-shrink-0">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100 bg-emerald-50">
-                    <img
-                      src={thread.avatar}
-                      alt={thread.doctorName}
-                      className="object-cover w-full h-full"
-                    />
+        {isLoading ? (
+          <div className="p-8 text-center text-gray-400 text-sm">Loading conversations...</div>
+        ) : conversations.length > 0 ? (
+          conversations.map((thread) => {
+            const isOnline = thread.isProviderOnline; // For patient view, we care about doctor's status
+            const doctor = thread.provider || {};
+            
+            return (
+              <button
+                key={thread.id}
+                onClick={() => onSelectChat(thread.id)}
+                className="w-full flex items-center justify-between p-5 hover:bg-gray-50/50 text-left transition-all duration-150 group"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  {/* Avatar with indicator */}
+                  <div className="relative flex-shrink-0">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100 bg-emerald-50">
+                      {doctor?.avatar ? (
+                        <img
+                          src={doctor.avatar}
+                          alt={doctor.name || 'Provider'}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600">
+                          <User className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                    {isOnline && (
+                      <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-500 border-2 border-white"></span>
+                    )}
                   </div>
-                  {thread.isActive && (
-                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-500 border-2 border-white"></span>
-                  )}
+
+                  {/* Details */}
+                  <div className="min-w-0">
+                    <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">
+                      {doctor?.name || 'Unknown Provider'}
+                    </h4>
+                    <p className="text-xs text-gray-400 mt-1 font-light flex flex-wrap items-center gap-1.5 leading-none">
+                      <span className="font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider text-[10px]">
+                        {thread.service.name}
+                      </span>
+                      {thread.submission && (
+                        <>
+                          <span>&bull;</span>
+                          <span>{thread.submission.submissionCode}</span>
+                        </>
+                      )}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Details */}
-                <div className="min-w-0">
-                  <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">
-                    {thread.doctorName}
-                  </h4>
-                  <p className="text-xs text-gray-400 mt-1 font-light flex flex-wrap items-center gap-1.5 leading-none">
-                    <span className="font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider text-[10px]">
-                      {thread.category}
-                    </span>
-                    <span>&bull;</span>
-                    <span>Consultation id: {thread.consultationId}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Chevron */}
-              <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-            </button>
-          ))
+                {/* Right Chevron */}
+                <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+              </button>
+            );
+          })
         ) : (
           <div className="p-8 text-center text-gray-400 text-sm">
             No active message threads found.
