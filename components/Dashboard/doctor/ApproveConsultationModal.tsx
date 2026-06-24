@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { useUpdateConsultationStatusMutation } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
 import { toast } from "sonner";
 
-interface AssessmentDeclineModalProps {
+interface ApproveConsultationModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientName: string;
@@ -14,14 +14,14 @@ interface AssessmentDeclineModalProps {
   submittedDate: string;
 }
 
-export default function AssessmentDeclineModal({
+export default function ApproveConsultationModal({
   isOpen,
   onClose,
   patientName,
   consultationId,
   submittedDate,
-}: AssessmentDeclineModalProps) {
-  const [reason, setReason] = useState("");
+}: ApproveConsultationModalProps) {
+  const [consultationNote, setConsultationNote] = useState("");
   const [updateConsultationStatus, { isLoading }] =
     useUpdateConsultationStatusMutation();
 
@@ -30,12 +30,12 @@ const handleSubmit = async () => {
     const res = await updateConsultationStatus({
       id: consultationId,
       body: {
-        status: "REJECTED",
-        doctorNotes: reason,
+        status: "ACCEPTED",
+        doctorNotes: consultationNote,
       },
     }).unwrap();
 
-    console.log("rrrrrrrre:", res);
+    console.log("Success:", res);
 
     if (res?.success) {
       toast.success(res.message || "Updated successfully");
@@ -52,15 +52,16 @@ const handleSubmit = async () => {
     );
   }
 };
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Assessment Decline Reason</h2>
+          <h2 className="text-xl font-bold text-gray-900">
+            Approve & Provide Consultation
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -73,24 +74,26 @@ const handleSubmit = async () => {
         <div className="p-6 space-y-6">
           {/* Patient Info */}
           <div>
-            <p className="text-gray-900 font-semibold mb-1">Patient: {patientName}</p>
-            <p className="text-sm text-gray-500 space-x-4">
+            <p className="text-gray-900 font-semibold mb-1">
+              Patient: {patientName}
+            </p>
+            <p className="text-xs text-gray-500 space-x-4">
               <span>Consultation id: #{consultationId}</span>
               <span>Submitted: {submittedDate}</span>
             </p>
           </div>
 
-          {/* Decline Reason */}
+          {/* Consultation Input */}
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-3">
-              Describe Reason:
+              Consultation Notes:
             </label>
             <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Write you r opinion....."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm text-gray-700 placeholder:text-gray-400"
-              rows={8}
+              value={consultationNote}
+              onChange={(e) => setConsultationNote(e.target.value)}
+              placeholder="Write consultation for patient..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm text-gray-700"
+              rows={6}
             />
           </div>
         </div>
@@ -99,19 +102,17 @@ const handleSubmit = async () => {
         <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
           <button
             onClick={onClose}
-            className="flex-1 bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
-                onClick={handleSubmit}
+            onClick={handleSubmit}
             disabled={isLoading}
-            className="flex-1 bg-[#e07856] hover:bg-[#d46745] text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            Decline
-            {isLoading ? "Processing..." : "Decline"}
+            {isLoading ? "Processing..." : "Approve"}
           </button>
-           
         </div>
       </div>
     </div>

@@ -108,7 +108,7 @@ export default function WeightLossPage() {
 
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-10">
             <p className="text-white text-[15px] font-light tracking-wide mb-8 flex items-center gap-1.5 drop-shadow-md">
-              Services <ChevronRight className="w-4 h-4" /> Weight Loss
+              Services <ChevronRight className="w-4 h-4" /> Weight Loss  
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white max-w-[1000px] leading-[1.15] mb-12 drop-shadow-lg tracking-tight">
               Take control of your body with <br className="hidden md:block" /> our weight loss service
