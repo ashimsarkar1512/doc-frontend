@@ -215,7 +215,9 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
   // ✅ click -> redirect to product route, categoryId as query param for the API call
   const handleCategoryClick = (category: CategoryItem) => {
     const slug = slugify(category.name);
-    router.push(`/products/${slug}?categoryId=${category.id}`);  // DEVELOPER NOTE: redirect ar jonno ai khane route ta chnage kore  dilei hbe
+    // router.push(`/common-services/categoryId=${category.id}`);  // DEVELOPER NOTE: redirect ar jonno ai khane route ta chnage kore  dilei hbe
+    router.push(`/common-services/${category.id}`);
+    // router.push(`/common-services/${slug}-${category.id}`);
   };
 
   const isDesktop = variant === "desktop";

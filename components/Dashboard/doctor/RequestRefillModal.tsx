@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useUpdateConsultationStatusMutation } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
+import { toast } from "sonner";
 
 interface RequestRefillModalProps {
   isOpen: boolean;
@@ -18,27 +21,40 @@ export default function RequestRefillModal({
   consultationId,
   submittedDate,
 }: RequestRefillModalProps) {
-  const [refillType, setRefillType] = useState<{
-    assessment: boolean;
-    products: boolean;
-  }>({
-    assessment: true,
-    products: false,
-  });
+ 
   const [reason, setReason] = useState("");
 
-  const handleRefillChange = (type: "assessment" | "products") => {
-    setRefillType((prev) => ({
-      ...prev,
-      [type]: !prev[type],
-    }));
-  };
 
-  const handleSubmit = () => {
-    console.log("Refill Information:", { refillType, reason });
-    // Handle submit logic here
+  const [updateConsultationStatus, { isLoading }] =
+    useUpdateConsultationStatusMutation();
+
+const handleSubmit = async () => {
+  try {
+    const res = await updateConsultationStatus({
+      id: consultationId,
+      body: {
+        status: "REFIL_REQUESTED",
+        doctorNotes: reason,
+      },
+    }).unwrap();
+
+    console.log("rrrrrrrre:", res);
+
+    if (res?.success) {
+      toast.success(res.message || "Updated successfully");
+    } else {
+      toast.error(res.message || "Something went wrong");
+    }
+
     onClose();
-  };
+  } catch (error: any) {
+    console.error("Error:", error);
+
+    toast.error(
+      error?.data?.message || "Failed to update consultation status"
+    );
+  }
+};
 
   if (!isOpen) return null;
 
@@ -67,36 +83,7 @@ export default function RequestRefillModal({
             </p>
           </div>
 
-          {/* What to refill */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-3">
-              What to refill:
-            </label>
-            <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={refillType.assessment}
-                  onChange={() => handleRefillChange("assessment")}
-                  className="w-5 h-5 rounded text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
-                />
-                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
-                  Assessment
-                </span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={refillType.products}
-                  onChange={() => handleRefillChange("products")}
-                  className="w-5 h-5 rounded text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
-                />
-                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
-                  Products
-                </span>
-              </label>
-            </div>
-          </div>
+        
 
           {/* Refill Reason */}
           <div>
@@ -123,10 +110,13 @@ export default function RequestRefillModal({
           </button>
           <button
             onClick={handleSubmit}
+            disabled={isLoading}
             className="flex-1 bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Submit
+          
+            {isLoading ? "Submitting..." : "Submit"}
           </button>
+            
         </div>
       </div>
     </div>

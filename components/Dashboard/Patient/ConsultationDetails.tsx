@@ -151,9 +151,9 @@ export default function ConsultationDetails({
             </span>
             <span
               className={`text-[11px] font-bold text-white px-3 py-1 rounded-full uppercase tracking-wide ${
-                data.status === "ACCEPTED"
+                consultation.status === "ACCEPTED"
                   ? "bg-[#10b981]"
-                  : data.status === "PENDING"
+                  : consultation.status === "PENDING"
                     ? "bg-[#f59e0b]"
                     : "bg-[#ef4444]"
               }`}
