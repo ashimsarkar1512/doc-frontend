@@ -1,6 +1,7 @@
 import React from "react";
 import { Home, FolderOpen, Bell, Settings, Plus } from "lucide-react";
 import Link from "next/link";
+import { useGetNotificationsQuery } from "@/Redux/features/notifications/notificationApi";
 
 interface ActionBarProps {
   activeDomain: "dashboard" | "messages" | "notifications" | "settings";
@@ -14,6 +15,9 @@ export default function ActionBar({
   activeDomain,
   onChangeDomain,
 }: ActionBarProps) {
+  const { data: notificationsData } = useGetNotificationsQuery();
+  const unreadCount = notificationsData?.data?.unreadCount || 0;
+
   const getButtonClass = (
     domain: "dashboard" | "messages" | "notifications" | "settings",
   ) => {
@@ -51,9 +55,14 @@ export default function ActionBar({
         <button
           onClick={() => onChangeDomain("notifications")}
           aria-label="Notifications"
-          className={getButtonClass("notifications")}
+          className={`${getButtonClass("notifications")} relative`}
         >
           <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
         </button>
 
         {/* Settings Control */}

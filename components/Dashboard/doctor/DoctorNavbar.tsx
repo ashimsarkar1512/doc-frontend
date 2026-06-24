@@ -8,6 +8,7 @@ import { ChevronDown, LayoutDashboard, LogOut, User, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function DoctorNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,6 +80,9 @@ export default function DoctorNavbar() {
               Doctor
             </span>
           </div>
+
+          {/* Notifications */}
+          <NotificationDropdown />
 
           {/* Profile Button + Dropdown */}
           <div ref={dropdownRef} className="relative">
