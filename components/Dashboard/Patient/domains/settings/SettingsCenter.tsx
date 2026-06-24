@@ -118,7 +118,7 @@ export default function SettingsCenter() {
       await updateProfile({ avatarId: newAvatarId }).unwrap();
       toast.success("Profile picture updated");
       refetch();
-    } catch {
+    } catch (error) {
       toast.error("Failed to upload image");
     }
   };

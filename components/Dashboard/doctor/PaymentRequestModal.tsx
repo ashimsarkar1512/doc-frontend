@@ -7,24 +7,26 @@ interface PaymentRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientName?: string;
+  onSubmit?: (data: { title: string; message: string; fee: string }) => void;
 }
 
-export default function PaymentRequestModal({ isOpen, onClose, patientName }: PaymentRequestModalProps) {
+export default function PaymentRequestModal({ isOpen, onClose, patientName, onSubmit }: PaymentRequestModalProps) {
   const [formData, setFormData] = useState({
-    requestFor: patientName || "",
-    proposal: "",
-    amount: "",
-    date: "",
-    time: "",
+    title: "Personalized Weight Loss Consultation",
+    message: "",
+    fee: "",
   });
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Payment request submitted:", formData);
-    onClose();
+    if (onSubmit) {
+      onSubmit(formData);
+    } else {
+      console.log("Payment request submitted:", formData);
+      onClose();
+    }
   };
 
   return (
@@ -53,28 +55,28 @@ export default function PaymentRequestModal({ isOpen, onClose, patientName }: Pa
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Request For */}
+          {/* Proposal Title */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Request For
+              Proposal Title
             </label>
             <input
               type="text"
-              value={formData.requestFor}
-              onChange={(e) => setFormData({ ...formData, requestFor: e.target.value })}
-              placeholder="Patient name"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g. Personalized Weight Loss Consultation"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
 
-          {/* Proposal */}
+          {/* Proposal Message */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Write Your Proposal
+              Write Your Proposal Message
             </label>
             <textarea
-              value={formData.proposal}
-              onChange={(e) => setFormData({ ...formData, proposal: e.target.value })}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder="Describe the services and details..."
               rows={4}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
@@ -90,43 +92,11 @@ export default function PaymentRequestModal({ isOpen, onClose, patientName }: Pa
               <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="number"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                value={formData.fee}
+                onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
                 placeholder="0.00"
                 className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
-            </div>
-          </div>
-
-          {/* Date and Time */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Date
-              </label>
-              <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Time
-              </label>
-              <div className="relative">
-                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="time"
-                  value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
             </div>
           </div>
 
