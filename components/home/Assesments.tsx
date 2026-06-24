@@ -3,6 +3,7 @@
 import { FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
+import { Search, RotateCcw } from "lucide-react";
 import { useGetCategoriesNamesQuery, useGetCategoriesQuery, type Assessment } from "@/Redux/features/patient/assesmentcategory";
 
 //  Constants 
@@ -236,15 +237,32 @@ export default function Assessments() {
         </div>
 
         {/* Empty State */}
-        {visibleCards.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">No assessments found in this category.</p>
-            <button
-              onClick={() => handleFilterChange("All")}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium underline underline-offset-2"
-            >
-              View all assessments
-            </button>
+        {visibleCards.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+              <Search className="w-10 h-10 text-blue-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No assessments found</h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
+              {activeFilter ? (
+                <>
+                  We couldn't find any assessments matching the{" "}
+                  <span className="font-semibold text-blue-600">"{activeFilter}"</span> category at
+                  the moment.
+                </>
+              ) : (
+                "There are currently no assessments available. Please check back later."
+              )}
+            </p>
+            {activeFilter && (
+              <button
+                onClick={() => handleFilterChange("All")}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95 group"
+              >
+                <RotateCcw className="w-4 h-4 transition-transform group-hover:rotate-[-45deg]" />
+                View all assessments
+              </button>
+            )}
           </div>
         )}
 
