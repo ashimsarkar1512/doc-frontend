@@ -178,7 +178,7 @@ const ReportForm = () => {
           ...prev,
           { id: res.data.id, name: file.name, type: file.type, size: file.size },
         ]);
-      } catch {
+      } catch (error) {
         toast.error(`Failed to upload ${file.name}`);
       } finally {
         setUploadingFiles((prev) => prev.filter((id) => id !== tempId));
@@ -224,7 +224,7 @@ const ReportForm = () => {
       setFormData({ firstName: '', lastName: '', email: '', description: '', serviceId: '', providerId: '' });
       setSelectedSeverity(null);
       setUploadedFiles([]);
-    } catch {
+    } catch (error) {
       toast.error('Failed to submit report. Please try again.');
     }
   };

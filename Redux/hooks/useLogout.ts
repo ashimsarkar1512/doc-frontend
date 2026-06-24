@@ -25,7 +25,7 @@ export function useLogout() {
           },
         }
       )
-    } catch {
+    } catch (error) {
       // API failure should never block logout
     } finally {
       // 1. Clear Redux state + localStorage + document cookies

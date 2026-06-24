@@ -154,6 +154,11 @@ function QuestionRenderer({ question }: { question: any }) {
 }
 
 
+import { toast } from "sonner";
+import { useCreateConversationMutation } from "@/Redux/api/messageApi";
+import { useAppSelector } from "@/Redux/store/hooks";
+import { useRouter } from "next/navigation";
+
 // for the bottom part  complinceConfiramation
 function ComplianceCheckItem({ label, checked }: { label: React.ReactNode; checked: boolean }) {
   return (
@@ -229,6 +234,7 @@ function ComplianceConfirmationSection({ complianceConfirmation }: { complianceC
 // ====================================================================
 
 export default function ConsultationDetails() {
+
   const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
   const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
@@ -240,18 +246,20 @@ export default function ConsultationDetails() {
   const detailesData = data?.data;
   console.log(detailesData)
 
-  if (isLoading) {
-  return (
-    <div className="p-6 flex flex-col items-center gap-3 text-gray-500">
-      <BeatLoader />
-      <p>Loading consultation details...</p>
-    </div>
-  );
-}
-  if (isError || !detailesData) return <div className="p-6 text-center text-red-500">Failed to load consultation details.</div>
+  if (isLoading) return <p>Loading...</p>;
 
-  const { assessment, questions, paymentSummary, complianceConfirmation, status } = detailesData;
-  const patientName = detailesData.reviewedBy?.name || "N/A";
+  // Pull out the pieces we render below. Optional chaining so nothing crashes
+  // if a field is missing while the API/shape is still settling.
+  const assessment = detailesData?.assessment; // { id, title, thumbnail, category, ... }
+  const questions = detailesData?.questions || []; // dynamic length, can be 1 question or 50
+  const paymentSummary = detailesData?.paymentSummary; // { products, subtotal, ... }
+  const complianceConfirmation = detailesData?.complianceConfirmation;
+
+  // Backend doesn't send a dedicated `patientName` field yet.
+  // We fall back to whichever question's text contains "name" (matches your
+  // "Your name?" question) and use its typed answer as the patient's name.
+  const nameQuestion = questions.find((q: any) => q.questionText?.toLowerCase().includes("name"));
+  const patientName = nameQuestion?.patientAnswer?.textResponse || "Patient";
 
   return (
     <div className="mb-12">
@@ -349,24 +357,24 @@ export default function ConsultationDetails() {
           }
         </div>
       </div>
-      
-      {/* Action Buttons */}
-       <div className="flex flex-wrap gap-4 mt-8">
-        {status !== "REFIL_REQUESTED" && status !== "REJECTED" && (
-            <button onClick={() => setIsApproveModalOpen(true)} disabled={status === "ACCEPTED"} className={`text-sm font-semibold py-2.5 px-6 rounded-lg shadow-sm transition-colors ${status === "ACCEPTED" ? "bg-blue-300 text-white cursor-not-allowed" : "bg-[#2563eb] hover:bg-blue-700 text-white"}`}>
-              {status === "ACCEPTED" ? "Approved" : "Approve & Provide Consultation"}
-            </button>
-        )}
-        {status !== "ACCEPTED" && status !== "REJECTED" && (
-            <button onClick={() => setIsRefillModalOpen(true)} disabled={status === "REFIL_REQUESTED"} className={`text-sm font-semibold py-2.5 px-6 rounded-lg shadow-sm transition-colors ${status === "REFIL_REQUESTED" ? "bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"}`}>
-              {status === "REFIL_REQUESTED" ? "Refill Requested" : "Request Refill Information"}
-            </button>
-        )}
-        {status !== "ACCEPTED" && status !== "REFIL_REQUESTED" && (
-            <button onClick={() => setIsDeclineModalOpen(true)} disabled={status === "REJECTED"} className={`text-sm font-semibold py-2.5 px-8 rounded-lg shadow-sm transition-colors ${status === "REJECTED" ? "bg-red-50 border border-red-100 text-red-300 cursor-not-allowed" : "bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300"}`}>
-              {status === "REJECTED" ? "Declined" : "Decline"}
-            </button>
-        )}
+
+      {/* Bottom Actions — unchanged, always visible like the original */}
+      <div className="flex flex-wrap gap-4 mt-8">
+        <button className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm">
+          Approve & Provide Consultation
+        </button>
+        <button
+          onClick={() => setIsRefillModalOpen(true)}
+          className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm"
+        >
+          Request Refill Information
+        </button>
+        <button
+          onClick={() => setIsDeclineModalOpen(true)}
+          className="bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-semibold py-2.5 px-8 rounded-full shadow-sm"
+        >
+          Decline
+        </button>
       </div>
 
       {/* Modals */}

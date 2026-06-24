@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { ReduxProvider } from "@/providers/redux.provider";
+import { SocketProvider } from "@/providers/SocketProvider";
+import { E2EEProvider } from "@/providers/E2EEProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,8 +40,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ReduxProvider>
-          <Toaster richColors position="top-right" />
-          <div className="flex-1">{children}</div>
+          <SocketProvider>
+            <E2EEProvider>
+              <Toaster richColors position="top-right" />
+              <div className="flex-1">{children}</div>
+            </E2EEProvider>
+          </SocketProvider>
         </ReduxProvider>
 
         {/* Live chat widget start */}
