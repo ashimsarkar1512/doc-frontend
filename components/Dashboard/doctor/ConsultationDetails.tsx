@@ -253,6 +253,7 @@ export default function ConsultationDetails() {
   const assessment = detailesData?.assessment; // { id, title, thumbnail, category, ... }
   const questions = detailesData?.questions || []; // dynamic length, can be 1 question or 50
   const paymentSummary = detailesData?.paymentSummary; // { products, subtotal, ... }
+  const complianceConfirmation = detailesData?.complianceConfirmation;
 
   // Backend doesn't send a dedicated `patientName` field yet.
   // We fall back to whichever question's text contains "name" (matches your
