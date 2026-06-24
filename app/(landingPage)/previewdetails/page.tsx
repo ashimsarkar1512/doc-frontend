@@ -12,6 +12,7 @@ import {
   useEditAssessmentSubmissionMutation,
   useGetMyCartQuery,
   useGetCartSummaryQuery,
+  useCheckoutMutation,
 } from "@/Redux/features/patient/assesmentcategory";
 import { useUploadAttachmentMutation } from "@/Redux/api/authApi";
 
@@ -31,7 +32,7 @@ export default function PreviewDetailsPage() {
     if (id) setSubmissionId(id);
     else {
       toast.error("No assessment submission found.");
-      router.push("/dashboard/patient");
+      router.push("/patient");
     }
     
     const payloadStr = localStorage.getItem("checkoutPayload");
@@ -53,6 +54,7 @@ export default function PreviewDetailsPage() {
 
   const [editAssessmentSubmission, { isLoading: isSaving }] = useEditAssessmentSubmissionMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
+  const [checkout, { isLoading: isCheckingOut }] = useCheckoutMutation();
 
   const cartItems = cartData?.data?.items ?? [];
   const itemCount = cartData?.data?.totalItem ?? 0;
@@ -148,30 +150,36 @@ export default function PreviewDetailsPage() {
     }
   };
 
-  const submitFinalAssessment = async () => {
+  const handleConfirmAndPay = async () => {
     try {
-      if (!submissionId || !submissionData?.questions) return;
-
-      const answersToSubmit: any[] = [];
-      for (const q of submissionData.questions) {
-        if (q.type === "INFORMATION_ONLY") continue;
-        const answerPayload: any = { questionId: q.id };
-        if (q.patientAnswer) {
-           if (q.type === "SINGLE_CHOICE" || q.type === "MULTIPLE_CHOICE") {
-             answerPayload.selectedOptionIds = q.patientAnswer.selectedOptions?.map((o: any) => o.id) || [];
-           } else if (q.type === "INPUT") {
-             answerPayload.textResponse = q.patientAnswer.file?.id || q.patientAnswer.textResponse || "";
-           }
-           answersToSubmit.push(answerPayload);
-        }
+      if (!submissionId) {
+        toast.error("Submission ID not found.");
+        return;
       }
 
-      await editAssessmentSubmission({ id: submissionId, answers: answersToSubmit }).unwrap();
-      toast.success("Assessment submitted for medical review!");
-      router.push("/dashboard/patient");
+      if (!checkoutPayload) {
+        toast.error("Payment information not found. Please complete the checkout steps.");
+        router.push("/checkout");
+        return;
+      }
+
+      // Merge the latest submissionId into the checkout payload
+      const finalPayload = {
+        ...checkoutPayload,
+        submissionId: submissionId,
+      };
+
+      const res = await checkout(finalPayload).unwrap();
+
+      if (res.success) {
+        toast.success("Payment successful! Assessment submitted for review.");
+        localStorage.removeItem("submissionId");
+        localStorage.removeItem("checkoutPayload");
+        router.push("/patient");
+      }
     } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to submit assessment.");
-      console.error(e);
+      toast.error(e?.data?.message || "Payment failed. Please try again.");
+      console.error("Checkout error:", e);
     }
   };
 
@@ -552,19 +560,19 @@ export default function PreviewDetailsPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
             <div className="flex gap-3 w-full sm:w-auto">
               <button 
-                onClick={submitFinalAssessment} 
-                disabled={isSaving}
+                onClick={handleConfirmAndPay} 
+                disabled={isCheckingOut || isSaving}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white text-[13px] font-medium px-5 py-2 rounded-lg transition-colors"
               >
-                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Submit for medical review
+                {(isCheckingOut || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                Confirm & Pay
               </button>
               <Link href="/checkout" className="flex-1 sm:flex-none text-[#EF4444] border border-[#EF4444] hover:bg-red-50 text-[13px] font-medium px-5 py-2 rounded-lg transition-colors text-center">
                 Cancel
               </Link>
             </div>
             
-            {!isEditing && (
+            {submissionData.status === 'DRAFT' && !isEditing && (
               <button onClick={() => setIsEditing(true)} className="w-full sm:w-auto text-gray-600 border border-gray-300 hover:bg-gray-50 text-[13px] font-medium px-5 py-2 rounded-lg transition-colors text-center">
                 Edit before submitting
               </button>
