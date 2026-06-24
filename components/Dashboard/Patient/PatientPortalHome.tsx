@@ -115,8 +115,8 @@ export default function PatientPortalHome() {
   const { data: assessmentsResponse } = useGetMyAssessmentsQuery({
     status: getApiStatus(activeTab)
   }, { skip: activeTab === "My Orders" });
-  const submissions = assessmentsResponse?.data?.submissions || [];
-  const counts = assessmentsResponse?.data?.counts || {};
+  const submissions = assessmentsResponse?.submissions || [];
+  const counts = assessmentsResponse?.counts || {};
 
   const mappedConsultations: Consultation[] = submissions.map((sub) => ({
     id: sub.id,

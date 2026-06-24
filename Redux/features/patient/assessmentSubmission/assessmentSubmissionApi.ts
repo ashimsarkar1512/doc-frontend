@@ -24,17 +24,22 @@ export interface MyAssessmentSubmission {
 
 export interface MyAssessmentsResponse {
   success: boolean;
+  statusCode: number;
   message: string;
-  data: {
-    submissions: MyAssessmentSubmission[];
-    counts: {
-      ACCEPTED?: number;
-      PENDING?: number;
-      REFIL_REQUESTED?: number;
-      REJECTED?: number;
-      DRAFT?: number;
-      REVIEWED?: number;
-    };
+  submissions: MyAssessmentSubmission[];
+  counts: {
+    ACCEPTED?: number;
+    PENDING?: number;
+    REFIL_REQUESTED?: number;
+    REJECTED?: number;
+    DRAFT?: number;
+    REVIEWED?: number;
+  };
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
   };
 }
 
@@ -54,5 +59,5 @@ export const assessmentSubmissionApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetMyAssessmentsQuery } = assessmentSubmissionApi;
+export const { useGetMyAssessmentsQuery, useGetMyAssessmentByIdQuery } = assessmentSubmissionApi;
 export default assessmentSubmissionApi;

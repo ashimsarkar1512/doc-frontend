@@ -5,6 +5,8 @@ export interface Consultation {
   category: string;
   status: 'DRAFT' | 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'REFIL_REQUESTED' | 'REJECTED';
   image: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type TabType = 'DRAFT' | 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'REFIL_REQUESTED' | 'REJECTED' | 'My Orders';
