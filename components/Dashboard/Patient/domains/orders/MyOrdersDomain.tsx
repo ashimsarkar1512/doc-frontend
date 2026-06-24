@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { ChevronDown, PackageX } from "lucide-react";
 import OrderCard from "./OrderCard";
+
 import { useGetMyOrdersQuery } from "@/Redux/features/patient/orders/orderApi";
 import { OrderDateRange, OrderStatus } from "@/types/orderTypes";
+import OrderDetails from "./OrderDetails";
+
 
 export default function MyOrdersDomain() {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "ALL">("ALL");
   const [selectedDate, setSelectedDate] = useState<OrderDateRange>("ALL");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+console.log(selectedOrderId)
+
   
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isDateOpen, setIsDateOpen] = useState(false);
@@ -43,6 +50,10 @@ export default function MyOrdersDomain() {
   const orders = ordersResponse?.orders || [];
 
 
+
+  if (selectedOrderId) {
+    return <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />;
+  }
 
   return (
     <div className="flex flex-col w-full animate-in fade-in duration-300">
@@ -119,7 +130,7 @@ export default function MyOrdersDomain() {
       ) : orders.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
           {orders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard key={order.id} order={order} onViewDetails={setSelectedOrderId} />
           ))}
         </div>
       ) : (

@@ -13,8 +13,12 @@ export const orderApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Orders"],
     }),
+    getMyOrderById: builder.query<any, string>({
+      query: (id) => `/my-orders/${id}`,
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
-export const { useGetMyOrdersQuery } = orderApi;
+export const { useGetMyOrdersQuery, useGetMyOrderByIdQuery } = orderApi;
 export default orderApi;
