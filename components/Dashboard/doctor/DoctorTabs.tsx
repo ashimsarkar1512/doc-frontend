@@ -224,14 +224,13 @@
 //   );
 // }
 
-
-
 "use client";
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetMyConsultationsQuery } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
+import  fallBackImg from "@/public/p-image-fallback.jpg"
 
 export default function DoctorTabs() {
   const [activeTab, setActiveTab] = useState("ACTIVE_CONSULTATION");
@@ -270,16 +269,14 @@ export default function DoctorTabs() {
       consultationId: `#${item.id}`,
 
       buttonText:
-        item.status === "PENDING"
-          ? "View Details"
-          : "Open Consultation",
+        item.status === "PENDING" ? "View Details" : "Open Consultation",
 
       status:
         item.status === "PENDING"
           ? "Pending"
           : item.status === "REJECTED"
-          ? "Declined"
-          : "Approved",
+            ? "Declined"
+            : "Approved",
     }));
   }, [consultations]);
 
@@ -351,7 +348,6 @@ export default function DoctorTabs() {
       {/* ================= TABS ================= */}
       <div className="mb-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible">
         <div className="flex w-max min-w-full gap-2 rounded-2xl bg-gray-50 p-1 md:w-full md:gap-8 md:rounded-none md:border-b md:border-gray-200 md:bg-transparent md:p-0">
-
           {TABS.map((tab) => (
             <button
               key={tab.value}
@@ -373,21 +369,21 @@ export default function DoctorTabs() {
 
       {/* ================= LOADING ================= */}
       {isLoading ? (
-        <div className="py-10 text-center text-gray-400">
-          Loading...
-        </div>
+        <div className="py-10 text-center text-gray-400">Loading...</div>
       ) : (
         <>
           {/* ================= CARDS ================= */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {cards.map((card: any) => (
               <div key={card.id} className="flex flex-col">
-
                 {/* Image */}
                 <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-gray-50 shadow-sm border border-gray-100/50">
                   <Image
                     src={card.image}
                     alt={card.title}
+                    onError={(e) => {
+                      e.currentTarget.src = fallBackImg.src;
+                    }}
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-500"
                   />
@@ -397,8 +393,8 @@ export default function DoctorTabs() {
                       card.status === "Pending"
                         ? "bg-[#eab308]/90"
                         : card.status === "Declined"
-                        ? "bg-red-500"
-                        : "bg-green-500"
+                          ? "bg-red-500"
+                          : "bg-green-500"
                     }`}
                   >
                     {card.status}
