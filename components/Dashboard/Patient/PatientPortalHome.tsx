@@ -295,7 +295,20 @@ export default function PatientPortalHome() {
       {/* 3. Event Notification Domain view */}
       {activeDomain === "notifications" && (
         <div className="w-full">
-          <NotificationCenter/>
+          <NotificationCenter
+            onNotificationClick={(notif) => {
+               if (notif.actionType === "NEW_MESSAGE") {
+                  setActiveDomain("messages");
+                  setSelectedChatId(notif.referenceId);
+               } else if (notif.actionType.startsWith("ASSESSMENT_")) {
+                  setActiveDomain("dashboard");
+                  setSelectedConsultationId(notif.referenceId);
+               } else if (notif.actionType === "ORDER_STATUS_UPDATED") {
+                  setActiveDomain("dashboard");
+                  setActiveTab("My Orders");
+               }
+            }}
+          />
         </div>
       )}
 
