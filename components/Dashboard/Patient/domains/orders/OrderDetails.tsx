@@ -60,6 +60,23 @@ export default function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
     }
   }
 
+  // Fallback to order status for progress bar if timeline dates are missing
+  const statusToStepMap: Record<string, number> = {
+    "DELIVERED": 4,
+    "SHIPPED": 3,
+    "PROCESSING": 2,
+    "IN_PROGRESS": 2,
+    "APPROVED": 1,
+    "CONFIRMED": 1,
+    "SUBMITTED": 0,
+    "PENDING": 0,
+  };
+
+  const statusStr = order.status?.toUpperCase() || "";
+  if (statusToStepMap[statusStr] !== undefined && statusToStepMap[statusStr] > activeStepIndex) {
+    activeStepIndex = statusToStepMap[statusStr];
+  }
+
   return (
     <div className="flex flex-col w-full animate-in fade-in duration-300 font-sans text-gray-900 pb-12">
       {/* Header */}
