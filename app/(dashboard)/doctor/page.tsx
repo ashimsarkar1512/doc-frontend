@@ -22,6 +22,7 @@ import MessagesPanel from "@/components/Dashboard/doctor/MessagesPanel";
 import DoctorNavbar from "@/components/Dashboard/doctor/DoctorNavbar";
 import DoctorSettings from "@/components/Dashboard/doctor/DoctorSettings";
 import DashboardStatsCards from "@/components/Dashboard/doctor/DashboardStatsCards/DashboardStatsCards";
+import DoctorNotificationWrapper from "@/components/Dashboard/doctor/DoctorNotificationWrapper";
 
 
 
@@ -136,31 +137,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
     if (isMessages) return <MessagesPanel />;
     if (isSettings) return <DoctorSettings />;
     if (isNotifications) {
-      return (
-        <section className="pt-1">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Notifications</h2>
-
-          <div className="space-y-7">
-            <div>
-              <p className="mb-2 text-sm text-gray-500">Today</p>
-              <div className="space-y-3">
-                {doctorNotifications.today.map((item, index) =>
-                  renderNotificationItem(item, index === 0)
-                )}
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-3 text-sm text-gray-500">This week</p>
-              <div className="space-y-3">
-                {doctorNotifications.thisWeek.map((item) =>
-                  renderNotificationItem(item)
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      );
+      return <DoctorNotificationWrapper />;
     }
     return <DoctorTabs />;
   };

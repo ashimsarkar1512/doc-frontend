@@ -107,7 +107,14 @@ export default function LabTestingPage() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold text-white leading-[1.12] mb-4 sm:mb-6 drop-shadow-md tracking-tight">
               WLMD Lab Tests
             </h1>
-            <button className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-full transition-colors shadow-md text-[13px] sm:text-[14px]">
+            <button
+                onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+             className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-full transition-colors shadow-md text-[13px] sm:text-[14px]">
               Book a consultation
             </button>
           </div>
@@ -155,7 +162,7 @@ export default function LabTestingPage() {
                       {service.description}
                     </p>
                     <button className="self-start bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[12px] sm:text-[13px] font-medium px-4 sm:px-5 py-2 rounded-full transition-colors">
-                      Learn More
+                    Coming soon
                     </button>
                   </div>
                 </div>
@@ -212,7 +219,14 @@ export default function LabTestingPage() {
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
-            <button className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap">
+            <button
+                onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap">
               Book a consultation
             </button>
           </div>

@@ -1,20 +1,29 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { X, CreditCard, ShieldCheck } from 'lucide-react';
 
 interface StripeCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (paymentData: any) => void;
+  amount?: string;
 }
 
-export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: StripeCheckoutModalProps) {
+export default function StripeCheckoutModal({ isOpen, onClose, onSuccess, amount }: StripeCheckoutModalProps) {
+  const [formData, setFormData] = useState({
+    paymentMethod: 'CREDIT_CARD',
+    cardholderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: ''
+  });
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSuccess();
+    onSuccess(formData);
   };
 
   return (
@@ -63,6 +72,8 @@ export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: Stri
                 <input
                   type="text"
                   required
+                  value={formData.cardholderName}
+                  onChange={(e) => setFormData({ ...formData, cardholderName: e.target.value })}
                   placeholder="Alan Cattoch"
                   className="w-full bg-gray-50 border border-gray-150 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
                 />
@@ -74,6 +85,8 @@ export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: Stri
                 <input
                   type="text"
                   required
+                  value={formData.cardNumber}
+                  onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
                   placeholder="1234 5678 9012 3456"
                   maxLength={19}
                   className="w-full bg-gray-50 border border-gray-150 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
@@ -87,6 +100,8 @@ export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: Stri
                   <input
                     type="text"
                     required
+                    value={formData.expiryDate}
+                    onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
                     placeholder="12/28"
                     maxLength={5}
                     className="w-full bg-gray-50 border border-gray-150 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
@@ -98,8 +113,10 @@ export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: Stri
                   <input
                     type="password"
                     required
+                    value={formData.cvv}
+                    onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
                     placeholder="123"
-                    maxLength={3}
+                    maxLength={4}
                     className="w-full bg-gray-50 border border-gray-150 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400"
                   />
                 </div>
@@ -138,7 +155,7 @@ export default function StripeCheckoutModal({ isOpen, onClose, onSuccess }: Stri
 
               <div className="flex justify-between items-center py-1">
                 <span className="text-xs font-bold text-gray-800">Total payable</span>
-                <span className="text-xl font-black text-blue-600">$148.00</span>
+                <span className="text-xl font-black text-blue-600">${amount || '148.00'}</span>
               </div>
 
               <div className="bg-blue-50 border border-blue-100/50 rounded-xl p-3 flex gap-2 text-blue-700">

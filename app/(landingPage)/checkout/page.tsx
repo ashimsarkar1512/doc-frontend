@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
-import { ShieldCheck, ChevronDown, Trash2, Tag, CheckCircle, Loader2, ShoppingCart } from "lucide-react";
+import {
+  ShieldCheck,
+  ChevronDown,
+  Trash2,
+  Tag,
+  CheckCircle,
+  Loader2,
+  ShoppingCart,
+  CalendarDays,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 import {
   useGetMyCartQuery,
   useGetCartSummaryQuery,
@@ -14,6 +26,39 @@ import {
   useRemoveFromCartMutation,
   useCheckoutMutation,
 } from "@/Redux/features/patient/assesmentcategory";
+import {
+  formatCardNumber,
+  validateCardNumber,
+  formatExpiry,
+  validateExpiry,
+  EXPIRY_MONTH_OPTIONS,
+  getExpiryYearOptions,
+  formatCVV,
+  validateCVV,
+  formatZip,
+  validateZip,
+  validatePhone,
+  validateCardHolderName,
+  stripNonDigits,
+} from "@/utils/checkoutvalidation";
+
+/* ──────────────────────────────────────────────────────────
+   Small reusable field wrapper that shows an error message
+   ────────────────────────────────────────────────────────── */
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p className="flex items-center gap-1 text-red-500 text-[12px] mt-1.5">
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+      {message}
+    </p>
+  );
+}
+
+const inputBase =
+  "w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:bg-white border transition-colors";
+const inputOk = "border-transparent focus:border-blue-500";
+const inputErr = "border-red-400 focus:border-red-500 bg-red-50";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -44,7 +89,7 @@ export default function CheckoutPage() {
   // ── Checkout Form State ──
   const [shippingInfo, setShippingInfo] = useState({
     fullName: "",
-    contactNumber: "",
+    contactNumber: "", // stored in E.164 format, e.g. "+15551234567"
     address: "",
     city: "",
     state: "",
@@ -69,7 +114,138 @@ export default function CheckoutPage() {
 
   const [recurring, setRecurring] = useState(true);
 
-  // ── Handlers ──
+  // ── Field-level errors (only shown after the field has been touched / on submit) ──
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const markTouched = (field: string) =>
+    setTouched((t) => ({ ...t, [field]: true }));
+
+  const setFieldError = (field: string, message: string) =>
+    setErrors((e) => ({ ...e, [field]: message }));
+
+  /* ── Expiry date picker (calendar-style month/year dropdown) ── */
+  const [expiryPickerOpen, setExpiryPickerOpen] = useState(false);
+  const expiryPickerRef = useRef<HTMLDivElement>(null);
+  const yearOptions = getExpiryYearOptions();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        expiryPickerRef.current &&
+        !expiryPickerRef.current.contains(e.target as Node)
+      ) {
+        setExpiryPickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const applyExpiryFromPicker = (month: number, year: number) => {
+    const mm = String(month).padStart(2, "0");
+    const yy = String(year).slice(-2);
+    const formatted = `${mm}/${yy}`;
+    setPaymentInfo((p) => ({ ...p, expiredDate: formatted }));
+    setFieldError("expiredDate", validateExpiry(formatted));
+    markTouched("expiredDate");
+    setExpiryPickerOpen(false);
+  };
+
+  /* ──────────────────────────────────────────────────────────
+     Field change handlers — format as you type, validate live
+     ────────────────────────────────────────────────────────── */
+
+  const handleZipChange = (val: string) => {
+    const formatted = formatZip(val);
+    setShippingInfo((s) => ({ ...s, zip: formatted }));
+    if (touched.zip) setFieldError("zip", validateZip(formatted));
+  };
+
+  const handlePhoneChange = (val: string | undefined) => {
+    const value = val || "";
+    setShippingInfo((s) => ({ ...s, contactNumber: value }));
+    if (touched.contactNumber) setFieldError("contactNumber", validatePhone(value));
+  };
+
+  const handleCardHolderChange = (val: string) => {
+    setPaymentInfo((p) => ({ ...p, cardHolderName: val }));
+    if (touched.cardHolderName)
+      setFieldError("cardHolderName", validateCardHolderName(val));
+  };
+
+  const handleCardNumberChange = (val: string) => {
+    const formatted = formatCardNumber(val);
+    setPaymentInfo((p) => ({ ...p, cardNumber: formatted }));
+    if (touched.cardNumber) setFieldError("cardNumber", validateCardNumber(formatted));
+  };
+
+  const handleExpiryChange = (val: string) => {
+    const formatted = formatExpiry(val);
+    setPaymentInfo((p) => ({ ...p, expiredDate: formatted }));
+    if (touched.expiredDate) setFieldError("expiredDate", validateExpiry(formatted));
+  };
+
+  const handleCVVChange = (val: string) => {
+    const formatted = formatCVV(val);
+    setPaymentInfo((p) => ({ ...p, cvv: formatted }));
+    if (touched.cvv)
+      setFieldError("cvv", validateCVV(formatted, stripNonDigits(paymentInfo.cardNumber).length));
+  };
+
+  /* ──────────────────────────────────────────────────────────
+     Blur handlers — validate once the user leaves the field
+     ────────────────────────────────────────────────────────── */
+
+  const handleBlurValidate = (field: string) => {
+    markTouched(field);
+    switch (field) {
+      case "fullName":
+        setFieldError(
+          "fullName",
+          shippingInfo.fullName.trim() ? "" : "Full name is required."
+        );
+        break;
+      case "contactNumber":
+        setFieldError("contactNumber", validatePhone(shippingInfo.contactNumber));
+        break;
+      case "address":
+        setFieldError(
+          "address",
+          shippingInfo.address.trim() ? "" : "Address is required."
+        );
+        break;
+      case "city":
+        setFieldError("city", shippingInfo.city.trim() ? "" : "City is required.");
+        break;
+      case "state":
+        setFieldError("state", shippingInfo.state.trim() ? "" : "State is required.");
+        break;
+      case "zip":
+        setFieldError("zip", validateZip(shippingInfo.zip));
+        break;
+      case "cardHolderName":
+        setFieldError("cardHolderName", validateCardHolderName(paymentInfo.cardHolderName));
+        break;
+      case "cardNumber":
+        setFieldError("cardNumber", validateCardNumber(paymentInfo.cardNumber));
+        break;
+      case "expiredDate":
+        setFieldError("expiredDate", validateExpiry(paymentInfo.expiredDate));
+        break;
+      case "cvv":
+        setFieldError(
+          "cvv",
+          validateCVV(paymentInfo.cvv, stripNonDigits(paymentInfo.cardNumber).length)
+        );
+        break;
+    }
+  };
+
+  /* ──────────────────────────────────────────────────────────
+     Cart handlers (unchanged behavior)
+     ────────────────────────────────────────────────────────── */
+
   const handleRemove = async (itemId: string) => {
     setRemovingId(itemId);
     try {
@@ -90,7 +266,7 @@ export default function CheckoutPage() {
   ) => {
     const newQty = currentQty + delta;
     if (newQty < 1) return;
-    setUpdatingId(`${itemId}-${delta > 0 ? 'inc' : 'dec'}`);
+    setUpdatingId(`${itemId}-${delta > 0 ? "inc" : "dec"}`);
     try {
       await updateCartItem({ id: itemId, quantity: newQty }).unwrap();
       toast.success("Cart updated");
@@ -120,25 +296,47 @@ export default function CheckoutPage() {
       .replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
-  const formatCardNumber = (val: string) => {
-    const v = val.replace(/\D/g, "");
-    return v.replace(/(\d{4})/g, "$1 ").trim().substring(0, 19);
-  };
-  const formatExpiry = (val: string) => {
-    const v = val.replace(/\D/g, "");
-    if (v.length >= 3) return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
-    return v.substring(0, 4);
-  };
-  const formatCVV = (val: string) => val.replace(/\D/g, "").substring(0, 4);
-  const formatZip = (val: string) => val.replace(/\D/g, "").substring(0, 5);
-  const formatPhone = (val: string) => {
-    const v = val.replace(/\D/g, "");
-    if (v.length <= 3) return v;
-    if (v.length <= 6) return `(${v.substring(0, 3)}) ${v.substring(3)}`;
-    return `(${v.substring(0, 3)}) ${v.substring(3, 6)}-${v.substring(6, 10)}`;
+  /* ──────────────────────────────────────────────────────────
+     Full-form validation on submit
+     ────────────────────────────────────────────────────────── */
+
+  const validateAll = (): boolean => {
+    const newErrors: Record<string, string> = {
+      fullName: shippingInfo.fullName.trim() ? "" : "Full name is required.",
+      contactNumber: validatePhone(shippingInfo.contactNumber),
+      address: shippingInfo.address.trim() ? "" : "Address is required.",
+      city: shippingInfo.city.trim() ? "" : "City is required.",
+      state: shippingInfo.state.trim() ? "" : "State is required.",
+      zip: validateZip(shippingInfo.zip),
+      cardHolderName: validateCardHolderName(paymentInfo.cardHolderName),
+      cardNumber: validateCardNumber(paymentInfo.cardNumber),
+      expiredDate: validateExpiry(paymentInfo.expiredDate),
+      cvv: validateCVV(paymentInfo.cvv, stripNonDigits(paymentInfo.cardNumber).length),
+    };
+
+    setErrors(newErrors);
+    setTouched({
+      fullName: true,
+      contactNumber: true,
+      address: true,
+      city: true,
+      state: true,
+      zip: true,
+      cardHolderName: true,
+      cardNumber: true,
+      expiredDate: true,
+      cvv: true,
+    });
+
+    return Object.values(newErrors).every((msg) => !msg);
   };
 
   const handleSubmit = () => {
+    if (!validateAll()) {
+      toast.error("Please fix the highlighted fields before continuing.");
+      return;
+    }
+
     const submissionId = localStorage.getItem("submissionId");
     if (!submissionId) {
       toast.error("Valid assessment submission not found. Please complete the assessment.");
@@ -154,7 +352,7 @@ export default function CheckoutPage() {
       isRecurring: recurring,
       billingCycle: summary?.serviceDuration || "MONTHLY",
     };
-    
+
     localStorage.setItem("checkoutPayload", JSON.stringify(checkoutPayload));
     router.push("/previewdetails");
   };
@@ -165,11 +363,12 @@ export default function CheckoutPage() {
 
       <div className="pt-32 pb-16 max-w-[1320px] mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row gap-10 items-start">
-
           {/* LEFT: Checkout Form */}
           <div className="flex-1 min-w-0 w-full">
             <h1 className="text-[26px] font-bold text-gray-900 mb-1">Checkout</h1>
-            <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-700 mb-8">Pay to checkout and submit for approval</h2>
+            <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-700 mb-8">
+              Pay to checkout and submit for approval
+            </h2>
 
             {/* Shipping Info */}
             <div className="mb-10">
@@ -177,68 +376,134 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Full Name:</label>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Full Name:
+                  </label>
                   <input
                     type="text"
                     value={shippingInfo.fullName}
-                    onChange={(e) => setShippingInfo({ ...shippingInfo, fullName: e.target.value })}
+                    onChange={(e) =>
+                      setShippingInfo({ ...shippingInfo, fullName: e.target.value })
+                    }
+                    onBlur={() => handleBlurValidate("fullName")}
                     placeholder="e.g. John Doe"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                    className={`${inputBase} ${errors.fullName && touched.fullName ? inputErr : inputOk}`}
+                  />
+                  <FieldError message={touched.fullName ? errors.fullName : undefined} />
+                </div>
+
+                <div>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Contact Number
+                  </label>
+                  {/* International phone input with built-in country selector + format validation */}
+                  <div
+                    className={`flex items-center w-full bg-[#F3F4F6] rounded-lg border transition-colors ${
+                      errors.contactNumber && touched.contactNumber
+                        ? "border-red-400 bg-red-50"
+                        : "border-transparent focus-within:border-blue-500 focus-within:bg-white"
+                    }`}
+                  >
+                    <PhoneInput
+                      defaultCountry="us"
+                      value={shippingInfo.contactNumber}
+                      onChange={(phone) => handlePhoneChange(phone)}
+                      style={{ width: "100%" }}
+                      inputStyle={{
+                        width: "100%",
+                        height: "46px",
+                        fontSize: "14px",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        color: "#374151",
+                        paddingLeft: "8px",
+                        outline: "none"
+                      }}
+                      countrySelectorStyleProps={{
+                        buttonStyle: {
+                          height: "46px",
+                          backgroundColor: "transparent",
+                          border: "none",
+                          paddingLeft: "10px",
+                          paddingRight: "8px",
+                        },
+                      }}
+                      inputProps={{
+                        onBlur: () => handleBlurValidate("contactNumber"),
+                        placeholder: "e.g. +1 555 000 0000"
+                      }}
+                    />
+                  </div>
+                  <FieldError
+                    message={touched.contactNumber ? errors.contactNumber : undefined}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Contact Number</label>
-                  <input
-                    type="text"
-                    value={shippingInfo.contactNumber}
-                    onChange={(e) => setShippingInfo({ ...shippingInfo, contactNumber: formatPhone(e.target.value) })}
-                    placeholder="e.g. (555) 000-0000"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Address</label>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Address
+                  </label>
                   <input
                     type="text"
                     value={shippingInfo.address}
-                    onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                    onChange={(e) =>
+                      setShippingInfo({ ...shippingInfo, address: e.target.value })
+                    }
+                    onBlur={() => handleBlurValidate("address")}
                     placeholder="e.g. 123 Main St, Apt 4B"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                    className={`${inputBase} ${errors.address && touched.address ? inputErr : inputOk}`}
                   />
+                  <FieldError message={touched.address ? errors.address : undefined} />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">City</label>
+                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                      City
+                    </label>
                     <input
                       type="text"
                       value={shippingInfo.city}
-                      onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
+                      onChange={(e) =>
+                        setShippingInfo({ ...shippingInfo, city: e.target.value })
+                      }
+                      onBlur={() => handleBlurValidate("city")}
                       placeholder="e.g. New York"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                      className={`${inputBase} ${errors.city && touched.city ? inputErr : inputOk}`}
                     />
+                    <FieldError message={touched.city ? errors.city : undefined} />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">State</label>
+                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                      State
+                    </label>
                     <input
                       type="text"
                       value={shippingInfo.state}
-                      onChange={(e) => setShippingInfo({ ...shippingInfo, state: e.target.value })}
+                      onChange={(e) =>
+                        setShippingInfo({ ...shippingInfo, state: e.target.value })
+                      }
+                      onBlur={() => handleBlurValidate("state")}
                       placeholder="e.g. NY"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                      className={`${inputBase} ${errors.state && touched.state ? inputErr : inputOk}`}
                     />
+                    <FieldError message={touched.state ? errors.state : undefined} />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Zip</label>
+                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                      Zip
+                    </label>
                     <input
                       type="text"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
                       value={shippingInfo.zip}
-                      onChange={(e) => setShippingInfo({ ...shippingInfo, zip: formatZip(e.target.value) })}
+                      onChange={(e) => handleZipChange(e.target.value)}
+                      onBlur={() => handleBlurValidate("zip")}
                       placeholder="e.g. 10001"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                      className={`${inputBase} ${errors.zip && touched.zip ? inputErr : inputOk}`}
                     />
+                    <FieldError message={touched.zip ? errors.zip : undefined} />
                   </div>
                 </div>
               </div>
@@ -261,11 +526,15 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Payment Method</label>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Payment Method
+                  </label>
                   <div className="relative">
                     <select
                       value={paymentInfo.method}
-                      onChange={(e) => setPaymentInfo({ ...paymentInfo, method: e.target.value })}
+                      onChange={(e) =>
+                        setPaymentInfo({ ...paymentInfo, method: e.target.value })
+                      }
                       className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 appearance-none outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
                     >
                       <option value="CLOVER">Default card</option>
@@ -275,49 +544,170 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Card Holder Name</label>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Card Holder Name
+                  </label>
                   <input
                     type="text"
+                    autoComplete="cc-name"
                     value={paymentInfo.cardHolderName}
-                    onChange={(e) => setPaymentInfo({ ...paymentInfo, cardHolderName: e.target.value })}
+                    onChange={(e) => handleCardHolderChange(e.target.value)}
+                    onBlur={() => handleBlurValidate("cardHolderName")}
                     placeholder="e.g. John Doe"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                    className={`${inputBase} ${
+                      errors.cardHolderName && touched.cardHolderName ? inputErr : inputOk
+                    }`}
+                  />
+                  <FieldError
+                    message={touched.cardHolderName ? errors.cardHolderName : undefined}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Card Number</label>
+                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    Card Number
+                  </label>
                   <input
                     type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
                     value={paymentInfo.cardNumber}
-                    onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: formatCardNumber(e.target.value) })}
+                    onChange={(e) => handleCardNumberChange(e.target.value)}
+                    onBlur={() => handleBlurValidate("cardNumber")}
                     placeholder="e.g. 4111 1111 1111 1111"
-                    className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
+                    className={`${inputBase} ${
+                      errors.cardNumber && touched.cardNumber ? inputErr : inputOk
+                    }`}
                   />
+                  <FieldError message={touched.cardNumber ? errors.cardNumber : undefined} />
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">Expired Date</label>
-                    <input
-                      type="text"
-                      value={paymentInfo.expiredDate}
-                      onChange={(e) => setPaymentInfo({ ...paymentInfo, expiredDate: formatExpiry(e.target.value) })}
-                      placeholder="MM/YY"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">CVV</label>
-                    <input
-                      type="text"
-                      value={paymentInfo.cvv}
-                      onChange={(e) => setPaymentInfo({ ...paymentInfo, cvv: formatCVV(e.target.value) })}
-                      placeholder="123"
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
-                    />
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+  {/* Expiry Date */}
+  <div className="flex-1 relative" ref={expiryPickerRef}>
+    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+      Expired Date
+    </label>
+
+    <div
+      className={`flex items-center h-[42px] ${inputBase} ${
+        errors.expiredDate && touched.expiredDate ? inputErr : inputOk
+      } px-0 py-0`}
+    >
+      <input
+        type="text"
+        inputMode="numeric"
+        autoComplete="cc-exp"
+        value={paymentInfo.expiredDate}
+        onChange={(e) => handleExpiryChange(e.target.value)}
+        onBlur={() => handleBlurValidate("expiredDate")}
+        placeholder="MM/YY"
+        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0"
+      />
+
+      <button
+        type="button"
+        onClick={() => setExpiryPickerOpen((v) => !v)}
+        aria-label="Open expiry date picker"
+        className="h-full px-3 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors shrink-0"
+      >
+        <CalendarDays className="w-4 h-4" />
+      </button>
+    </div>
+
+    <FieldError
+      message={touched.expiredDate ? errors.expiredDate : undefined}
+    />
+
+    {expiryPickerOpen && (
+      <div className="absolute z-20 top-full left-0 mt-2 w-full sm:w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-3">
+        <p className="text-[12px] font-semibold text-gray-500 mb-2 px-1">
+          Select expiry month &amp; year
+        </p>
+
+        <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto mb-2">
+          {EXPIRY_MONTH_OPTIONS.map(
+            (m: { value: number; label: string }) => {
+              const currentYear =
+                parseInt(paymentInfo.expiredDate.split("/")[1], 10) ||
+                yearOptions[0];
+
+              const fullYear =
+                currentYear < 100 ? 2000 + currentYear : currentYear;
+
+              const isPast =
+                new Date(fullYear, m.value, 0) < new Date();
+
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  disabled={isPast}
+                  onClick={() =>
+                    applyExpiryFromPicker(m.value, fullYear)
+                  }
+                  className="text-gray-800 text-[12px] py-1.5 rounded-md border border-gray-200 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  {String(m.value).padStart(2, "0")}
+                </button>
+              );
+            }
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
+          {yearOptions.map((y: number) => {
+            const currentMonth =
+              parseInt(paymentInfo.expiredDate.split("/")[0], 10) || 1;
+
+            const isSelectedYear =
+              String(y).slice(-2) ===
+              paymentInfo.expiredDate.split("/")[1];
+
+            return (
+              <button
+                key={y}
+                type="button"
+                onClick={() =>
+                  applyExpiryFromPicker(currentMonth, y)
+                }
+                className={`text-[12px] px-2.5 py-1 rounded-md border transition-colors ${
+                  isSelectedYear
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                {y}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* CVV */}
+  <div className="flex-1">
+    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+      CVV
+    </label>
+
+    <input
+      type="text"
+      inputMode="numeric"
+      autoComplete="cc-csc"
+      value={paymentInfo.cvv}
+      onChange={(e) => handleCVVChange(e.target.value)}
+      onBlur={() => handleBlurValidate("cvv")}
+      placeholder="123"
+      className={`h-[42px] ${inputBase} ${
+        errors.cvv && touched.cvv ? inputErr : inputOk
+      }`}
+    />
+
+    <FieldError message={touched.cvv ? errors.cvv : undefined} />
+  </div>
+</div>
               </div>
             </div>
 
@@ -328,7 +718,8 @@ export default function CheckoutPage() {
                 <h2 className="text-[18px] font-bold text-gray-900">Compliance Confirmation:</h2>
               </div>
               <p className="text-gray-500 text-[14.5px] mb-6 leading-relaxed max-w-[95%]">
-                Before completing your submission, please confirm you understand the following important information about our telemedicine service:
+                Before completing your submission, please confirm you understand the following
+                important information about our telemedicine service:
               </p>
 
               <div className="flex flex-col gap-3 mb-6">
@@ -336,60 +727,98 @@ export default function CheckoutPage() {
                   <input
                     type="checkbox"
                     checked={complianceConfirmation.agreedToTermsAndPrivacy}
-                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, agreedToTermsAndPrivacy: e.target.checked })}
+                    onChange={(e) =>
+                      setComplianceConfirmation({
+                        ...complianceConfirmation,
+                        agreedToTermsAndPrivacy: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 accent-blue-600 shrink-0"
                   />
-                  <span className="text-gray-700 text-[14px]">I have reviewed and agree to the <span className="font-bold underline">Terms of Service and Privacy Policy.</span></span>
+                  <span className="text-gray-700 text-[14px]">
+                    I have reviewed and agree to the{" "}
+                    <span className="font-bold underline">Terms of Service and Privacy Policy.</span>
+                  </span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="checkbox"
                     checked={complianceConfirmation.certifiedInfoAccurate}
-                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, certifiedInfoAccurate: e.target.checked })}
+                    onChange={(e) =>
+                      setComplianceConfirmation({
+                        ...complianceConfirmation,
+                        certifiedInfoAccurate: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 accent-blue-600 shrink-0"
                   />
-                  <span className="text-gray-700 text-[14px]">I certify that all information provided is accurate and complete.</span>
+                  <span className="text-gray-700 text-[14px]">
+                    I certify that all information provided is accurate and complete.
+                  </span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="checkbox"
                     checked={complianceConfirmation.understoodFalseInfoConsequences}
-                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodFalseInfoConsequences: e.target.checked })}
+                    onChange={(e) =>
+                      setComplianceConfirmation({
+                        ...complianceConfirmation,
+                        understoodFalseInfoConsequences: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 accent-blue-600 shrink-0"
                   />
-                  <span className="text-gray-700 text-[14px]">I understand that providing false or misleading information may result in denial of treatment.</span>
+                  <span className="text-gray-700 text-[14px]">
+                    I understand that providing false or misleading information may result in
+                    denial of treatment.
+                  </span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="checkbox"
                     checked={complianceConfirmation.understoodRecommendationsBasis}
-                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodRecommendationsBasis: e.target.checked })}
+                    onChange={(e) =>
+                      setComplianceConfirmation({
+                        ...complianceConfirmation,
+                        understoodRecommendationsBasis: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 accent-blue-600 shrink-0"
                   />
-                  <span className="text-gray-700 text-[14px]">I understand that treatment recommendations are based on the information I have provided.</span>
+                  <span className="text-gray-700 text-[14px]">
+                    I understand that treatment recommendations are based on the information I
+                    have provided.
+                  </span>
                 </label>
                 <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="checkbox"
                     checked={complianceConfirmation.understoodAdditionalInfoMayBeRequested}
-                    onChange={(e) => setComplianceConfirmation({ ...complianceConfirmation, understoodAdditionalInfoMayBeRequested: e.target.checked })}
+                    onChange={(e) =>
+                      setComplianceConfirmation({
+                        ...complianceConfirmation,
+                        understoodAdditionalInfoMayBeRequested: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 accent-blue-600 shrink-0"
                   />
-                  <span className="text-gray-700 text-[14px]">I understand that additional information may be requested before treatment is approved.</span>
+                  <span className="text-gray-700 text-[14px]">
+                    I understand that additional information may be requested before treatment is
+                    approved.
+                  </span>
                 </label>
               </div>
 
               <div className="bg-[#EBF1FF] text-[#3B82F6] text-[14px] rounded-lg p-4 font-medium">
-                All checkboxes are required. This disclosure is maintained for HIPAA and telemedicine compliance purposes.
+                All checkboxes are required. This disclosure is maintained for HIPAA and
+                telemedicine compliance purposes.
               </div>
             </div>
-
           </div>
 
           {/* RIGHT: Order Summary Panel */}
           <div className="w-full lg:w-[370px] lg:sticky lg:top-[100px] flex-shrink-0 self-start">
             <div className="rounded-2xl p-5 shadow-sm" style={{ background: "#EEF2FF" }}>
-
               {/* Header */}
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-[18px] font-bold text-gray-900">Order Summary</h3>
@@ -417,7 +846,6 @@ export default function CheckoutPage() {
                     const isRemoving = removingId === item.id;
                     const isUpdatingInc = updatingId === `${item.id}-inc`;
                     const isUpdatingDec = updatingId === `${item.id}-dec`;
-                    const isUpdating = isUpdatingInc || isUpdatingDec;
 
                     return (
                       <div key={item.id} className="py-3.5 flex gap-3">
@@ -464,9 +892,7 @@ export default function CheckoutPage() {
                             {/* Qty controls */}
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() =>
-                                  handleQtyChange(item.id, item.quantity, -1)
-                                }
+                                onClick={() => handleQtyChange(item.id, item.quantity, -1)}
                                 disabled={isUpdatingDec || item.quantity <= 1}
                                 className="w-6 h-6 rounded-full bg-white border border-blue-200 text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[13px] font-bold transition-colors"
                               >
@@ -480,9 +906,7 @@ export default function CheckoutPage() {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() =>
-                                  handleQtyChange(item.id, item.quantity, 1)
-                                }
+                                onClick={() => handleQtyChange(item.id, item.quantity, 1)}
                                 disabled={isUpdatingInc}
                                 className="w-6 h-6 rounded-full bg-white border border-blue-200 text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[13px] font-bold transition-colors"
                               >
@@ -522,9 +946,7 @@ export default function CheckoutPage() {
               <div className="mb-4">
                 <div className="flex items-center gap-1.5 mb-2.5">
                   <Tag className="w-3.5 h-3.5 text-gray-500" />
-                  <span className="text-gray-700 text-[13px] font-semibold">
-                    Coupon Code
-                  </span>
+                  <span className="text-gray-700 text-[13px] font-semibold">Coupon Code</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -571,9 +993,7 @@ export default function CheckoutPage() {
                 {[
                   {
                     label: "Subtotal",
-                    value: summary?.subtotal
-                      ? `$${parseFloat(summary.subtotal).toFixed(2)}`
-                      : "—",
+                    value: summary?.subtotal ? `$${parseFloat(summary.subtotal).toFixed(2)}` : "—",
                   },
                   {
                     label: "Service Duration",
@@ -603,8 +1023,7 @@ export default function CheckoutPage() {
                   <div key={label} className="flex justify-between">
                     <span className="text-gray-500 text-[13px]">{label}</span>
                     <span
-                      className={`text-[13px] font-medium ${accent ? "text-red-500" : "text-gray-800"
-                        }`}
+                      className={`text-[13px] font-medium ${accent ? "text-red-500" : "text-gray-800"}`}
                     >
                       {value}
                     </span>
@@ -615,9 +1034,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-center pt-2 border-t border-blue-200">
                   <span className="text-gray-900 text-[15px] font-bold">Total</span>
                   <span className="text-[#2563EB] text-[17px] font-bold">
-                    {summary?.total
-                      ? `$${parseFloat(summary.total).toFixed(2)}`
-                      : "—"}
+                    {summary?.total ? `$${parseFloat(summary.total).toFixed(2)}` : "—"}
                   </span>
                 </div>
               </div>
@@ -626,10 +1043,9 @@ export default function CheckoutPage() {
               <label className="flex items-start gap-2.5 mb-5 cursor-pointer select-none">
                 <div
                   onClick={() => setRecurring((v) => !v)}
-                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${recurring
-                      ? "bg-blue-600 border-blue-600"
-                      : "bg-white border-blue-400"
-                    }`}
+                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${
+                    recurring ? "bg-blue-600 border-blue-600" : "bg-white border-blue-400"
+                  }`}
                 >
                   {recurring && (
                     <svg
@@ -639,11 +1055,7 @@ export default function CheckoutPage() {
                       stroke="currentColor"
                       strokeWidth={3.5}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                 </div>
@@ -669,9 +1081,27 @@ export default function CheckoutPage() {
               </button>
             </div>
           </div>
-
         </div>
       </div>
+
+      {/* Scoped overrides so react-phone-number-input matches the form's visual style */}
+      <style jsx global>{`
+        .checkout-phone-input .PhoneInputInput {
+          background: transparent;
+          border: none;
+          outline: none;
+          font-size: 14px;
+          color: #374151;
+          padding: 0;
+          flex: 1;
+        }
+        .checkout-phone-input .PhoneInputCountry {
+          margin-right: 10px;
+        }
+        .checkout-phone-input .PhoneInputCountrySelect {
+          font-size: 14px;
+        }
+      `}</style>
     </div>
   );
 }

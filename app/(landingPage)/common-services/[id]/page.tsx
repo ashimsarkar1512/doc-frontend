@@ -366,7 +366,14 @@ export default function CommonServicesPage() {
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <button className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+            <button
+                onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
               Book a consultation
             </button>
           </div>

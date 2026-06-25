@@ -18,19 +18,27 @@ import {
 import { AppNotification } from "@/types/notificationTypes";
 import { toast } from "sonner";
 
-export default function NotificationCenter() {
+interface NotificationCenterProps {
+  onNotificationClick?: (notification: AppNotification) => void;
+}
+
+export default function NotificationCenter({ onNotificationClick }: NotificationCenterProps = {}) {
   const { data: notificationsData, isLoading } = useGetNotificationsQuery();
   const [markAsRead] = useMarkAsReadMutation();
   const [markAllAsRead, { isLoading: isMarkingAll }] = useMarkAllAsReadMutation();
 
   const notifications = notificationsData?.data?.notifications || [];
 
-  const handleMarkAsRead = async (id: string, isRead: boolean) => {
-    if (isRead) return;
-    try {
-      await markAsRead(id).unwrap();
-    } catch (err) {
-      console.error("Failed to mark as read", err);
+  const handleMarkAsRead = async (item: AppNotification) => {
+    if (!item.isRead) {
+      try {
+        await markAsRead(item.id).unwrap();
+      } catch (err) {
+        console.error("Failed to mark as read", err);
+      }
+    }
+    if (onNotificationClick) {
+      onNotificationClick(item);
     }
   };
 
@@ -151,7 +159,7 @@ export default function NotificationCenter() {
           {list.map((item) => (
             <div
               key={item.id}
-              onClick={() => handleMarkAsRead(item.id, item.isRead)}
+              onClick={() => handleMarkAsRead(item)}
               className={`flex items-start justify-between p-4 border rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.01)] transition-all duration-200 cursor-pointer ${
                 !item.isRead
                   ? "bg-blue-50/30 border-blue-100 hover:shadow-md hover:border-blue-200"

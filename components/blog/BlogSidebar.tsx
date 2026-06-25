@@ -29,7 +29,14 @@ const BlogSidebar = () => {
 
         {/* Action Button */}
         <div className="absolute bottom-6 w-full z-20 px-2">
-          <button className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium py-3.5 rounded-full transition-all shadow-md shadow-blue-500/30">
+          <button
+             onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+           className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium py-3.5 rounded-full transition-all shadow-md shadow-blue-500/30">
             Book a consultation
           </button>
         </div>

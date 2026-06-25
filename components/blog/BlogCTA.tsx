@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import React from "react";
 
@@ -25,7 +26,14 @@ const BlogCTA = () => {
         </div>
 
         <div className="relative z-10">
-          <button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-4 rounded-full transition-all shadow-lg shadow-blue-500/30">
+          <button
+               onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+           className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-4 rounded-full transition-all shadow-lg shadow-blue-500/30">
             Book a consultation
           </button>
         </div>

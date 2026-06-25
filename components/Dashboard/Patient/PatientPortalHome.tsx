@@ -138,6 +138,8 @@ export default function PatientPortalHome() {
   >(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [stripeModalOpen, setStripeModalOpen] = useState(false);
+  // Holds an ID navigated directly from chat (bypasses tab filtering)
+  const [directSubmissionId, setDirectSubmissionId] = useState<string | null>(null);
 
   const activeConsultation = mappedConsultations.find(
     (c) => c.id === selectedConsultationId,
@@ -145,6 +147,7 @@ export default function PatientPortalHome() {
 
   const handleOpenConsultation = (id: string) => {
     setSelectedConsultationId(id);
+    setDirectSubmissionId(null);
   };
 
   const handleRequestConsultation = () => {
@@ -228,6 +231,7 @@ export default function PatientPortalHome() {
           // Auto reset sub views when switching primary modules
           setSelectedConsultationId(null);
           setSelectedChatId(null);
+          setDirectSubmissionId(null);
         }}
         onRequestNewConsultation={handleRequestConsultation}
       />
@@ -237,7 +241,7 @@ export default function PatientPortalHome() {
       {/* 1. Dashboard Domain view */}
       {activeDomain === "dashboard" && (
         <div className="flex flex-col gap-6 w-full">
-          {!selectedConsultationId && (
+          {!selectedConsultationId && !directSubmissionId && (
             <TabBar
               activeTab={activeTab}
               onChangeTab={setActiveTab}
@@ -247,6 +251,15 @@ export default function PatientPortalHome() {
 
           {activeTab === "My Orders" ? (
             <MyOrdersDomain />
+          ) : directSubmissionId ? (
+            // Navigated directly from chat — build a minimal shell, ConsultationDetails fetches the real data
+            <ConsultationDetails
+              consultation={{ id: directSubmissionId, title: '', category: '', status: 'ACCEPTED' as any, image: '' }}
+              onBack={() => {
+                setDirectSubmissionId(null);
+                setActiveDomain('messages');
+              }}
+            />
           ) : selectedConsultationId && activeConsultation ? (
             <ConsultationDetails
               consultation={activeConsultation}
@@ -285,6 +298,11 @@ export default function PatientPortalHome() {
               chatId={selectedChatId}
               onBack={() => setSelectedChatId(null)}
               onTriggerPayment={() => setStripeModalOpen(true)}
+              onViewDetails={(submissionId) => {
+                setActiveDomain('dashboard');
+                setDirectSubmissionId(submissionId);
+                setSelectedConsultationId(null);
+              }}
             />
           ) : (
             <MessageList onSelectChat={setSelectedChatId} />
@@ -295,7 +313,20 @@ export default function PatientPortalHome() {
       {/* 3. Event Notification Domain view */}
       {activeDomain === "notifications" && (
         <div className="w-full">
-          <NotificationCenter/>
+          <NotificationCenter
+            onNotificationClick={(notif) => {
+               if (notif.actionType === "NEW_MESSAGE") {
+                  setActiveDomain("messages");
+                  setSelectedChatId(notif.referenceId);
+               } else if (notif.actionType.startsWith("ASSESSMENT_")) {
+                  setActiveDomain("dashboard");
+                  setSelectedConsultationId(notif.referenceId);
+               } else if (notif.actionType === "ORDER_STATUS_UPDATED") {
+                  setActiveDomain("dashboard");
+                  setActiveTab("My Orders");
+               }
+            }}
+          />
         </div>
       )}
 

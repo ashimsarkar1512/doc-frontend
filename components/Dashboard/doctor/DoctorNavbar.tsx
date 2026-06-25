@@ -72,6 +72,9 @@ export default function DoctorNavbar() {
         </Link>
 
         <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+          {/* Notifications */}
+          <NotificationDropdown />
+
           <div className="hidden min-w-0 text-right min-[380px]:block">
             <span className="block max-w-[150px] truncate text-xs font-semibold text-gray-700 sm:max-w-none sm:text-sm">
               {getDisplayName()}
@@ -80,9 +83,6 @@ export default function DoctorNavbar() {
               Doctor
             </span>
           </div>
-
-          {/* Notifications */}
-          <NotificationDropdown />
 
           {/* Profile Button + Dropdown */}
           <div ref={dropdownRef} className="relative">

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -72,18 +72,20 @@ const services = [
 const AboutUs = () => {
   const { content, isLoading } = useHomepageContent();
 
-  const subtitle = content?.aboutSubtitle || "About us";
+  const subtitle = content?.aboutSubtitle || "About us ";
   const title = content?.aboutTitle || null;
   const description = content?.aboutDescription || null;
   const bullets = content?.aboutBullets ?? [];
 
-  const primaryButtonText = content?.aboutPrimaryButtonText || "Learn More";
+  const primaryButtonText = content?.aboutPrimaryButtonText || "Comming soon ";
+  // console.log(primaryButtonText)
   const primaryButtonLink = content?.aboutPrimaryButtonLink || "#";
   const primaryButtonNewTab = content?.aboutPrimaryButtonNewTab ?? false;
 
   const secondaryButtonText = content?.aboutSecondaryButtonText || null;
+  // console.log(secondaryButtonText);
   const secondaryButtonLink = content?.aboutSecondaryButtonLink || "#";
-  const secondaryButtonNewTab = content?.aboutSecondaryButtonNewTab ?? false;
+  // const secondaryButtonNewTab = content?.aboutSecondaryButtonNewTab ?? false;
 
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center font-sans">
@@ -104,8 +106,8 @@ const AboutUs = () => {
           Weight Loss MD was built by a team of physicians and technologists who
           knew there had to be a better way.{" "}
           <span className="text-gray-400">
-            By leveraging secure telehealth technology, we&apos;ve created a clinic
-            that lives on your schedule, not ours.
+            By leveraging secure telehealth technology, we&apos;ve created a
+            clinic that lives on your schedule, not ours.
           </span>
         </h2>
       )}
@@ -125,8 +127,18 @@ const AboutUs = () => {
               key={i}
               className="flex items-center gap-2 bg-blue-50 text-blue-700 text-sm font-medium px-4 py-2 rounded-full"
             >
-              <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              <svg
+                className="w-4 h-4 text-blue-500 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 12.75l6 6 9-13.5"
+                />
               </svg>
               {bullet}
             </li>
@@ -166,9 +178,18 @@ const AboutUs = () => {
             </Link>
             {secondaryButtonText && (
               <Link
-                href={secondaryButtonLink}
-                target={secondaryButtonNewTab ? "_blank" : "_self"}
-                rel={secondaryButtonNewTab ? "noopener noreferrer" : undefined}
+                // href={secondaryButtonLink}
+                // target={secondaryButtonNewTab ? "_blank" : "_self"}
+                // rel={secondaryButtonNewTab ? "noopener noreferrer" : undefined}
+                href={secondaryButtonLink || "#"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open(
+                    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
                 className="text-blue-600 hover:underline font-medium text-sm"
               >
                 {secondaryButtonText}
