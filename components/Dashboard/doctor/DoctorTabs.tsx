@@ -247,7 +247,7 @@ export default function DoctorTabs() {
     limit,
   });
 
-  console.log(data);
+  // console.log(data);
 
   // ===============================
   // SAFE API RESPONSE

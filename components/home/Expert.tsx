@@ -2,36 +2,14 @@
 
 import React, { useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-
-interface Provider {
-  id: string;
-  name: string;
-  role: string;
-  image: string;
-}
-
-const providers: Provider[] = [
-  {
-    id: "1",
-    name: "Jeffrey Richker MD",
-    role: "Licensed Colorado Physician",
-    image: "/expartProviders/expart1.png",
-  },
-  {
-    id: "2",
-    name: "Runa Pradhan NP",
-    role: "Licensed Colorado Nurse Practitioner - Family",
-    image: "/expartProviders/expart2.png",
-  },
-  {
-    id: "3",
-    name: "Nicole Sheeder NP",
-    role: "Licensed Colorado Nurse Practitioner - Family",
-    image: "/expartProviders/expart3.png",
-  },
-];
+import { useGetAllFeaturesDoctorQuery } from "@/Redux/features/homePageDoctor/homePageDoctorApi";
 
 const Expert: React.FC = () => {
+  const { data } = useGetAllFeaturesDoctorQuery();
+  // console.log(data)
+  const providersD = data?.data?.filter((doctor) => doctor.featured);
+  // console.log(providersD)
+  // const providers=
   // Initialize Embla Carousel with basic configurations
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -82,7 +60,7 @@ const Expert: React.FC = () => {
           {/* Embla Viewport */}
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-6 select-none">
-              {providers.map((provider) => (
+              {providersD?.map((provider) => (
                 <div
                   key={provider.id}
                   className="flex-[0_0_100%] sm:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)] min-w-0"
@@ -92,8 +70,8 @@ const Expert: React.FC = () => {
                     {/* Image Container with the exact soft blue tint fill background */}
                     <div className="w-full aspect-[4/5] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group">
                       <img
-                        src={provider.image}
-                        alt={provider.name}
+                        src={provider?.thumbnail}
+                        alt={provider?.fullName}
                         className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-103 mix-blend-multiply opacity-90"
                         draggable={false}
                       />
@@ -101,10 +79,10 @@ const Expert: React.FC = () => {
                     {/* Meta Text */}
                     <div className="px-2">
                       <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-1">
-                        {provider.name}
+                        {provider?.fullName}
                       </h3>
                       <p className="text-xs text-gray-500 leading-relaxed font-medium">
-                        {provider.role}
+                        {provider?.title}
                       </p>
                     </div>
                   </div>
@@ -136,7 +114,15 @@ const Expert: React.FC = () => {
         </div>
 
         {/* CTA Consultation Button */}
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-8 py-4 rounded-full transition-all duration-200 shadow-md shadow-blue-600/10 active:scale-98">
+        <button
+          onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-8 py-4 rounded-full transition-all duration-200 shadow-md shadow-blue-600/10 active:scale-98"
+        >
           Schedule your consultation
         </button>
       </div>
