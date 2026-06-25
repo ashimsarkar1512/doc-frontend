@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, FolderOpen, Bell, Settings, Plus } from "lucide-react";
+import { Home, MessageSquare, Bell, Settings, Plus } from "lucide-react";
 import Link from "next/link";
 import { useGetNotificationsQuery } from "@/Redux/features/notifications/notificationApi";
 
@@ -42,13 +42,13 @@ export default function ActionBar({
           <Home className="h-5 w-5" />
         </button>
 
-        {/* Documents/Files Control (Messages) */}
+        {/* Messages Control */}
         <button
           onClick={() => onChangeDomain("messages")}
-          aria-label="Folders"
+          aria-label="Messages"
           className={getButtonClass("messages")}
         >
-          <FolderOpen className="h-5 w-5" />
+          <MessageSquare className="h-5 w-5" />
         </button>
 
         {/* Notifications Control */}
