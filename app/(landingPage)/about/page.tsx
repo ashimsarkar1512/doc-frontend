@@ -73,7 +73,14 @@ export default function AboutPage() {
               health goals and lifestyle.
             </p>
 
-            <button className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
+            <button
+                onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+             className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
               Book a consultation
             </button>
           </div>
@@ -212,7 +219,14 @@ export default function AboutPage() {
               ))}
             </ul>
 
-            <button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
+            <button
+               onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+             className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
               Book a consultation
             </button>
           </div>

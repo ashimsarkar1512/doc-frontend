@@ -46,15 +46,23 @@ const Navbar = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  // const handleStartConsultation = () => {
+  //   setIsMobileMenuOpen(false);
+  //   if (pathname === "/") {
+  //     const el = document.getElementById("assessments");
+  //     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  //   } else {
+  //     router.push("/#assessments");
+  //   }
+  // };
   const handleStartConsultation = () => {
-    setIsMobileMenuOpen(false);
-    if (pathname === "/") {
-      const el = document.getElementById("assessments");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      router.push("/#assessments");
-    }
-  };
+  setIsMobileMenuOpen(false);
+
+  window.open(
+    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+    "_blank"
+  );
+};
 
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;

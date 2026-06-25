@@ -129,6 +129,15 @@ const Expert: React.FC = () => {
         >
           Schedule your consultation
         </button>
+        {/* best for SEO  */}
+        {/* <a
+          href="https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-8 py-4 rounded-full transition-all duration-200 shadow-md shadow-blue-600/10 active:scale-98"
+        >
+          Schedule your consultation
+        </a> */}
       </div>
     </section>
   );
