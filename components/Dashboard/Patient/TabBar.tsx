@@ -21,7 +21,7 @@ export default function TabBar({
   counts
 }: TabBarProps) {
   const tabs = [
-   
+
     { type: 'PENDING' as TabType, label: 'Pending', count: counts.PENDING || 0, badgeColor: 'bg-[#f59e0b]' },
     { type: 'REVIEWED' as TabType, label: 'Reviewed', count: counts.REVIEWED || 0, badgeColor: 'bg-[#3b82f6]' },
     { type: 'ACCEPTED' as TabType, label: 'Accepted', count: counts.ACCEPTED || 0, badgeColor: 'bg-[#10b981]' },
@@ -40,8 +40,8 @@ export default function TabBar({
             onClick={() => onChangeTab(tab.type)}
             className={`
               pb-4 text-[15px] font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-150 border-b-2
-              ${isActive 
-                ? 'text-[#2563eb] border-[#2563eb]' 
+              ${isActive
+                ? 'text-[#2563eb] border-[#2563eb]'
                 : 'text-gray-500 border-transparent hover:text-gray-800'}
             `}
           >
