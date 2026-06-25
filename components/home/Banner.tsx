@@ -101,23 +101,26 @@ const Banner = () => {
         )}
 
         {/* Avatars */}
-        <div className="flex -space-x-3">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <div
-              key={n}
-              className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden"
-            >
-              <Image
-                src={`/banner/avater/Ellipse ${n}.png`}
-                alt="Avatar"
-                fill
-                className="object-cover"
-                sizes="40px"
-              />
-            </div>
-          ))}
-        </div>
+        {!isLoading && !badgeImageUrl && (
+          <div className="flex -space-x-3">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <div
+                key={n}
+                className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden"
+              >
+                <Image
+                  src={`/banner/avater/Ellipse ${n}.png`}
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                  sizes="40px"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
 
       {/* Heading */}
       {isLoading ? (

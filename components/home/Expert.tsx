@@ -4,11 +4,20 @@ import React, { useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useGetAllFeaturesDoctorQuery } from "@/Redux/features/homePageDoctor/homePageDoctorApi";
 import fallBackImg from "@/public/fallback-man.jpeg";
+import { useHomepageContent } from "@/providers/HomepageContentProvider";
+
 
 const Expert: React.FC = () => {
+  const { content } = useHomepageContent();
   const { data } = useGetAllFeaturesDoctorQuery();
-  // console.log(data)
+  
+  const providersTitle = content?.providersTitle || "Meet our expert providers";
+  const buttonText = content?.providersButtonText || "Schedule your consultation";
+  const buttonLink = content?.providersButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+  const buttonNewTab = content?.providersButtonNewTab ?? true;
+
   const providersD = data?.data?.filter((doctor) => doctor.featured);
+
   // console.log(providersD)
   // const providers=
   // Initialize Embla Carousel with basic configurations
@@ -32,7 +41,7 @@ const Expert: React.FC = () => {
       <div className="max-w-6xl mx-auto flex flex-col items-center">
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-gray-900 mb-16 tracking-tight text-center">
-          Meet our expert providers
+          {providersTitle}
         </h2>
 
         {/* Carousel Container Wrapper */}
@@ -121,13 +130,13 @@ const Expert: React.FC = () => {
         <button
           onClick={() =>
             window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
+              buttonLink,
+              buttonNewTab ? "_blank" : "_self"
             )
           }
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-8 py-4 rounded-full transition-all duration-200 shadow-md shadow-blue-600/10 active:scale-98"
         >
-          Schedule your consultation
+          {buttonText}
         </button>
         {/* best for SEO  */}
         {/* <a
