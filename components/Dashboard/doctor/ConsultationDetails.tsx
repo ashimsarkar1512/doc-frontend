@@ -247,6 +247,7 @@ export default function ConsultationDetails() {
   console.log(detailesData)
 
   if (isLoading) return <p>Loading...</p>;
+  if (isError || !detailesData) return <div className="p-8 text-center text-gray-500">Consultation details not found.</div>;
 
   // Pull out the pieces we render below. Optional chaining so nothing crashes
   // if a field is missing while the API/shape is still settling.
@@ -282,7 +283,7 @@ export default function ConsultationDetails() {
                 Patient: {patientName}
               </h2>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-0.5">
-                <span>Consultation ID: #{detailesData.submissionCode}</span>
+                <span>Consultation ID: #{detailesData?.submissionCode || 'N/A'}</span>
                 {/* Add submitted date if available in API */}
               </div>
             </div>

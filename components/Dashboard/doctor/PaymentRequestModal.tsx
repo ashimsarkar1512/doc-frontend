@@ -91,10 +91,15 @@ export default function PaymentRequestModal({ isOpen, onClose, patientName, onSu
             <div className="relative">
               <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                type="number"
+                type="text"
                 value={formData.fee}
-                onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                onChange={(e) => {
+                  const cleaned = e.target.value.replace(/[^0-9.]/g, '');
+                  setFormData({ ...formData, fee: cleaned });
+                }}
                 placeholder="0.00"
+                min="0"
+                step="0.01"
                 className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>

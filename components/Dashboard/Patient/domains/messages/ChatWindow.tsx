@@ -1,17 +1,22 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ArrowLeft, Send, FileText, Download, Check, X, ShieldAlert, Paperclip, Loader2, ChevronUp, User } from 'lucide-react';
+import Image from "next/image";
+import { User, Paperclip, Send, Download, FileText, Check, X, ShieldAlert, FileMinus, UploadCloud, Loader2, ChevronUp, ArrowLeft } from "lucide-react";
 import {
   useGetMessageHistoryQuery,
   useGetPublicKeyQuery,
-  useUploadAttachmentMutation,
+  useUploadMessageAttachmentMutation,
   useCancelSubscriptionMutation,
   useGetConversationFilesQuery,
+  useGetServiceInfoQuery,
+  useAcceptProposalMutation,
+  useRejectProposalMutation,
 } from '@/Redux/api/messageApi';
 import { useSocket } from '@/providers/SocketProvider';
 import { useE2EE } from '@/Redux/hooks/useE2EE';
 import { useAppSelector } from '@/Redux/store/hooks';
+import StripeCheckoutModal from "../billing/StripeCheckoutModal";
 import { toast } from 'sonner';
 
 // ─── Cancel Subscription Confirmation Modal ────────────────────────────────────
@@ -74,14 +79,17 @@ interface ChatWindowProps {
   chatId: string;
   onBack: () => void;
   onTriggerPayment: () => void;
+  onViewDetails?: (consultationId: string) => void;
 }
 
-export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWindowProps) {
+export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDetails }: ChatWindowProps) {
   const [typedMessage, setTypedMessage] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [pendingProposalForPayment, setPendingProposalForPayment] = useState<any>(null);
+  const [proposalMsgId, setProposalMsgId] = useState<string | null>(null);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
 
@@ -89,15 +97,19 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
     conversationId: chatId,
     cursor,
   });
+  const { data: serviceInfoRes } = useGetServiceInfoQuery(chatId, { skip: !chatId });
+  const serviceInfo = serviceInfoRes?.data;
   const { data: filesData } = useGetConversationFilesQuery(chatId);
   const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation();
-  const [uploadAttachment] = useUploadAttachmentMutation();
+  const [uploadAttachment] = useUploadMessageAttachmentMutation();
+  const [acceptProposal] = useAcceptProposalMutation();
+  const [rejectProposal] = useRejectProposalMutation();
 
   const { socket, isConnected, joinConversation, leaveConversation, sendMessage, emitTyping, emitStopTyping } = useSocket();
   const { decrypt, encrypt } = useE2EE();
   const user = useAppSelector((state) => state.auth.user);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const conversation = historyData?.data?.conversation;
@@ -183,7 +195,9 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
 
   // Auto-scroll on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages, otherUserTyping]);
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
@@ -402,7 +416,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
           </div>
 
           {/* Message bubbles — Messenger style */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50 flex flex-col gap-0">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50 flex flex-col gap-0 scroll-smooth">
 
             {/* Load more button */}
             {hasMore && messages.length >= 50 && (
@@ -452,40 +466,99 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
                 // ── PROPOSAL bubble ──
                 if (msg.messageType === 'PROPOSAL' && msg.proposals?.length > 0) {
                   const proposal = msg.proposals[0];
+                  const proposalDate = proposal.proposalDate
+                    ? new Date(proposal.proposalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : null;
+                  const timeAgo = (() => {
+                    const diff = (Date.now() - new Date(msg.createdAt).getTime()) / 60000;
+                    if (diff < 1) return 'just now';
+                    if (diff < 60) return `${Math.floor(diff)} min ago`;
+                    if (diff < 1440) return `${Math.floor(diff / 60)} hr ago`;
+                    return `${Math.floor(diff / 1440)} days ago`;
+                  })();
                   rendered.push(
-                    <div key={msg.id} className="flex gap-2 max-w-[85%] my-1 animate-in slide-in-from-bottom-2 duration-200">
-                      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-white border border-gray-100 flex items-center justify-center self-end">
-                        {senderInfo.avatar
-                          ? <img src={senderInfo.avatar} className="object-cover w-full h-full" alt="" />
-                          : <User className="h-4 w-4 text-gray-400" />}
-                      </div>
-                      <div className="bg-white rounded-3xl border border-blue-100 p-5 shadow-sm flex flex-col gap-4">
-                        <div className="flex flex-col gap-1 border-b border-gray-50 pb-3">
-                          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded self-start uppercase tracking-wide">Medical Proposal</span>
-                          <h5 className="text-base font-bold text-gray-900 mt-1 leading-snug">{proposal.title}</h5>
+                    <div
+                      key={msg.id}
+                      className={`flex flex-col gap-1 my-2 ${isMe ? 'items-end' : 'items-start'}`}
+                    >
+                      <div className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-white border border-gray-100 shadow-sm flex items-center justify-center self-end">
+                          {senderInfo.avatar
+                            ? <img src={senderInfo.avatar} className="object-cover w-full h-full" alt="" />
+                            : <User className="h-4 w-4 text-gray-400" />}
                         </div>
-                        {proposal.description && <p className="text-xs text-gray-500 leading-relaxed font-light">{proposal.description}</p>}
-                        <div className="bg-blue-50/60 rounded-xl p-3 border border-blue-100/50 flex justify-between items-center text-sm font-bold">
-                          <span className="text-gray-600">Total Price</span>
-                          <span className="text-blue-600 text-lg">${proposal.fee}</span>
-                        </div>
-                        {proposal.status === 'PENDING' && !isMe && (
-                          <div className="flex items-center gap-3">
-                            <button onClick={onTriggerPayment} className="flex-1 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold rounded-xl text-xs shadow-sm transition-all flex items-center justify-center gap-1.5">
-                              <Check className="h-3.5 w-3.5" /><span>Accept Proposal</span>
-                            </button>
-                            <button className="flex-1 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-500 font-semibold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5">
-                              <X className="h-3.5 w-3.5" /><span>Decline</span>
-                            </button>
+                        <div className="w-[360px] bg-[#e8edf2] rounded-2xl overflow-hidden shadow-sm">
+                          {/* Title */}
+                          <div className="px-5 pt-5 pb-0">
+                            <h5 className="font-bold text-gray-900 text-[15px] leading-snug">{proposal.title}</h5>
+                            <div className="border-t border-gray-300/70 mt-3" />
                           </div>
-                        )}
-                        {proposal.status !== 'PENDING' && (
-                          <div className={`text-xs font-bold text-center py-2 rounded-lg ${
-                            proposal.status === 'ACCEPTED' ? 'bg-emerald-50 text-emerald-600' :
-                            proposal.status === 'REJECTED' ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-500'
-                          }`}>Proposal {proposal.status}</div>
-                        )}
+                          {/* Body */}
+                          <div className="px-5 pt-3 pb-2 flex flex-col gap-2">
+                            {proposal.description && (
+                              <>
+                                <p className="text-[13px] font-bold text-gray-800">Message:</p>
+                                <p className="text-[12px] text-gray-600 leading-relaxed">{proposal.description}</p>
+                              </>
+                            )}
+                            <p className="text-[13px] font-bold text-gray-800 mt-1">Proposal Includes:</p>
+                            <div className="flex items-center gap-5 text-[12px] text-gray-700">
+                              <span>Fees: <strong className="text-blue-600">${proposal.fee}</strong></span>
+                              {proposalDate && <span>Date: <strong className="text-gray-800">{proposalDate}</strong></span>}
+                            </div>
+                          </div>
+                          {/* Footer - action buttons */}
+                          <div className="px-5 py-4">
+                            {proposal.status === 'PENDING' && !isMe ? (
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => {
+                                    setPendingProposalForPayment(proposal);
+                                    setProposalMsgId(msg.id);
+                                  }}
+                                  className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold rounded-full text-[12px] shadow-sm transition-all"
+                                >
+                                  Accept Proposal
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await rejectProposal(proposal.id).unwrap();
+                                      setMessages(prev => prev.map(m =>
+                                        m.id === msg.id
+                                          ? { ...m, proposals: [{ ...proposal, status: 'REJECTED', rejectedBy: user?.id }] }
+                                          : m
+                                      ));
+                                      toast.success('Proposal declined.');
+                                    } catch {
+                                      toast.error('Failed to decline proposal. Please try again.');
+                                    }
+                                  }}
+                                  className="px-5 py-2 border border-gray-400 text-gray-700 font-semibold rounded-full text-[12px] hover:bg-gray-200/60 transition-all"
+                                >
+                                  Decline
+                                </button>
+                              </div>
+                            ) : (
+                              <div className={`text-[11px] font-bold py-1.5 px-3 rounded-full w-fit ${
+                                proposal.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-700' :
+                                proposal.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                                'bg-amber-100 text-amber-700'
+                              }`}>
+                                {proposal.status === 'ACCEPTED' ? '✓ You accepted this proposal' :
+                                 proposal.status === 'REJECTED' ? (
+                                   proposal.rejectedBy === user?.id ? '✕ You declined this proposal' :
+                                   proposal.rejectedBy === conversation?.providerId ? '✕ Doctor withdrew this proposal' :
+                                   '✕ Proposal Cancelled'
+                                 ) :
+                                 'Awaiting your response'}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
+                      {/* Timestamp below the card */}
+                      <span className={`text-[10px] text-gray-400 px-11 ${isMe ? 'text-right' : 'text-left'}`}>{timeAgo}</span>
                     </div>
                   );
                   return;
@@ -587,7 +660,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
+
           </div>
 
           {/* Message input */}
@@ -617,87 +690,78 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment }: ChatWin
 
         {/* ── Right Column: Files & Actions Sidebar ── */}
         <div className="lg:col-span-4 flex flex-col gap-5">
-
-          {/* Service info card */}
-          {conversation?.submission && (
-            <div className="bg-white rounded-3xl border border-gray-150 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col gap-3">
-              <h4 className="text-[14px] font-bold text-gray-900">Service Info</h4>
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between items-center text-gray-500">
-                  <span>Service</span>
-                  <span className="font-semibold text-gray-800">{conversation.service?.name}</span>
-                </div>
-                <div className="flex justify-between items-center text-gray-500">
-                  <span>Submission</span>
-                  <span className="font-semibold text-blue-600">{conversation.submission.submissionCode}</span>
-                </div>
-                <div className="flex justify-between items-center text-gray-500">
-                  <span>Status</span>
-                  <span className={`font-bold px-2 py-0.5 rounded-md text-[10px] uppercase ${
-                    conversation.submission.status === 'ACCEPTED'
-                      ? 'bg-emerald-50 text-emerald-600'
-                      : conversation.submission.status === 'PENDING'
-                      ? 'bg-amber-50 text-amber-600'
-                      : 'bg-rose-50 text-rose-600'
-                  }`}>
-                    {conversation.submission.status}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-gray-500">
-                  <span>Assessment</span>
-                  <span className="font-semibold text-gray-800 truncate max-w-[140px] text-right">
-                    {conversation.submission.assessment?.title}
-                  </span>
-                </div>
+          <div className="bg-[#f0f4f8] rounded-xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">Service Information</h3>
+            
+            <div className="space-y-3 text-[13px] mt-4 mb-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Service Started</span>
+                <span className="text-gray-700">{serviceInfo?.serviceStart ? new Date(serviceInfo.serviceStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Service Duration</span>
+                <span className="text-gray-700">{serviceInfo?.serviceDuration === 'MONTHLY' ? '1 month' : serviceInfo?.serviceDuration?.toLowerCase() || '-'}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-[#2563eb]">
+                <span className="text-gray-500">Service Fees</span>
+                <span className="text-gray-700">${serviceInfo?.serviceFees ? parseFloat(serviceInfo.serviceFees).toFixed(2) : '0.00'}</span>
+              </div>
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-gray-500">Next billing date:</span>
+                <span className="text-gray-700">{serviceInfo?.nextBillingDate ? new Date(serviceInfo.nextBillingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
               </div>
             </div>
-          )}
 
-          {/* Files & Attachments card */}
-          <div className="bg-white rounded-3xl border border-gray-150 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col gap-4">
-            <div>
-              <h4 className="text-[15px] font-bold text-gray-900">Files &amp; Attachments</h4>
-              <p className="text-[11px] text-gray-400 mt-0.5 font-light">Shared document attachments</p>
+            <div className="flex flex-col gap-3 mt-5">
+              <button 
+                onClick={() => {
+                  if (conversation?.submission?.id) {
+                    if (onViewDetails) {
+                      onViewDetails(conversation.submission.id);
+                    }
+                  } else {
+                    toast.error("Submission details not found");
+                  }
+                }}
+                className="w-full bg-[#3f3f46] hover:bg-[#27272a] transition-colors text-white text-[14px] font-medium py-2.5 rounded-lg shadow-sm"
+              >
+                View details
+              </button>
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="w-full bg-[#e11d48] hover:bg-rose-700 transition-colors text-white text-[14px] font-medium py-2.5 rounded-lg shadow-sm"
+              >
+                Close treatment
+              </button>
             </div>
+          </div>
+
+          <div className="bg-[#f0f4f8] rounded-xl p-5 shadow-sm flex flex-col gap-4">
+            <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">File & attachments</h3>
 
             <div className="flex flex-col gap-3 max-h-[260px] overflow-y-auto pr-1">
-              {uniqueFiles.length > 0 ? uniqueFiles.map((file: any) => (
-                <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50/50 rounded-2xl border border-gray-100 group">
+              {uniqueFiles.length > 0 ? uniqueFiles.map((file: any) => {
+                // Determine who sent the file to mimic the "by you:" or "by [Doctor]:" grouping
+                // For a simpler flat list that matches the new design
+                return (
+                <div key={file.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/50 transition-colors group">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center flex-shrink-0 border border-rose-100">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-gray-800 truncate leading-snug">{file.fileName}</p>
-                      {file.fileSize && (
-                        <p className="text-[10px] text-gray-400 leading-none mt-0.5">
-                          {(file.fileSize / 1024).toFixed(0)} KB
-                        </p>
-                      )}
-                    </div>
+                    <FileText className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
+                    <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file.fileName}</span>
                   </div>
                   <a
                     href={file.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 hover:bg-gray-100 text-gray-400 hover:text-gray-800 rounded-lg transition-all"
+                    className="p-1 text-[#2563eb] rounded-lg transition-all"
                   >
                     <Download className="h-4 w-4" />
                   </a>
                 </div>
-              )) : (
+              )}) : (
                 <p className="text-xs text-gray-400 text-center py-4">No attachments yet</p>
               )}
             </div>
-
-            {/* Cancel subscription / close consultation */}
-            <button
-              onClick={() => setShowCancelModal(true)}
-              className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold rounded-xl text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow-sm mt-2"
-            >
-              <ShieldAlert className="h-3.5 w-3.5" />
-              <span>Close This Consultation</span>
-            </button>
           </div>
         </div>
       </div>

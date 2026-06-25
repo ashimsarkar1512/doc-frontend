@@ -141,7 +141,7 @@ export const messageApi = baseApi.injectEndpoints({
         params: { cursor },
       }),
     }),
-    uploadAttachment: builder.mutation<any, FormData>({
+    uploadMessageAttachment: builder.mutation<any, FormData>({
       query: (formData) => ({
         url: '/attachments/upload',
         method: 'POST',
@@ -164,6 +164,21 @@ export const messageApi = baseApi.injectEndpoints({
       query: (conversationId) => `/message/conversations/${conversationId}/files`,
       providesTags: ['Message'],
     }),
+    acceptProposal: builder.mutation<{ success: boolean; message: string }, { proposalId: string; paymentData: any }>({
+      query: ({ proposalId, paymentData }) => ({
+        url: `/proposal/${proposalId}/accept`,
+        method: 'POST',
+        body: paymentData,
+      }),
+      invalidatesTags: ['Message'],
+    }),
+    rejectProposal: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (proposalId) => ({
+        url: `/proposal/${proposalId}/reject`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Message'],
+    }),
   }),
 });
 
@@ -173,8 +188,10 @@ export const {
   useCreateConversationMutation,
   useGetConversationsQuery,
   useGetMessageHistoryQuery,
-  useUploadAttachmentMutation,
+  useUploadMessageAttachmentMutation,
   useGetServiceInfoQuery,
   useCancelSubscriptionMutation,
   useGetConversationFilesQuery,
+  useAcceptProposalMutation,
+  useRejectProposalMutation,
 } = messageApi;
