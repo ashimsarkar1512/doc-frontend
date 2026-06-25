@@ -1,7 +1,8 @@
 "use client";
 
 import { AlertCircle, CheckCircle, HelpCircle, Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ActionBar from "./ActionBar";
 import ConsultationCard from "./ConsultationCard";
 import ConsultationDetails from "./ConsultationDetails";
@@ -129,10 +130,21 @@ export default function PatientPortalHome() {
 
   const filteredList = mappedConsultations;
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // High scaleable Shell Orchestration Domain State
+  const initialDomain = (searchParams.get("domain") as any) || "dashboard";
   const [activeDomain, setActiveDomain] = useState<
     "dashboard" | "messages" | "notifications" | "settings"
-  >("dashboard");
+  >(initialDomain);
+
+  const handleDomainChange = (domain: "dashboard" | "messages" | "notifications" | "settings") => {
+    setActiveDomain(domain);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("domain", domain);
+    router.push(`?${params.toString()}`);
+  };
   const [selectedConsultationId, setSelectedConsultationId] = useState<
     string | null
   >(null);
@@ -227,7 +239,7 @@ export default function PatientPortalHome() {
       <ActionBar
         activeDomain={activeDomain}
         onChangeDomain={(domain) => {
-          setActiveDomain(domain);
+          handleDomainChange(domain);
           // Auto reset sub views when switching primary modules
           setSelectedConsultationId(null);
           setSelectedChatId(null);
