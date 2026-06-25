@@ -31,16 +31,31 @@ const HowItsWork: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
 
   const title = content?.howItWorksTitle || "How It Works";
-  const apiSteps = content?.howItWorksSteps || [];
-  
-  // Use API steps if available and not empty, otherwise default steps
-  const stepsToDisplay = apiSteps.length > 0 
-    ? [...apiSteps].sort((a, b) => a.order - b.order).map((step, index) => ({
-        number: index + 1,
-        title: step.title,
-        description: step.description || "",
-      }))
+  const stepsToDisplay = content
+    ? [
+        {
+          number: 1,
+          title: content.howItWorksStep1Title || defaultSteps[0].title,
+          description: content.howItWorksStep1Description || defaultSteps[0].description,
+        },
+        {
+          number: 2,
+          title: content.howItWorksStep2Title || defaultSteps[1].title,
+          description: content.howItWorksStep2Description || defaultSteps[1].description,
+        },
+        {
+          number: 3,
+          title: content.howItWorksStep3Title || defaultSteps[2].title,
+          description: content.howItWorksStep3Description || defaultSteps[2].description,
+        },
+        {
+          number: 4,
+          title: content.howItWorksStep4Title || defaultSteps[3].title,
+          description: content.howItWorksStep4Description || defaultSteps[3].description,
+        },
+      ]
     : defaultSteps;
+
 
   return (
     <section className="w-full bg-white py-16 md:py-24 px-4 md:px-8 font-sans">
