@@ -18,7 +18,7 @@ import { useGetDoctorDashboardStatsQuery } from "@/Redux/features/doctorDashboar
 
 export default function DashboardStatsCards() {
     const {data}=useGetDoctorDashboardStatsQuery({})
-    console.log(data)
+    // console.log(data)
     const metaData=data?.data
   return (
     <div>

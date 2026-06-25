@@ -147,7 +147,7 @@ export default function FaqPage() {
         >
           <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-5">
             <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-[#1f1f1f] leading-[1.15] tracking-tight">
-              Frequently Asked Questions
+              Frequently Asked Questions 
             </h1>
             <p className="text-[#595959] text-[14px] leading-relaxed font-normal max-w-xl mx-auto">
               Find answers to common questions about our programs, medications,

@@ -76,7 +76,7 @@ const QNA: React.FC = () => {
         
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
-          Frequently asked questions
+          Frequently asked questions  
         </h2>
 
         {/* Two Column Grid */}
@@ -154,11 +154,18 @@ const QNA: React.FC = () => {
                 Everything you need to know before getting started.
               </p>
               
-              <button className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
+              <button
+              onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+               className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
                 Book An Appointment
               </button>
             </div>
-          </div>
+          </div>  
 
         </div>
       </div>
