@@ -5,6 +5,8 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Search, RotateCcw } from "lucide-react";
 import { useGetCategoriesNamesQuery, useGetCategoriesQuery, type Assessment } from "@/Redux/features/patient/assesmentcategory";
+import { useHomepageContent } from "@/providers/HomepageContentProvider";
+
 
 //  Constants 
 
@@ -145,7 +147,9 @@ const PaginationButton = ({ onClick, disabled, children, ariaLabel } : Paginatio
 //  Main Component 
 
 export default function Assessments() {
+  const { content } = useHomepageContent();
   const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
+
   const [currentPage, setCurrentPage] = useState(0);
 
   // Auto-scroll to this section when navigated via /#assessments
@@ -205,10 +209,10 @@ export default function Assessments() {
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-            Start from a tailored assessment
+            {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
           <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
-            Comprehensive care for a wide range of everyday conditions, managed safely from home.
+            {content?.assessmentDescription || "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
         </div>
 
