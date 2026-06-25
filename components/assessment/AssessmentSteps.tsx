@@ -666,7 +666,7 @@ export default function AssessmentSteps() {
       : undefined;
 
   // ── Auth helpers ──────────────────────────────────────────────────────────
-  const activeEmail = registerMode ? registerEmail : loginEmail;
+  const activeEmail = otpPending?.email || (registerMode ? registerEmail : loginEmail);
   const maskedEmail = activeEmail
     ? activeEmail.replace(
       /^(.{2})(.+?)(@.+)$/,
@@ -676,8 +676,9 @@ export default function AssessmentSteps() {
     : "ex******@email.com";
 
   // mask phone: show first 3 and last 2 digits, rest as *
-  const maskedPhone = registerPhone
-    ? registerPhone.replace(/(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/, (_, start, mid, end) =>
+  const activePhone = otpPending?.phone || registerPhone;
+  const maskedPhone = activePhone
+    ? activePhone.replace(/(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/, (_, start, mid, end) =>
       start + "*".repeat(mid.length) + end
     )
     : "+***********";
@@ -686,17 +687,33 @@ export default function AssessmentSteps() {
   const handleLoginSubmit = async () => {
     try {
       const res = await login({ email: loginEmail, password: loginPassword }).unwrap();
-      dispatch(
-        setOtpPending({
-          userId: res.data.userId,
-          challengeId: null,
-          method: "EMAIL",
-          purpose: "LOGIN",
-        } as any)
-      );
-      toast.success(res.message);
-      setLoginMode(false);
-      setOtpMode(true);
+      
+      if (res.data?.status === "OTP_REQUIRED") {
+        dispatch(
+          setOtpPending({
+            userId: res.data.userId,
+            challengeId: null,
+            method: "EMAIL",
+            purpose: "LOGIN",
+            email: res.data.email || loginEmail,
+            phone: res.data.phone || "",
+          } as any)
+        );
+        toast.success(res.message);
+        setLoginMode(false);
+        setOtpMode(true);
+      } else if (res.data?.accessToken && res.data?.user) {
+        // Direct Login without OTP
+        dispatch(
+          setCredentials({
+            user: res.data.user,
+            accessToken: res.data.accessToken,
+          })
+        );
+        toast.success("Login successful");
+        setLoginMode(false);
+        setShippingMode(true);
+      }
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ?? "Login failed."
@@ -722,6 +739,8 @@ export default function AssessmentSteps() {
           challengeId: null,
           method: "EMAIL",
           purpose: "REGISTER",
+          email: registerEmail,
+          phone: registerPhone,
         } as any)
       );
       toast.success(res.message);
@@ -1226,9 +1245,11 @@ export default function AssessmentSteps() {
                 <p className="text-gray-500 text-[14px] mb-5">Choose the option to receive the code</p>
                 <div className="flex flex-col gap-3">
                   {[
-                    { key: "EMAIL", label: "Email: " + maskedEmail },
-                    { key: "PHONE", label: "Phone: " + maskedPhone },
-                  ].map(({ key, label }) => {
+                    { key: "EMAIL", label: "Email: " + maskedEmail, visible: true },
+                    { key: "PHONE", label: "Phone: " + maskedPhone, visible: !!activePhone },
+                  ]
+                  .filter((opt) => opt.visible)
+                  .map(({ key, label }) => {
                     const isSelected = otpChannel === key;
                     return (
                       <button

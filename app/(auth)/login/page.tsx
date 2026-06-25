@@ -12,7 +12,7 @@ import Navbar from "@/components/shared/Navbar";
 import Logo from "@/components/ui/Logo";
 
 import { useLoginMutation } from "@/Redux/api/authApi";
-import { setOtpPending } from "@/Redux/features/auth/authSlice";
+import { setOtpPending, setCredentials } from "@/Redux/features/auth/authSlice";
 import { useAppDispatch } from "@/Redux/store/hooks";
 
 const LoginPage = () => {
@@ -46,6 +46,22 @@ const LoginPage = () => {
         );
         toast.success(res.message);
         router.push("/receive-otp");
+      } else if (res.data?.accessToken && res.data?.user) {
+        // MFA disabled or not required, direct login
+        dispatch(
+          setCredentials({
+            user: res.data.user,
+            accessToken: res.data.accessToken,
+          })
+        );
+        toast.success("Login successful");
+        
+        const roles = res.data.user.roles ?? [];
+        if (roles.includes("DOCTOR") || roles.includes("PROVIDER")) {
+          router.push("/doctor");
+        } else {
+          router.push("/patient");
+        }
       }
     } catch (err: unknown) {
       const message =
@@ -87,7 +103,7 @@ const LoginPage = () => {
               </header>
 
               {/* Tabs */}
-              <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
+              {/* <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
                 <button
                   type="button"
                   onClick={() => setActiveTab("patient")}
@@ -118,7 +134,7 @@ const LoginPage = () => {
                 >
                   New Register
                 </Link>
-              </nav>
+              </nav> */}
 
               {/* Form */}
               <form

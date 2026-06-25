@@ -72,20 +72,10 @@ const services = [
 const AboutUs = () => {
   const { content, isLoading } = useHomepageContent();
 
-  const subtitle = content?.aboutSubtitle || "About us ";
+  const subtitle = "About us";
   const title = content?.aboutTitle || null;
   const description = content?.aboutDescription || null;
-  const bullets = content?.aboutBullets ?? [];
-
-  const primaryButtonText = content?.aboutPrimaryButtonText || "Comming soon ";
-  // console.log(primaryButtonText)
-  const primaryButtonLink = content?.aboutPrimaryButtonLink || "#";
-  const primaryButtonNewTab = content?.aboutPrimaryButtonNewTab ?? false;
-
-  const secondaryButtonText = content?.aboutSecondaryButtonText || null;
-  // console.log(secondaryButtonText);
-  const secondaryButtonLink = content?.aboutSecondaryButtonLink || "#";
-  // const secondaryButtonNewTab = content?.aboutSecondaryButtonNewTab ?? false;
+  const bullets: string[] = [];
 
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center font-sans">
