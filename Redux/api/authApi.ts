@@ -17,6 +17,9 @@ export interface LoginResponse {
     status: 'OTP_REQUIRED' | 'ACTIVE'
     phone?: string
     email?: string
+    accessToken?: string
+    tokenType?: string
+    user?: User
   }
 }
 

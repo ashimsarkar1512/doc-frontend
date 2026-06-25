@@ -84,8 +84,10 @@ interface ChatWindowProps {
 
 export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDetails }: ChatWindowProps) {
   const [typedMessage, setTypedMessage] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
+  const isTypingRef = useRef(false);
   const [otherUserTyping, setOtherUserTyping] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingProposalForPayment, setPendingProposalForPayment] = useState<any>(null);
@@ -174,8 +176,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
       });
     };
 
-    const handleTyping = ({ userId, name }: { userId: string; name: string }) => {
-      if (userId !== user?.id) setOtherUserTyping(name);
+    const handleTyping = (payload: { userId: string; name?: string }) => {
+      if (payload.userId !== user?.id) setOtherUserTyping(payload.name || 'Someone');
     };
 
     const handleStopTyping = ({ userId }: { userId: string }) => {
@@ -203,14 +205,34 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   // ─── Handlers ───────────────────────────────────────────────────────────────
 
   const handleSend = async () => {
-    if (!typedMessage.trim() || !recipientKeyData?.data?.publicKey) {
+    if ((!typedMessage.trim() && !selectedFile) || !recipientKeyData?.data?.publicKey) {
       if (!recipientKeyData?.data?.publicKey) toast.error('Recipient public key not found');
       return;
     }
+    
+    setIsUploading(true);
+    let attachmentId = null;
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append('files', selectedFile);
+      formData.append('context', 'CHAT_MESSAGE');
+      try {
+        const uploadRes = await uploadAttachment(formData).unwrap();
+        attachmentId = uploadRes.data.id;
+      } catch (error) {
+        toast.error('File upload failed');
+        setIsUploading(false);
+        return;
+      }
+    }
+
     try {
-      const encrypted = await encrypt(typedMessage, recipientKeyData.data.publicKey);
+      const textToSend = typedMessage.trim() || (selectedFile ? `Sent an attachment: ${selectedFile.name}` : '');
+      const encrypted = await encrypt(textToSend, recipientKeyData.data.publicKey);
       if (!encrypted) {
         toast.error("Encryption failed. Ensure you are on HTTPS or localhost to use WebCrypto.");
+        setIsUploading(false);
         return;
       }
       
@@ -218,58 +240,78 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           id: `opt-${Date.now()}`,
           conversationId: chatId,
           senderId: user?.id,
-          messageType: 'TEXT',
+          messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
           createdAt: new Date().toISOString(),
           sender: {
             id: user?.id,
             name: user?.profile?.name,
             avatar: user?.profile?.avatar,
           },
-          decryptedText: typedMessage,
+          decryptedText: textToSend,
+          attachments: selectedFile ? [{
+            id: 'temp',
+            fileName: selectedFile.name,
+            fileType: selectedFile.type,
+            fileSize: selectedFile.size,
+            fileUrl: URL.createObjectURL(selectedFile)
+          }] : []
         };
         setMessages((prev) => [...prev, optimisticMsg]);
 
-        sendMessage({ conversationId: chatId, ...encrypted, messageType: 'TEXT', senderId: user?.id });
+        sendMessage({
+          conversationId: chatId,
+          ...encrypted,
+          messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
+          attachmentId,
+          senderId: user?.id
+        });
         setTypedMessage('');
+        setSelectedFile(null);
         emitStopTyping(chatId);
     } catch (error) {
       toast.error('Failed to encrypt message');
     }
+    setIsUploading(false);
   };
 
   const handleTypingInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTypedMessage(e.target.value);
-    if (!isTyping) {
-      setIsTyping(true);
+    if (!isTypingRef.current) {
+      isTypingRef.current = true;
       emitTyping(chatId);
     }
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
+      isTypingRef.current = false;
       emitStopTyping(chatId);
     }, 2000);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !recipientKeyData?.data?.publicKey) return;
-
-    const formData = new FormData();
-    formData.append('files', file);
-    formData.append('context', 'CHAT_MESSAGE');
-
-    try {
-      const uploadRes = await uploadAttachment(formData).unwrap();
-      const attachmentId = uploadRes.data.id;
-      const encrypted = await encrypt(`Sent an attachment: ${file.name}`, recipientKeyData.data.publicKey);
-      if (encrypted) {
-        sendMessage({ conversationId: chatId, ...encrypted, messageType: 'ATTACHMENT', attachmentId, senderId: user?.id });
-      }
-    } catch (error) {
-      toast.error('File upload failed');
+    if (file) {
+      setSelectedFile(file);
     }
-    // Reset input so same file can be re-selected
     e.target.value = '';
+  };
+
+  const handleDownload = async (url: string, filename: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename || 'download';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      // Fallback
+      window.open(url, '_blank');
+    }
   };
 
   const handleLoadMore = () => {
@@ -610,21 +652,46 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                       <div className={`px-4 py-2.5 text-sm leading-relaxed ${
                         isMe
                           ? `bg-[#2563eb] text-white ${myRadius}`
-                          : `bg-white text-gray-800 border border-gray-100 shadow-sm ${myRadius}`
+                          : `bg-[#e2e8f0] text-gray-800 ${myRadius}`
                       }`}>
                         {msg.decryptedText || '...'}
 
-                        {msg.messageType === 'ATTACHMENT' && msg.attachments?.map((file: any) => (
-                          <div key={file.id} className="mt-2 p-2 bg-white/10 rounded-lg border border-white/20 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 overflow-hidden">
-                              <FileText className="h-4 w-4 flex-shrink-0 opacity-80" />
-                              <span className="truncate text-xs opacity-90">{file.fileName}</span>
+                        {msg.messageType === 'ATTACHMENT' && msg.attachments?.map((file: any) => {
+                          const isImage = file.fileType?.startsWith('image/') || file.fileName?.match(/\.(jpeg|jpg|gif|png|webp|bmp|svg)$/i);
+                          if (isImage) {
+                            return (
+                              <div key={file.id} className="mt-2 rounded-xl overflow-hidden border border-black/10 relative group bg-black/5">
+                                <img src={file.fileUrl} alt={file.fileName} className="max-w-full max-h-[250px] object-contain" />
+                                <a 
+                                  href={file.fileUrl} 
+                                  onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
+                                  className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <Download className="h-4 w-4" />
+                                </a>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div key={file.id} className={`mt-2 p-2 rounded-lg border flex items-center justify-between gap-3 min-w-[180px] max-w-full ${
+                              isMe ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
+                            }`}>
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <FileText className="h-5 w-5 flex-shrink-0 opacity-80" />
+                                <span className="truncate text-xs font-medium">{file.fileName}</span>
+                              </div>
+                              <a 
+                                href={file.fileUrl} 
+                                onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
+                                className={`p-1.5 rounded-md transition-colors flex-shrink-0 ${
+                                  isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-black/10 text-gray-700'
+                                }`}
+                              >
+                                <Download className="h-4 w-4" />
+                              </a>
                             </div>
-                            <a href={file.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-white/20 rounded">
-                              <Download className="h-3.5 w-3.5" />
-                            </a>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
                       {/* Timestamp — only on last message in group */}
@@ -653,7 +720,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                     ? <img src={doctor.avatar} className="object-cover w-full h-full" alt="" />
                     : <User className="h-3.5 w-3.5 text-gray-400" />}
                 </div>
-                <div className="bg-white border border-gray-100 shadow-sm rounded-[20px] rounded-bl-[5px] px-4 py-3 flex items-center gap-1.5">
+                <div className="bg-[#e2e8f0] rounded-[20px] rounded-bl-[5px] px-4 py-3 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -663,27 +730,55 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
           </div>
 
+          {/* Selected File Preview */}
+          {selectedFile && (
+            <div className="bg-white border-t border-gray-150 p-4 pb-0 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center">
+                  {selectedFile.type.startsWith('image/') ? (
+                    <img src={URL.createObjectURL(selectedFile)} alt="preview" className="object-cover w-full h-full" />
+                  ) : (
+                    <FileText className="w-5 h-5 text-gray-500" />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-gray-800 max-w-[200px] truncate">{selectedFile.name}</span>
+                  <span className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedFile(null)} 
+                disabled={isUploading}
+                className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-colors disabled:opacity-50"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Message input */}
           <div className="bg-white border-t border-gray-150 p-4 flex items-center gap-3">
-            <label className="p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
-              <Paperclip className="h-5 w-5 text-gray-500" />
-              <input type="file" className="hidden" onChange={handleFileUpload} />
+            <label className={`text-[#2563eb] hover:text-blue-700 transition-colors flex-shrink-0 p-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+              <Paperclip className="h-5 w-5" />
+              <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
             </label>
             <input
               type="text"
               placeholder="Type your message..."
               value={typedMessage}
               onChange={handleTypingInput}
+              disabled={isUploading}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              className="flex-1 bg-gray-50 border border-gray-150 rounded-[14px] px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400 focus:bg-white transition-all shadow-inner"
+              className="flex-1 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all disabled:opacity-50"
             />
             <button
               onClick={handleSend}
-              disabled={!typedMessage.trim()}
-              className="w-11 h-11 bg-[#2563eb] hover:bg-[#1d4ed8] disabled:bg-gray-300 text-white rounded-[14px] flex items-center justify-center hover:shadow active:scale-95 transition-all flex-shrink-0"
-              aria-label="Send message"
+              disabled={(!typedMessage.trim() && !selectedFile) || isUploading}
+              className="bg-[#2563eb] hover:bg-blue-700 disabled:bg-gray-300 transition-colors text-white text-sm font-semibold px-6 py-3 rounded-lg flex items-center gap-2 flex-shrink-0 shadow-sm"
             >
-              <Send className="h-4 w-4" />
+              {isUploading ? 'Sending...' : (
+                <>Send <Send className="w-4 h-4" /></>
+              )}
             </button>
           </div>
         </div>
@@ -751,11 +846,10 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                   </div>
                   <a
                     href={file.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1 text-[#2563eb] rounded-lg transition-all"
+                    onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
+                    className="p-2 hover:bg-black/5 rounded-md transition-colors flex-shrink-0"
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-4 w-4 text-gray-500 hover:text-gray-900" />
                   </a>
                 </div>
               )}) : (

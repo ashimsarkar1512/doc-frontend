@@ -14,37 +14,18 @@ export interface MediaFile {
   updatedAt: string
 }
 
-export interface HowItWorksStep {
+export interface FeaturedService {
   id: string
-  homePageContentId: string
-  title: string
-  description: string | null
-  iconId: string | null
-  icon: MediaFile | null
-  iconUrl: string | null
-  order: number
-  createdAt: string
-  updatedAt: string
-}
-
-export interface FAQ {
-  id: string
-  homePageContentId: string
-  question: string
-  answer: string
-  order: number
-  createdAt: string
-  updatedAt: string
+  name: string
+  slug: string
 }
 
 export interface HomepageContent {
   id: string
-  heroImageId: string | null
-  heroImage: MediaFile | null
-  heroImageUrl: string | null
+  heroMediaId: string | null
+  heroMedia: MediaFile | null
   heroBadgeImageId: string | null
   heroBadgeImage: MediaFile | null
-  heroBadgeImageUrl: string | null
   heroBadgeText: string | null
   heroBadgeLink: string | null
   heroTitle: string | null
@@ -52,34 +33,67 @@ export interface HomepageContent {
   heroButtonText: string | null
   heroButtonLink: string | null
   heroButtonNewTab: boolean
-  bannerTitle: string | null
-  bannerDescription: string | null
-  aboutSubtitle: string | null
+
+  assessmentTitle: string | null
+  assessmentDescription: string | null
+
   aboutTitle: string | null
   aboutDescription: string | null
-  aboutPrimaryButtonText: string | null
-  aboutPrimaryButtonLink: string | null
-  aboutPrimaryButtonNewTab: boolean
-  aboutSecondaryButtonText: string | null
-  aboutSecondaryButtonLink: string | null
-  aboutSecondaryButtonNewTab: boolean
-  aboutBullets: string[]
-  productTitle: string | null
-  productButtonLink: string | null
-  productButtonNewTab: boolean
+  aboutFeaturedService1Id: string | null
+  aboutFeaturedService1: FeaturedService | null
+  aboutFeaturedService2Id: string | null
+  aboutFeaturedService2: FeaturedService | null
+  aboutFeaturedService3Id: string | null
+  aboutFeaturedService3: FeaturedService | null
+  aboutButtonText: string | null
+  aboutButtonLink: string | null
+  aboutButtonNewTab: boolean
+  aboutMediaId: string | null
+  aboutMedia: MediaFile | null
+
+  providersTitle: string | null
+  providersButtonText: string | null
+  providersButtonLink: string | null
+  providersButtonNewTab: boolean
+
   howItWorksTitle: string | null
-  howItWorksSteps: HowItWorksStep[]
+  howItWorksStep1Title: string | null
+  howItWorksStep1Description: string | null
+  howItWorksStep2Title: string | null
+  howItWorksStep2Description: string | null
+  howItWorksStep3Title: string | null
+  howItWorksStep3Description: string | null
+  howItWorksStep4Title: string | null
+  howItWorksStep4Description: string | null
+
   testimonialTitle: string | null
-  testimonialSubtitle: string | null
-  testimonialDescription: string | null
+  testimonialCardTitle: string | null
+  testimonialCardDescription: string | null
+  testimonialButtonText: string | null
   testimonialButtonLink: string | null
   testimonialButtonNewTab: boolean
-  pricingTitle: string | null
-  pricingSubtitle: string | null
-  pricingDescription: string | null
-  pricingButtonLink: string | null
-  pricingButtonNewTab: boolean
-  faqs: FAQ[]
+
+  faqTitle: string | null
+  faqCardTitle: string | null
+  faqCardDescription: string | null
+  faqButtonText: string | null
+  faqButtonLink: string | null
+  faqButtonNewTab: boolean
+  faqCardMediaId: string | null
+  faqCardMedia: MediaFile | null
+  faqQuestion1: string | null
+  faqAnswer1: string | null
+  faqQuestion2: string | null
+  faqAnswer2: string | null
+  faqQuestion3: string | null
+  faqAnswer3: string | null
+  faqQuestion4: string | null
+  faqAnswer4: string | null
+  faqQuestion5: string | null
+  faqAnswer5: string | null
+  faqQuestion6: string | null
+  faqAnswer6: string | null
+
   createdAt: string
   updatedAt: string
 }

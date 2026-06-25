@@ -11,8 +11,7 @@ const Home = () => {
   const { content } = useHomepageContent()
 
   const heroImageUrl =
-    content?.heroImageUrl ||
-    content?.heroImage?.fileUrl ||
+    content?.heroMedia?.fileUrl ||
     null
 
   return (

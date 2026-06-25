@@ -156,9 +156,10 @@ const ReceiveOtpPage = () => {
                       className="hidden"
                     />
                   
-                    <div className="">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[15px] text-white/90">Email:</span>
                       {otpPending?.email && (
-                        <span className="text-lg text-white/70">
+                        <span className="text-[15px] text-white/90">
                           {maskEmail(otpPending.email)}
                         </span>
                       )}
@@ -194,8 +195,9 @@ const ReceiveOtpPage = () => {
                         className="hidden"
                       />
                       
-                      <div className="">
-                        <span className="text-lg text-white/70">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[15px] text-white/90">Phone:</span>
+                        <span className="text-[15px] text-white/90">
                           {maskPhone(otpPending.phone)}
                         </span>
                       </div>
