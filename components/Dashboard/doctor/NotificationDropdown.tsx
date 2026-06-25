@@ -10,6 +10,7 @@ import {
 import { AppNotification } from "@/types/notificationTypes";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +33,8 @@ export default function NotificationDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const router = useRouter();
+
   const handleMarkAsRead = async (id: string, isRead: boolean) => {
     if (isRead) return;
     try {
@@ -41,10 +44,21 @@ export default function NotificationDropdown() {
     }
   };
 
+  const handleNotificationClick = async (notification: AppNotification) => {
+    await handleMarkAsRead(notification.id, notification.isRead);
+    setIsOpen(false);
+    if (notification.actionType === "NEW_MESSAGE") {
+      router.push(`/doctor?view=messages&chatId=${notification.referenceId}`);
+    } else if (notification.actionType.startsWith("ASSESSMENT_")) {
+      router.push(`/doctor?view=consultations&consultationId=${notification.referenceId}`);
+    } else if (notification.actionType === "ORDER_STATUS_UPDATED") {
+      router.push(`/doctor`);
+    }
+  };
+
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead().unwrap();
-      toast.success("All notifications marked as read");
     } catch (err) {
       console.error("Failed to mark all as read", err);
       toast.error("Failed to mark all as read");
@@ -107,7 +121,7 @@ export default function NotificationDropdown() {
   const renderNotificationItem = (notification: AppNotification) => (
     <div
       key={notification.id}
-      onClick={() => handleMarkAsRead(notification.id, notification.isRead)}
+      onClick={() => handleNotificationClick(notification)}
       className={`px-5 py-4 transition-colors cursor-pointer ${
         !notification.isRead ? "bg-blue-50/50 hover:bg-blue-50" : "hover:bg-gray-50"
       }`}
@@ -142,7 +156,7 @@ export default function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-colors shadow-sm bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"
+        className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-colors text-[#2563eb]"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -176,7 +190,7 @@ export default function NotificationDropdown() {
             </div>
 
             {/* Content */}
-            <div className="max-h-[400px] overflow-y-auto">
+            <div className="max-h-[400px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {notifications.length === 0 ? (
                 <div className="px-5 py-10 flex flex-col items-center justify-center text-center">
                   <Bell className="w-8 h-8 text-gray-300 mb-2" />
