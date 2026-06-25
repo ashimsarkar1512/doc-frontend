@@ -3,6 +3,7 @@
 import React, { useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useGetAllFeaturesDoctorQuery } from "@/Redux/features/homePageDoctor/homePageDoctorApi";
+import fallBackImg from "@/public/fallback-man.jpeg";
 
 const Expert: React.FC = () => {
   const { data } = useGetAllFeaturesDoctorQuery();
@@ -70,7 +71,10 @@ const Expert: React.FC = () => {
                     {/* Image Container with the exact soft blue tint fill background */}
                     <div className="w-full aspect-[4/5] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group">
                       <img
-                        src={provider?.thumbnail}
+                        src={provider?.thumbnail || fallBackImg.src}
+                        onError={(e) => {
+                          e.currentTarget.src = fallBackImg.src;
+                        }}
                         alt={provider?.fullName}
                         className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-103 mix-blend-multiply opacity-90"
                         draggable={false}
