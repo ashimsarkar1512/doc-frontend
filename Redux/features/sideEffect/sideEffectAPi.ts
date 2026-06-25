@@ -98,7 +98,7 @@ export const sideEffectApi = baseApi.injectEndpoints({
       { status?: "ACTIVE" | "INACTIVE"; page?: number; limit?: number }
     >({
       query: ({ status = "ACTIVE", page = 1, limit = 100 } = {}) => ({
-        url: "/admin/doctors",
+        url: "/public/doctors",
         method: "GET",
         params: { status, page, limit },
       }),

@@ -140,6 +140,7 @@ const ReportForm = () => {
 
   const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesNamesQuery();
   const { data: providersData, isLoading: providersLoading } = useGetActiveProvidersQuery({});
+  
   console.log(providersData , 'providersData');
 
   const categories: Category[] = categoriesData?.data ?? [];
