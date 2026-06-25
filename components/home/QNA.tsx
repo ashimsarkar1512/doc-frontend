@@ -53,15 +53,15 @@ const QNA: React.FC = () => {
     setOpenId(openId === id ? null : id);
   };
 
-  const apiFaqs = content?.faqs || [];
-  
-  const faqDataToDisplay = apiFaqs.length > 0
-    ? [...apiFaqs].sort((a, b) => a.order - b.order).map(faq => ({
-        id: faq.id,
-        question: faq.question,
-        answer: faq.answer,
-      }))
-    : defaultFaqData;
+  const dynamicFaqs: FAQItem[] = [];
+  if (content?.faqQuestion1 && content?.faqAnswer1) dynamicFaqs.push({ id: '1', question: content.faqQuestion1, answer: content.faqAnswer1 });
+  if (content?.faqQuestion2 && content?.faqAnswer2) dynamicFaqs.push({ id: '2', question: content.faqQuestion2, answer: content.faqAnswer2 });
+  if (content?.faqQuestion3 && content?.faqAnswer3) dynamicFaqs.push({ id: '3', question: content.faqQuestion3, answer: content.faqAnswer3 });
+  if (content?.faqQuestion4 && content?.faqAnswer4) dynamicFaqs.push({ id: '4', question: content.faqQuestion4, answer: content.faqAnswer4 });
+  if (content?.faqQuestion5 && content?.faqAnswer5) dynamicFaqs.push({ id: '5', question: content.faqQuestion5, answer: content.faqAnswer5 });
+  if (content?.faqQuestion6 && content?.faqAnswer6) dynamicFaqs.push({ id: '6', question: content.faqQuestion6, answer: content.faqAnswer6 });
+
+  const faqDataToDisplay = dynamicFaqs.length > 0 ? dynamicFaqs : defaultFaqData;
 
   // Set the first item as open by default when data loads
   React.useEffect(() => {
@@ -76,7 +76,7 @@ const QNA: React.FC = () => {
         
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
-          Frequently asked questions  
+          {content?.faqTitle || "Frequently asked questions"}
         </h2>
 
         {/* Two Column Grid */}
@@ -135,7 +135,7 @@ const QNA: React.FC = () => {
             {/* Background Medical Art Vector Frame */}
             <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-103">
               <Image
-                src="/QNA.png"
+                src={content?.faqCardMedia?.fileUrl || "/QNA.png"}
                 alt="Medical Background"
                 fill
                 className="object-cover"
@@ -148,21 +148,20 @@ const QNA: React.FC = () => {
             {/* Callout Typography Stack */}
             <div className="relative z-10 flex flex-col gap-3">
               <h3 className="text-3xl md:text-4xl font-normal tracking-tight">
-                Still have a Question?
+                {content?.faqCardTitle || "Still have a Question?"}
               </h3>
               <p className="text-sm text-gray-300 font-light max-w-sm leading-relaxed mb-6">
-                Everything you need to know before getting started.
+                {content?.faqCardDescription || "Everything you need to know before getting started."}
               </p>
               
               <button
-              onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
-            )
-          }
-               className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
-                Book An Appointment
+                onClick={() => {
+                  const link = content?.faqButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+                  const target = content?.faqButtonNewTab ?? true ? "_blank" : "_self";
+                  window.open(link, target);
+                }}
+                className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
+                {content?.faqButtonText || "Book An Appointment"}
               </button>
             </div>
           </div>  

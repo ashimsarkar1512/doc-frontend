@@ -169,32 +169,13 @@ const AboutUs = () => {
           </span>
           <div className="flex flex-col gap-2 w-full items-center">
             <Link
-              href={primaryButtonLink}
-              target={primaryButtonNewTab ? "_blank" : "_self"}
-              rel={primaryButtonNewTab ? "noopener noreferrer" : undefined}
+              href={content?.aboutButtonLink || "#"}
+              target={content?.aboutButtonNewTab ? "_blank" : "_self"}
+              rel={content?.aboutButtonNewTab ? "noopener noreferrer" : undefined}
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-6 py-2.5 rounded-full transition-colors duration-200 shadow-md shadow-blue-600/10 active:scale-98"
             >
-              {primaryButtonText}
+              {content?.aboutButtonText || "Learn More"}
             </Link>
-            {secondaryButtonText && (
-              <Link
-                // href={secondaryButtonLink}
-                // target={secondaryButtonNewTab ? "_blank" : "_self"}
-                // rel={secondaryButtonNewTab ? "noopener noreferrer" : undefined}
-                href={secondaryButtonLink || "#"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open(
-                    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                    "_blank",
-                    "noopener,noreferrer",
-                  );
-                }}
-                className="text-blue-600 hover:underline font-medium text-sm"
-              >
-                {secondaryButtonText}
-              </Link>
-            )}
           </div>
         </div>
       </div>

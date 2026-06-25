@@ -5,87 +5,16 @@ import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
-
-interface Review {
-  id: string;
-  author: string;
-  date: string;
-  rating: number;
-  text: string;
-}
-
-const reviews: Review[] = [
-  {
-    id: "1",
-    author: "Amanda P.",
-    date: "2 months ago",
-    rating: 5,
-    text: "What stands out is the guidance. Every session has purpose, and I always know what I'm working toward. It's not just training harder – it's training in a way that actually lasts.",
-  },
-  {
-    id: "2",
-    author: "Marvin McKinney",
-    date: "2 months ago",
-    rating: 5,
-    text: "I used to train regularly but never felt consistent progress. Here, everything follows a clear structure. Within a few weeks, I noticed more strength, less discomfort, and a better routine overall.",
-  },
-  {
-    id: "3",
-    author: "Nancy Lopez",
-    date: "2 months ago",
-    rating: 5,
-    text: "Diana front desk the most helpful and sweet great every time I go in. Highly recommend, they make sure you get what you need and believed in my weight loss goals.",
-  },
-  {
-    id: "4",
-    author: "Amanda P.",
-    date: "2 months ago",
-    rating: 5,
-    text: "What stands out is the guidance. Every session has purpose, and I always know what I'm working toward. It's not just training harder – it's training in a way that actually lasts.",
-  },
-  {
-    id: "5",
-    author: "Marvin McKinney",
-    date: "2 months ago",
-    rating: 5,
-    text: "I used to train regularly but never felt consistent progress. Here, everything follows a clear structure. Within a few weeks, I noticed more strength, less discomfort, and a better routine overall.",
-  },
-  {
-    id: "6",
-    author: "Nancy Lopez",
-    date: "2 months ago",
-    rating: 5,
-    text: "Diana front desk the most helpful and sweet great every time I go in. Highly recommend, they make sure you get what you need and believed in my weight loss goals.",
-  },
-  {
-    id: "7",
-    author: "Amanda P.",
-    date: "2 months ago",
-    rating: 5,
-    text: "What stands out is the guidance. Every session has purpose, and I always know what I'm working toward. It's not just training harder – it's training in a way that actually lasts.",
-  },
-  {
-    id: "8",
-    author: "Marvin McKinney",
-    date: "2 months ago",
-    rating: 5,
-    text: "I used to train regularly but never felt consistent progress. Here, everything follows a clear structure. Within a few weeks, I noticed more strength, less discomfort, and a better routine overall.",
-  },
-  {
-    id: "9",
-    author: "Nancy Lopez",
-    date: "2 months ago",
-    rating: 5,
-    text: "Diana front desk the most helpful and sweet great every time I go in. Highly recommend, they make sure you get what you need and believed in my weight loss goals.",
-  },
-];
+import { useGetTestimonialsQuery } from "@/Redux/features/testimonials/testimonialsApi";
 
 const TestiMonial: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
+  const { data: testimonialsData } = useGetTestimonialsQuery();
+  const reviews = testimonialsData?.data || [];
 
   const title = content?.testimonialTitle || "Read from Hundreds of success stories";
-  const subtitle = content?.testimonialSubtitle || "Client's Testimonial";
-  const description = content?.testimonialDescription || "See how Weight Loss MD has helped people feel stronger, healthier, and more balanced.";
+  const subtitle = content?.testimonialCardTitle || "Client's Testimonial";
+  const description = content?.testimonialCardDescription || "See how Weight Loss MD has helped people feel stronger, healthier, and more balanced.";
   const buttonLink = content?.testimonialButtonLink || "#";
   const buttonNewTab = content?.testimonialButtonNewTab ?? false;
 
@@ -182,7 +111,7 @@ const TestiMonial: React.FC = () => {
                           <span className="text-[#4285F4]">G</span>
                         </div>
                         <div className="flex gap-0.5">
-                          {[...Array(review.rating)].map((_, i) => (
+                          {[...Array(review.rating || 5)].map((_, i) => (
                             <span key={i} className="text-[#FBBC05] text-sm">
                               ★
                             </span>
@@ -193,16 +122,18 @@ const TestiMonial: React.FC = () => {
                       {/* Author Meta Details */}
                       <div className="mb-4">
                         <h4 className="text-base font-bold tracking-tight text-gray-100">
-                          {review.author}
+                          {review.author || review.clientName || "Anonymous"}
                         </h4>
                         <span className="text-xs text-gray-500 font-medium">
-                          {review.date}
+                          {review.date || review.createdAt
+                            ? new Date(review.date || review.createdAt).toLocaleDateString()
+                            : ""}
                         </span>
                       </div>
 
                       {/* Actual Review Text Area */}
                       <p className="text-sm text-gray-300 leading-relaxed font-normal line-clamp-6">
-                        {review.text}
+                        {review.text || review.content}
                       </p>
                     </div>
                   </div>

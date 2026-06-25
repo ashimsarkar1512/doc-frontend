@@ -9,13 +9,11 @@ const Banner = () => {
 
   // Resolve hero image URL
   const heroImageUrl =
-    content?.heroImageUrl ||
-    content?.heroImage?.fileUrl ||
+    content?.heroMedia?.fileUrl ||
     null;
 
   // Resolve badge image URL
   const badgeImageUrl =
-    content?.heroBadgeImageUrl ||
     content?.heroBadgeImage?.fileUrl ||
     null;
 
