@@ -14,11 +14,11 @@ import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDa
 
 const Footer = () => {
   const { data, isLoading } = useGetWebsiteSettingsQuery();
-  console.log(data);
+  // console.log(data);
   const officeData = data?.offices;
   const contactInfoData = data?.contactInfo;
-  console.log(contactInfoData);
-  console.log(officeData);
+  // console.log(contactInfoData);
+  // console.log(officeData);
   return (
     <footer className="w-full bg-[#0a0a0a] font-sans p-5 pt-12">
       {/* Office Locations Section (Constrained Width like Figma) */}
