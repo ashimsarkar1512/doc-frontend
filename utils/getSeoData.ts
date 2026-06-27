@@ -1,21 +1,20 @@
-// src/lib/getSeoData.ts
-
-
-
-export async function getSeoData(){
+export async function getSeoData() {
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+    // ✅ Build এর সময় URL না থাকলে null return করো — error দেবে না
+    if (!apiUrl) return null;
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/website-settings`,
+      `${apiUrl}/admin/website-settings`,
       {
-        // next: { revalidate: 3600 }, // 1 ঘণ্টা cache
-             next: { revalidate: 60 },
+        next: { revalidate: 60 },
       }
     );
 
     if (!res.ok) return null;
 
-    const data= await res.json();
-    return data;
+    return await res.json();
   } catch {
     return null;
   }
