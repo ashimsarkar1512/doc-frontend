@@ -5,4 +5,5 @@ push:
 up:
 	docker compose up -d
 down:
-	docker compsoe down
+	docker compose down
+
