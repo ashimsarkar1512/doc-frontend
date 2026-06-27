@@ -31,8 +31,8 @@ const quicksand = Quicksand({
 // ✅ static metadata REMOVE করো, এটা বসাও
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoData();
-    console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl); 
-  console.log("SEO DATA check:", seo?.metaDescription, );
+  console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
+  console.log("SEO DATA check:", seo?.metaDescription);
 
   const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
   const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
