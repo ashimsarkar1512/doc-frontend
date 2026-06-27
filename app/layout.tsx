@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Quicksand } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { ReduxProvider } from "@/providers/redux.provider";
+import { SocketProvider } from "@/providers/SocketProvider";
+import { E2EEProvider } from "@/providers/E2EEProvider";
+import { getSeoData } from "@/utils/getSeoData";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,11 +18,58 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "WeightLossMD & Wellness",
-  description: "Medical Weight Management Program",
-};
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
+// export const metadata: Metadata = {
+//   title: "WeightLossMD & Wellness",
+//   description: "Medical Weight Management Program",
+// };
+// ✅ static metadata REMOVE করো, এটা বসাও
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSeoData();
+    console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl); 
+  console.log("SEO DATA check:", seo?.metaDescription, );
+
+  const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
+  const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
+
+  return {
+    title: seo?.title || "WeightLossMD & Wellness",
+    description: seo?.metaDescription || "Medical Weight Management Program",
+
+    icons: {
+      icon: [
+        {
+          url: faviconLightUrl,
+          media: "(prefers-color-scheme: light)",
+        },
+        {
+          url: faviconDarkUrl,
+          media: "(prefers-color-scheme: dark)",
+        },
+      ],
+    },
+
+    openGraph: {
+      title: seo?.title || "WeightLossMD & Wellness",
+      description: seo?.metaDescription || "",
+      images: seo?.socialPreview?.fileUrl
+        ? [{ url: seo.socialPreview.fileUrl }]
+        : [],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: seo?.title || "",
+      description: seo?.metaDescription || "",
+      images: seo?.socialPreview?.fileUrl ? [seo.socialPreview.fileUrl] : [],
+    },
+  };
+}
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,11 +78,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Toaster richColors position="top-right" />
-        <div className="flex-1">{children}</div>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <ReduxProvider>
+          <SocketProvider>
+            <E2EEProvider>
+              <Toaster richColors position="top-right" />
+              <div className="flex-1">{children}</div>
+            </E2EEProvider>
+          </SocketProvider>
+        </ReduxProvider>
 
         {/* Live chat widget start */}
         <Script id="livechat-widget" strategy="lazyOnload">
@@ -57,6 +114,7 @@ export default function RootLayout({
           </a>
         </noscript>
         {/* Live chat widget end */}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

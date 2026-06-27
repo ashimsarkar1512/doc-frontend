@@ -1,78 +1,24 @@
 'use client'
 
-import { AssessmentCardProps, FilterButtonProps, PaginationButtonProps } from "@/types";
-import { useState, useMemo, useCallback } from "react";
-import Image from "next/image";
+import { FilterButtonProps, PaginationButtonProps } from "@/types";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import Link from "next/link";
+import { Search, RotateCcw } from "lucide-react";
+import { useGetCategoriesNamesQuery, useGetCategoriesQuery, type Assessment } from "@/Redux/features/patient/assesmentcategory";
+import { useHomepageContent } from "@/providers/HomepageContentProvider";
+
 
 //  Constants 
 
-const FILTERS = ["All", "Weight Loss", "Hormone Therapy", "Regrow Hair", "Men's Services", "Skin Services"];
-
-const CARDS = [
-  {
-    id: 1,
-    title: "Weight Loss",
-    category: "Weight Loss",
-    description: "Medically supervised weight management with GLP-1 prescriptions tailored to your body.",
-    gradient: "from-stone-900 via-amber-950 to-stone-900",
-    image: "/assessments/assessment1.png",
-  },
-  {
-    id: 2,
-    title: "Individual Therapy",
-    category: "Hormone Therapy",
-    description: "Comprehensive evaluation of joint and muscle discomfort with custom rehab and pain management.",
-    gradient: "from-slate-900 via-teal-950 to-slate-900",
-    image: "/assessments/assessment2.png",
-  },
-  {
-    id: 3,
-    title: "Anxiety & Stress",
-    category: "Men's Services",
-    description: "Expert support and tailored strategies for managing anxiety, stress, and improving well-being.",
-    gradient: "from-stone-900 via-orange-950 to-stone-900",
-    image: "/assessments/assessment3.jpg",
-  },
-  {
-    id: 4,
-    title: "Clarity Consult",
-    category: "Skin Services",
-    description: "Effective treatments for various skin issues such as acne, rashes, and eczema using Rx.",
-    gradient: "from-slate-900 via-blue-950 to-slate-900",
-    image: "/assessments/assessmnet4.png",
-  },
-  {
-    id: 5,
-    title: "Hair Restoration",
-    category: "Regrow Hair",
-    description: "Clinically proven treatments to restore thinning hair and promote lasting regrowth.",
-    gradient: "from-stone-900 via-yellow-950 to-stone-900",
-    image: "/assessments/assessment5.jpg",
-  },
-  {
-    id: 6,
-    title: "Hormone Balance",
-    category: "Hormone Therapy",
-    description: "Personalized hormone replacement therapy to restore vitality, mood, and well-being.",
-    gradient: "from-zinc-900 via-rose-950 to-zinc-900",
-    image: "/assessments/assessment2.png",
-  },
-  {
-    id: 7,
-    title: "Men's Wellness",
-    category: "Men's Services",
-    description: "Targeted programs for testosterone, ED, and male health using advanced medical protocols.",
-    gradient: "from-slate-900 via-indigo-950 to-slate-900",
-    image: "/assessments/assessment3.jpg",
-  },
-  {
-    id: 8,
-    title: "Skin Rejuvenation",
-    category: "Skin Services",
-    description: "Laser and Rx-based treatments to reduce wrinkles, dark spots, and improve skin texture.",
-    gradient: "from-stone-900 via-red-950 to-stone-900",
-    image: "/assessments/assessmnet4.png",
-  },
+const GRADIENTS = [
+  "from-stone-900 via-amber-950 to-stone-900",
+  "from-slate-900 via-teal-950 to-slate-900",
+  "from-stone-900 via-orange-950 to-stone-900",
+  "from-slate-900 via-blue-950 to-slate-900",
+  "from-stone-900 via-yellow-950 to-stone-900",
+  "from-zinc-900 via-rose-950 to-zinc-900",
+  "from-slate-900 via-indigo-950 to-slate-900",
+  "from-stone-900 via-red-950 to-stone-900",
 ];
 
 const PAGE_SIZE = 4;
@@ -110,70 +56,72 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   </button>
 );
 
-const AssessmentCard = ({ title, description, gradient, image }: AssessmentCardProps) => (
+const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: number }) => (
   <div className={`
-    group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient}
-    h-[420px] flex flex-col cursor-pointer
+    group relative overflow-hidden rounded-3xl h-[420px]
+    bg-gradient-to-br ${GRADIENTS[index % GRADIENTS.length]}
+    flex flex-col cursor-pointer
     transition-all duration-500 ease-out
     hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1
+    border border-white/10
   `}>
-    {/* Background Image if present */}
-    {image && (
-      <>
-        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </div>
-        {/* Dark Vignette Overlay to maintain contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 pointer-events-none z-10" />
-      </>
+    {/* Background image — full card using native img for fast S3 load */}
+    {assessment.thumbnail && (
+      <div className="absolute inset-0 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={assessment.thumbnail}
+          alt={assessment.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
     )}
 
-    {/* Noise texture overlay */}
-    <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMSIvPjwvc3ZnPg==')] bg-repeat z-10" />
-
-    {/* Radial gradient glow */}
-    <div className="absolute inset-0 bg-gradient-radial from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10" />
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/45 to-black/85 z-10" />
 
     {/* Content */}
-    <div className="relative z-20 flex flex-col h-full p-6">
-      <h3 className="text-white font-bold text-xl leading-tight tracking-tight">
-        {title}
+    <div className="relative z-20 flex flex-col h-full p-5">
+
+      {/* Fees badge */}
+      {assessment.paymentPlan && (
+        <div className="self-start mb-3">
+          <span className="bg-white/20 backdrop-blur-md text-white text-sm font-normal px-4 py-1.5 rounded-full border border-white/20">
+            Fees: <span className="font-bold">${assessment.paymentPlan.price}</span>
+            /{assessment.paymentPlan.billingCycle === "MONTHLY" ? "m" : assessment.paymentPlan.billingCycle.toLowerCase()}
+          </span>
+        </div>
+      )}
+
+      {/* Title */}
+      <h3 className="text-white font-bold text-2xl leading-tight tracking-tight capitalize">
+        {assessment.title.replace(/-/g, " ")}
       </h3>
 
       <div className="flex-1" />
 
-      <div className="transform transition-transform duration-500 translate-y-0">
-        <p className="text-white/70 text-sm leading-relaxed mb-5 line-clamp-3">
-          {description}
-        </p>
+      {/* Description */}
+      <p className="text-white/80 text-[15px] leading-relaxed mb-5 line-clamp-3">
+        {assessment.description}
+      </p>
 
-        <button
-          className="
-            opacity-0 -translate-y-2
-            group-hover:opacity-100 group-hover:translate-y-0
-            transition-all duration-400 ease-out
-            bg-gradient-to-r from-blue-600 to-blue-500
-            hover:from-blue-500 hover:to-blue-600
-            active:scale-95
-            text-white text-sm font-semibold
-            px-6 py-2.5 rounded-full
-            shadow-lg shadow-blue-900/30
-            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
-          "
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log(`Starting assessment: ${title}`);
-          }}
-        >
-          Start Assessment
-        </button>
-      </div>
+      {/* Button — visible on hover */}
+      <Link
+        href={`/assessment/${assessment.id}`}
+        onClick={(e) => e.stopPropagation()}
+        className="
+          inline-block
+          opacity-0 translate-y-2
+          group-hover:opacity-100 group-hover:translate-y-0
+          bg-blue-600 hover:bg-blue-700 active:scale-95
+          text-white text-base font-bold
+          w-full py-3.5 rounded-full shadow-lg text-center
+          transition-all duration-300 ease-out
+          focus:outline-none focus:ring-2 focus:ring-blue-400
+        "
+      >
+        Start Assessment
+      </Link>
     </div>
   </div>
 );
@@ -199,26 +147,45 @@ const PaginationButton = ({ onClick, disabled, children, ariaLabel } : Paginatio
 //  Main Component 
 
 export default function Assessments() {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const { content } = useHomepageContent();
+  const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
+
   const [currentPage, setCurrentPage] = useState(0);
 
-  // Memoized filtered cards - prevents unnecessary recalculations
-  const filteredCards = useMemo(() => {
-    if (activeFilter === "All") return CARDS;
-    return CARDS.filter(card => card.category === activeFilter);
-  }, [activeFilter]);
+  // Auto-scroll to this section when navigated via /#assessments
+  useEffect(() => {
+    if (window.location.hash === "#assessments") {
+      const el = document.getElementById("assessments");
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      }
+    }
+  }, []);
 
-  // Memoized pagination values
+  const { data: categoryNamesData } = useGetCategoriesNamesQuery();
+  const { data: categoriesData, isLoading } = useGetCategoriesQuery(activeFilter);
+
+  const filters = useMemo(() => {
+    const names = categoryNamesData?.data?.map(c => c.name) ?? [];
+    return ["All", ...names];
+  }, [categoryNamesData]);
+
+  // Flatten all assessments from all categories — inject paymentPlan from category
+  const allCards = useMemo(() => {
+    return categoriesData?.data?.flatMap(cat =>
+      cat.assessments.map(a => ({ ...a, paymentPlan: cat.paymentPlan }))
+    ) ?? [];
+  }, [categoriesData]);
+
   const { totalPages, visibleCards } = useMemo(() => {
-    const total = Math.ceil(filteredCards.length / PAGE_SIZE);
+    const total = Math.ceil(allCards.length / PAGE_SIZE);
     const start = currentPage * PAGE_SIZE;
-    const visible = filteredCards.slice(start, start + PAGE_SIZE);
+    const visible = allCards.slice(start, start + PAGE_SIZE);
     return { totalPages: total, visibleCards: visible };
-  }, [filteredCards, currentPage]);
+  }, [allCards, currentPage]);
 
-  // Reset to first page when filter changes
-  const handleFilterChange = useCallback((filter : string) => {
-    setActiveFilter(filter);
+  const handleFilterChange = useCallback((filter: string) => {
+    setActiveFilter(filter === "All" ? undefined : filter);
     setCurrentPage(0);
   }, []);
 
@@ -237,25 +204,25 @@ export default function Assessments() {
   }, [currentPage, totalPages, handlePageChange]);
 
   return (
-    <section className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6">
+    <section id="assessments" className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-            Start from a tailored assessment
+            {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
           <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
-            Comprehensive care for a wide range of everyday conditions, managed safely from home.
+            {content?.assessmentDescription || "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
         </div>
 
         {/* Filters with scroll into view on filter change */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {FILTERS.map((filter) => (
+          {filters.map((filter) => (
             <FilterButton
               key={filter}
               label={filter}
-              isActive={activeFilter === filter}
+              isActive={activeFilter === (filter === "All" ? undefined : filter)}
               onClick={() => handleFilterChange(filter)}
             />
           ))}
@@ -263,21 +230,43 @@ export default function Assessments() {
 
         {/* Cards Grid */}
         <div className="cards-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {visibleCards.map((card) => (
-            <AssessmentCard key={card.id} {...card} />
-          ))}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-[420px] rounded-2xl bg-gray-200 animate-pulse" />
+              ))
+            : visibleCards.map((assessment, i) => (
+                <AssessmentCard key={assessment.id} assessment={assessment} index={currentPage * PAGE_SIZE + i} />
+              ))
+          }
         </div>
 
         {/* Empty State */}
-        {visibleCards.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">No assessments found in this category.</p>
-            <button
-              onClick={() => handleFilterChange("All")}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium underline underline-offset-2"
-            >
-              View all assessments
-            </button>
+        {visibleCards.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+              <Search className="w-10 h-10 text-blue-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No assessments found</h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
+              {activeFilter ? (
+                <>
+                  We couldn't find any assessments matching the{" "}
+                  <span className="font-semibold text-blue-600">"{activeFilter}"</span> category at
+                  the moment.
+                </>
+              ) : (
+                "There are currently no assessments available. Please check back later."
+              )}
+            </p>
+            {activeFilter && (
+              <button
+                onClick={() => handleFilterChange("All")}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95 group"
+              >
+                <RotateCcw className="w-4 h-4 transition-transform group-hover:rotate-[-45deg]" />
+                View all assessments
+              </button>
+            )}
           </div>
         )}
 

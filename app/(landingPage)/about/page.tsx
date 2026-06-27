@@ -33,10 +33,14 @@ export default function AboutPage() {
     <div className="w-full bg-white text-gray-900 font-sans overflow-x-hidden">
       {blobDefs}
 
-      <Navbar variant="dark" />
+ <Navbar
+        variant="dark" 
+        initialPadding="pt-5 pb-4" // You can set your custom padding here!
+        scrolledPadding="py-2" 
+      />
 
       {/* ABOUT Section */}
-      <div className="px-4 md:px-6 mt-32 pb-8">
+      <div className="px-4 md:px-6 mt-28 pb-8">
         <div className="max-w-7xl mx-auto relative rounded-[2.5rem] overflow-hidden bg-[#F0F4FA] py-16 md:py-20 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[500px]">
           {/* ABOUT Watermark - PNG Image */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden p-5">
@@ -69,7 +73,14 @@ export default function AboutPage() {
               health goals and lifestyle.
             </p>
 
-            <button className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
+            <button
+                onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+             className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
               Book a consultation
             </button>
           </div>
@@ -208,7 +219,14 @@ export default function AboutPage() {
               ))}
             </ul>
 
-            <button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
+            <button
+               onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+             className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
               Book a consultation
             </button>
           </div>

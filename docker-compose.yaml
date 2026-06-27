@@ -1,5 +1,5 @@
 services:
-  public:
+  client:
     restart: unless-stopped
     container_name: doc-frontend
     image: softvence/doc-frontend:latest
@@ -20,3 +20,7 @@ services:
 networks:
   doc_release:
     external: true
+<<<<<<< HEAD
+=======
+    name: doc-backend_doc_release
+>>>>>>> 5efddb621fc98c8c6daa6ac5f0d7c549d5626106

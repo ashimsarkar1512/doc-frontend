@@ -21,11 +21,15 @@ import ChatView from "@/components/Dashboard/doctor/ChatView";
 import MessagesPanel from "@/components/Dashboard/doctor/MessagesPanel";
 import DoctorNavbar from "@/components/Dashboard/doctor/DoctorNavbar";
 import DoctorSettings from "@/components/Dashboard/doctor/DoctorSettings";
+import DashboardStatsCards from "@/components/Dashboard/doctor/DashboardStatsCards/DashboardStatsCards";
+import DoctorNotificationWrapper from "@/components/Dashboard/doctor/DoctorNotificationWrapper";
+
 
 
 type SearchParams = Promise<{ consultationId?: string; view?: string; chatId?: string }>;
 
 export default async function DoctorDashboard({ searchParams }: { searchParams: SearchParams }) {
+  
   const params = await searchParams;
   const consultationId = params.consultationId;
   const view = params.view;
@@ -127,36 +131,13 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   };
 
   const getContent = () => {
-    if (consultationId) return <ConsultationDetails id={consultationId} />;
+    // if (consultationId) return <ConsultationDetails id={consultationId} />;
+    if (consultationId) return <ConsultationDetails  />;
     if (isMessages && chatId) return <ChatView chatId={chatId} />;
     if (isMessages) return <MessagesPanel />;
     if (isSettings) return <DoctorSettings />;
     if (isNotifications) {
-      return (
-        <section className="pt-1">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Notifications</h2>
-
-          <div className="space-y-7">
-            <div>
-              <p className="mb-2 text-sm text-gray-500">Today</p>
-              <div className="space-y-3">
-                {doctorNotifications.today.map((item, index) =>
-                  renderNotificationItem(item, index === 0)
-                )}
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-3 text-sm text-gray-500">This week</p>
-              <div className="space-y-3">
-                {doctorNotifications.thisWeek.map((item) =>
-                  renderNotificationItem(item)
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      );
+      return <DoctorNotificationWrapper />;
     }
     return <DoctorTabs />;
   };
@@ -178,7 +159,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
           </div>
           <div>
             <h1 className="text-3xl font-semibold text-gray-800 mb-1">
-              Welcome Back, Dr. Runa!
+              Welcome Back, Dr. Runa! (shaikot)
             </h1>
             <p className="text-gray-500 text-sm">
               Manage your patients and consultations
@@ -187,41 +168,9 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-          <div className="bg-[#e6ecfd] rounded-2xl p-6 flex items-start justify-between shadow-sm">
-            <div>
-              <h2 className="text-3xl font-bold text-[#355ff5] mb-2">10</h2>
-              <p className="text-gray-700 font-medium text-sm">Total Consulted</p>
-            </div>
-            <Stethoscope className="w-7 h-7 text-[#355ff5]" strokeWidth={2} />
-          </div>
-          
-          <div className="bg-[#dcfce7] rounded-2xl p-6 flex items-start justify-between shadow-sm">
-            <div>
-              <h2 className="text-3xl font-bold text-[#16a34a] mb-2">03</h2>
-              <p className="text-gray-700 font-medium text-sm">Active Consultation</p>
-            </div>
-            <ClipboardPlus className="w-7 h-7 text-[#16a34a]" strokeWidth={2} />
-          </div>
-          
-          <div className="bg-[#fef9c3] rounded-2xl p-6 flex items-start justify-between shadow-sm">
-            <div>
-              <h2 className="text-3xl font-bold text-[#ca8a04] mb-2">02</h2>
-              <p className="text-gray-700 font-medium text-sm">New Request</p>
-            </div>
-            <Shield className="w-7 h-7 text-[#ca8a04]" strokeWidth={2} />
-          </div>
-          
-          <div className="bg-[#ffe4e6] rounded-2xl p-6 flex items-start justify-between shadow-sm">
-            <div>
-              <h2 className="text-3xl font-bold text-[#e11d48] mb-2">01</h2>
-              <p className="text-gray-700 font-medium text-sm">Declined Request</p>
-            </div>
-            <ShieldBan className="w-7 h-7 text-[#e11d48]" strokeWidth={2} />
-          </div>
-        </div>
-
-        {/* Action Buttons */}
+        <DashboardStatsCards/>
+      
+        {/* Action Buttons  i cone*/}
         <div className="flex gap-4 mb-8">
           <Link href="/doctor">
             <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>

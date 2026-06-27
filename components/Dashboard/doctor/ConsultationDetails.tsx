@@ -1,254 +1,387 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import RequestRefillModal from "./RequestRefillModal";
+import AssessmentDeclineModal from "./AssessmentDeclineModal";
+import { useSearchParams } from "next/navigation";
+import { useGetConsultationByIdQuery } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
+import ApproveConsultationModal from "./ApproveConsultationModal";
+import { BeatLoader } from "react-spinners";
 
-function QuestionCheckbox({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
-  const [checked, setChecked] = useState(defaultChecked);
+// ====================================================================
+// Question Renderer Components
+// These are PURELY for display. They don't have their own state.
+// They show what the patient answered, not for interaction.
+// ====================================================================
+
+function QuestionCheckbox({ label, checked }: { label: string; checked: boolean }) {
   return (
-    <label className="flex items-start gap-3 text-sm text-gray-700 cursor-pointer group">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => setChecked(e.target.checked)}
-        className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5 cursor-pointer flex-shrink-0"
-      />
-      <span className="group-hover:text-gray-900 transition-colors">{label}</span>
-    </label>
+    <div className={`flex items-start gap-3 text-sm transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-blue-50 text-gray-900" : "opacity-60 text-gray-700"}`}>
+      <span
+        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border ${
+          checked ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300"
+        }`}
+      >
+        {checked && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3} className="w-3 h-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </span>
+      <span className={checked ? "text-gray-900 font-medium" : "text-gray-400"}>{label}</span>
+    </div>
   );
 }
 
-function QuestionRadio({ label, name, defaultChecked = false }: { label: string; name: string; defaultChecked?: boolean }) {
-  const [selected, setSelected] = useState(defaultChecked);
+function QuestionRadio({ label, checked }: { label: string; name?: string; checked: boolean }) {
   return (
-    <label className="flex items-start gap-3 text-sm text-gray-700 cursor-pointer group" onClick={() => setSelected(true)}>
-      <input
-        type="radio"
-        name={name}
-        checked={selected}
-        onChange={() => setSelected(true)}
-        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5 cursor-pointer flex-shrink-0 accent-blue-600"
-      />
-      <span className={`transition-colors ${selected ? "text-gray-900 font-medium" : "group-hover:text-gray-900"}`}>{label}</span>
-    </label>
+    <div className={`flex items-start gap-3 text-sm transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-blue-50 text-gray-900" : "opacity-60 text-gray-700"}`}>
+      <span
+        className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border bg-white ${
+          checked ? "border-blue-600" : "border-gray-300"
+        }`}
+      >
+        {checked && <span className="w-2 h-2 rounded-full bg-blue-600" />}
+      </span>
+      <span className={checked ? "text-gray-900 font-medium" : "text-gray-400"}>{label}</span>
+    </div>
+  );
+}
+
+/**
+ * A recursive component to render a question and its answer.
+ * It handles different question types and nested sub-questions.
+ */
+function QuestionRenderer({ question }: { question: any }) {
+  const { type, heading, questionText, description, options, patientAnswer } = question;
+
+  const renderAnswer = () => {
+    // Show "No answer" only if it's not an info-only block and has no answer
+    if (!patientAnswer && type !== 'INFORMATION_ONLY') {
+      return <p className="text-sm text-gray-500 italic">No answer provided.</p>;
+    }
+
+    switch (type) {
+      case 'INFORMATION_ONLY':
+        return <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: description }} />;
+
+      case 'SINGLE_CHOICE':
+        const selectedOptionId = patientAnswer?.selectedOptions?.[0]?.id;
+        return (
+          <div className="space-y-3">
+            {options.map((option: any) => (
+              <div key={option.id}>
+                <QuestionRadio
+                  label={option.label}
+                  name={question.id}
+                  checked={option.id === selectedOptionId}
+                />
+                {/* If this option was selected and it has sub-questions, render them recursively */}
+                {option.id === selectedOptionId && option.subQuestions?.length > 0 && (
+                  <div className="mt-4 pl-8 space-y-4 border-l border-gray-200">
+                    {option.subQuestions.map((subQuestion: any) => (
+                      <QuestionRenderer key={subQuestion.id} question={subQuestion} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'MULTIPLE_CHOICE':
+        const selectedOptionIds = patientAnswer?.selectedOptions?.map((o: any) => o.id) || [];
+        return (
+          <div className="space-y-3">
+            {options.map((option: any) => (
+              <div key={option.id}>
+                <QuestionCheckbox
+                  label={option.label}
+                  checked={selectedOptionIds.includes(option.id)}
+                />
+                {/* If this option was selected and it has sub-questions, render them recursively */}
+                {selectedOptionIds.includes(option.id) && option.subQuestions?.length > 0 && (
+                  <div className="mt-4 pl-8 space-y-4 border-l border-gray-200">
+                    {option.subQuestions.map((subQuestion: any) => (
+                      <QuestionRenderer key={subQuestion.id} question={subQuestion} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'INPUT':
+        const inputOption = options?.[0];
+        if (inputOption?.inputType === 'file upload') {
+          if (patientAnswer?.file) {
+            return (
+              <div>
+                <Link href={patientAnswer.file.fileUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 font-medium hover:underline">
+                  {patientAnswer.file.fileName}
+                </Link>
+                {/* If the file is an image, show a preview */}
+                {patientAnswer.file.fileType.startsWith('image/') && (
+                   <Image src={patientAnswer.file.fileUrl} alt={patientAnswer.file.fileName} width={200} height={200} className="mt-2 rounded-md border border-gray-200" />
+                )}
+              </div>
+            );
+          } else {
+             return <p className="text-sm text-gray-500 italic">No file uploaded.</p>;
+          }
+        }
+        // For other input types like 'text', 'number', etc.
+        return <p className="text-sm text-gray-900 font-medium">{patientAnswer?.textResponse || "—"}</p>;
+
+      default:
+        return <p className="text-sm text-red-500">Error: Unknown question type `{type}`.</p>;
+    }
+  };
+
+  return (
+    <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors bg-white">
+      {heading && <h3 className="text-base font-bold text-gray-900 mb-2">{heading}</h3>}
+      {questionText && <h4 className="font-semibold text-gray-800 text-sm mb-3">{questionText}</h4>}
+      {description && type !== 'INFORMATION_ONLY' && <p className="text-xs text-gray-500 mb-4">{description}</p>}
+      {renderAnswer()}
+    </div>
   );
 }
 
 
-export default function ConsultationDetails({ id }: { id: string }) {
+import { toast } from "sonner";
+import { useCreateConversationMutation } from "@/Redux/api/messageApi";
+import { useAppSelector } from "@/Redux/store/hooks";
+import { useRouter } from "next/navigation";
+
+// for the bottom part  complinceConfiramation
+function ComplianceCheckItem({ label, checked }: { label: React.ReactNode; checked: boolean }) {
+  return (
+    <div className="flex items-center gap-3 text-sm border border-gray-200 rounded-full px-4 py-3 bg-white">
+      <span
+        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border ${
+          checked ? "bg-gray-200 border-gray-300" : "bg-white border-gray-300"
+        }`}
+      >
+        {checked && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth={3} className="w-3 h-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </span>
+      <span className="text-gray-700">{label}</span>
+    </div>
+  );
+}
+
+function ComplianceConfirmationSection({ complianceConfirmation }: { complianceConfirmation: any }) {
+  if (!complianceConfirmation) return null;
+
+  const items = [
+    {
+      key: "agreedToTermsAndPrivacy",
+      label: (
+        <>
+          I have reviewed and agree to the{" "}
+          <Link href="/privicyPage" className="font-semibold underline">Terms of Service and Privacy Policy.</Link>
+        </>
+      ),
+    },
+    {
+      key: "certifiedInfoAccurate",
+      label: "I certify that all information provided is accurate and complete.",
+    },
+    {
+      key: "understoodFalseInfoConsequences",
+      label: "I understand that providing false or misleading information may result in denial of treatment.",
+    },
+    {
+      key: "understoodRecommendationsBasis",
+      label: "I understand that treatment recommendations are based on the information I have provided.",
+    },
+    {
+      key: "understoodAdditionalInfoMayBeRequested",
+      label: "I understand that additional information may be requested before treatment is approved.",
+    },
+  ];
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-8">
+      <h3 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-4">
+        <ShieldCheck className="w-5 h-5 text-blue-600" />
+        Compliance Confirmation:
+      </h3>
+      <div className="space-y-3">
+        {items.map((item) => (
+          <ComplianceCheckItem
+            key={item.key}
+            label={item.label}
+            checked={Boolean(complianceConfirmation[item.key])}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ====================================================================
+// Main Consultation Details Component
+// ====================================================================
+
+export default function ConsultationDetails() {
+
+  const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("consultationId");
+
+  const { data, isLoading, isError } = useGetConsultationByIdQuery(id);
+  const detailesData = data?.data;
+  console.log(detailesData)
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !detailesData) return <div className="p-8 text-center text-gray-500">Consultation details not found.</div>;
+
+  // Pull out the pieces we render below. Optional chaining so nothing crashes
+  // if a field is missing while the API/shape is still settling.
+  const assessment = detailesData?.assessment; // { id, title, thumbnail, category, ... }
+  const questions = detailesData?.questions || []; // dynamic length, can be 1 question or 50
+  const paymentSummary = detailesData?.paymentSummary; // { products, subtotal, ... }
+  const complianceConfirmation = detailesData?.complianceConfirmation;
+
+  // Backend doesn't send a dedicated `patientName` field yet.
+  // We fall back to whichever question's text contains "name" (matches your
+  // "Your name?" question) and use its typed answer as the patient's name.
+  const nameQuestion = questions.find((q: any) => q.questionText?.toLowerCase().includes("name"));
+  const patientName = nameQuestion?.patientAnswer?.textResponse || "Patient";
+
   return (
     <div className="mb-12">
-      {/* Back Link */}
+      {/* Back Link — text now comes from assessment.title instead of being hardcoded */}
       <Link href="/doctor" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors">
         <ArrowLeft className="w-4 h-4" />
-        Weight Loss / GLP-1 Assessment
+        {assessment?.title || "Back to Dashboard"}
       </Link>
 
+      {/* Header Section */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-8">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100">
+              {/* Using a placeholder as patient image is not in the data */}
               <Image src="/doctor/profile-doc.png" alt="Patient" fill className="object-cover" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">Patient: Alan Gattuso</h2>
+              <h2 className="text-base font-bold text-gray-900">
+                Patient: {patientName}
+              </h2>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-0.5">
-                <span>Consultation id: #{id}</span>
-                <span>Submitted: 15 May, 2026</span>
+                <span>Consultation ID: #{detailesData?.submissionCode || 'N/A'}</span>
+                {/* Add submitted date if available in API */}
               </div>
             </div>
           </div>
-          <div className="bg-[#eff6ff] text-[#2563eb] text-xs font-semibold px-3 py-1.5 rounded-full w-fit">
-            Weight Loss
+          {assessment?.category && (
+            <div className="bg-[#eff6ff] text-[#2563eb] text-xs font-semibold px-3 py-1.5 rounded-full w-fit">
+              {assessment.category}
+            </div>
+          )}
+        </div>
+
+        {assessment?.thumbnail && (
+          <div className="relative w-full h-[240px] md:h-[320px] rounded-xl overflow-hidden mb-5">
+            <Image src={assessment.thumbnail} alt={assessment.title || "Assessment"} fill className="object-cover" />
           </div>
-        </div>
-
-        {/* Cover Image */}
-        <div className="relative w-full h-[240px] md:h-[320px] rounded-xl overflow-hidden mb-5">
-          <Image src="/doctor/doc-1.jpg" alt="Assessment" fill className="object-cover" />
-        </div>
-
-        <p className="text-gray-600 text-sm leading-relaxed">
-          Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.
-        </p>
+        )}
+        
+        {assessment?.description && (
+          <p className="text-gray-600 text-sm leading-relaxed">{assessment.description}</p>
+        )}
       </div>
 
-      {/* Questions */}
+      {/* Questions Section */}
       <div className="space-y-4 mb-10">
-
-        {/* Q1 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-3">How much weight are you looking to lose?</h3>
-          <QuestionRadio label="< 20 lbs" name="weight_goal" defaultChecked />
-        </div>
-
-        {/* Q2 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">What is your age, current weight & height?</h3>
-          <div className="space-y-2 text-sm text-gray-600 mb-4 ml-1">
-            <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-gray-500">Age:</span><span className="font-medium text-gray-900">24 years</span></div>
-            <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-gray-500">Height:</span><span className="font-medium text-gray-900">6 feet</span></div>
-            <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-gray-500">Weight:</span><span className="font-medium text-gray-900">220 lbs</span></div>
-          </div>
-          <div className="bg-[#fce7f3] rounded-lg p-3 px-4 text-xs">
-            <p className="font-semibold text-gray-900 mb-1">Health Snapshot:</p>
-            <p className="text-red-500 font-medium">BMI 29.8 (Overweight)</p>
-          </div>
-        </div>
-
-        {/* Q3 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">What do you want to accomplish with the Weight Loss MD Body Program I want to...</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Lose weight" defaultChecked />
-            <QuestionCheckbox label="Improve my general physical health" defaultChecked />
-            <QuestionCheckbox label="Increase confidence about my appearance" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q4 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">Do you currently have, or have you ever been diagnosed with, any of the following heart or heart-related conditions?</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Atrial fibrillation or flutter" defaultChecked />
-            <QuestionCheckbox label="Heart failure" defaultChecked />
-            <QuestionCheckbox label="Heart disease, stroke, or peripheral vascular disease" defaultChecked />
-            <QuestionCheckbox label="Hypertension (High blood pressure)" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q5 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">Do you currently have, or have you ever been diagnosed with, any of these hormone, kidney, or liver conditions?</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Multiple Endocrine Neoplasia syndrome type 2 (MEN2)" defaultChecked />
-            <QuestionCheckbox label="Family history of thyroid cancer" defaultChecked />
-            <QuestionCheckbox label="Type-2 Diabetes" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q6 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">Do you currently have, or have history of, any of these gastrointestinal conditions or procedures?</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Pancreatitis" defaultChecked />
-            <QuestionCheckbox label="GERD / Acid Reflux requiring insulin" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q7 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">Do you currently have, or have you ever been diagnosed with, any of these additional following conditions?</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Chronic candidiasis (Fungal infection)" defaultChecked />
-            <QuestionCheckbox label="Eating disorder" defaultChecked />
-            <QuestionCheckbox label="Metabolic syndrome" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q8 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-3">Do you have an ALLERGY to GLP-1 agonist medications?</h3>
-          <QuestionRadio label="No, I do not have an allergy to GLP-1 medication" name="allergy" defaultChecked />
-        </div>
-
-        {/* Q9 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-3">Are you currently taking a GLP-1 medication in the past 30 days?</h3>
-          <QuestionRadio label="No, I am not currently taking a GLP-1 medication in the past 30 days." name="glp1_current" defaultChecked />
-        </div>
-
-        {/* Q10 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-4">Do you currently take any of the following medications?</h3>
-          <div className="space-y-3">
-            <QuestionCheckbox label="Insulin" defaultChecked />
-            <QuestionCheckbox label="Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex), hydrochlorothiazide/HCTZ" defaultChecked />
-          </div>
-        </div>
-
-        {/* Q11 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-3">Do you take any medications?</h3>
-          <QuestionRadio label="I don't take any medications" name="other_meds" defaultChecked />
-        </div>
-
-        {/* Q12 */}
-        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors">
-          <h3 className="font-semibold text-gray-900 text-sm mb-3">Is there anything else you want your healthcare provider to know about your health?</h3>
-          <QuestionRadio label="No" name="extra_info" defaultChecked />
-        </div>
+        {(questions || []).map((question: any) => (
+          <QuestionRenderer key={question.id} question={question} />
+        ))}
       </div>
+
+      {/* here is the complaine conframation start */}
+      <ComplianceConfirmationSection complianceConfirmation={complianceConfirmation} />
+      {/* here is the complaine confram */}
 
       {/* Summary Section */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-4">
         <h3 className="text-lg font-bold text-gray-900 mb-1">Product & Payment Summary</h3>
-        <p className="text-sm text-gray-500 mb-6">Patient selected two products:</p>
+        {paymentSummary?.products?.length > 0 &&
+          <p className="text-sm text-gray-500 mb-6">Patient selected {paymentSummary.products.length} product(s):</p>
+        }
 
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="flex-1 flex flex-col gap-4">
-            {/* Product 1 */}
-            <div className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-              <div className="w-12 h-12 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
-                <Image src="/doctor/doc-1.jpg" alt="Product" fill className="object-cover opacity-70" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-0.5">
-                  <h4 className="font-semibold text-sm text-gray-900">Phentermine</h4>
-                  <span className="font-semibold text-sm text-blue-600">$48</span>
+            {paymentSummary?.products?.map((product: any, idx: number) => (
+              <div key={idx} className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
+                <div className="w-12 h-12 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
+                  {product.image && <Image src={product.image} alt={product.name} fill className="object-cover opacity-70" />}
                 </div>
-                <p className="text-xs text-gray-500">Medium Flora, Bone Marrow, Butter</p>
-              </div>
-            </div>
-            {/* Product 2 */}
-            <div className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-              <div className="w-12 h-12 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
-                <Image src="/doctor/doc-2.jpg" alt="Product" fill className="object-cover opacity-70" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-0.5">
-                  <h4 className="font-semibold text-sm text-gray-900">Vitamin C Ascorbic Acid</h4>
-                  <span className="font-semibold text-sm text-blue-600">$48</span>
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-0.5">
+                    <h4 className="font-semibold text-sm text-gray-900">{product.name}</h4>
+                    <span className="font-semibold text-sm text-blue-600">${product.price?.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">{product.size || 'N/A'}</p>
                 </div>
-                <p className="text-xs text-gray-500">Medium Flora, Bone Marrow, Butter</p>
               </div>
-            </div>
+            ))}
           </div>
 
-          <div className="w-full md:w-64 space-y-2.5 text-sm pt-2 md:pt-0">
-            <div className="flex justify-between text-gray-500 font-medium">
-              <span>Subtotal</span><span>$96.00</span>
+          {paymentSummary &&
+            <div className="w-full md:w-64 space-y-2.5 text-sm pt-2 md:pt-0">
+              <div className="flex justify-between text-gray-500 font-medium"><span>Subtotal</span><span>${paymentSummary.subtotal?.toFixed(2)}</span></div>
+              <div className="flex justify-between text-gray-500 font-medium"><span>Service Duration</span><span>{paymentSummary.serviceDuration || 'N/A'}</span></div>
+              <div className="flex justify-between text-gray-500 font-medium"><span>Service Fees</span><span>${paymentSummary.serviceFees?.toFixed(2)}</span></div>
+              <div className="flex justify-between text-gray-500 font-medium"><span>Shipping charge</span><span>${paymentSummary.shippingCharge?.toFixed(2)}</span></div>
+              <div className="flex justify-between text-gray-500 font-medium"><span>Discount</span><span className="text-green-600">-${paymentSummary.discount?.toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-gray-900 pt-3 border-t border-gray-200 mt-3"><span>Total</span><span className="text-blue-600">${paymentSummary.total?.toFixed(2)}</span></div>
+              <div className="flex justify-between items-center pt-2">
+                <span className="text-gray-500 font-medium">Payment Status:</span>
+                <span className="bg-[#eff6ff] text-[#2563eb] text-xs font-semibold px-2.5 py-1 rounded-md">Paid</span>
+              </div>
             </div>
-            <div className="flex justify-between text-gray-500 font-medium">
-              <span>Incl. VAT</span><span>$2.00</span>
-            </div>
-            <div className="flex justify-between text-gray-500 font-medium">
-              <span>Consultation Fees</span><span>+ $50.00</span>
-            </div>
-            <div className="flex justify-between font-bold text-gray-900 pt-3 border-t border-gray-200 mt-3">
-              <span>Total payable</span>
-              <span className="text-blue-600">$148.00</span>
-            </div>
-            <div className="flex justify-between items-center pt-2">
-              <span className="text-gray-500 font-medium">Payment Status:</span>
-              <span className="bg-[#eff6ff] text-[#2563eb] text-xs font-semibold px-2.5 py-1 rounded-md">Paid</span>
-            </div>
-          </div>
+          }
         </div>
       </div>
 
-      {/* Bottom Actions */}
+      {/* Bottom Actions — unchanged, always visible like the original */}
       <div className="flex flex-wrap gap-4 mt-8">
         <button className="bg-[#2563eb] hover:bg-blue-700 transition-colors text-white text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm">
           Approve & Provide Consultation
         </button>
-        <button className="bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-semibold py-2.5 px-8 rounded-full shadow-sm">
+        <button
+          onClick={() => setIsRefillModalOpen(true)}
+          className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-semibold py-2.5 px-6 rounded-full shadow-sm"
+        >
+          Request Refill Information
+        </button>
+        <button
+          onClick={() => setIsDeclineModalOpen(true)}
+          className="bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-semibold py-2.5 px-8 rounded-full shadow-sm"
+        >
           Decline
         </button>
       </div>
+
+      {/* Modals */}
+      <ApproveConsultationModal isOpen={isApproveModalOpen} onClose={() => setIsApproveModalOpen(false)} patientName={patientName} consultationId={id ?? ""} submittedDate={detailesData?.submittedAt} />
+      <RequestRefillModal isOpen={isRefillModalOpen} onClose={() => setIsRefillModalOpen(false)} patientName={patientName} consultationId={id ?? ""} submittedDate={detailesData?.submittedAt} />
+      <AssessmentDeclineModal isOpen={isDeclineModalOpen} onClose={() => setIsDeclineModalOpen(false)} patientName={patientName} consultationId={id ?? ""} submittedDate={detailesData?.submittedAt} />
     </div>
   );
 }

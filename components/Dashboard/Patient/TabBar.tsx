@@ -5,23 +5,29 @@ import React from 'react';
 interface TabBarProps {
   activeTab: TabType;
   onChangeTab: (tab: TabType) => void;
-  approvedCount: number;
-  pendingCount: number;
-  declinedCount: number;
+  counts: {
+    DRAFT?: number;
+    PENDING?: number;
+    REVIEWED?: number;
+    ACCEPTED?: number;
+    REFIL_REQUESTED?: number;
+    REJECTED?: number;
+  };
 }
 
 export default function TabBar({
   activeTab,
   onChangeTab,
-  approvedCount,
-  pendingCount,
-  declinedCount
+  counts
 }: TabBarProps) {
   const tabs = [
-    { type: 'Approved' as TabType, label: 'Approved Consultation', count: approvedCount, badgeColor: 'bg-[#10b981]' },
-    { type: 'Pending' as TabType, label: 'Pending', count: pendingCount, badgeColor: 'bg-[#f59e0b]' },
-    { type: 'Declined' as TabType, label: 'Declined', count: declinedCount, badgeColor: 'bg-[#ef4444]' },
-    { type: 'History' as TabType, label: 'History', count: null, badgeColor: '' }
+
+    { type: 'PENDING' as TabType, label: 'Pending', count: counts.PENDING || 0, badgeColor: 'bg-[#f59e0b]' },
+    { type: 'REVIEWED' as TabType, label: 'Reviewed', count: counts.REVIEWED || 0, badgeColor: 'bg-[#3b82f6]' },
+    { type: 'ACCEPTED' as TabType, label: 'Accepted', count: counts.ACCEPTED || 0, badgeColor: 'bg-[#10b981]' },
+    { type: 'REFIL_REQUESTED' as TabType, label: 'Refill Requested', count: counts.REFIL_REQUESTED || 0, badgeColor: 'bg-[#8b5cf6]' },
+    { type: 'REJECTED' as TabType, label: 'Rejected', count: counts.REJECTED || 0, badgeColor: 'bg-[#ef4444]' },
+    { type: 'My Orders' as TabType, label: 'My Orders', count: null, badgeColor: '' }
   ];
 
   return (
@@ -34,8 +40,8 @@ export default function TabBar({
             onClick={() => onChangeTab(tab.type)}
             className={`
               pb-4 text-[15px] font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-150 border-b-2
-              ${isActive 
-                ? 'text-[#2563eb] border-[#2563eb]' 
+              ${isActive
+                ? 'text-[#2563eb] border-[#2563eb]'
                 : 'text-gray-500 border-transparent hover:text-gray-800'}
             `}
           >
