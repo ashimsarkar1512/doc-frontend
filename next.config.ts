@@ -16,9 +16,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    buildStartTimeout: 600000,
-  },
 };
 
 export default nextConfig;
