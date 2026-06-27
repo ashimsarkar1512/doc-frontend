@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ReduxProvider } from "@/providers/redux.provider";
 import { SocketProvider } from "@/providers/SocketProvider";
 import { E2EEProvider } from "@/providers/E2EEProvider";
+import { getSeoData } from "@/utils/getSeoData";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +24,58 @@ const quicksand = Quicksand({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "WeightLossMD & Wellness",
-  description: "Medical Weight Management Program",
-};
+// export const metadata: Metadata = {
+//   title: "WeightLossMD & Wellness",
+//   description: "Medical Weight Management Program",
+// };
+// ✅ static metadata REMOVE করো, এটা বসাও
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSeoData();
 
+  if (!seo) {
+    console.log("waiting for load data");
+    return {
+      title: "WeightLossMD & Wellness",
+      description: "Medical Weight Management Program",
+    };
+  }
+
+  const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
+  const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
+
+  return {
+    title: seo?.title || "WeightLossMD & Wellness",
+    description: seo?.metaDescription || "Medical Weight Management Program",
+
+    icons: {
+      icon: [
+        {
+          url: faviconLightUrl,
+          media: "(prefers-color-scheme: light)",
+        },
+        {
+          url: faviconDarkUrl,
+          media: "(prefers-color-scheme: dark)",
+        },
+      ],
+    },
+
+    openGraph: {
+      title: seo?.title || "WeightLossMD & Wellness",
+      description: seo?.metaDescription || "",
+      images: seo?.socialPreview?.fileUrl
+        ? [{ url: seo.socialPreview.fileUrl }]
+        : [],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: seo?.title || "",
+      description: seo?.metaDescription || "",
+      images: seo?.socialPreview?.fileUrl ? [seo.socialPreview.fileUrl] : [],
+    },
+  };
+}
 export default function RootLayout({
   children,
 }: Readonly<{
