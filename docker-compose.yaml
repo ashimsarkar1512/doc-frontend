@@ -14,3 +14,9 @@ services:
       - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
     ports:
       - "3000:3000"
+    networks:
+      - doc_release
+
+networks:
+  doc_release:
+    external: true
