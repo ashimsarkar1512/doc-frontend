@@ -6,8 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      platforms:
-        - linux/amd64
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
