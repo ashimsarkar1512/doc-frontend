@@ -32,9 +32,12 @@ const quicksand = Quicksand({
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoData();
 <<<<<<< HEAD
+<<<<<<< HEAD
   console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
   console.log("SEO DATA check:", seo?.metaDescription);
 =======
+=======
+>>>>>>> fd37be0c78e24c7657761c90725b31a13d00e734
 
   if (!seo) {
     console.log("waiting for load data");
@@ -43,7 +46,10 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Medical Weight Management Program",
     };
   }
+<<<<<<< HEAD
 >>>>>>> dev
+=======
+>>>>>>> fd37be0c78e24c7657761c90725b31a13d00e734
 
   const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
   const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
