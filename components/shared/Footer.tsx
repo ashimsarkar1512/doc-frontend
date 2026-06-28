@@ -90,7 +90,7 @@ const Footer = () => {
         </div>
 
         {/* Constrain content to match the width above */}
-        <div className="relative z-10 max-w-9xl mx-auto px-6 md:px-12 py-16">
+        <div className="relative z-10 max-w-9xl mx-auto px-6 md:px-12 pt-8 pb-8">
           <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10">
             {/* Brand & Description */}
             <div className="md:col-span-4 pr-0 md:pr-12">
@@ -293,123 +293,47 @@ const Footer = () => {
           </div>
 
           {/* Badges & Payments */}
-          <div className="relative z-10 flex flex-col xl:flex-row justify-between items-center gap-10 mt-8 mb-8 pl-0 md:pl-[33.33%]">
-            <div className="flex flex-wrap items-center gap-6 md:gap-10">
-              {/* LegitScript Certified Hexagon */}
-              <div className="relative flex items-center justify-center w-[45px] h-[50px]">
-                <svg
-                  viewBox="0 0 100 115"
-                  className="w-full h-full drop-shadow-lg"
-                >
-                  <polygon
-                    points="50,5 95,30 95,80 50,105 5,80 5,30"
-                    fill="#0b162c"
-                    stroke="#3b82f6"
-                    strokeWidth="4"
-                  />
-                  <text
-                    x="50"
-                    y="45"
-                    fontSize="14"
-                    fill="white"
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    fontFamily="sans-serif"
-                  >
-                    LegitScript
-                  </text>
-                  <text
-                    x="50"
-                    y="62"
-                    fontSize="9"
-                    fill="white"
-                    textAnchor="middle"
-                    fontFamily="sans-serif"
-                    letterSpacing="1"
-                  >
-                    CERTIFIED
-                  </text>
-                  <polyline
-                    points="40,82 48,90 62,75"
-                    fill="none"
-                    stroke="#22c55e"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-
-              {/* LegitScript Logo */}
-              <div className="flex items-center gap-2">
-                <div className="relative w-[32px] h-[32px]">
-                  <div className="absolute top-[8px] left-[0px] w-[10px] h-[10px] rounded-full bg-[#00d2ff]"></div>
-                  <div className="absolute top-[0px] left-[13px] w-[10px] h-[10px] rounded-full bg-[#00a8ff]"></div>
-                  <div className="absolute top-[16px] left-[13px] w-[10px] h-[10px] rounded-full bg-[#0080ff]"></div>
-                  <div className="absolute top-[8px] left-[26px] w-[10px] h-[10px] rounded-full bg-[#005cff]"></div>
-                </div>
-                <span className="text-white font-bold text-[22px] tracking-tight ml-2">
-                  LegitScript
-                </span>
-              </div>
-
-              {/* HIPAA */}
-              <div className="flex items-center gap-2.5">
-                <svg
-                  width="32"
-                  height="38"
-                  viewBox="0 0 24 28"
-                  fill="white"
-                  stroke="white"
-                  strokeWidth="1"
-                >
-                  <path
-                    d="M12 2L3 6v8c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"
-                    fill="white"
-                  />
-                  {/* Caduceus stylized inner */}
-                  <path
-                    d="M12 7v12M9 11h6M10 15h4"
-                    stroke="#000"
-                    strokeWidth="1.5"
-                  />
-                  <circle
-                    cx="12"
-                    cy="11"
-                    r="2"
-                    stroke="#000"
-                    strokeWidth="1.5"
-                    fill="none"
-                  />
-                </svg>
-                <div className="flex flex-col">
-                  <span className="text-white font-bold text-[11px] leading-tight">
-                    HIPAA
-                  </span>
-                  <span className="text-white font-bold text-[13px] leading-tight">
-                    COMPLIANT
-                  </span>
-                </div>
-              </div>
+          <div className="relative z-10 flex flex-row justify-between items-center gap-6 mt-8 mb-8 pl-0 md:pl-[33.33%]">
+            {/* Left: Badge Images */}
+            <div className="flex items-center gap-8">
+              <Image
+                src="/footer1.png"
+                alt="LegitScript Certified"
+                width={48}
+                height={48}
+                className="h-[48px] w-auto object-contain"
+              />
+              <Image
+                src="/footer2.png"
+                alt="LegitScript"
+                width={150}
+                height={40}
+                className="h-[40px] w-auto object-contain"
+              />
+              <Image
+                src="/footer3.png"
+                alt="HIPAA Compliant"
+                width={110}
+                height={44}
+                className="h-[44px] w-auto object-contain"
+              />
             </div>
 
-            {/* We Support */}
-            <div className="flex items-center gap-4 w-full xl:w-auto justify-center xl:justify-end">
-              <span className="text-white text-[16px] font-medium mr-2">
+            {/* Right: We Support */}
+            <div className="flex items-center gap-5">
+              <span className="text-white text-[15px] font-medium whitespace-nowrap">
                 We Support
               </span>
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col leading-[1.1] text-white font-bold text-[10px] tracking-wider text-center">
-                  <span>AMERICAN</span>
-                  <span>EXPRESS</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-[28px] h-[28px] rounded-full bg-[#eb001b] mix-blend-screen opacity-90 relative z-10"></div>
-                  <div className="w-[28px] h-[28px] rounded-full bg-[#f79e1b] mix-blend-screen opacity-90 -ml-3 relative z-0"></div>
-                </div>
-                <div className="text-white font-black text-2xl italic tracking-tighter ml-1">
-                  VISA
-                </div>
+              <div className="flex flex-col leading-[1.1] text-white font-bold text-[10px] tracking-wider text-center">
+                <span>AMERICAN</span>
+                <span>EXPRESS</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-[26px] h-[26px] rounded-full bg-[#eb001b] relative z-10" />
+                <div className="w-[26px] h-[26px] rounded-full bg-[#f79e1b] -ml-3 relative z-0" />
+              </div>
+              <div className="text-white font-black text-2xl italic tracking-tighter">
+                VISA
               </div>
             </div>
           </div>
@@ -419,7 +343,7 @@ const Footer = () => {
 
           {/* Copyright & Socials */}
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-300 font-light">
-            <p>© 2025 Weight Loss MD. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Weight Loss MD. All Rights Reserved.</p>
             <div className="flex items-center gap-3 mt-4 md:mt-0">
               <span className="mr-2">Follow us at:</span>
               <div className="flex gap-4 text-white items-center">
