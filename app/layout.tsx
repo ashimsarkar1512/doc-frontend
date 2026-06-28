@@ -31,8 +31,19 @@ const quicksand = Quicksand({
 // ✅ static metadata REMOVE করো, এটা বসাও
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoData();
+<<<<<<< HEAD
   console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
   console.log("SEO DATA check:", seo?.metaDescription);
+=======
+
+  if (!seo) {
+    console.log("waiting for load data");
+    return {
+      title: "WeightLossMD & Wellness",
+      description: "Medical Weight Management Program",
+    };
+  }
+>>>>>>> dev
 
   const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
   const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
