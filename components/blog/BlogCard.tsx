@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import fallBackImg from "@/public/p-image-fallback.jpg";
 
 export interface BlogPost {
   id: string;
@@ -8,18 +11,23 @@ export interface BlogPost {
   image: string;
   category: string;
   link: string;
+  providerImage?: string;
+  providerName?: string;
 }
 
 const BlogCard = ({ post }: { post: BlogPost }) => {
+  const [imgSrc, setImgSrc] = useState(post.image || fallBackImg.src);
+
   return (
     <div className="flex flex-col bg-[#F3F4F6] rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <div className="relative w-full aspect-[4/3] overflow-hidden">
         <Image
-          src={post.image}
+          src={imgSrc}
           alt={post.title}
           fill
           className="object-cover transition-transform duration-500 hover:scale-105"
           sizes="(max-width: 768px) 100vw, 50vw"
+          onError={() => setImgSrc(fallBackImg.src)}
         />
       </div>
       <div className="p-6 md:p-8 flex flex-col flex-grow">

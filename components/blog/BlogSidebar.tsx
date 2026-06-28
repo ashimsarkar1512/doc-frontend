@@ -1,7 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import React from "react";
+import doc2Img from "@/public/doctor/doc-2.jpg";
 
-const BlogSidebar = () => {
+interface BlogSidebarProps {
+  providerImage?: string;
+  providerName?: string;
+}
+
+const BlogSidebar = ({ providerImage, providerName }: BlogSidebarProps) => {
   return (
     <div className="sticky top-32 w-full bg-[#F3F4F6] rounded-3xl p-8 flex flex-col items-center text-center overflow-hidden h-fit">
       <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-snug mb-8 uppercase tracking-wide">
@@ -17,11 +25,11 @@ const BlogSidebar = () => {
         {/* Abstract blue background shape */}
         <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-blue-200/50 to-transparent rounded-t-full z-0" />
         
-        {/* Doctor image (placeholder) */}
+        {/* Doctor image (dynamic or fallback) */}
         <div className="relative z-10 w-[80%] h-full">
           <Image
-            src="/doctor/doc-2.jpg" 
-            alt="Doctor"
+            src={providerImage || doc2Img} 
+            alt={providerName || "Doctor"}
             fill
             className="object-contain object-bottom drop-shadow-2xl"
           />
@@ -30,13 +38,9 @@ const BlogSidebar = () => {
         {/* Action Button */}
         <div className="absolute bottom-6 w-full z-20 px-2">
           <button
-             onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
-            )
-          }
-           className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium py-3.5 rounded-full transition-all shadow-md shadow-blue-500/30">
+            onClick={() => window.open("https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434", "_blank")}
+            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium py-3.5 rounded-full transition-all shadow-md shadow-blue-500/30"
+          >
             Book a consultation
           </button>
         </div>
