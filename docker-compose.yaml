@@ -8,10 +8,18 @@ services:
       dockerfile: Dockerfile
       platforms:
         - linux/amd64
+      # ADD THIS SECTION: Pass variables as build arguments
+      args:
+        - NODE_ENV=production
+        - NEXT_TELEMETRY_DISABLED=1
+        - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
+    
+    # Keep environment for runtime (in case the app reads them again at runtime)
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
+      
     ports:
       - "3000:3000"
     networks:
