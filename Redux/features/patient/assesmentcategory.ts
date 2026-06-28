@@ -227,6 +227,7 @@ export interface AssessmentSubmissionResponse {
       title: string
       thumbnail: string | null
       category: string
+      description?: string | null
     }
     reviewedBy: string | null
     doctorNotes: string | null

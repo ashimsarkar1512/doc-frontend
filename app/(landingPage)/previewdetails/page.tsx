@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
-import { Check, ShieldCheck, Save, X, Loader2, FileText, ShoppingCart } from "lucide-react";
+import { Check, ShieldCheck, Save, X, Loader2, FileText, ShoppingCart, User } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  useGetMyAssessmentSubmissionByIdQuery, 
+import { useAppSelector } from "@/Redux/store/hooks";
+import {
+  useGetMyAssessmentSubmissionByIdQuery,
   useEditAssessmentSubmissionMutation,
   useGetMyCartQuery,
   useGetCartSummaryQuery,
@@ -26,6 +27,7 @@ export default function PreviewDetailsPage() {
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [checkoutPayload, setCheckoutPayload] = useState<any>(null);
+  const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     const id = localStorage.getItem("submissionId");
@@ -34,7 +36,7 @@ export default function PreviewDetailsPage() {
       toast.error("No assessment submission found.");
       router.push("/patient");
     }
-    
+
     const payloadStr = localStorage.getItem("checkoutPayload");
     if (payloadStr) {
       try {
@@ -76,10 +78,25 @@ export default function PreviewDetailsPage() {
   const [draftFiles, setDraftFiles] = useState<Record<string, File | null>>({});
   const [uploadingFiles, setUploadingFiles] = useState(false);
 
+  // helper function to extract all nested questions for initial state
+  const getAllQuestions = (questionsArray: any[]) => {
+    let all: any[] = [];
+    questionsArray.forEach((q) => {
+      all.push(q);
+      q.options?.forEach((opt: any) => {
+        if (opt.subQuestions && opt.subQuestions.length > 0) {
+          all = all.concat(getAllQuestions(opt.subQuestions));
+        }
+      });
+    });
+    return all;
+  };
+
   useEffect(() => {
     if (isEditing && submissionData?.questions) {
       const initialDrafts: Record<string, any> = {};
-      submissionData.questions.forEach((q: any) => {
+      const allQ = getAllQuestions(submissionData.questions);
+      allQ.forEach((q: any) => {
         if (q.type === "SINGLE_CHOICE") {
           initialDrafts[q.id] = q.patientAnswer?.selectedOptions?.[0]?.id || "";
         } else if (q.type === "MULTIPLE_CHOICE") {
@@ -100,43 +117,57 @@ export default function PreviewDetailsPage() {
     try {
       const answersToSubmit: any[] = [];
 
-      for (const q of submissionData.questions) {
-        if (q.type === "INFORMATION_ONLY") continue;
+      const collectAnswers = async (questionsArray: any[]) => {
+        for (const q of questionsArray) {
+          if (q.type === "INFORMATION_ONLY") continue;
 
-        const answerPayload: any = { questionId: q.id };
+          const answerPayload: any = { questionId: q.id };
+          let selectedOptIds: string[] = [];
 
-        if (q.type === "SINGLE_CHOICE") {
-          if (draftAnswers[q.id]) {
-            answerPayload.selectedOptionIds = [draftAnswers[q.id]];
-            answersToSubmit.push(answerPayload);
-          }
-        } else if (q.type === "MULTIPLE_CHOICE") {
-          if (draftAnswers[q.id] && draftAnswers[q.id].length > 0) {
-            answerPayload.selectedOptionIds = draftAnswers[q.id];
-            answersToSubmit.push(answerPayload);
-          }
-        } else if (q.type === "INPUT") {
-          let textResponse = draftAnswers[q.id] || "";
-          
-          const fileOpt = q.options?.find((o: any) => isFileInput(o.inputType));
-          if (fileOpt && draftFiles[q.id]) {
-            const formData = new FormData();
-            formData.append("files", draftFiles[q.id]!);
-            formData.append("context", "ASSESSMENT_FILE");
-            const res = await uploadAttachment(formData).unwrap();
-            if (res.data?.id) {
-              textResponse = res.data.id;
+          if (q.type === "SINGLE_CHOICE") {
+            if (draftAnswers[q.id]) {
+              answerPayload.selectedOptionIds = [draftAnswers[q.id]];
+              answersToSubmit.push(answerPayload);
+              selectedOptIds = [draftAnswers[q.id]];
             }
-          } else if (fileOpt && !draftFiles[q.id] && q.patientAnswer?.file?.id) {
-             textResponse = q.patientAnswer.file.id;
+          } else if (q.type === "MULTIPLE_CHOICE") {
+            if (draftAnswers[q.id] && draftAnswers[q.id].length > 0) {
+              answerPayload.selectedOptionIds = draftAnswers[q.id];
+              answersToSubmit.push(answerPayload);
+              selectedOptIds = draftAnswers[q.id];
+            }
+          } else if (q.type === "INPUT") {
+            let textResponse = draftAnswers[q.id] || "";
+
+            const fileOpt = q.options?.find((o: any) => isFileInput(o.inputType));
+            if (fileOpt && draftFiles[q.id]) {
+              const formData = new FormData();
+              formData.append("files", draftFiles[q.id]!);
+              formData.append("context", "ASSESSMENT_FILE");
+              const res = await uploadAttachment(formData).unwrap();
+              if (res.data?.id) {
+                textResponse = res.data.id;
+              }
+            } else if (fileOpt && !draftFiles[q.id] && q.patientAnswer?.file?.id) {
+              textResponse = q.patientAnswer.file.id;
+            }
+
+            if (textResponse) {
+              answerPayload.textResponse = textResponse;
+              answersToSubmit.push(answerPayload);
+            }
           }
 
-          if (textResponse) {
-            answerPayload.textResponse = textResponse;
-            answersToSubmit.push(answerPayload);
+          // recurse only into selected options
+          for (const opt of q.options || []) {
+            if (selectedOptIds.includes(opt.id) && opt.subQuestions && opt.subQuestions.length > 0) {
+              await collectAnswers(opt.subQuestions);
+            }
           }
         }
-      }
+      };
+
+      await collectAnswers(submissionData.questions);
 
       await editAssessmentSubmission({ id: submissionId, answers: answersToSubmit }).unwrap();
       toast.success("Assessment updated successfully!");
@@ -202,22 +233,22 @@ export default function PreviewDetailsPage() {
   );
 
   const Question = ({ text }: { text: string }) => (
-    <h3 className="text-[14px] font-bold text-gray-900 mb-4">{text}</h3>
+    <h3 className="text-[15px] font-bold text-gray-900 mb-3 leading-snug">{text}</h3>
   );
 
   const CheckboxRow = ({ text }: { text: string }) => (
-    <div className="flex items-start gap-3 mb-3 last:mb-0">
-      <div className="w-4 h-4 rounded bg-[#2563EB] flex items-center justify-center mt-0.5 shrink-0">
-        <Check className="w-3 h-3 text-white" strokeWidth={3} />
+    <div className="flex items-start gap-3 mb-2 last:mb-0">
+      <div className="w-5 h-5 rounded bg-[#2563EB] flex items-center justify-center shrink-0 shadow-sm">
+        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
       </div>
-      <span className="text-[13px] text-gray-600 leading-snug">{text}</span>
+      <span className="text-[14px] text-gray-700 leading-relaxed font-medium pt-0.5">{text}</span>
     </div>
   );
 
   const RadioRow = ({ text }: { text: string }) => (
-    <div className="flex items-center gap-3 mb-3 last:mb-0">
-      <div className="w-4 h-4 rounded-full border-[4.5px] border-[#2563EB] shrink-0" />
-      <span className="text-[13px] text-gray-600 leading-snug">{text}</span>
+    <div className="flex items-center gap-3 mb-2 last:mb-0">
+      <div className="w-5 h-5 rounded-full border-[5px] border-[#2563EB] shrink-0 shadow-sm" />
+      <span className="text-[14px] text-gray-700 leading-relaxed font-medium">{text}</span>
     </div>
   );
 
@@ -225,201 +256,260 @@ export default function PreviewDetailsPage() {
     <div className="min-h-screen bg-white pb-10">
       <Navbar variant="dark" />
       <div className="pt-32 max-w-[850px] mx-auto px-4 sm:px-6">
-        
+
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[18px] font-bold text-gray-900">Preview details</h1>
           {isEditing && (
-             <div className="flex gap-2">
-                <button 
-                  onClick={() => setIsEditing(false)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 text-[13px] font-medium"
-                >
-                  <X className="w-4 h-4" /> Cancel
-                </button>
-                <button 
-                  onClick={handleSaveEdits}
-                  disabled={uploadingFiles || isSaving}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-medium disabled:opacity-70"
-                >
-                  {(uploadingFiles || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} 
-                  Save
-                </button>
-             </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 text-[13px] font-medium"
+              >
+                <X className="w-4 h-4" /> Cancel
+              </button>
+              <button
+                onClick={handleSaveEdits}
+                disabled={uploadingFiles || isSaving}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-medium disabled:opacity-70"
+              >
+                {(uploadingFiles || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Save
+              </button>
+            </div>
           )}
         </div>
 
         <div className="flex flex-col">
-          
+
           {/* Card 1: Patient info & image */}
           <Card>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 shrink-0">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Patient" className="w-full h-full object-cover" />
+            <div className="flex items-center gap-4 mb-5">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                {user?.profile?.avatar ? (
+                  <img src={user.profile.avatar} alt="Patient" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-6 h-6 text-blue-500" />
+                )}
               </div>
               <div>
-                <p className="text-[14px] font-bold text-gray-900 leading-tight">Patient: {paymentSummary?.shippingInfo?.fullName || 'Alan Cattach'}</p>
-                <p className="text-[12px] text-gray-500">Consultation id: {submissionData.submissionCode}</p>
+                <p className="text-[15px] font-bold text-gray-900 leading-tight">
+                  Patient: {paymentSummary?.shippingInfo?.fullName || user?.profile?.name || user?.email?.split('@')[0] || 'Unknown Patient'}
+                </p>
+                <p className="text-[13px] text-gray-500 mt-0.5">Consultation id: <span className="font-medium text-gray-700">{submissionData.submissionCode}</span></p>
               </div>
             </div>
 
             {assessment.thumbnail && (
-              <div className="relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden mb-4 bg-gray-200">
-                <Image 
-                  src={assessment.thumbnail} 
-                  alt={assessment.title} 
-                  fill 
-                  className="object-cover"
-                  unoptimized
+              <div className="w-full h-[250px] md:h-[350px] rounded-xl overflow-hidden mb-5 bg-[#FAFAFA] border border-gray-200 flex items-center justify-center p-4 shadow-sm">
+                <img
+                  src={assessment.thumbnail}
+                  alt={assessment.title || "Assessment Thumbnail"}
+                  className="max-w-full max-h-full object-contain"
                 />
               </div>
             )}
 
-            <p className="text-[12px] text-gray-500">
-              Weight loss is about more than diet and exercise alone. Weight Loss MD provides medical support to help you overcome these challenges.
-            </p>
+            {assessment.description && (
+              <p className="text-[13.5px] text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+                {assessment.description}
+              </p>
+            )}
           </Card>
 
           {/* Dynamic Questions */}
           {questions.map((q: any) => {
             if (q.type === "INFORMATION_ONLY") return null;
 
-            return (
-              <Card key={q.id}>
-                <Question text={q.questionText || q.heading || ""} />
-                
-                {/* Read Mode */}
-                {!isEditing && (
-                  <div className="mt-2">
-                    {q.type === "SINGLE_CHOICE" ? (
-                      q.patientAnswer?.selectedOptions?.map((opt: any) => (
-                        <RadioRow key={opt.id} text={opt.label || opt.optionLabel} />
-                      ))
-                    ) : q.type === "MULTIPLE_CHOICE" ? (
-                      q.patientAnswer?.selectedOptions?.map((opt: any) => (
-                        <CheckboxRow key={opt.id} text={opt.label || opt.optionLabel} />
-                      ))
-                    ) : q.type === "INPUT" ? (
-                      q.patientAnswer?.file ? (
-                        q.patientAnswer.file.fileType?.startsWith('image/') ? (
-                          <div className="relative w-[150px] h-[150px] rounded-lg overflow-hidden border border-gray-200 mt-2">
-                            <Image src={q.patientAnswer.file.fileUrl} alt="Uploaded file" fill className="object-cover" unoptimized />
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 mt-2">
-                             <FileText className="w-4 h-4 text-gray-500" />
-                             <a href={q.patientAnswer.file.fileUrl} target="_blank" rel="noreferrer" className="text-[13px] text-[#2563EB] hover:underline">
-                               {q.patientAnswer.file.fileName}
-                             </a>
-                          </div>
-                        )
-                      ) : (
-                        <p className="text-[13px] text-gray-600 whitespace-pre-wrap">{q.patientAnswer?.textResponse}</p>
-                      )
-                    ) : null}
-                  </div>
-                )}
+            const renderQ = (question: any, depth = 0) => {
+              if (question.type === "INFORMATION_ONLY") return null;
+              const isIndented = depth > 0;
+              const marginLeft = isIndented ? `${depth * 1.5}rem` : '0';
 
-                {/* Edit Mode */}
-                {isEditing && (
-                  <div className="mt-3">
-                    {q.type === "SINGLE_CHOICE" && (
-                      <div className="flex flex-col gap-2.5">
-                        {q.options?.map((opt: any) => (
-                          <label key={opt.id} className="flex items-center gap-3 cursor-pointer group">
-                            <input 
-                              type="radio" 
-                              name={`q-${q.id}`} 
-                              checked={draftAnswers[q.id] === opt.id}
-                              onChange={() => setDraftAnswers({...draftAnswers, [q.id]: opt.id})}
-                              className="w-4 h-4 text-[#2563EB] focus:ring-[#2563EB] border-gray-300"
-                            />
-                            <span className="text-[13px] text-gray-600 group-hover:text-gray-900">{opt.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
+              return (
+                <div key={question.id} style={{ marginLeft }} className={isIndented ? "mt-5 pl-5 border-l-2 border-blue-100" : ""}>
+                  <Question text={question.questionText || question.heading || ""} />
 
-                    {q.type === "MULTIPLE_CHOICE" && (
-                      <div className="flex flex-col gap-2.5">
-                        {q.options?.map((opt: any) => {
-                          const isChecked = draftAnswers[q.id]?.includes(opt.id);
-                          return (
-                            <label key={opt.id} className="flex items-center gap-3 cursor-pointer group">
-                              <input 
-                                type="checkbox" 
-                                checked={isChecked}
-                                onChange={(e) => {
-                                  const current = draftAnswers[q.id] || [];
-                                  setDraftAnswers({
-                                    ...draftAnswers, 
-                                    [q.id]: e.target.checked ? [...current, opt.id] : current.filter((id: string) => id !== opt.id)
-                                  });
-                                }}
-                                className="w-4 h-4 rounded text-[#2563EB] focus:ring-[#2563EB] border-gray-300"
-                              />
-                              <span className="text-[13px] text-gray-600 group-hover:text-gray-900">{opt.label}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {q.type === "INPUT" && (
-                      <div>
-                        {q.options?.some((o: any) => isFileInput(o.inputType)) ? (
-                          <div className="flex flex-col gap-3 mt-1">
-                            {/* Show current or new image preview */}
-                            {(draftFiles[q.id] || (q.patientAnswer?.file && q.patientAnswer.file.fileType?.startsWith('image/'))) && (
-                              <div className="relative w-[150px] h-[150px] rounded-lg overflow-hidden border border-gray-200">
-                                <Image 
-                                  src={draftFiles[q.id] ? URL.createObjectURL(draftFiles[q.id]!) : q.patientAnswer.file.fileUrl} 
-                                  alt="Uploaded preview" 
-                                  fill 
-                                  className="object-cover" 
-                                  unoptimized 
-                                />
+                  {/* Read Mode */}
+                  {!isEditing && (
+                    <div className="mt-2">
+                      {question.type === "SINGLE_CHOICE" ? (
+                        question.options?.filter((opt: any) => question.patientAnswer?.selectedOptions?.some((so: any) => so.id === opt.id)).map((opt: any) => (
+                          <div key={opt.id}>
+                            <RadioRow text={opt.label || opt.optionLabel} />
+                            {opt.subQuestions && opt.subQuestions.length > 0 && (
+                              <div className="mt-3">
+                                {opt.subQuestions.map((subQ: any) => renderQ(subQ, depth + 1))}
                               </div>
                             )}
-                            {q.patientAnswer?.file && !draftFiles[q.id] && !q.patientAnswer.file.fileType?.startsWith('image/') && (
-                              <p className="text-[11px] text-gray-500">Current file: {q.patientAnswer.file.fileName}</p>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <input 
-                                type="file" 
-                                accept="image/*"
-                                onChange={(e) => {
-                                  if (e.target.files && e.target.files[0]) {
-                                    setDraftFiles({...draftFiles, [q.id]: e.target.files[0]});
-                                  }
-                                }}
-                                className="text-[12px] file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-[#2563EB] hover:file:bg-blue-100 transition-colors"
-                              />
-                              {draftFiles[q.id] && (
-                                <button 
-                                  onClick={() => {
-                                    const newDrafts = {...draftFiles};
-                                    delete newDrafts[q.id];
-                                    setDraftFiles(newDrafts);
-                                  }}
-                                  className="text-[12px] text-red-500 hover:text-red-700 font-medium px-2 py-1"
-                                >
-                                  Remove
-                                </button>
-                              )}
-                            </div>
                           </div>
-                        ) : (
-                          <textarea 
-                            value={draftAnswers[q.id] || ""}
-                            onChange={(e) => setDraftAnswers({...draftAnswers, [q.id]: e.target.value})}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-[13px] focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] outline-none"
-                            rows={3}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
+                        ))
+                      ) : question.type === "MULTIPLE_CHOICE" ? (
+                        question.options?.filter((opt: any) => question.patientAnswer?.selectedOptions?.some((so: any) => so.id === opt.id)).map((opt: any) => (
+                          <div key={opt.id}>
+                            <CheckboxRow text={opt.label || opt.optionLabel} />
+                            {opt.subQuestions && opt.subQuestions.length > 0 && (
+                              <div className="mt-3">
+                                {opt.subQuestions.map((subQ: any) => renderQ(subQ, depth + 1))}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : question.type === "INPUT" ? (
+                        <div className="mb-2">
+                          {question.patientAnswer?.file ? (
+                            question.patientAnswer.file.fileType?.startsWith('image/') ? (
+                              <div className="relative w-[150px] h-[150px] rounded-lg overflow-hidden border border-gray-200 mt-2 shadow-sm">
+                                <Image src={question.patientAnswer.file.fileUrl} alt="Uploaded file" fill className="object-cover" unoptimized />
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 mt-2 bg-gray-50 p-3 rounded-lg border border-gray-100 w-fit">
+                                <FileText className="w-5 h-5 text-blue-500" />
+                                <a href={question.patientAnswer.file.fileUrl} target="_blank" rel="noreferrer" className="text-[13px] text-[#2563EB] hover:underline font-medium">
+                                  {question.patientAnswer.file.fileName}
+                                </a>
+                              </div>
+                            )
+                          ) : (
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 w-full max-w-[500px]">
+                              <p className="text-[14px] text-gray-700 whitespace-pre-wrap">{question.patientAnswer?.textResponse || "No response provided"}</p>
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* Edit Mode */}
+                  {isEditing && (
+                    <div className="mt-3">
+                      {question.type === "SINGLE_CHOICE" && (
+                        <div className="flex flex-col gap-3">
+                          {question.options?.map((opt: any) => {
+                            const isSelected = draftAnswers[question.id] === opt.id;
+                            return (
+                              <div key={opt.id} className="flex flex-col">
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                  <input
+                                    type="radio"
+                                    name={`q-${question.id}`}
+                                    checked={isSelected}
+                                    onChange={() => setDraftAnswers({ ...draftAnswers, [question.id]: opt.id })}
+                                    className="w-5 h-5 text-[#2563EB] focus:ring-[#2563EB] border-gray-300"
+                                  />
+                                  <span className="text-[14px] text-gray-700 group-hover:text-gray-900">{opt.label}</span>
+                                </label>
+                                {isSelected && opt.subQuestions && opt.subQuestions.length > 0 && (
+                                  <div className="mt-3 mb-1">
+                                    {opt.subQuestions.map((subQ: any) => renderQ(subQ, depth + 1))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {question.type === "MULTIPLE_CHOICE" && (
+                        <div className="flex flex-col gap-3">
+                          {question.options?.map((opt: any) => {
+                            const isChecked = draftAnswers[question.id]?.includes(opt.id);
+                            return (
+                              <div key={opt.id} className="flex flex-col">
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={(e) => {
+                                      const current = draftAnswers[question.id] || [];
+                                      setDraftAnswers({
+                                        ...draftAnswers,
+                                        [question.id]: e.target.checked ? [...current, opt.id] : current.filter((id: string) => id !== opt.id)
+                                      });
+                                    }}
+                                    className="w-5 h-5 rounded text-[#2563EB] focus:ring-[#2563EB] border-gray-300"
+                                  />
+                                  <span className="text-[14px] text-gray-700 group-hover:text-gray-900">{opt.label}</span>
+                                </label>
+                                {isChecked && opt.subQuestions && opt.subQuestions.length > 0 && (
+                                  <div className="mt-3 mb-1">
+                                    {opt.subQuestions.map((subQ: any) => renderQ(subQ, depth + 1))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {question.type === "INPUT" && (
+                        <div>
+                          {question.options?.some((o: any) => isFileInput(o.inputType)) ? (
+                            <div className="flex flex-col gap-3 mt-1">
+                              {(draftFiles[question.id] || (question.patientAnswer?.file && question.patientAnswer.file.fileType?.startsWith('image/'))) && (
+                                <div className="relative w-[150px] h-[150px] rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                                  <Image
+                                    src={draftFiles[question.id] ? URL.createObjectURL(draftFiles[question.id]!) : question.patientAnswer.file.fileUrl}
+                                    alt="Uploaded preview"
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
+                                  />
+                                </div>
+                              )}
+                              {question.patientAnswer?.file && !draftFiles[question.id] && !question.patientAnswer.file.fileType?.startsWith('image/') && (
+                                <p className="text-[12px] text-gray-500 bg-gray-50 p-2 rounded w-fit border border-gray-100">Current file: <span className="font-medium text-gray-700">{question.patientAnswer.file.fileName}</span></p>
+                              )}
+                              <div className="flex items-center gap-3">
+                                <label className="cursor-pointer group">
+                                  <div className="flex items-center gap-2 bg-blue-50 text-[#2563EB] hover:bg-blue-100 transition-colors px-4 py-2 rounded-lg border border-blue-100">
+                                    <FileText className="w-4 h-4" />
+                                    <span className="text-[13px] font-semibold">{draftFiles[question.id] ? 'Change File' : 'Upload File'}</span>
+                                  </div>
+                                  <input
+                                    type="file"
+                                    accept="image/*,.pdf,.doc,.docx"
+                                    onChange={(e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        setDraftFiles({ ...draftFiles, [question.id]: e.target.files[0] });
+                                      }
+                                    }}
+                                    className="hidden"
+                                  />
+                                </label>
+                                {draftFiles[question.id] && (
+                                  <button
+                                    onClick={() => {
+                                      const newDrafts = { ...draftFiles };
+                                      delete newDrafts[question.id];
+                                      setDraftFiles(newDrafts);
+                                    }}
+                                    className="text-[13px] text-red-500 hover:text-red-700 font-semibold px-3 py-2 hover:bg-red-50 rounded-lg transition-colors"
+                                  >
+                                    Remove
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <textarea
+                              value={draftAnswers[question.id] || ""}
+                              onChange={(e) => setDraftAnswers({ ...draftAnswers, [question.id]: e.target.value })}
+                              placeholder="Type your response here..."
+                              className="w-full border border-gray-200 rounded-xl p-3.5 text-[14px] text-gray-700 focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] outline-none shadow-sm transition-all"
+                              rows={3}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            };
+
+            return (
+              <Card key={q.id}>
+                {renderQ(q)}
               </Card>
             );
           })}
@@ -559,8 +649,8 @@ export default function PreviewDetailsPage() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
             <div className="flex gap-3 w-full sm:w-auto">
-              <button 
-                onClick={handleConfirmAndPay} 
+              <button
+                onClick={handleConfirmAndPay}
                 disabled={isCheckingOut || isSaving}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white text-[13px] font-medium px-5 py-2 rounded-lg transition-colors"
               >
@@ -571,7 +661,7 @@ export default function PreviewDetailsPage() {
                 Cancel
               </Link>
             </div>
-            
+
             {submissionData.status === 'DRAFT' && !isEditing && (
               <button onClick={() => setIsEditing(true)} className="w-full sm:w-auto text-gray-600 border border-gray-300 hover:bg-gray-50 text-[13px] font-medium px-5 py-2 rounded-lg transition-colors text-center">
                 Edit before submitting

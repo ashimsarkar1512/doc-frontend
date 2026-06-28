@@ -55,7 +55,7 @@ const LoginPage = () => {
           })
         );
         toast.success("Login successful");
-        
+
         const roles = res.data.user.roles ?? [];
         if (roles.includes("DOCTOR") || roles.includes("PROVIDER")) {
           router.push("/doctor");
@@ -94,10 +94,10 @@ const LoginPage = () => {
                 <div className="flex justify-center mb-3">
                   <Logo variant="light" />
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white mt-4">
+                <h2 className="text-4xl font-bold tracking-tight text-white mt-8">
                   Welcome Back
                 </h2>
-                <p className="text-xs text-white/70 mt-1 font-light">
+                <p className="text-md text-white/70 mt-3 font-light">
                   Sign in to your account to continue
                 </p>
               </header>
