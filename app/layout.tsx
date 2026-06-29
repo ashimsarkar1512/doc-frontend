@@ -41,11 +41,6 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  // console.log("SEO Data", seo);
-
-  // console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
-  // console.log("SEO DATA check:", seo?.metaDescription);
-
   const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
   const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
 

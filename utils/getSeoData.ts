@@ -6,12 +6,9 @@ export async function getSeoData() {
 
     if (!apiUrl) return null;
 
-    const res = await fetch(
-      `${apiUrl}/admin/website-settings`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const res = await fetch(`${apiUrl}/admin/website-settings`, {
+      next: { revalidate: 60 },
+    });
 
     if (!res.ok) return null;
 

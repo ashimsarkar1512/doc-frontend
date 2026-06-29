@@ -227,6 +227,7 @@ export interface AssessmentSubmissionResponse {
       title: string
       thumbnail: string | null
       category: string
+      description?: string | null
     }
     reviewedBy: string | null
     doctorNotes: string | null
@@ -277,8 +278,13 @@ const patientApi = baseApi.injectEndpoints({
       query: () => '/patient/cart/my-carts',
       providesTags: ['Cart'],
     }),
-    getCartSummary: builder.query<CartSummaryResponse, void>({
-      query: () => '/patient/cart/summary',
+    getCartSummary: builder.query<CartSummaryResponse, string | void>({
+      query: (discountCode) => {
+        if (discountCode) {
+          return `/patient/cart/summary?discountCode=${discountCode}`
+        }
+        return '/patient/cart/summary'
+      },
       providesTags: ['Cart'],
     }),
     removeFromCart: builder.mutation<{ success: boolean; message: string }, string>({

@@ -13,8 +13,16 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                deleteDir()
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: scm.branches,
+                    doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+                    extensions: (scm.extensions ?: []) + [
+                        [$class: 'CloneOption', depth: 1, noTags: true, shallow: true],
+                        [$class: 'CleanBeforeCheckout']
+                    ],
+                    userRemoteConfigs: scm.userRemoteConfigs
+                ])
             }
         }
 

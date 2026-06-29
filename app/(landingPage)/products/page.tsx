@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import { Trash2, ShoppingCart, Tag, CheckCircle, Loader2 } from "lucide-react";
@@ -23,12 +23,27 @@ function ProductsInner() {
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("categoryId") ?? "";
 
+  // ── Coupon state ──
+  const [couponInput, setCouponInput] = useState("");
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
   // ── API queries ──
   const { data: productsData, isLoading: productsLoading } =
     useGetProductsByCategoryIdQuery(categoryId, { skip: !categoryId });
 
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
-  const { data: summaryData } = useGetCartSummaryQuery();
+  const { data: summaryData, isFetching: summaryFetching, isError: summaryError } = useGetCartSummaryQuery(
+    couponApplied ? couponInput.trim() : undefined
+  );
+
+  useEffect(() => {
+    if (summaryError && couponApplied) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCouponError("Invalid or expired coupon code.");
+      setCouponApplied(false);
+    }
+  }, [summaryError, couponApplied]);
 
   // ── API mutations ──
   const [addToCart] = useAddToCartMutation();
@@ -47,11 +62,6 @@ function ProductsInner() {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // ── Coupon state ──
-  const [couponInput, setCouponInput] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
-  const [couponError, setCouponError] = useState("");
-
   // ── Checkbox state (controlled so checkmark works) ──
   const [recurring, setRecurring] = useState(true);
 
@@ -63,8 +73,8 @@ function ProductsInner() {
       await addToCart({ productId: p.id }).unwrap();
       toast.success("Added to cart");
       // RTK Query tag invalidation auto-refetches cart & summary
-    } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to add to cart");
+    } catch (e: unknown) {
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to add to cart");
       console.error("Add to cart failed:", e);
     } finally {
       setAddingId(null);
@@ -76,8 +86,8 @@ function ProductsInner() {
     try {
       await removeFromCart(itemId).unwrap();
       toast.success("Item removed from cart");
-    } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to remove item");
+    } catch (e: unknown) {
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to remove item");
       console.error("Remove from cart failed:", e);
     } finally {
       setRemovingId(null);
@@ -95,8 +105,8 @@ function ProductsInner() {
     try {
       await updateCartItem({ id: itemId, quantity: newQty }).unwrap();
       toast.success("Cart updated");
-    } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to update cart");
+    } catch (e: unknown) {
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to update cart");
       console.error("Update cart failed:", e);
     } finally {
       setUpdatingId(null);
@@ -250,7 +260,6 @@ function ProductsInner() {
                     const isRemoving = removingId === item.id;
                     const isUpdatingInc = updatingId === `${item.id}-inc`;
                     const isUpdatingDec = updatingId === `${item.id}-dec`;
-                    const isUpdating = isUpdatingInc || isUpdatingDec;
 
                     return (
                       <div key={item.id} className="py-3.5 flex gap-3">
@@ -374,13 +383,14 @@ function ProductsInner() {
                       placeholder="Enter coupon code"
                       className="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none min-w-0"
                     />
-                    {couponApplied && (
+                    {couponApplied && !summaryFetching && !summaryError && (
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                   <button
                     onClick={handleApplyCoupon}
-                    className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0"
+                    disabled={summaryFetching}
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     Apply
                   </button>
@@ -389,7 +399,12 @@ function ProductsInner() {
                 {couponError && (
                   <p className="text-red-500 text-[11px] mt-1.5 ml-1">{couponError}</p>
                 )}
-                {couponApplied && (
+                {summaryFetching && couponApplied && (
+                  <p className="text-blue-600 text-[11px] mt-1.5 ml-1 font-medium flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Applying coupon...
+                  </p>
+                )}
+                {couponApplied && !summaryFetching && !summaryError && (
                   <p className="text-green-600 text-[11px] mt-1.5 ml-1 font-medium">
                     ✓ Coupon applied successfully!
                   </p>
