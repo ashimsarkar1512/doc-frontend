@@ -12,7 +12,6 @@
     "@livechat/widget-react": "^1.4.0",
     "@reduxjs/toolkit": "^2.12.0",
     "@tailwindcss/postcss": "^4.3.1",
-    "@tailwindcss/typography": "^0.5.20",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.40.0",
@@ -32,6 +31,7 @@
     "tailwindcss": "^4"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
