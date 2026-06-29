@@ -79,9 +79,9 @@ export default function PatientLayout({
       <header className="w-full bg-white border-b border-gray-150 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-1 cursor-pointer">
+          <button onClick={() => window.location.href = "/"} className="flex items-center gap-1 cursor-pointer">
             <Logo />
-          </Link>
+          </button>
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-8">
@@ -174,14 +174,16 @@ export default function PatientLayout({
 
                   {/* Home link */}
                   <div className="py-2">
-                    <Link
-                      href="/"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileDropdownOpen(false)}
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        window.location.href = "/";
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                     >
                       <Home className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <span>Home</span>
-                    </Link>
+                    </button>
                   </div>
 
                   {/* Logout */}
@@ -265,14 +267,16 @@ export default function PatientLayout({
                     </div>
                   </div>
 
-                  <Link
-                    href="/"
-                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors"
-                    onClick={toggleMobileMenu}
+                  <button
+                    onClick={() => {
+                      toggleMobileMenu();
+                      window.location.href = "/";
+                    }}
+                    className="flex w-full items-center gap-2 text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors text-left"
                   >
                     <Home className="h-4 w-4" />
                     Home
-                  </Link>
+                  </button>
 
                   <button
                     disabled={isLoggingOut}
