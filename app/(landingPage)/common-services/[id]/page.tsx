@@ -380,7 +380,7 @@ export default function CommonServicesPage() {
         </div>
       </section>
 
-      <Footer />
+      {/* <Footer />   */}
     </div>
   );
 }
