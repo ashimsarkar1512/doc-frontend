@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
-import doc2Img from "@/public/doctor/doc-2.jpg";
+import fallbackDoctorImg from "@/public/doctor-blog.png";
 
 interface BlogSidebarProps {
   providerImage?: string;
@@ -16,23 +16,20 @@ const BlogSidebar = ({ providerImage, providerName }: BlogSidebarProps) => {
         Medical Weight<br />Management<br />Program
       </h3>
       
-      <div className="relative w-full h-[320px] flex justify-center mt-auto">
-        {/* Abstract text background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] z-0 text-[120px] font-black text-blue-900 overflow-hidden select-none whitespace-nowrap tracking-tighter pointer-events-none">
-          WLMD
-        </div>
-        
-        {/* Abstract blue background shape */}
-        <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-blue-200/50 to-transparent rounded-t-full z-0" />
+      <div className="relative w-full h-[350px] flex justify-center mt-auto">
+
         
         {/* Doctor image (dynamic or fallback) */}
-        <div className="relative z-10 w-[80%] h-full">
-          <Image
-            src={providerImage || doc2Img} 
-            alt={providerName || "Doctor"}
-            fill
-            className="object-contain object-bottom drop-shadow-2xl"
-          />
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-24">
+          <div className="absolute inset-0 w-full h-full">
+            <Image
+              src={providerImage || fallbackDoctorImg} 
+              alt={providerName || "Doctor"}
+              fill
+              unoptimized
+              className="object-contain object-bottom drop-shadow-2xl scale-110 origin-bottom"
+            />
+          </div>
         </div>
 
         {/* Action Button */}

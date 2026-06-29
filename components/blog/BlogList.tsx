@@ -11,12 +11,13 @@ const BlogList = () => {
   const [categories, setCategories] = useState<string[]>(["All Blogs"]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch("https://prod.weightlossmdcherrycreek.com/api/v1/public/blogs?limit=100");
+        const res = await fetch("https://prod.weightlossmdcherrycreek.com/api/v1/public/blogs");
         if (!res.ok) {
           throw new Error("Failed to fetch blogs");
         }
@@ -54,6 +55,8 @@ const BlogList = () => {
       ? posts
       : posts.filter((post) => post.category === activeCategory);
 
+  const displayedPosts = filteredPosts.slice(0, visibleCount);
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 mb-20">
       {/* Category Filter */}
@@ -61,7 +64,10 @@ const BlogList = () => {
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => setActiveCategory(cat)}
+            onClick={() => {
+              setActiveCategory(cat);
+              setVisibleCount(10);
+            }}
             className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
               activeCategory === cat
                 ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
@@ -85,15 +91,18 @@ const BlogList = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {filteredPosts.map((post) => (
+                {displayedPosts.map((post) => (
                   <BlogCard key={post.id} post={post} />
                 ))}
               </div>
               
               {/* Load More Button */}
-              {filteredPosts.length > 0 && (
+              {filteredPosts.length > visibleCount && (
                 <div className="flex justify-start mt-10">
-                  <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-8 py-3 rounded-full transition-colors">
+                  <button 
+                    onClick={() => setVisibleCount((prev) => prev + 10)}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-8 py-3 rounded-full transition-colors"
+                  >
                     Load More
                   </button>
                 </div>

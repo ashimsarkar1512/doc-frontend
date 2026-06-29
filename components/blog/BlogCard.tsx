@@ -25,6 +25,7 @@ const BlogCard = ({ post }: { post: BlogPost }) => {
           src={imgSrc}
           alt={post.title}
           fill
+          unoptimized
           className="object-cover transition-transform duration-500 hover:scale-105"
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={() => setImgSrc(fallBackImg.src)}
