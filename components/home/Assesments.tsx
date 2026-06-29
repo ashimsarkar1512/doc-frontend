@@ -140,7 +140,7 @@ const AssessmentCard = ({
       {/* Button — visible on hover */}
       <Link
         href={`/assessment/${assessment.id}`}
-        // onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className="
           inline-block
           opacity-0 translate-y-2
