@@ -1,14 +1,17 @@
-'use client'
+"use client";
 
 import { FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Search, RotateCcw } from "lucide-react";
-import { useGetCategoriesNamesQuery, useGetCategoriesQuery, type Assessment } from "@/Redux/features/patient/assesmentcategory";
+import {
+  useGetCategoriesNamesQuery,
+  useGetCategoriesQuery,
+  type Assessment,
+} from "@/Redux/features/patient/assesmentcategory";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
 
-
-//  Constants 
+//  Constants
 
 const GRADIENTS = [
   "from-stone-900 via-amber-950 to-stone-900",
@@ -23,15 +26,33 @@ const GRADIENTS = [
 
 const PAGE_SIZE = 4;
 
-// Icons (memoized for performance) 
+// Icons (memoized for performance)
 const Icons = {
   ChevronLeft: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polyline points="15 18 9 12 15 6" />
     </svg>
   ),
   ChevronRight: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polyline points="9 18 15 12 9 6" />
     </svg>
   ),
@@ -45,9 +66,10 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
     className={`
       px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-      ${isActive
-        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
-        : "bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:shadow-md"
+      ${
+        isActive
+          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
+          : "bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:shadow-md"
       }
     `}
     aria-pressed={isActive}
@@ -56,15 +78,23 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   </button>
 );
 
-const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: number }) => (
-  <div className={`
+const AssessmentCard = ({
+  assessment,
+  index,
+}: {
+  assessment: Assessment;
+  index: number;
+}) => (
+  <div
+    className={`
     group relative overflow-hidden rounded-3xl h-[420px]
     bg-gradient-to-br ${GRADIENTS[index % GRADIENTS.length]}
     flex flex-col cursor-pointer
     transition-all duration-500 ease-out
     hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1
     border border-white/10
-  `}>
+  `}
+  >
     {/* Background image — full card using native img for fast S3 load */}
     {assessment.thumbnail && (
       <div className="absolute inset-0 overflow-hidden">
@@ -82,13 +112,15 @@ const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: 
 
     {/* Content */}
     <div className="relative z-20 flex flex-col h-full p-5">
-
       {/* Fees badge */}
       {assessment.paymentPlan && (
         <div className="self-start mb-3">
           <span className="bg-white/20 backdrop-blur-md text-white text-sm font-normal px-4 py-1.5 rounded-full border border-white/20">
-            Fees: <span className="font-bold">${assessment.paymentPlan.price}</span>
-            /{assessment.paymentPlan.billingCycle === "MONTHLY" ? "m" : assessment.paymentPlan.billingCycle.toLowerCase()}
+            Fees:{" "}
+            <span className="font-bold">${assessment.paymentPlan.price}</span>/
+            {assessment.paymentPlan.billingCycle === "MONTHLY"
+              ? "m"
+              : assessment.paymentPlan.billingCycle.toLowerCase()}
           </span>
         </div>
       )}
@@ -108,7 +140,7 @@ const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: 
       {/* Button — visible on hover */}
       <Link
         href={`/assessment/${assessment.id}`}
-        onClick={(e) => e.stopPropagation()}
+        // onClick={(e) => e.stopPropagation()}
         className="
           inline-block
           opacity-0 translate-y-2
@@ -126,7 +158,12 @@ const AssessmentCard = ({ assessment, index }: { assessment: Assessment; index: 
   </div>
 );
 
-const PaginationButton = ({ onClick, disabled, children, ariaLabel } : PaginationButtonProps) => (
+const PaginationButton = ({
+  onClick,
+  disabled,
+  children,
+  ariaLabel,
+}: PaginationButtonProps) => (
   <button
     onClick={onClick}
     disabled={disabled}
@@ -144,11 +181,13 @@ const PaginationButton = ({ onClick, disabled, children, ariaLabel } : Paginatio
   </button>
 );
 
-//  Main Component 
+//  Main Component
 
 export default function Assessments() {
   const { content } = useHomepageContent();
-  const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
+  const [activeFilter, setActiveFilter] = useState<string | undefined>(
+    undefined,
+  );
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -157,24 +196,30 @@ export default function Assessments() {
     if (window.location.hash === "#assessments") {
       const el = document.getElementById("assessments");
       if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+        setTimeout(
+          () => el.scrollIntoView({ behavior: "smooth", block: "start" }),
+          100,
+        );
       }
     }
   }, []);
 
   const { data: categoryNamesData } = useGetCategoriesNamesQuery();
-  const { data: categoriesData, isLoading } = useGetCategoriesQuery(activeFilter);
+  const { data: categoriesData, isLoading } =
+    useGetCategoriesQuery(activeFilter);
 
   const filters = useMemo(() => {
-    const names = categoryNamesData?.data?.map(c => c.name) ?? [];
+    const names = categoryNamesData?.data?.map((c) => c.name) ?? [];
     return ["All", ...names];
   }, [categoryNamesData]);
 
   // Flatten all assessments from all categories — inject paymentPlan from category
   const allCards = useMemo(() => {
-    return categoriesData?.data?.flatMap(cat =>
-      cat.assessments.map(a => ({ ...a, paymentPlan: cat.paymentPlan }))
-    ) ?? [];
+    return (
+      categoriesData?.data?.flatMap((cat) =>
+        cat.assessments.map((a) => ({ ...a, paymentPlan: cat.paymentPlan })),
+      ) ?? []
+    );
   }, [categoriesData]);
 
   const { totalPages, visibleCards } = useMemo(() => {
@@ -189,10 +234,12 @@ export default function Assessments() {
     setCurrentPage(0);
   }, []);
 
-  const handlePageChange = useCallback((newPage : number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
     // Optional: scroll to top of cards section
-    document.querySelector('.cards-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .querySelector(".cards-grid")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const goToPreviousPage = useCallback(() => {
@@ -204,7 +251,10 @@ export default function Assessments() {
   }, [currentPage, totalPages, handlePageChange]);
 
   return (
-    <section id="assessments" className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6">
+    <section
+      id="assessments"
+      className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6"
+    >
       <div className="max-w-6xl mx-auto">
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
@@ -212,7 +262,8 @@ export default function Assessments() {
             {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
           <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
-            {content?.assessmentDescription || "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
+            {content?.assessmentDescription ||
+              "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
         </div>
 
@@ -222,7 +273,9 @@ export default function Assessments() {
             <FilterButton
               key={filter}
               label={filter}
-              isActive={activeFilter === (filter === "All" ? undefined : filter)}
+              isActive={
+                activeFilter === (filter === "All" ? undefined : filter)
+              }
               onClick={() => handleFilterChange(filter)}
             />
           ))}
@@ -232,12 +285,18 @@ export default function Assessments() {
         <div className="cards-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-[420px] rounded-2xl bg-gray-200 animate-pulse" />
+                <div
+                  key={i}
+                  className="h-[420px] rounded-2xl bg-gray-200 animate-pulse"
+                />
               ))
             : visibleCards.map((assessment, i) => (
-                <AssessmentCard key={assessment.id} assessment={assessment} index={currentPage * PAGE_SIZE + i} />
-              ))
-          }
+                <AssessmentCard
+                  key={assessment.id}
+                  assessment={assessment}
+                  index={currentPage * PAGE_SIZE + i}
+                />
+              ))}
         </div>
 
         {/* Empty State */}
@@ -246,13 +305,17 @@ export default function Assessments() {
             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
               <Search className="w-10 h-10 text-blue-500" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">No assessments found</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              No assessments found
+            </h3>
             <p className="text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
               {activeFilter ? (
                 <>
                   We couldn't find any assessments matching the{" "}
-                  <span className="font-semibold text-blue-600">"{activeFilter}"</span> category at
-                  the moment.
+                  <span className="font-semibold text-blue-600">
+                    "{activeFilter}"
+                  </span>{" "}
+                  category at the moment.
                 </>
               ) : (
                 "There are currently no assessments available. Please check back later."
@@ -330,7 +393,10 @@ export default function Assessments() {
       {/* Add custom CSS for radial gradient (since Tailwind doesn't have it by default) */}
       <style jsx>{`
         .bg-gradient-radial {
-          background-image: radial-gradient(ellipse at 30% 20%, var(--tw-gradient-stops));
+          background-image: radial-gradient(
+            ellipse at 30% 20%,
+            var(--tw-gradient-stops)
+          );
         }
       `}</style>
     </section>
