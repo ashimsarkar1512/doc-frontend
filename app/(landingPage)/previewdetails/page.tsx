@@ -52,7 +52,9 @@ export default function PreviewDetailsPage() {
   });
 
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
-  const { data: summaryData } = useGetCartSummaryQuery();
+  const { data: summaryData } = useGetCartSummaryQuery(
+    submissionId ? { submissionId } : undefined
+  );
 
   const [editAssessmentSubmission, { isLoading: isSaving }] = useEditAssessmentSubmissionMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
