@@ -31,7 +31,7 @@ const ShippingQuestions = () => {
   };
 
   return (
-    <section className="w-full max-w-4xl mx-auto px-4 mt-16 mb-20">
+    <section className="w-full max-w-6xl mx-auto px-4 mt-16 mb-20">
       <h2 className="text-2xl md:text-3xl font-semibold text-center text-slate-900 mb-10">
         Shipping Questions
       </h2>

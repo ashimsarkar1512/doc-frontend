@@ -20,12 +20,12 @@ const ShippingInformationPage = () => {
         scrolledPadding="py-2" 
       />
       
-      <div className="pt-24 md:pt-32 pb-16 w-full flex flex-col items-center">
+      <div className="pt-24 md:pt-32 pb-16 w-full flex flex-col items-center ">
         <HeroSection />
         <PartnerPharmacyNetwork />
         <ShippingTimeline />
         <ShippingQuestions />
-        <div className="w-full max-w-7xl px-4">
+        <div className="w-full max-w-7xl ">
           <ContactCTA />
         </div>
       </div>

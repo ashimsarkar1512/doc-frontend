@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 const ContactCTA = () => {
   return (
-    <section className="w-full max-w-5xl mx-auto px-4 mb-24">
+    <section className="w-full max-w-6xl mx-auto px-4 mb-24">
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         {/* Abstract glow effect like in the image */}
         <div className="absolute top-1/2 -translate-y-1/2 right-0 w-64 h-64 bg-blue-500/30 blur-[80px] rounded-full pointer-events-none" />

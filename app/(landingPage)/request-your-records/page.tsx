@@ -5,7 +5,7 @@ import RecordsRequestForm from '@/components/RequestYourRecords/RecordsRequestFo
 import InfoCards from '@/components/RequestYourRecords/InfoCards';
 
 export const metadata = {
-  title: "Request Your Records - Weight Loss MD",
+  title: "Request Your Records - Weight Loss MD ",
   description: "Request access, copies, or corrections to your medical records under HIPAA.",
 };
 

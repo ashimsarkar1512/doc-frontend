@@ -254,7 +254,7 @@ export default function MedicalTeamPage() {
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-24 w-full">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-3">
-            Our Licensed Provider Network
+            Our Licensed Provider Network 
           </h2>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             Every provider in our network is credentialed, licensed in your

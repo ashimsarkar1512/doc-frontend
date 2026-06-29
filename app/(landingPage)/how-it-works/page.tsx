@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Clock,
   CheckCircle,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function HowItWorksPage() {
@@ -156,7 +157,7 @@ export default function HowItWorksPage() {
             Your Patient Journey
           </h2>
           <p className="text-gray-500 text-sm">
-            Six structured steps from assessment to ongoing care
+            Six structured steps from assessment to ongoing care 
           </p>
         </div>
 
@@ -174,7 +175,7 @@ export default function HowItWorksPage() {
               </div>
 
               {/* Card */}
-              <div className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5" style={{ background: "#f0f4fb" }}>
+              <div className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5" style={{ background: "#F0F4FB" }}>
                 {/* Title + Duration */}
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h3 className="text-[15.5px] font-semibold text-gray-900 leading-snug">
@@ -209,9 +210,9 @@ export default function HowItWorksPage() {
         </div>
 
         {/* ── DISCLAIMER ── */}
-        <div className="bg-[#fff5f5] border border-[#fecaca] rounded-[16px] p-5 mt-5 flex items-start gap-3">
-          <AlertCircle className="w-[18px] h-[18px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
-          <p className="text-gray-700 text-xs leading-relaxed">
+        <div className="bg-[#fff5f5] border  rounded-2xl p-5 mt-5 flex items-start gap-3">
+          <ShieldAlert className="w-[22px] h-[22px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
+          <p className="text-gray-700 text-sm leading-relaxed">
             <strong className="text-[#dc2626]">Provider Review Disclaimer</strong>
             : All treatment decisions are made exclusively by licensed healthcare
             providers. Payment of any membership fee does not guarantee a
@@ -231,7 +232,7 @@ export default function HowItWorksPage() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-[16px] overflow-hidden"
+              className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
             >
               <button
                 onClick={() =>

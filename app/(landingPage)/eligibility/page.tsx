@@ -107,22 +107,22 @@ export default function EligibilityPage() {
           {eligibilityCriteria.map((item, index) => (
             <div
               key={index}
-              className="flex items-start gap-3 rounded-[14px] px-4 py-3.5"
-              style={{ background: "#eef2f9" }}
+              className="flex items-start gap-3 rounded-[14px] px-4 py-6"
+              style={{ background: "#E8F4FD" }}
             >
-              <CircleCheckBig className="w-[17px] h-[17px] text-[#22c55e] flex-shrink-0 mt-0.5 stroke-[2]" />
-              <span className="text-gray-700 text-[13px] leading-snug">{item}</span>
+              <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
+              <span className="text-gray-700 text-sm leading-snug">{item}</span>
             </div>
           ))}
         </div>
 
         {/* Blue info note — full width */}
         <div
-          className="flex items-start gap-3 rounded-[14px] px-4 py-3.5"
+          className="flex items-start gap-3 rounded-[14px] px-4 py-6"
           style={{ background: "#e8f0fb" }}
         >
-          <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#3b82f6] stroke-[2]" />
-          <p className="text-gray-600 text-[12.5px] leading-relaxed">
+          <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#1A5C8A] stroke-[2]" />
+          <p className="text-gray-600 text-[14px] leading-relaxed">
             Final eligibility is determined solely by your licensed provider
             after reviewing your complete health history. Meeting these general
             criteria does not guarantee approval.
@@ -179,9 +179,9 @@ export default function EligibilityPage() {
           {weightRelatedConditions.map((condition, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-[12.5px]"
+              className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-[12.5px]"
             >
-              <CircleCheckBig className="w-[14px] h-[14px] text-[#22c55e] flex-shrink-0 stroke-[2]" />
+              <CircleCheckBig className="w-[14px] h-[14px] text-[#1D4ED8] flex-shrink-0 stroke-[2]" />
               {condition}
             </span>
           ))}
@@ -198,9 +198,9 @@ export default function EligibilityPage() {
           {contraindications.map((item, index) => (
             <div
               key={index}
-              className="flex items-start gap-3 rounded-[14px] px-4 py-3.5 bg-white border border-gray-200"
+              className="flex items-start gap-3 rounded-[14px] px-4 py-6 bg-white border border-gray-200"
             >
-              <XCircle className="w-[17px] h-[17px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+              <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
               <span className="text-gray-700 text-[13px] leading-snug">{item}</span>
             </div>
           ))}
@@ -224,7 +224,7 @@ export default function EligibilityPage() {
               {requiredLabWork.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 rounded-[12px] px-4 py-3 bg-white border border-gray-200"
+                  className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2563eb] flex-shrink-0" />
                   <span className="text-gray-700 text-[13px]">{item}</span>
@@ -242,7 +242,7 @@ export default function EligibilityPage() {
               {ongoingMonitoring.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 rounded-[12px] px-4 py-3 bg-white border border-gray-200"
+                  className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2563eb] flex-shrink-0" />
                   <span className="text-gray-700 text-[13px]">{item}</span>
@@ -258,7 +258,7 @@ export default function EligibilityPage() {
         </p>
 
         {/* Provider Review Disclaimer — pink bg, red shield icon */}
-        <div className="bg-[#fff5f5] border border-[#fecaca] rounded-[16px] p-5 mt-5 flex items-start gap-3">
+        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 flex items-start gap-3">
           <Shield className="w-[18px] h-[18px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
           <p className="text-gray-700 text-xs leading-relaxed">
             <strong className="text-[#ef4444]">Provider Review Disclaimer</strong>
@@ -280,7 +280,7 @@ export default function EligibilityPage() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-[16px] overflow-hidden"
+              className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
