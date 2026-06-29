@@ -34,27 +34,27 @@ const InfoCards = () => {
       <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <h3 className="flex items-center gap-2 font-semibold text-slate-800 mb-4">
           <Shield className="w-4 h-4 text-blue-500" />
-          HIPAA Rights
+          HIPAA Rights 
         </h3>
         <ul className="space-y-2.5">
           <li className="text-sm text-slate-600 flex items-start gap-2">
-            <span className="text-slate-400 mt-1">•</span>
+            <span className="text-[#3B3B3B] mt-1">•</span>
             Right to access your medical records
           </li>
           <li className="text-sm text-slate-600 flex items-start gap-2">
-            <span className="text-slate-400 mt-1">•</span>
+            <span className="text-[#3B3B3B] mt-1">•</span>
             Right to request corrections
           </li>
           <li className="text-sm text-slate-600 flex items-start gap-2">
-            <span className="text-slate-400 mt-1">•</span>
+            <span className="text-[#3B3B3B] mt-1">•</span>
             Right to receive an accounting of disclosures
           </li>
           <li className="text-sm text-slate-600 flex items-start gap-2">
-            <span className="text-slate-400 mt-1">•</span>
+            <span className="text-[#3B3B3B] mt-1">•</span>
             Right to restrict certain uses
           </li>
           <li className="text-sm text-slate-600 flex items-start gap-2">
-            <span className="text-slate-400 mt-1">•</span>
+            <span className="text-[#3B3B3B] mt-1">•</span>
             Right to receive records in electronic format
           </li>
         </ul>
