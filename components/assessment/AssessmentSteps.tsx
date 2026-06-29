@@ -27,11 +27,10 @@ import {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-
 function getMediaUrl(media: string | null | undefined): string | null {
   if (!media || !media.trim()) return null;
   if (media.startsWith("http")) return media;
-  return `https://pre-storage.weightlossmdcherrycreek.com/testing/${media}`;
+  return `https://storage.weightlossmdcherrycreek.com/testing/${media}`;
 }
 
 function getQuestionTitle(question: Question) {
@@ -57,7 +56,10 @@ function sortQuestionsByCreationOrder(questions: Question[]) {
 /** Normalise the inputType field — backend sometimes sends "file upload" with a space */
 function isFileInputType(inputType: string | null | undefined): boolean {
   if (!inputType) return false;
-  return inputType.toLowerCase().replace(/\s+/g, "") === "fileupload" || inputType.toLowerCase() === "file";
+  return (
+    inputType.toLowerCase().replace(/\s+/g, "") === "fileupload" ||
+    inputType.toLowerCase() === "file"
+  );
 }
 
 // ─── File helpers ─────────────────────────────────────────────────────────────
@@ -123,27 +125,44 @@ function FileUploadField({
         <p className="text-gray-500 text-[13px] mb-3">{description}</p>
       )}
       <label
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={(e) => {
           e.preventDefault();
           setIsDragging(false);
           addFiles(Array.from(e.dataTransfer.files));
         }}
-        className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${isDragging
+        className={`flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed py-8 px-4 cursor-pointer transition-all duration-150 ${
+          isDragging
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50/40"
-          }`}
+        }`}
       >
         <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center mb-1">
-          <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4" />
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4"
+            />
           </svg>
         </div>
         <p className="text-gray-700 text-[14px] font-medium">
-          <span className="text-blue-600 font-semibold">Click to upload</span> or drag &amp; drop
+          <span className="text-blue-600 font-semibold">Click to upload</span>{" "}
+          or drag &amp; drop
         </p>
-        <p className="text-gray-400 text-[12px]">PDF, JPG, PNG, DOC up to 10MB each</p>
+        <p className="text-gray-400 text-[12px]">
+          PDF, JPG, PNG, DOC up to 10MB each
+        </p>
         <input
           type="file"
           multiple
@@ -161,22 +180,45 @@ function FileUploadField({
           {files.map((file, idx) => {
             const icon = getFileIcon(file.name);
             return (
-              <li key={idx} className="flex items-center gap-3 bg-white rounded-xl px-3 py-2.5 border border-gray-200">
-                <div className={`flex-shrink-0 w-9 h-9 rounded-lg ${icon.bg} flex items-center justify-center`}>
-                  <span className={`text-[10px] font-bold ${icon.text}`}>{icon.label}</span>
+              <li
+                key={idx}
+                className="flex items-center gap-3 bg-white rounded-xl px-3 py-2.5 border border-gray-200"
+              >
+                <div
+                  className={`flex-shrink-0 w-9 h-9 rounded-lg ${icon.bg} flex items-center justify-center`}
+                >
+                  <span className={`text-[10px] font-bold ${icon.text}`}>
+                    {icon.label}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-800 text-[13px] font-medium truncate">{file.name}</p>
-                  <p className="text-gray-400 text-[11px]">{formatBytes(file.size)}</p>
+                  <p className="text-gray-800 text-[13px] font-medium truncate">
+                    {file.name}
+                  </p>
+                  <p className="text-gray-400 text-[11px]">
+                    {formatBytes(file.size)}
+                  </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => onFileChange(files.filter((_, i) => i !== idx))}
+                  onClick={() =>
+                    onFileChange(files.filter((_, i) => i !== idx))
+                  }
                   className="flex-shrink-0 w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
                   aria-label="Remove"
                 >
-                  <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3.5 h-3.5 text-red-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </li>
@@ -215,26 +257,41 @@ function RenderOption({
       {/* Option button */}
       <button
         onClick={onToggle}
-        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
+        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+          isSelected
             ? "bg-white border-blue-500 shadow-sm"
             : "bg-white border-transparent hover:border-gray-300"
-          }`}
+        }`}
       >
         <span
-          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-            }`}
+          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${
+            isSelected
+              ? "border-blue-600 bg-blue-600"
+              : "border-gray-400 bg-gray-300"
+          }`}
         >
-          {isSelected && (
-            isCheckbox ? (
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          {isSelected &&
+            (isCheckbox ? (
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
               <span className="w-2.5 h-2.5 rounded-full bg-white" />
-            )
-          )}
+            ))}
         </span>
-        <span className="text-gray-800 text-[15px] font-medium">{option.label}</span>
+        <span className="text-gray-800 text-[15px] font-medium">
+          {option.label}
+        </span>
       </button>
 
       {/* SubQuestions — recursive, shown only when selected */}
@@ -287,18 +344,31 @@ function RenderQuestion({
       ? "rounded-xl p-4 mb-3 bg-gray-100"
       : "rounded-2xl p-5 mb-7";
     return (
-      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+      <div
+        className={wrapperClass}
+        style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
+      >
         {mediaUrl && (
           <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-4">
-            <Image src={mediaUrl} alt={title || "Info"} fill unoptimized className="object-cover" />
+            <Image
+              src={mediaUrl}
+              alt={title || "Info"}
+              fill
+              unoptimized
+              className="object-cover"
+            />
           </div>
         )}
         <div className={`px-1 pb-1 ${alignClass}`}>
           {question.heading?.trim() && (
-            <h2 className="text-gray-900 text-[18px] font-bold mb-2 leading-snug">{question.heading}</h2>
+            <h2 className="text-gray-900 text-[18px] font-bold mb-2 leading-snug">
+              {question.heading}
+            </h2>
           )}
           {question.description?.trim() && (
-            <p className="text-gray-700 text-[15px] leading-relaxed">{question.description}</p>
+            <p className="text-gray-700 text-[15px] leading-relaxed">
+              {question.description}
+            </p>
           )}
         </div>
       </div>
@@ -313,27 +383,44 @@ function RenderQuestion({
       : "rounded-2xl p-6 mb-7";
 
     return (
-      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+      <div
+        className={wrapperClass}
+        style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
+      >
         {!isNested && mediaUrl && (
           <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
+            <Image
+              src={mediaUrl}
+              alt={title || "Question"}
+              fill
+              unoptimized
+              className="object-cover"
+            />
           </div>
         )}
         {!isNested && question.heading?.trim() && (
-          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
+          <h2 className="text-gray-900 text-[18px] font-bold mb-2">
+            {question.heading}
+          </h2>
         )}
         {title && (
           <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
             {title}
-            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+            {question.isRequired && (
+              <span className="text-red-500 ml-1">*</span>
+            )}
           </p>
         )}
         {question.description?.trim() && (
-          <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
+          <p className="text-gray-500 text-[14px] mb-5">
+            {question.description}
+          </p>
         )}
         <div className={title || question.description ? "mt-4" : ""}>
           {options.length === 0 ? (
-            <p className="text-gray-400 text-[14px] italic">No options available.</p>
+            <p className="text-gray-400 text-[14px] italic">
+              No options available.
+            </p>
           ) : (
             <div className="flex flex-col gap-3">
               {options.map((option) => (
@@ -368,27 +455,44 @@ function RenderQuestion({
       : "rounded-2xl p-6 mb-7";
 
     return (
-      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+      <div
+        className={wrapperClass}
+        style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
+      >
         {!isNested && mediaUrl && (
           <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
+            <Image
+              src={mediaUrl}
+              alt={title || "Question"}
+              fill
+              unoptimized
+              className="object-cover"
+            />
           </div>
         )}
         {!isNested && question.heading?.trim() && (
-          <h2 className="text-gray-900 text-[18px] font-bold mb-2">{question.heading}</h2>
+          <h2 className="text-gray-900 text-[18px] font-bold mb-2">
+            {question.heading}
+          </h2>
         )}
         {title && (
           <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
             {title}
-            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+            {question.isRequired && (
+              <span className="text-red-500 ml-1">*</span>
+            )}
           </p>
         )}
         {question.description?.trim() && (
-          <p className="text-gray-500 text-[14px] mb-5">{question.description}</p>
+          <p className="text-gray-500 text-[14px] mb-5">
+            {question.description}
+          </p>
         )}
         <div className={title || question.description ? "mt-4" : ""}>
           {options.length === 0 ? (
-            <p className="text-gray-400 text-[14px] italic">No options available.</p>
+            <p className="text-gray-400 text-[14px] italic">
+              No options available.
+            </p>
           ) : (
             <div className="flex flex-col gap-3">
               {options.map((option) => (
@@ -430,20 +534,33 @@ function RenderQuestion({
       : "rounded-2xl p-6 mb-7";
 
     return (
-      <div className={wrapperClass} style={isNested ? {} : { backgroundColor: "#EFEFEF" }}>
+      <div
+        className={wrapperClass}
+        style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
+      >
         {!isNested && mediaUrl && (
           <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
-            <Image src={mediaUrl} alt={title || "Question"} fill unoptimized className="object-cover" />
+            <Image
+              src={mediaUrl}
+              alt={title || "Question"}
+              fill
+              unoptimized
+              className="object-cover"
+            />
           </div>
         )}
         {title && (
           <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
             {title}
-            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+            {question.isRequired && (
+              <span className="text-red-500 ml-1">*</span>
+            )}
           </p>
         )}
         {question.description?.trim() && (
-          <p className="text-gray-500 text-[14px] mb-4">{question.description}</p>
+          <p className="text-gray-500 text-[14px] mb-4">
+            {question.description}
+          </p>
         )}
 
         {options.length === 0 ? (
@@ -463,7 +580,9 @@ function RenderQuestion({
             />
           </div>
         ) : (
-          <div className={`flex flex-col gap-4 ${title || question.description ? "mt-3" : ""}`}>
+          <div
+            className={`flex flex-col gap-4 ${title || question.description ? "mt-3" : ""}`}
+          >
             {options.map((option) => {
               if (isFileInputType(option.inputType)) {
                 return (
@@ -492,12 +611,32 @@ function RenderQuestion({
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
                       {isNumber ? (
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                          />
                         </svg>
                       ) : (
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
                         </svg>
                       )}
                     </div>
@@ -575,7 +714,7 @@ function isMissingRequired(question: Question, answers: AnswerStore): boolean {
     }
     for (const option of options) {
       if (isFileInputType(option.inputType)) {
-        if (!(answers.files[option.id]?.length)) return true;
+        if (!answers.files[option.id]?.length) return true;
       } else {
         if (!(answers.text[option.id] ?? "").trim()) return true;
       }
@@ -586,7 +725,6 @@ function isMissingRequired(question: Question, answers: AnswerStore): boolean {
   return false;
 }
 
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AssessmentSteps() {
@@ -594,13 +732,13 @@ export default function AssessmentSteps() {
   const assessmentId = params?.id as string | undefined;
   const { data: assessmentData, isLoading } = useGetAssessmentByIdQuery(
     assessmentId!,
-    { skip: !assessmentId }
+    { skip: !assessmentId },
   );
   const assessment: AssessmentDetail | undefined = assessmentData;
 
   // Only top-level questions become steps
   const topLevelQuestions: Question[] = sortQuestionsByCreationOrder(
-    (assessment?.questions ?? []).filter((q) => !q.parentOptionId)
+    (assessment?.questions ?? []).filter((q) => !q.parentOptionId),
   );
 
   // ── Step layout ──────────────────────────────────────────────────────────
@@ -642,7 +780,14 @@ export default function AssessmentSteps() {
   const [otpMode, setOtpMode] = useState(false);
   const [otpVerifyMode, setOtpVerifyMode] = useState(false);
   const [otpChannel, setOtpChannel] = useState("");
-  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
+  const [otpDigits, setOtpDigits] = useState<string[]>([
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const router = useRouter();
@@ -654,8 +799,10 @@ export default function AssessmentSteps() {
   const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
   const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
-  const [updateProfile, { isLoading: isSavingAddress }] = useUpdateProfileMutation();
-  const [submitAssessment, { isLoading: isSubmitting }] = useSubmitAssessmentMutation();
+  const [updateProfile, { isLoading: isSavingAddress }] =
+    useUpdateProfileMutation();
+  const [submitAssessment, { isLoading: isSubmitting }] =
+    useSubmitAssessmentMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
 
   const progress = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
@@ -666,28 +813,33 @@ export default function AssessmentSteps() {
       : undefined;
 
   // ── Auth helpers ──────────────────────────────────────────────────────────
-  const activeEmail = otpPending?.email || (registerMode ? registerEmail : loginEmail);
+  const activeEmail =
+    otpPending?.email || (registerMode ? registerEmail : loginEmail);
   const maskedEmail = activeEmail
     ? activeEmail.replace(
-      /^(.{2})(.+?)(@.+)$/,
-      (_: string, a: string, b: string, c: string) =>
-        a + "*".repeat(Math.min(b.length, 6)) + c
-    )
+        /^(.{2})(.+?)(@.+)$/,
+        (_: string, a: string, b: string, c: string) =>
+          a + "*".repeat(Math.min(b.length, 6)) + c,
+      )
     : "ex******@email.com";
 
   // mask phone: show first 3 and last 2 digits, rest as *
   const activePhone = otpPending?.phone || registerPhone;
   const maskedPhone = activePhone
-    ? activePhone.replace(/(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/, (_, start, mid, end) =>
-      start + "*".repeat(mid.length) + end
-    )
+    ? activePhone.replace(
+        /(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/,
+        (_, start, mid, end) => start + "*".repeat(mid.length) + end,
+      )
     : "+***********";
 
   // ── Auth API handlers ─────────────────────────────────────────────────────
   const handleLoginSubmit = async () => {
     try {
-      const res = await login({ email: loginEmail, password: loginPassword }).unwrap();
-      
+      const res = await login({
+        email: loginEmail,
+        password: loginPassword,
+      }).unwrap();
+
       if (res.data?.status === "OTP_REQUIRED") {
         dispatch(
           setOtpPending({
@@ -697,7 +849,7 @@ export default function AssessmentSteps() {
             purpose: "LOGIN",
             email: res.data.email || loginEmail,
             phone: res.data.phone || "",
-          } as any)
+          } as any),
         );
         toast.success(res.message);
         setLoginMode(false);
@@ -708,7 +860,7 @@ export default function AssessmentSteps() {
           setCredentials({
             user: res.data.user,
             accessToken: res.data.accessToken,
-          })
+          }),
         );
         toast.success("Login successful");
         setLoginMode(false);
@@ -716,7 +868,8 @@ export default function AssessmentSteps() {
       }
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Login failed."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Login failed.",
       );
     }
   };
@@ -741,14 +894,15 @@ export default function AssessmentSteps() {
           purpose: "REGISTER",
           email: registerEmail,
           phone: registerPhone,
-        } as any)
+        } as any),
       );
       toast.success(res.message);
       setRegisterMode(false);
       setOtpMode(true);
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Registration failed."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Registration failed.",
       );
     }
   };
@@ -767,14 +921,15 @@ export default function AssessmentSteps() {
           challengeId: res.data.challengeId,
           method: otpChannel as "EMAIL" | "PHONE",
           purpose: otpPending.purpose,
-        } as any)
+        } as any),
       );
       toast.success(res.message);
       setOtpMode(false);
       setOtpVerifyMode(true);
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Failed to send OTP."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Failed to send OTP.",
       );
     }
   };
@@ -786,7 +941,12 @@ export default function AssessmentSteps() {
         challengeId: otpPending.challengeId,
         otp: otpDigits.join(""),
       }).unwrap();
-      dispatch(setCredentials({ user: res.data.user, accessToken: res.data.accessToken }));
+      dispatch(
+        setCredentials({
+          user: res.data.user,
+          accessToken: res.data.accessToken,
+        }),
+      );
       toast.success(res.message);
       if (otpPending?.purpose === "REGISTER") {
         setShippingMode(true);
@@ -798,7 +958,8 @@ export default function AssessmentSteps() {
       }
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Invalid OTP."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Invalid OTP.",
       );
     }
   };
@@ -823,15 +984,19 @@ export default function AssessmentSteps() {
         const res = await sendOtp({
           userId: otpPending.userId,
           purpose: otpPending.purpose,
-          method: (otpPending.method || otpChannel || "EMAIL") as "EMAIL" | "PHONE",
+          method: (otpPending.method || otpChannel || "EMAIL") as
+            | "EMAIL"
+            | "PHONE",
         }).unwrap();
         dispatch(
           setOtpPending({
             userId: otpPending.userId,
             challengeId: res.data.challengeId,
-            method: (otpPending.method || otpChannel || "EMAIL") as "EMAIL" | "PHONE",
+            method: (otpPending.method || otpChannel || "EMAIL") as
+              | "EMAIL"
+              | "PHONE",
             purpose: otpPending.purpose,
-          } as any)
+          } as any),
         );
         toast.success(res.message);
       }
@@ -839,7 +1004,8 @@ export default function AssessmentSteps() {
       otpRefs.current[0]?.focus();
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Failed to resend OTP."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Failed to resend OTP.",
       );
     }
   };
@@ -862,7 +1028,8 @@ export default function AssessmentSteps() {
               qAns.selectedOptionIds = [selectedId];
               finalAnswers.push(qAns);
               const opt = q.options?.find((o) => o.id === selectedId);
-              if (opt?.subQuestions?.length) await collectAnswers(opt.subQuestions);
+              if (opt?.subQuestions?.length)
+                await collectAnswers(opt.subQuestions);
             }
           } else if (q.type === "MULTIPLE_CHOICE") {
             const selectedIds = answers.multi[q.id] || [];
@@ -871,7 +1038,8 @@ export default function AssessmentSteps() {
               finalAnswers.push(qAns);
               for (const optId of selectedIds) {
                 const opt = q.options?.find((o) => o.id === optId);
-                if (opt?.subQuestions?.length) await collectAnswers(opt.subQuestions);
+                if (opt?.subQuestions?.length)
+                  await collectAnswers(opt.subQuestions);
               }
             }
           } else if (q.type === "INPUT") {
@@ -895,12 +1063,19 @@ export default function AssessmentSteps() {
                       const fileId = res.data?.id || res.data?.fileUrl;
                       if (fileId) textParts.push(fileId);
                       else {
-                        console.error("Upload succeeded but no file ID returned", res);
-                        toast.error("File uploaded but could not get file ID. Please try again.");
+                        console.error(
+                          "Upload succeeded but no file ID returned",
+                          res,
+                        );
+                        toast.error(
+                          "File uploaded but could not get file ID. Please try again.",
+                        );
                         throw new Error("No file ID returned from upload");
                       }
                     } catch (e: unknown) {
-                      const errMsg = (e as { data?: { message?: string } })?.data?.message ?? "File upload failed";
+                      const errMsg =
+                        (e as { data?: { message?: string } })?.data?.message ??
+                        "File upload failed";
                       console.error("File upload failed", e);
                       toast.error(errMsg);
                       throw e;
@@ -927,14 +1102,17 @@ export default function AssessmentSteps() {
         answers: finalAnswers,
       }).unwrap();
 
-      const submissionId = res?.data?.id || res?.data?.submissionId || (typeof res?.data === "string" ? res?.data : null);
+      const submissionId =
+        res?.data?.id ||
+        res?.data?.submissionId ||
+        (typeof res?.data === "string" ? res?.data : null);
       if (submissionId) {
         localStorage.setItem("submissionId", submissionId);
       }
-
     } catch (err: unknown) {
       toast.error(
-        (err as { data?: { message?: string } })?.data?.message ?? "Assessment submission failed."
+        (err as { data?: { message?: string } })?.data?.message ??
+          "Assessment submission failed.",
       );
       throw err;
     }
@@ -949,7 +1127,10 @@ export default function AssessmentSteps() {
     if (digit && index < 5) otpRefs.current[index + 1]?.focus();
   };
 
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleOtpKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
@@ -957,9 +1138,14 @@ export default function AssessmentSteps() {
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     const newDigits = ["", "", "", "", "", ""];
-    pasted.split("").forEach((char, i) => { newDigits[i] = char; });
+    pasted.split("").forEach((char, i) => {
+      newDigits[i] = char;
+    });
     setOtpDigits(newDigits);
     const nextEmpty = newDigits.findIndex((d) => d === "");
     otpRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
@@ -989,7 +1175,9 @@ export default function AssessmentSteps() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-600 text-[15px] font-medium">Loading assessment...</p>
+          <p className="text-gray-600 text-[15px] font-medium">
+            Loading assessment...
+          </p>
         </div>
       </div>
     );
@@ -1000,10 +1188,11 @@ export default function AssessmentSteps() {
   return (
     <div className="min-h-screen bg-white flex items-start justify-center px-4 pt-10">
       <div className="w-full max-w-[700px]">
-
         {/* ── Header ── */}
         <div className="flex items-center justify-between mb-3 px-1">
-          <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">{pageTitle}</h1>
+          <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">
+            {pageTitle}
+          </h1>
           <span className="text-sm font-medium text-gray-600">
             Step {currentStep} of {TOTAL_STEPS}
           </span>
@@ -1039,50 +1228,73 @@ export default function AssessmentSteps() {
         {currentStep === AUTH_STEP && (
           <>
             {/* Selection */}
-            {!loginMode && !registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
-                  Almost there! Do you have any account?
-                </p>
-                <p className="text-gray-500 text-[14px] mb-5">
-                  Login or create an account to submit the assessment for approval
-                </p>
-                <div className="flex flex-col gap-3">
-                  {[
-                    "Yes, I already have an account",
-                    "No, I don't have an account. Create one.",
-                  ].map((option) => {
-                    const isSelected = authChoice === option;
-                    return (
-                      <button
-                        key={option}
-                        onClick={() => setAuthChoice(option)}
-                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
-                            ? "bg-white border-blue-500 shadow-sm"
-                            : "bg-white border-transparent hover:border-gray-300"
+            {!loginMode &&
+              !registerMode &&
+              !otpMode &&
+              !otpVerifyMode &&
+              !shippingMode && (
+                <div
+                  className="rounded-2xl p-6 mb-7"
+                  style={{ backgroundColor: "#EFEFEF" }}
+                >
+                  <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+                    Almost there! Do you have any account?
+                  </p>
+                  <p className="text-gray-500 text-[14px] mb-5">
+                    Login or create an account to submit the assessment for
+                    approval
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    {[
+                      "Yes, I already have an account",
+                      "No, I don't have an account. Create one.",
+                    ].map((option) => {
+                      const isSelected = authChoice === option;
+                      return (
+                        <button
+                          key={option}
+                          onClick={() => setAuthChoice(option)}
+                          className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+                            isSelected
+                              ? "bg-white border-blue-500 shadow-sm"
+                              : "bg-white border-transparent hover:border-gray-300"
                           }`}
-                      >
-                        <span
-                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                            }`}
                         >
-                          {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
-                        </span>
-                        <span className="text-gray-800 text-[15px] font-medium">{option}</span>
-                      </button>
-                    );
-                  })}
+                          <span
+                            className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
+                              isSelected
+                                ? "border-blue-600 bg-blue-600"
+                                : "border-gray-400 bg-gray-300"
+                            }`}
+                          >
+                            {isSelected && (
+                              <span className="w-2.5 h-2.5 rounded-full bg-white" />
+                            )}
+                          </span>
+                          <span className="text-gray-800 text-[15px] font-medium">
+                            {option}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Login Form */}
             {loginMode && !otpMode && !otpVerifyMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">Login account</h2>
+              <div
+                className="rounded-2xl p-6 mb-7"
+                style={{ backgroundColor: "#EFEFEF" }}
+              >
+                <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
+                  Login account
+                </h2>
                 <div className="flex flex-col gap-5">
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Email:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Email:
+                    </label>
                     <input
                       type="email"
                       placeholder="example@email.com"
@@ -1092,7 +1304,9 @@ export default function AssessmentSteps() {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Password:
+                    </label>
                     <div className="relative">
                       <input
                         type={showLoginPassword ? "text" : "password"}
@@ -1108,13 +1322,39 @@ export default function AssessmentSteps() {
                         tabIndex={-1}
                       >
                         {showLoginPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                            />
                           </svg>
                         ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
                           </svg>
                         )}
                       </button>
@@ -1126,13 +1366,19 @@ export default function AssessmentSteps() {
 
             {/* Register Form */}
             {registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">Register a new account</h2>
+              <div
+                className="rounded-2xl p-6 mb-7"
+                style={{ backgroundColor: "#EFEFEF" }}
+              >
+                <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
+                  Register a new account
+                </h2>
                 <div className="flex flex-col gap-5">
-
                   {/* Email */}
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Email:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Email:
+                    </label>
                     <input
                       type="email"
                       placeholder="example@email.com"
@@ -1144,7 +1390,9 @@ export default function AssessmentSteps() {
 
                   {/* Phone number with country code */}
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Phone number:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Phone number:
+                    </label>
                     <PhoneInput
                       defaultCountry="us"
                       value={registerPhone}
@@ -1173,7 +1421,9 @@ export default function AssessmentSteps() {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Password:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Password:
+                    </label>
                     <div className="relative">
                       <input
                         type={showRegisterPassword ? "text" : "password"}
@@ -1189,13 +1439,39 @@ export default function AssessmentSteps() {
                         tabIndex={-1}
                       >
                         {showRegisterPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                            />
                           </svg>
                         ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
                           </svg>
                         )}
                       </button>
@@ -1204,7 +1480,9 @@ export default function AssessmentSteps() {
 
                   {/* Confirm Password */}
                   <div>
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">Confirm Password:</label>
+                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                      Confirm Password:
+                    </label>
                     <div className="relative">
                       <input
                         type={showRegisterConfirm ? "text" : "password"}
@@ -1220,63 +1498,116 @@ export default function AssessmentSteps() {
                         tabIndex={-1}
                       >
                         {showRegisterConfirm ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                            />
                           </svg>
                         ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
                           </svg>
                         )}
                       </button>
                     </div>
                   </div>
-
                 </div>
               </div>
             )}
 
             {/* OTP Channel Picker */}
             {otpMode && !otpVerifyMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">Receive OTP Code</h2>
-                <p className="text-gray-500 text-[14px] mb-5">Choose the option to receive the code</p>
+              <div
+                className="rounded-2xl p-6 mb-7"
+                style={{ backgroundColor: "#EFEFEF" }}
+              >
+                <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
+                  Receive OTP Code
+                </h2>
+                <p className="text-gray-500 text-[14px] mb-5">
+                  Choose the option to receive the code
+                </p>
                 <div className="flex flex-col gap-3">
                   {[
-                    { key: "EMAIL", label: "Email: " + maskedEmail, visible: true },
-                    { key: "PHONE", label: "Phone: " + maskedPhone, visible: !!activePhone },
+                    {
+                      key: "EMAIL",
+                      label: "Email: " + maskedEmail,
+                      visible: true,
+                    },
+                    {
+                      key: "PHONE",
+                      label: "Phone: " + maskedPhone,
+                      visible: !!activePhone,
+                    },
                   ]
-                  .filter((opt) => opt.visible)
-                  .map(({ key, label }) => {
-                    const isSelected = otpChannel === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setOtpChannel(key)}
-                        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
-                            ? "bg-white border-blue-500 shadow-sm"
-                            : "bg-white border-transparent hover:border-gray-300"
+                    .filter((opt) => opt.visible)
+                    .map(({ key, label }) => {
+                      const isSelected = otpChannel === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setOtpChannel(key)}
+                          className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
+                            isSelected
+                              ? "bg-white border-blue-500 shadow-sm"
+                              : "bg-white border-transparent hover:border-gray-300"
                           }`}
-                      >
-                        <span
-                          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-400 bg-gray-300"
-                            }`}
                         >
-                          {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
-                        </span>
-                        <span className="text-gray-800 text-[15px] font-medium">{label}</span>
-                      </button>
-                    );
-                  })}
+                          <span
+                            className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors duration-150 ${
+                              isSelected
+                                ? "border-blue-600 bg-blue-600"
+                                : "border-gray-400 bg-gray-300"
+                            }`}
+                          >
+                            {isSelected && (
+                              <span className="w-2.5 h-2.5 rounded-full bg-white" />
+                            )}
+                          </span>
+                          <span className="text-gray-800 text-[15px] font-medium">
+                            {label}
+                          </span>
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
             )}
 
             {/* OTP Verify */}
             {otpVerifyMode && !shippingMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
-                <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">Verify Authentication</h2>
+              <div
+                className="rounded-2xl p-6 mb-7"
+                style={{ backgroundColor: "#EFEFEF" }}
+              >
+                <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">
+                  Verify Authentication
+                </h2>
                 <p className="text-gray-700 text-[15px] leading-relaxed mb-6">
                   Enter the 6 digit authentication code we&apos;ve sent to{" "}
                   <span className="font-medium">{maskedEmail}</span>
@@ -1285,7 +1616,9 @@ export default function AssessmentSteps() {
                   {otpDigits.map((digit, index) => (
                     <input
                       key={index}
-                      ref={(el) => { otpRefs.current[index] = el; }}
+                      ref={(el) => {
+                        otpRefs.current[index] = el;
+                      }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
@@ -1313,7 +1646,10 @@ export default function AssessmentSteps() {
 
             {/* Shipping Address */}
             {shippingMode && (
-              <div className="rounded-2xl p-6 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+              <div
+                className="rounded-2xl p-6 mb-7"
+                style={{ backgroundColor: "#EFEFEF" }}
+              >
                 <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
                   Almost there! Just a few more details.
                 </h2>
@@ -1321,25 +1657,48 @@ export default function AssessmentSteps() {
                   Your account has been created and you are logged in.
                 </p>
                 <div className="rounded-xl bg-white p-4 flex flex-col gap-4">
-                  <p className="text-gray-800 text-[15px] font-semibold">Shipping address</p>
+                  <p className="text-gray-800 text-[15px] font-semibold">
+                    Shipping address
+                  </p>
                   <div>
-                    <label className="block text-gray-700 text-[14px] mb-1">Address line 1</label>
+                    <label className="block text-gray-700 text-[14px] mb-1">
+                      Address line 1
+                    </label>
                     <input
                       type="text"
                       placeholder="4140 Parker Rd. Allentown"
                       value={shippingAddress.address}
-                      onChange={(e) => setShippingAddress((p) => ({ ...p, address: e.target.value }))}
+                      onChange={(e) =>
+                        setShippingAddress((p) => ({
+                          ...p,
+                          address: e.target.value,
+                        }))
+                      }
                       className="w-full px-4 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[15px]"
                     />
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { label: "City:", placeholder: "Allentown", key: "city" as const },
-                      { label: "State:", placeholder: "NM", key: "state" as const },
-                      { label: "Zip:", placeholder: "31134", key: "zip" as const },
+                      {
+                        label: "City:",
+                        placeholder: "Allentown",
+                        key: "city" as const,
+                      },
+                      {
+                        label: "State:",
+                        placeholder: "NM",
+                        key: "state" as const,
+                      },
+                      {
+                        label: "Zip:",
+                        placeholder: "31134",
+                        key: "zip" as const,
+                      },
                     ].map((field) => (
                       <div key={field.key}>
-                        <label className="block text-gray-700 text-[14px] mb-1">{field.label}</label>
+                        <label className="block text-gray-700 text-[14px] mb-1">
+                          {field.label}
+                        </label>
                         <input
                           type="text"
                           inputMode={field.key === "zip" ? "numeric" : "text"}
@@ -1350,7 +1709,10 @@ export default function AssessmentSteps() {
                             if (field.key === "zip") {
                               val = val.replace(/\D/g, "");
                             }
-                            setShippingAddress((p) => ({ ...p, [field.key]: val }));
+                            setShippingAddress((p) => ({
+                              ...p,
+                              [field.key]: val,
+                            }));
                           }}
                           className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
                         />
@@ -1365,7 +1727,10 @@ export default function AssessmentSteps() {
 
         {/* ── COMPLETION STEP ── */}
         {currentStep === COMPLETION_STEP && (
-          <div className="rounded-2xl p-5 mb-7" style={{ backgroundColor: "#EFEFEF" }}>
+          <div
+            className="rounded-2xl p-5 mb-7"
+            style={{ backgroundColor: "#EFEFEF" }}
+          >
             <div className="relative w-full rounded-xl overflow-hidden mb-6">
               <Image
                 src="/last-step-16.png"
@@ -1376,7 +1741,9 @@ export default function AssessmentSteps() {
               />
             </div>
             <div className="px-1 pb-2 text-center">
-              <h2 className="text-gray-900 text-[20px] font-bold mb-3">You are all set!</h2>
+              <h2 className="text-gray-900 text-[20px] font-bold mb-3">
+                You are all set!
+              </h2>
               <p className="text-gray-700 text-[16px] leading-relaxed">
                 Your assessment is done and ready to submit for review.
                 <br />
@@ -1388,14 +1755,15 @@ export default function AssessmentSteps() {
 
         {/* ── Footer buttons ── */}
         <div className="flex items-center justify-between px-1 pb-10">
-
           {/* ── COMPLETION STEP buttons ── */}
           {currentStep === COMPLETION_STEP && (
             <>
               <button
                 onClick={() => {
                   setCurrentStep(AUTH_STEP);
-                  if (authChoice === "No, I don't have an account. Create one.") {
+                  if (
+                    authChoice === "No, I don't have an account. Create one."
+                  ) {
                     setShippingMode(true);
                   } else {
                     setOtpVerifyMode(true);
@@ -1406,7 +1774,11 @@ export default function AssessmentSteps() {
                 Previous
               </button>
               <button
-                onClick={() => router.push(`/products${assessment?.category?.id ? `?categoryId=${assessment.category.id}` : ""}`)}
+                onClick={() =>
+                  router.push(
+                    `/products${assessment?.category?.id ? `?categoryId=${assessment.category.id}` : ""}`,
+                  )
+                }
                 className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
               >
                 Browse products
@@ -1458,10 +1830,14 @@ export default function AssessmentSteps() {
                     try {
                       // Build payload with only non-empty fields (all optional)
                       const payload: Record<string, string> = {};
-                      if (shippingAddress.address.trim()) payload.address = shippingAddress.address.trim();
-                      if (shippingAddress.city.trim()) payload.city = shippingAddress.city.trim();
-                      if (shippingAddress.state.trim()) payload.state = shippingAddress.state.trim();
-                      if (shippingAddress.zip.trim()) payload.zipCode = shippingAddress.zip.trim();
+                      if (shippingAddress.address.trim())
+                        payload.address = shippingAddress.address.trim();
+                      if (shippingAddress.city.trim())
+                        payload.city = shippingAddress.city.trim();
+                      if (shippingAddress.state.trim())
+                        payload.state = shippingAddress.state.trim();
+                      if (shippingAddress.zip.trim())
+                        payload.zipCode = shippingAddress.zip.trim();
 
                       if (Object.keys(payload).length > 0) {
                         await updateProfile(payload).unwrap();
@@ -1473,31 +1849,44 @@ export default function AssessmentSteps() {
                       setShippingMode(false);
                     } catch (err: unknown) {
                       toast.error(
-                        (err as { data?: { message?: string } })?.data?.message ??
-                        "Failed to save address or submit assessment."
+                        (err as { data?: { message?: string } })?.data
+                          ?.message ??
+                          "Failed to save address or submit assessment.",
                       );
                     }
                   }}
                   disabled={isSavingAddress || isSubmitting}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${isSavingAddress || isSubmitting
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    isSavingAddress || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                  }`}
                 >
-                  {isSavingAddress || isSubmitting ? "Saving…" : "Save & Continue"}
+                  {isSavingAddress || isSubmitting
+                    ? "Saving…"
+                    : "Save & Continue"}
                 </button>
               )}
 
               {otpVerifyMode && !shippingMode && (
                 <button
                   onClick={handleVerifyOtp}
-                  disabled={otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${otpDigits.some((d) => d === "") || isVerifyingOtp || isSubmitting
+                  disabled={
+                    otpDigits.some((d) => d === "") ||
+                    isVerifyingOtp ||
+                    isSubmitting
+                  }
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    otpDigits.some((d) => d === "") ||
+                    isVerifyingOtp ||
+                    isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                  }`}
                 >
-                  {isVerifyingOtp || isSubmitting ? "Verifying…" : "Verify Authentication"}
+                  {isVerifyingOtp || isSubmitting
+                    ? "Verifying…"
+                    : "Verify Authentication"}
                 </button>
               )}
 
@@ -1505,10 +1894,11 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleSendOtp}
                   disabled={!otpChannel || isSendingOtp}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!otpChannel || isSendingOtp
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    !otpChannel || isSendingOtp
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                  }`}
                 >
                   {isSendingOtp ? "Sending…" : "Send code"}
                 </button>
@@ -1517,11 +1907,18 @@ export default function AssessmentSteps() {
               {loginMode && !otpMode && !otpVerifyMode && (
                 <button
                   onClick={handleLoginSubmit}
-                  disabled={!loginEmail.trim() || !loginPassword.trim() || isLoginLoading}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!loginEmail.trim() || !loginPassword.trim() || isLoginLoading
+                  disabled={
+                    !loginEmail.trim() ||
+                    !loginPassword.trim() ||
+                    isLoginLoading
+                  }
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    !loginEmail.trim() ||
+                    !loginPassword.trim() ||
+                    isLoginLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                  }`}
                 >
                   {isLoginLoading ? "Signing in…" : "Login account"}
                 </button>
@@ -1537,44 +1934,53 @@ export default function AssessmentSteps() {
                     !registerConfirm.trim() ||
                     isRegisterLoading
                   }
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${!registerEmail.trim() || !registerPhone.trim() ||
-                      !registerPassword.trim() || !registerConfirm.trim() || isRegisterLoading
+                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                    !registerEmail.trim() ||
+                    !registerPhone.trim() ||
+                    !registerPassword.trim() ||
+                    !registerConfirm.trim() ||
+                    isRegisterLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                  }`}
                 >
                   {isRegisterLoading ? "Creating account…" : "Create account"}
                 </button>
               )}
 
-              {!loginMode && !registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
-                <>
-                  {authChoice === "Yes, I already have an account" && (
-                    <button
-                      onClick={() => setLoginMode(true)}
-                      className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
-                    >
-                      Login account
-                    </button>
-                  )}
-                  {authChoice === "No, I don't have an account. Create one." && (
-                    <button
-                      onClick={() => setRegisterMode(true)}
-                      className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
-                    >
-                      Create account
-                    </button>
-                  )}
-                  {!authChoice && (
-                    <button
-                      disabled
-                      className="px-7 py-2.5 rounded-full bg-blue-300 text-white text-sm font-semibold tracking-wide cursor-not-allowed"
-                    >
-                      Next
-                    </button>
-                  )}
-                </>
-              )}
+              {!loginMode &&
+                !registerMode &&
+                !otpMode &&
+                !otpVerifyMode &&
+                !shippingMode && (
+                  <>
+                    {authChoice === "Yes, I already have an account" && (
+                      <button
+                        onClick={() => setLoginMode(true)}
+                        className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
+                      >
+                        Login account
+                      </button>
+                    )}
+                    {authChoice ===
+                      "No, I don't have an account. Create one." && (
+                      <button
+                        onClick={() => setRegisterMode(true)}
+                        className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
+                      >
+                        Create account
+                      </button>
+                    )}
+                    {!authChoice && (
+                      <button
+                        disabled
+                        className="px-7 py-2.5 rounded-full bg-blue-300 text-white text-sm font-semibold tracking-wide cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    )}
+                  </>
+                )}
             </>
           )}
 
@@ -1590,10 +1996,11 @@ export default function AssessmentSteps() {
               <button
                 onClick={handleNext}
                 disabled={isNextDisabled()}
-                className={`px-8 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${isNextDisabled()
+                className={`px-8 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  isNextDisabled()
                     ? "bg-blue-300 text-white cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700 text-white"
-                  }`}
+                }`}
               >
                 Next
               </button>
