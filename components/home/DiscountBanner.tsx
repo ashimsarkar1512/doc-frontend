@@ -1,0 +1,164 @@
+'use client'
+
+import { X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useGetDiscountsQuery } from '@/Redux/features/discounts/discountsApi'
+import type { Discount } from '@/types/discountTypes'
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getTimeLeft(expiresAt: string) {
+  const diff = new Date(expiresAt).getTime() - Date.now()
+  if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 }
+  const s = Math.floor(diff / 1000)
+  return { hours: Math.floor(s / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 }
+}
+
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+const DiscountBanner = () => {
+  const { data, isLoading } = useGetDiscountsQuery()
+  const bannerRef = useRef<HTMLDivElement>(null)
+
+  const [dismissed, setDismissed] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 })
+
+const DUMMY_MODE = true 
+
+const dummyDiscount: Discount = {
+  id: 'test-1',
+  code: 'TESTCODE20',
+  value: 20,
+  type: 'PERCENTAGE',
+  isActive: true,
+  createdAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 5).toISOString(), // এখন থেকে ৫ ঘণ্টা পর expire
+updatedAt : new Date().toISOString(),
+
+}
+
+
+
+
+  // Pick the latest active PERCENTAGE coupon
+  const discount: Discount | null = DUMMY_MODE ? dummyDiscount : (() => {
+    const list = (data?.data ?? []).filter(
+      (d) => d.type === 'PERCENTAGE' && d.isActive
+    )
+    if (!list.length) return null
+    return list.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )[0]
+  })()
+
+  // Sync countdown whenever discount changes
+  useEffect(() => {
+    if (!discount) return
+    setTimeLeft(getTimeLeft(discount.expiresAt))
+    const id = setInterval(() => {
+      const tl = getTimeLeft(discount.expiresAt)
+      setTimeLeft(tl)
+      if (tl.hours === 0 && tl.minutes === 0 && tl.seconds === 0) {
+        clearInterval(id)
+        setDismissed(true)
+      }
+    }, 1000)
+    return () => clearInterval(id)
+  }, [discount])
+
+  // Push --banner-height CSS variable onto <html> so Navbar can offset itself
+  useEffect(() => {
+    const el = bannerRef.current
+    const root = document.documentElement
+
+    if (!el || isLoading || !discount || dismissed) {
+      root.style.setProperty('--banner-height', '0px')
+      return
+    }
+
+    const update = () => {
+      root.style.setProperty('--banner-height', `${el.offsetHeight}px`)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      root.style.setProperty('--banner-height', '0px')
+    }
+  }, [discount, dismissed, isLoading])
+
+  // Don't render during loading, no discount, or dismissed
+  if (isLoading || !discount || dismissed) return null
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(discount.code).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div
+      ref={bannerRef}
+      role="banner"
+      aria-label="Promotional discount banner"
+  className="relative z-[9999] flex min-h-[44px] flex-wrap items-center justify-center gap-2.5  px-4 py-2.5 pr-10 text-sm text-black"
+    >
+      {/* Left decorative line */}
+      <span
+        aria-hidden
+        className="block h-0.5 w-12 shrink-0 rounded-full bg-[linear-gradient(90deg,transparent,#e53e3e)]"
+      />
+
+      {/* Message */}
+      <span className="whitespace-nowrap font-normal">
+        Get UP-TO{' '}
+        <strong className="text-white">{discount.value}% Discount</strong>. Use coupon code{' '}
+      </span>
+
+      {/* Coupon code — click to copy */}
+      <button
+        onClick={handleCopy}
+        title={copied ? 'Copied!' : 'Click to copy'}
+        aria-label={`Copy coupon code ${discount.code}`}
+        className="inline-flex cursor-pointer border-none bg-transparent p-0"
+      >
+        <span className="text-sm font-bold tracking-[0.04em] text-[#e53e3e] underline underline-offset-[3px]">
+          {copied ? 'Copied!' : discount.code}
+        </span>
+      </button>
+
+      {/* Countdown timer */}
+      <span
+        aria-live="off"
+        className="inline-flex min-w-[92px] shrink-0 items-center justify-center rounded-md bg-[#2563EB] px-2.5 py-[3px] text-[0.8rem] font-semibold tracking-wide [font-variant-numeric:tabular-nums]"
+      >
+        {pad(timeLeft.hours)}h {pad(timeLeft.minutes)}m {pad(timeLeft.seconds)}s
+      </span>
+
+      {/* Right decorative line */}
+      <span
+        aria-hidden
+        className="block h-0.5 w-12 shrink-0 rounded-full bg-[linear-gradient(90deg,#e53e3e,transparent)]"
+      />
+
+      {/* Dismiss */}
+      <button
+        onClick={() => setDismissed(true)}
+        aria-label="Close discount banner"
+        className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer rounded-full border-none bg-transparent p-1 text-white opacity-70 transition-opacity duration-150 hover:opacity-100"
+      >
+        <X size={16} />
+      </button>
+    </div>
+  )
+}
+
+export default DiscountBanner
+

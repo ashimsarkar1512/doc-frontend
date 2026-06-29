@@ -37,10 +37,10 @@ const Expert: React.FC = () => {
   }, [emblaApi]);
 
   return (
-    <section className="w-full bg-[#f0f6ff] py-20  relative font-sans overflow-hidden">
+    <section className="w-full  py-20  relative font-sans overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col items-center">
         {/* Title */}
-        <h2 className="text-3xl md:text-[40px] font-normal text-gray-900 mb-16 tracking-tight text-center">
+        <h2 className="text-3xl md:text-[40px] font-bold text-gray-900 mb-16 tracking-tight text-center">
           {providersTitle}
         </h2>
 

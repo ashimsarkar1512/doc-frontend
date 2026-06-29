@@ -90,11 +90,17 @@ const Navbar = ({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      // Use the actual banner height as the scroll threshold so the navbar
+      // switches exactly when the banner leaves the viewport — no delay.
+      const bannerH = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--banner-height') || '0'
+      );
+      const threshold = bannerH > 0 ? bannerH : 20;
+      setIsScrolled(window.scrollY > threshold);
       if (embedded) setIsDetached(window.scrollY > 72);
     };
     handleScroll();
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [embedded]);
 
@@ -166,7 +172,8 @@ const Navbar = ({
 
   return (
     <nav
-      className={`${navPosition} top-0 left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
+      style={{ top: isScrolled ? '0px' : 'var(--banner-height, 0px)' }}
+      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
         isScrolled
           ? isDark
             ? `bg-white/90 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-black/10`

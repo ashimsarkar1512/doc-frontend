@@ -80,7 +80,7 @@ const AboutUs = () => {
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center font-sans">
       {/* Top Badge */}
-      <span className="bg-gray-100 text-gray-600 text-xs font-medium px-4 py-1.5 rounded-full mb-8 tracking-wide">
+      <span className="bg-gray-100 text-gray-600 text-lg  font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
         {subtitle}
       </span>
 
@@ -88,8 +88,8 @@ const AboutUs = () => {
       {isLoading ? (
         <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-12" />
       ) : title ? (
-        <h2 className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12">
-          {title}
+        <h2 className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12">
+          {title} <span className="text-[#AEAEAE]">{description}</span>
         </h2>
       ) : (
         <h2 className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12">
@@ -103,11 +103,11 @@ const AboutUs = () => {
       )}
 
       {/* Description */}
-      {description && (
+      {/* {description && (
         <p className="text-center text-gray-500 text-base max-w-2xl mb-10 leading-relaxed">
           {description}
         </p>
-      )}
+      )} */}
 
       {/* Bullets */}
       {bullets.length > 0 && (
@@ -161,7 +161,9 @@ const AboutUs = () => {
             <Link
               href={content?.aboutButtonLink || "#"}
               target={content?.aboutButtonNewTab ? "_blank" : "_self"}
-              rel={content?.aboutButtonNewTab ? "noopener noreferrer" : undefined}
+              rel={
+                content?.aboutButtonNewTab ? "noopener noreferrer" : undefined
+              }
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-6 py-2.5 rounded-full transition-colors duration-200 shadow-md shadow-blue-600/10 active:scale-98"
             >
               {content?.aboutButtonText || "Learn More"}
