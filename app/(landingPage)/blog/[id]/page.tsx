@@ -64,6 +64,7 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
             src={imageUrl} 
             alt={blog.title || "Blog Image"} 
             fill 
+            unoptimized
             className="object-cover"
           />
         </div>
