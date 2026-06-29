@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   CalendarDays,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneInput } from "react-international-phone";
@@ -63,9 +64,25 @@ const inputErr = "border-red-400 focus:border-red-500 bg-red-50";
 export default function CheckoutPage() {
   const router = useRouter();
 
+  // ── Coupon state ──
+  const [couponInput, setCouponInput] = useState("");
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
   // ── API queries ──
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
-  const { data: summaryData } = useGetCartSummaryQuery();
+  const { data: summaryData, isFetching: summaryFetching, isError: summaryError } = useGetCartSummaryQuery(
+    couponApplied ? couponInput.trim() : undefined
+  );
+
+  useEffect(() => {
+    if (summaryError && couponApplied) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCouponError("Invalid or expired coupon code.");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCouponApplied(false);
+    }
+  }, [summaryError, couponApplied]);
 
   // ── API mutations ──
   const [removeFromCart] = useRemoveFromCartMutation();
@@ -80,11 +97,6 @@ export default function CheckoutPage() {
   // ── Local loading states for cart ──
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-
-  // ── Coupon state ──
-  const [couponInput, setCouponInput] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
-  const [couponError, setCouponError] = useState("");
 
   // ── Checkout Form State ──
   const [shippingInfo, setShippingInfo] = useState({
@@ -251,8 +263,8 @@ export default function CheckoutPage() {
     try {
       await removeFromCart(itemId).unwrap();
       toast.success("Item removed from cart");
-    } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to remove item");
+    } catch (e: unknown) {
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to remove item");
       console.error("Remove from cart failed:", e);
     } finally {
       setRemovingId(null);
@@ -270,8 +282,8 @@ export default function CheckoutPage() {
     try {
       await updateCartItem({ id: itemId, quantity: newQty }).unwrap();
       toast.success("Cart updated");
-    } catch (e: any) {
-      toast.error(e?.data?.message || "Failed to update cart");
+    } catch (e: unknown) {
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to update cart");
       console.error("Update cart failed:", e);
     } finally {
       setUpdatingId(null);
@@ -365,6 +377,13 @@ export default function CheckoutPage() {
         <div className="flex flex-col lg:flex-row gap-10 items-start">
           {/* LEFT: Checkout Form */}
           <div className="flex-1 min-w-0 w-full">
+            <button
+              onClick={() => router.back()}
+              className="relative z-50 flex items-center gap-1.5 text-gray-500 hover:text-blue-600 transition-colors text-[14px] font-medium mb-6 group w-fit cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              Back
+            </button>
             <h1 className="text-[26px] font-bold text-gray-900 mb-1">Checkout</h1>
             <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-700 mb-8">
               Pay to checkout and submit for approval
@@ -398,11 +417,10 @@ export default function CheckoutPage() {
                   </label>
                   {/* International phone input with built-in country selector + format validation */}
                   <div
-                    className={`flex items-center w-full bg-[#F3F4F6] rounded-lg border transition-colors ${
-                      errors.contactNumber && touched.contactNumber
+                    className={`flex items-center w-full bg-[#F3F4F6] rounded-lg border transition-colors ${errors.contactNumber && touched.contactNumber
                         ? "border-red-400 bg-red-50"
                         : "border-transparent focus-within:border-blue-500 focus-within:bg-white"
-                    }`}
+                      }`}
                   >
                     <PhoneInput
                       defaultCountry="us"
@@ -529,17 +547,8 @@ export default function CheckoutPage() {
                   <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
                     Payment Method
                   </label>
-                  <div className="relative">
-                    <select
-                      value={paymentInfo.method}
-                      onChange={(e) =>
-                        setPaymentInfo({ ...paymentInfo, method: e.target.value })
-                      }
-                      className="w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 appearance-none outline-none focus:border-blue-500 focus:bg-white border border-transparent transition-colors"
-                    >
-                      <option value="CLOVER">Default card</option>
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <div className="w-full bg-[#F3F4F6] text-gray-700 font-medium text-[14px] rounded-lg px-4 py-3 border border-transparent">
+                    Clover
                   </div>
                 </div>
 
@@ -554,9 +563,8 @@ export default function CheckoutPage() {
                     onChange={(e) => handleCardHolderChange(e.target.value)}
                     onBlur={() => handleBlurValidate("cardHolderName")}
                     placeholder="e.g. John Doe"
-                    className={`${inputBase} ${
-                      errors.cardHolderName && touched.cardHolderName ? inputErr : inputOk
-                    }`}
+                    className={`${inputBase} ${errors.cardHolderName && touched.cardHolderName ? inputErr : inputOk
+                      }`}
                   />
                   <FieldError
                     message={touched.cardHolderName ? errors.cardHolderName : undefined}
@@ -575,139 +583,135 @@ export default function CheckoutPage() {
                     onChange={(e) => handleCardNumberChange(e.target.value)}
                     onBlur={() => handleBlurValidate("cardNumber")}
                     placeholder="e.g. 4111 1111 1111 1111"
-                    className={`${inputBase} ${
-                      errors.cardNumber && touched.cardNumber ? inputErr : inputOk
-                    }`}
+                    className={`${inputBase} ${errors.cardNumber && touched.cardNumber ? inputErr : inputOk
+                      }`}
                   />
                   <FieldError message={touched.cardNumber ? errors.cardNumber : undefined} />
                 </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-  {/* Expiry Date */}
-  <div className="flex-1 relative" ref={expiryPickerRef}>
-    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
-      Expired Date
-    </label>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Expiry Date */}
+                  <div className="flex-1 relative" ref={expiryPickerRef}>
+                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                      Expired Date
+                    </label>
 
-    <div
-      className={`flex items-center h-[42px] ${inputBase} ${
-        errors.expiredDate && touched.expiredDate ? inputErr : inputOk
-      } px-0 py-0`}
-    >
-      <input
-        type="text"
-        inputMode="numeric"
-        autoComplete="cc-exp"
-        value={paymentInfo.expiredDate}
-        onChange={(e) => handleExpiryChange(e.target.value)}
-        onBlur={() => handleBlurValidate("expiredDate")}
-        placeholder="MM/YY"
-        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0"
-      />
+                    <div
+                      className={`flex items-center h-[42px] ${inputBase} ${errors.expiredDate && touched.expiredDate ? inputErr : inputOk
+                        } px-0 py-0`}
+                    >
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
+                        value={paymentInfo.expiredDate}
+                        onChange={(e) => handleExpiryChange(e.target.value)}
+                        onBlur={() => handleBlurValidate("expiredDate")}
+                        placeholder="MM/YY"
+                        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0"
+                      />
 
-      <button
-        type="button"
-        onClick={() => setExpiryPickerOpen((v) => !v)}
-        aria-label="Open expiry date picker"
-        className="h-full px-3 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors shrink-0"
-      >
-        <CalendarDays className="w-4 h-4" />
-      </button>
-    </div>
+                      <button
+                        type="button"
+                        onClick={() => setExpiryPickerOpen((v) => !v)}
+                        aria-label="Open expiry date picker"
+                        className="h-full px-3 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors shrink-0"
+                      >
+                        <CalendarDays className="w-4 h-4" />
+                      </button>
+                    </div>
 
-    <FieldError
-      message={touched.expiredDate ? errors.expiredDate : undefined}
-    />
+                    <FieldError
+                      message={touched.expiredDate ? errors.expiredDate : undefined}
+                    />
 
-    {expiryPickerOpen && (
-      <div className="absolute z-20 top-full left-0 mt-2 w-full sm:w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-3">
-        <p className="text-[12px] font-semibold text-gray-500 mb-2 px-1">
-          Select expiry month &amp; year
-        </p>
+                    {expiryPickerOpen && (
+                      <div className="absolute z-20 top-full left-0 mt-2 w-full sm:w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-3">
+                        <p className="text-[12px] font-semibold text-gray-500 mb-2 px-1">
+                          Select expiry month &amp; year
+                        </p>
 
-        <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto mb-2">
-          {EXPIRY_MONTH_OPTIONS.map(
-            (m: { value: number; label: string }) => {
-              const currentYear =
-                parseInt(paymentInfo.expiredDate.split("/")[1], 10) ||
-                yearOptions[0];
+                        <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto mb-2">
+                          {EXPIRY_MONTH_OPTIONS.map(
+                            (m: { value: number; label: string }) => {
+                              const currentYear =
+                                parseInt(paymentInfo.expiredDate.split("/")[1], 10) ||
+                                yearOptions[0];
 
-              const fullYear =
-                currentYear < 100 ? 2000 + currentYear : currentYear;
+                              const fullYear =
+                                currentYear < 100 ? 2000 + currentYear : currentYear;
 
-              const isPast =
-                new Date(fullYear, m.value, 0) < new Date();
+                              const isPast =
+                                new Date(fullYear, m.value, 0) < new Date();
 
-              return (
-                <button
-                  key={m.value}
-                  type="button"
-                  disabled={isPast}
-                  onClick={() =>
-                    applyExpiryFromPicker(m.value, fullYear)
-                  }
-                  className="text-gray-800 text-[12px] py-1.5 rounded-md border border-gray-200 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  {String(m.value).padStart(2, "0")}
-                </button>
-              );
-            }
-          )}
-        </div>
+                              return (
+                                <button
+                                  key={m.value}
+                                  type="button"
+                                  disabled={isPast}
+                                  onClick={() =>
+                                    applyExpiryFromPicker(m.value, fullYear)
+                                  }
+                                  className="text-gray-800 text-[12px] py-1.5 rounded-md border border-gray-200 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  {String(m.value).padStart(2, "0")}
+                                </button>
+                              );
+                            }
+                          )}
+                        </div>
 
-        <div className="flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
-          {yearOptions.map((y: number) => {
-            const currentMonth =
-              parseInt(paymentInfo.expiredDate.split("/")[0], 10) || 1;
+                        <div className="flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
+                          {yearOptions.map((y: number) => {
+                            const currentMonth =
+                              parseInt(paymentInfo.expiredDate.split("/")[0], 10) || 1;
 
-            const isSelectedYear =
-              String(y).slice(-2) ===
-              paymentInfo.expiredDate.split("/")[1];
+                            const isSelectedYear =
+                              String(y).slice(-2) ===
+                              paymentInfo.expiredDate.split("/")[1];
 
-            return (
-              <button
-                key={y}
-                type="button"
-                onClick={() =>
-                  applyExpiryFromPicker(currentMonth, y)
-                }
-                className={`text-[12px] px-2.5 py-1 rounded-md border transition-colors ${
-                  isSelectedYear
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
-                }`}
-              >
-                {y}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    )}
-  </div>
+                            return (
+                              <button
+                                key={y}
+                                type="button"
+                                onClick={() =>
+                                  applyExpiryFromPicker(currentMonth, y)
+                                }
+                                className={`text-[12px] px-2.5 py-1 rounded-md border transition-colors ${isSelectedYear
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                                  }`}
+                              >
+                                {y}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-  {/* CVV */}
-  <div className="flex-1">
-    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
-      CVV
-    </label>
+                  {/* CVV */}
+                  <div className="flex-1">
+                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                      CVV
+                    </label>
 
-    <input
-      type="text"
-      inputMode="numeric"
-      autoComplete="cc-csc"
-      value={paymentInfo.cvv}
-      onChange={(e) => handleCVVChange(e.target.value)}
-      onBlur={() => handleBlurValidate("cvv")}
-      placeholder="123"
-      className={`h-[42px] ${inputBase} ${
-        errors.cvv && touched.cvv ? inputErr : inputOk
-      }`}
-    />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="cc-csc"
+                      value={paymentInfo.cvv}
+                      onChange={(e) => handleCVVChange(e.target.value)}
+                      onBlur={() => handleBlurValidate("cvv")}
+                      placeholder="123"
+                      className={`h-[42px] ${inputBase} ${errors.cvv && touched.cvv ? inputErr : inputOk
+                        }`}
+                    />
 
-    <FieldError message={touched.cvv ? errors.cvv : undefined} />
-  </div>
-</div>
+                    <FieldError message={touched.cvv ? errors.cvv : undefined} />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -963,13 +967,14 @@ export default function CheckoutPage() {
                       placeholder="Enter coupon code"
                       className="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none min-w-0"
                     />
-                    {couponApplied && (
+                    {couponApplied && !summaryFetching && !summaryError && (
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                   <button
                     onClick={handleApplyCoupon}
-                    className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0"
+                    disabled={summaryFetching}
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     Apply
                   </button>
@@ -978,7 +983,12 @@ export default function CheckoutPage() {
                 {couponError && (
                   <p className="text-red-500 text-[11px] mt-1.5 ml-1">{couponError}</p>
                 )}
-                {couponApplied && (
+                {summaryFetching && couponApplied && (
+                  <p className="text-blue-600 text-[11px] mt-1.5 ml-1 font-medium flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Applying coupon...
+                  </p>
+                )}
+                {couponApplied && !summaryFetching && !summaryError && (
                   <p className="text-green-600 text-[11px] mt-1.5 ml-1 font-medium">
                     ✓ Coupon applied successfully!
                   </p>
@@ -1043,9 +1053,8 @@ export default function CheckoutPage() {
               <label className="flex items-start gap-2.5 mb-5 cursor-pointer select-none">
                 <div
                   onClick={() => setRecurring((v) => !v)}
-                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${
-                    recurring ? "bg-blue-600 border-blue-600" : "bg-white border-blue-400"
-                  }`}
+                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${recurring ? "bg-blue-600 border-blue-600" : "bg-white border-blue-400"
+                    }`}
                 >
                   {recurring && (
                     <svg

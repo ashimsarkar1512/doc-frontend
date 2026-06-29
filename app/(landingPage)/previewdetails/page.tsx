@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
-import { Check, ShieldCheck, Save, X, Loader2, FileText, ShoppingCart, User } from "lucide-react";
+import { Check, ShieldCheck, Save, X, Loader2, FileText, ShoppingCart, User, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSelector } from "@/Redux/store/hooks";
 import {
@@ -256,6 +256,22 @@ export default function PreviewDetailsPage() {
     <div className="min-h-screen bg-white pb-10">
       <Navbar variant="dark" />
       <div className="pt-32 max-w-[850px] mx-auto px-4 sm:px-6">
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            if (window.history.length > 2) {
+              router.back();
+            } else {
+              router.push("/");
+            }
+          }}
+          className="relative z-50 flex items-center gap-1.5 text-gray-500 hover:text-blue-600 transition-colors text-[14px] font-medium mb-6 group w-fit cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          Back
+        </button>
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[18px] font-bold text-gray-900">Preview details</h1>

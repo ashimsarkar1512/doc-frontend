@@ -788,12 +788,13 @@ export default function AssessmentSteps() {
       }).unwrap();
       dispatch(setCredentials({ user: res.data.user, accessToken: res.data.accessToken }));
       toast.success(res.message);
-      setOtpVerifyMode(false);
       if (otpPending?.purpose === "REGISTER") {
         setShippingMode(true);
+        setOtpVerifyMode(false);
       } else {
         await submitAssessmentAnswers();
         setCurrentStep(COMPLETION_STEP);
+        setOtpVerifyMode(false);
       }
     } catch (err: unknown) {
       toast.error(
@@ -930,8 +931,6 @@ export default function AssessmentSteps() {
       if (submissionId) {
         localStorage.setItem("submissionId", submissionId);
       }
-
-      toast.success(res?.message || "Assessment submitted successfully!");
 
     } catch (err: unknown) {
       toast.error(
@@ -1343,11 +1342,16 @@ export default function AssessmentSteps() {
                         <label className="block text-gray-700 text-[14px] mb-1">{field.label}</label>
                         <input
                           type="text"
+                          inputMode={field.key === "zip" ? "numeric" : "text"}
                           placeholder={field.placeholder}
                           value={shippingAddress[field.key]}
-                          onChange={(e) =>
-                            setShippingAddress((p) => ({ ...p, [field.key]: e.target.value }))
-                          }
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (field.key === "zip") {
+                              val = val.replace(/\D/g, "");
+                            }
+                            setShippingAddress((p) => ({ ...p, [field.key]: val }));
+                          }}
                           className="w-full px-3 py-3 rounded-lg bg-gray-200 border border-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-150 text-[14px]"
                         />
                       </div>
@@ -1465,8 +1469,8 @@ export default function AssessmentSteps() {
                       }
 
                       await submitAssessmentAnswers();
-                      setShippingMode(false);
                       setCurrentStep(COMPLETION_STEP);
+                      setShippingMode(false);
                     } catch (err: unknown) {
                       toast.error(
                         (err as { data?: { message?: string } })?.data?.message ??
