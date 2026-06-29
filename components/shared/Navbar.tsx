@@ -83,7 +83,7 @@ const Navbar = ({
   const getDashboardHref = () => {
     if (!user?.role) return "/";
     const role = user.role.toUpperCase();
-    if (role === "ADMIN") return "/admin";
+   
     if (role === "DOCTOR" || role === "PROVIDER") return "/doctor";
     return "/patient";
   };
@@ -324,14 +324,16 @@ const Navbar = ({
                     </p>
                   </div>
                 </div>
-                <Link
-                  href={getDashboardHref()}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 text-base font-medium ${textColor}`}
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    window.location.href = getDashboardHref();
+                  }}
+                  className={`flex items-center gap-2 text-base font-medium ${textColor} w-full text-left`}
                 >
                   <LayoutDashboard className="h-5 w-5" />
                   Dashboard
-                </Link>
+                </button>
                 <button
                   onClick={handleStartConsultation}
                   className={`px-5 py-3 rounded-full border ${buttonStyle} text-left`}
@@ -450,14 +452,16 @@ const Navbar = ({
 
                     {/* Dashboard */}
                     <div className="py-2">
-                      <Link
-                        href={getDashboardHref()}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          window.location.href = getDashboardHref();
+                        }}
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                       >
                         <LayoutDashboard className="h-4 w-4 text-gray-400 flex-shrink-0" />
                         <span>Dashboard</span>
-                      </Link>
+                      </button>
                     </div>
 
                     {/* Logout */}
