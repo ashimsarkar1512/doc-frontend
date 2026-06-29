@@ -9,9 +9,17 @@ import type { RootState } from '../store/store'
 
 // ─── Base query ───────────────────────────────────────────────────────────────
 
+const getBaseUrl = () => {
+  let envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://prod.weightlossmdcherrycreek.com";
+  envUrl = envUrl.replace(/\/$/, "");
+  if (!envUrl.includes("/api/v1")) {
+    envUrl = `${envUrl}/api/v1`;
+  }
+  return envUrl;
+};
+
 const rawBaseQuery = fetchBaseQuery({
-  // baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-  baseUrl: "https://prod.weightlossmdcherrycreek.com/api/v1",
+  baseUrl: getBaseUrl(),
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     // Read the token directly from Redux state instead of localStorage

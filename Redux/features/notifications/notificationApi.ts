@@ -30,7 +30,18 @@ export const notificationApi = baseApi.injectEndpoints({
             socket.disconnect();
           }
 
-          socket = io("wss://prod.weightlossmdcherrycreek.com/notifications", {
+          let apiOrigin = "https://prod.weightlossmdcherrycreek.com";
+          if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+            try {
+              const url = new URL(process.env.NEXT_PUBLIC_API_BASE_URL);
+              apiOrigin = url.origin;
+            } catch {
+              apiOrigin = process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/api\/.*$/, '').replace(/\/$/, '');
+            }
+          }
+          const wsUrl = apiOrigin.replace(/^http/, 'ws') + '/notifications';
+
+          socket = io(wsUrl, {
             auth: { token },
             transports: ["websocket"],
           });

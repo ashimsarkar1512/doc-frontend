@@ -13,13 +13,14 @@ services:
         - NODE_ENV=production
         - NEXT_TELEMETRY_DISABLED=1
         - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
-    
+
     # Keep environment for runtime (in case the app reads them again at runtime)
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
-      
+      - API_BASE_URL=http://app_live_blue:5056/api/v1 # Change 'server' and '5000' to your backend service name and port if needed
+
     ports:
       - "3000:3000"
     networks:

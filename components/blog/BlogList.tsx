@@ -17,7 +17,12 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch("https://prod.weightlossmdcherrycreek.com/api/v1/public/blogs");
+        let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://prod.weightlossmdcherrycreek.com";
+        baseUrl = baseUrl.replace(/\/$/, "");
+        if (!baseUrl.includes("/api/v1")) {
+          baseUrl = `${baseUrl}/api/v1`;
+        }
+        const res = await fetch(`${baseUrl}/public/blogs`);
         if (!res.ok) {
           throw new Error("Failed to fetch blogs");
         }
