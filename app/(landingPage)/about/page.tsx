@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Expert from "@/components/home/Expert";
 import QNA from "@/components/home/QNA";
+import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
 
 export default function AboutPage() {
   const benefits = [
@@ -15,6 +16,9 @@ export default function AboutPage() {
     "Multiple clinic locations across Colorado",
     "Focus on long-term wellness and sustainable lifestyle improvements",
   ];
+
+  const { data } = useGetHomepageContentQuery();
+  console.log(data);
 
   const blobDefs = (
     <svg width="0" height="0" style={{ position: "absolute" }}>
@@ -33,10 +37,10 @@ export default function AboutPage() {
     <div className="w-full bg-white text-gray-900 font-sans overflow-x-hidden">
       {blobDefs}
 
- <Navbar
-        variant="dark" 
+      <Navbar
+        variant="dark"
         initialPadding="pt-5 pb-4" // You can set your custom padding here!
-        scrolledPadding="py-2" 
+        scrolledPadding="py-2"
       />
 
       {/* ABOUT Section */}
@@ -74,13 +78,14 @@ export default function AboutPage() {
             </p>
 
             <button
-                onClick={() =>
+              onClick={() =>
                 window.open(
                   "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                   "_blank",
                 )
               }
-             className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
+              className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
+            >
               Book a consultation
             </button>
           </div>
@@ -92,33 +97,18 @@ export default function AboutPage() {
           About us
         </span>
 
-        <p className="text-center text-gray-900 text-2xl md:text-3xl lg:text-4xl font-semibold leading-[1.15] max-w-6xl mb-12">
-          Our mission is to help individuals take control of their health
-          through medically supervised care, evidence-based treatments, and
-          personalized wellness programs. We are committed to creating a
-          supportive environment where patients feel heard, respected, and
-          empowered at every stage of their transformation.
-        </p>
+        <h2 className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12">
+          {data?.aboutTitle}{" "}
+          <span className="text-[#AEAEAE]">{data?.aboutDescription}</span>
+        </h2>
 
-        <div className="w-7xl relative overflow-hidden rounded-[2.5rem] bg-gray-900 shadow-2xl">
-          <video
-            className="w-full aspect-video object-cover opacity-90"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            <source src="/aboutUs.mp4" type="video/mp4" />
-          </video>
-
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10">
-            <span
-              className="font-black text-white/90 tracking-widest uppercase text-center drop-shadow-2xl leading-none"
-              style={{ fontSize: "clamp(42px, 11vw, 130px)" }}
-            >
-              WEIGHT LOSS MD
-            </span>
-          </div>
+        <div className="w-full relative overflow-hidden rounded-[2.5rem]  h-[00px] md:h-[500px] lg:h-[600px]">
+          <Image
+            src="/about_US.png"
+            alt="video thumbnail"
+            fill
+            className="object-cover"
+          />
         </div>
       </section>
 
@@ -140,9 +130,9 @@ export default function AboutPage() {
               personalized wellness programs.
             </p>
             <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              We are committed to creating a supportive environment where patients
-              feel heard, respected, and empowered at every stage of their
-              transformation.
+              We are committed to creating a supportive environment where
+              patients feel heard, respected, and empowered at every stage of
+              their transformation.
             </p>
             <button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
               Contact us
@@ -184,7 +174,9 @@ export default function AboutPage() {
               Why WLMD
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-[40px] font-medium text-gray-900 leading-[1.2] mb-6">
-              Why Patients Choose<br className="hidden md:block" />Weight Loss MD?
+              Why Patients Choose
+              <br className="hidden md:block" />
+              Weight Loss MD?
             </h2>
             <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-4">
               Our mission is to help individuals take control of their health
@@ -192,9 +184,9 @@ export default function AboutPage() {
               personalized wellness programs.
             </p>
             <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              We are committed to creating a supportive environment where patients
-              feel heard, respected, and empowered at every stage of their
-              transformation.
+              We are committed to creating a supportive environment where
+              patients feel heard, respected, and empowered at every stage of
+              their transformation.
             </p>
 
             <ul className="space-y-3 mb-8 w-full">
@@ -214,19 +206,22 @@ export default function AboutPage() {
                       <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                   </span>
-                  <span className="text-gray-600 text-sm md:text-[15px]">{benefit}</span>
+                  <span className="text-gray-600 text-sm md:text-[15px]">
+                    {benefit}
+                  </span>
                 </li>
               ))}
             </ul>
 
             <button
-               onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
-            )
-          }
-             className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
+              onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank",
+                )
+              }
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md"
+            >
               Book a consultation
             </button>
           </div>

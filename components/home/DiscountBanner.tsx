@@ -18,6 +18,21 @@ function pad(n: number) {
   return String(n).padStart(2, '0')
 }
 
+// ─── DUMMY (module-level — created ONCE, never on re-render) ─────────────────
+// Remove this block and set DUMMY_MODE = false to use real API data.
+const DUMMY_MODE = true
+
+const DUMMY_DISCOUNT: Discount = {
+  id: 'test-1',
+  code: 'TESTCODE20',
+  value: 20,
+  type: 'PERCENTAGE',
+  isActive: true,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 5).toISOString(),
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const DiscountBanner = () => {
@@ -28,25 +43,8 @@ const DiscountBanner = () => {
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 })
 
-const DUMMY_MODE = true 
-
-const dummyDiscount: Discount = {
-  id: 'test-1',
-  code: 'TESTCODE20',
-  value: 20,
-  type: 'PERCENTAGE',
-  isActive: true,
-  createdAt: new Date().toISOString(),
-  expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 5).toISOString(), // এখন থেকে ৫ ঘণ্টা পর expire
-updatedAt : new Date().toISOString(),
-
-}
-
-
-
-
-  // Pick the latest active PERCENTAGE coupon
-  const discount: Discount | null = DUMMY_MODE ? dummyDiscount : (() => {
+  // Pick the latest active PERCENTAGE coupon from the real API
+  const apiDiscount: Discount | null = (() => {
     const list = (data?.data ?? []).filter(
       (d) => d.type === 'PERCENTAGE' && d.isActive
     )
@@ -56,12 +54,18 @@ updatedAt : new Date().toISOString(),
     )[0]
   })()
 
-  // Sync countdown whenever discount changes
+  // Use dummy or real — but the reference is STABLE (not re-created each render)
+  const discount: Discount | null = DUMMY_MODE ? DUMMY_DISCOUNT : apiDiscount
+
+  // ─ Countdown timer ──────────────────────────────────────────────────────────
+  // Dependency is discount.expiresAt (a string) — stable, no infinite loop.
+  const expiresAt = discount?.expiresAt ?? null
+
   useEffect(() => {
-    if (!discount) return
-    setTimeLeft(getTimeLeft(discount.expiresAt))
+    if (!expiresAt) return
+    setTimeLeft(getTimeLeft(expiresAt))
     const id = setInterval(() => {
-      const tl = getTimeLeft(discount.expiresAt)
+      const tl = getTimeLeft(expiresAt)
       setTimeLeft(tl)
       if (tl.hours === 0 && tl.minutes === 0 && tl.seconds === 0) {
         clearInterval(id)
@@ -69,9 +73,9 @@ updatedAt : new Date().toISOString(),
       }
     }, 1000)
     return () => clearInterval(id)
-  }, [discount])
+  }, [expiresAt]) // ← string primitive, stable across renders ✓
 
-  // Push --banner-height CSS variable onto <html> so Navbar can offset itself
+  // ─ Banner height CSS variable for Navbar offset ──────────────────────────
   useEffect(() => {
     const el = bannerRef.current
     const root = document.documentElement
@@ -93,7 +97,7 @@ updatedAt : new Date().toISOString(),
     }
   }, [discount, dismissed, isLoading])
 
-  // Don't render during loading, no discount, or dismissed
+  // Don't render when loading, no discount, or dismissed
   if (isLoading || !discount || dismissed) return null
 
   const handleCopy = () => {
@@ -108,7 +112,7 @@ updatedAt : new Date().toISOString(),
       ref={bannerRef}
       role="banner"
       aria-label="Promotional discount banner"
-  className="relative z-[9999] flex min-h-[44px] flex-wrap items-center justify-center gap-2.5  px-4 py-2.5 pr-10 text-sm text-black"
+      className="relative z-40 flex min-h-[44px] flex-wrap items-center justify-center gap-2.5 bg-[linear-gradient(90deg,#1a1a2e,#16213e_50%,#0f3460)] px-4 py-2.5 pr-10 text-sm text-white shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
     >
       {/* Left decorative line */}
       <span
@@ -161,4 +165,3 @@ updatedAt : new Date().toISOString(),
 }
 
 export default DiscountBanner
-

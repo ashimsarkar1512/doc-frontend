@@ -4,6 +4,8 @@ import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import { useSubmitContactLeadMutation } from "@/Redux/features/contact/contactApi";
+import Expert from "@/components/home/Expert";
+import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDataApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -57,6 +59,8 @@ export default function ContactPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { data: settingsData, isLoading: settingsLoading } = useGetWebsiteSettingsQuery();
+  const contactInfo = settingsData?.contactInfo;
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -334,11 +338,30 @@ export default function ContactPage() {
           >
             <div className="text-center px-6 relative z-10 w-full">
               <h3 className="font-bold text-gray-900 text-[20px] mb-4 tracking-tight">Office Hours</h3>
-              <p className="text-[14px] text-gray-800 mb-2 font-semibold">Monday - Friday: 9 AM - 6 PM</p>
-              <p className="text-[13px] text-gray-500 mb-5 leading-relaxed max-w-[220px] mx-auto">
-                Our Office is closed from 2 PM to 3 PM<br />for lunch during the week.
-              </p>
-              <p className="text-[13px] font-bold text-gray-900">(720) 279-1164 - Info@wlmd.net</p>
+              {settingsLoading ? (
+                <div className="space-y-2 mb-5">
+                  <div className="h-4 w-3/4 mx-auto bg-gray-300/60 rounded animate-pulse" />
+                  <div className="h-3 w-full bg-gray-300/40 rounded animate-pulse" />
+                  <div className="h-3 w-4/5 mx-auto bg-gray-300/40 rounded animate-pulse" />
+                  <div className="h-3 w-2/3 mx-auto bg-gray-300/40 rounded animate-pulse mt-2" />
+                </div>
+              ) : (
+                <>
+                  <p className="text-[14px] text-gray-800 mb-2 font-semibold">
+                    {contactInfo?.openHours || "Monday - Friday: 9 AM - 6 PM"}
+                  </p>
+                  {contactInfo?.closedDays && (
+                    <p className="text-[13px] text-gray-500 mb-5 leading-relaxed max-w-[220px] mx-auto">
+                      {contactInfo.closedDays}
+                    </p>
+                  )}
+                  <p className="text-[13px] font-bold text-gray-900">
+                    {contactInfo?.phone && contactInfo?.email
+                      ? `${contactInfo.phone} - ${contactInfo.email}`
+                      : contactInfo?.phone || contactInfo?.email || "(720) 279-1164 - Info@wlmd.net"}
+                  </p>
+                </>
+              )}
             </div>
             <div className="absolute bottom-[180px] left-0 right-0 text-center z-[1] pointer-events-none select-none">
               <span
@@ -372,25 +395,8 @@ export default function ContactPage() {
 
       {/* ── MEET OUR EXPERT PROVIDERS ── */}
       <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-28">
-        <h2 className="text-3xl md:text-[32px] font-bold text-gray-900 text-center mb-20 tracking-tight">
-          Meet our expert providers
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {[
-            { src: "/expartProviders/expart1.png", name: "Jeffrey Richker MD", role: "Licensed Colorado-Physician" },
-            { src: "/expartProviders/expart2.png", name: "Runa Pradhan NP", role: "Licensed Colorado-Nurse Practitioner - Family" },
-            { src: "/expartProviders/expart3.png", name: "Nicole Sheeder NP", role: "Licensed Colorado Nurse Practitioner - Family" },
-            { src: "/doctor/doc-4.jpg", name: "Natalie Nicholas NP", role: "Licensed Colorado Nurse Practitioner - Acute Care" },
-          ].map((p) => (
-            <div key={p.name} className="flex flex-col">
-              <div className="bg-[#dceaf6] rounded-[24px] aspect-[4/5] relative overflow-hidden mb-5">
-                <Image src={p.src} alt={p.name} fill className="object-cover object-top mix-blend-darken" />
-              </div>
-              <h4 className="font-bold text-gray-900 text-[16px]">{p.name}</h4>
-              <p className="text-[12px] text-gray-500 mt-1">{p.role}</p>
-            </div>
-          ))}
-        </div>
+      
+        <Expert/>
       </section>
 
       {/* ── PARTNER PHARMACIES ── */}

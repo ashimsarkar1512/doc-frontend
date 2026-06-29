@@ -22,7 +22,7 @@ const Footer = () => {
   return (
     <footer className="w-full bg-[#0a0a0a] font-sans p-5 pt-12">
       {/* Office Locations Section (Constrained Width like Figma) */}
-      <div className="max-w-7xl mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-6 md:px-12">
+      <div className="max-w-7xl mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
         <h2 className="text-[2.5rem] font-medium text-center mb-14 text-white tracking-wide">
           Our office locations
         </h2>
@@ -93,11 +93,11 @@ const Footer = () => {
         <div className="relative z-10 max-w-9xl mx-auto px-6 md:px-12 pt-8 pb-8">
           <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10">
             {/* Brand & Description */}
-            <div className="md:col-span-4 pr-0 md:pr-12">
+            <div className="md:col-span-3 pr-0 md:pr-12">
               <div className="flex items-center gap-1 cursor-pointer mb-6">
                 <Logo variant="light" />
               </div>
-              <p className="text-[14px] text-gray-200 leading-[1.7] font-light">
+              <p className="text-lg text-gray-200 leading-[1.7] font-light">
                 Weight Loss MD is a medical weight loss clinic in Colorado
                 offering GLP-1 Prescription weight loss medications
                 CoolSculpting®, Laser Hair Removal, hormone replacement therapy,
@@ -260,7 +260,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-3">
               <h4 className="font-medium text-white mb-6 text-[17px]">
                 Contact Us
               </h4>
@@ -292,51 +292,51 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Badges & Payments */}
-          <div className="relative z-10 flex flex-row justify-between items-center gap-6 mt-8 mb-8 pl-0 md:pl-[33.33%]">
-            {/* Left: Badge Images */}
-            <div className="flex items-center gap-8">
-              <Image
-                src="/footer1.png"
-                alt="LegitScript Certified"
-                width={48}
-                height={48}
-                className="h-[48px] w-auto object-contain"
-              />
-              <Image
-                src="/footer2.png"
-                alt="LegitScript"
-                width={150}
-                height={40}
-                className="h-[40px] w-auto object-contain"
-              />
-              <Image
-                src="/footer3.png"
-                alt="HIPAA Compliant"
-                width={110}
-                height={44}
-                className="h-[44px] w-auto object-contain"
-              />
-            </div>
+        {/* Badges & Payments */}
+<div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 mt-8 mb-8 pl-0 md:pl-[33.33%]">
+  {/* Left: Badge Images */}
+  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8">
+    <Image
+      src="/footer1.png"
+      alt="LegitScript Certified"
+      width={48}
+      height={48}
+      className="h-[36px] sm:h-[42px] md:h-[48px] w-auto object-contain"
+    />
+    <Image
+      src="/footer2.png"
+      alt="LegitScript"
+      width={150}
+      height={40}
+      className="h-[30px] sm:h-[35px] md:h-[40px] w-auto object-contain"
+    />
+    <Image
+      src="/footer3.png"
+      alt="HIPAA Compliant"
+      width={110}
+      height={44}
+      className="h-[32px] sm:h-[38px] md:h-[44px] w-auto object-contain"
+    />
+  </div>
 
-            {/* Right: We Support */}
-            <div className="flex items-center gap-5">
-              <span className="text-white text-[15px] font-medium whitespace-nowrap">
-                We Support
-              </span>
-              <div className="flex flex-col leading-[1.1] text-white font-bold text-[10px] tracking-wider text-center">
-                <span>AMERICAN</span>
-                <span>EXPRESS</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-[26px] h-[26px] rounded-full bg-[#eb001b] relative z-10" />
-                <div className="w-[26px] h-[26px] rounded-full bg-[#f79e1b] -ml-3 relative z-0" />
-              </div>
-              <div className="text-white font-black text-2xl italic tracking-tighter">
-                VISA
-              </div>
-            </div>
-          </div>
+  {/* Right: We Support */}
+  <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5">
+    <span className="text-white text-[13px] sm:text-[14px] md:text-[15px] font-medium whitespace-nowrap">
+      We Support
+    </span>
+    <div className="flex flex-col leading-[1.1] text-white font-bold text-[9px] sm:text-[10px] tracking-wider text-center">
+      <span>AMERICAN</span>
+      <span>EXPRESS</span>
+    </div>
+    <div className="flex items-center">
+      <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#eb001b] relative z-10" />
+      <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#f79e1b] -ml-3 relative z-0" />
+    </div>
+    <div className="text-white font-black text-xl sm:text-2xl italic tracking-tighter">
+      VISA
+    </div>
+  </div>
+</div>
 
           {/* Divider */}
           <div className="relative z-10 w-full h-[1px] bg-white/20 mb-6" />

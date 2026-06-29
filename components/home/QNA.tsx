@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
 
 interface FAQItem {
   id: string;
@@ -44,7 +44,7 @@ const defaultFaqData: FAQItem[] = [
 ];
 
 const QNA: React.FC = () => {
-  const { content, isLoading } = useHomepageContent();
+  const { data: content, isLoading } = useGetHomepageContentQuery();
   
   // Track open state using unique ID string or null for clean closing control
   const [openId, setOpenId] = useState<string | null>('1');
