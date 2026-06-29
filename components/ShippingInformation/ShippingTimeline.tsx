@@ -1,17 +1,17 @@
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Shield } from 'lucide-react';
 
 const steps = [
-  { name: 'Rx Received', day: 'Day 0', color: 'bg-slate-400' },
-  { name: 'Processing', day: 'Day 1-2', color: 'bg-teal-400' },
-  { name: 'Shipped', day: 'Day 3-4', color: 'bg-teal-500' },
-  { name: 'In Transit', day: 'Day 5-7', color: 'bg-teal-600' },
-  { name: 'Delivered', day: 'Day 5-7', color: 'bg-emerald-600' },
+  { name: 'Rx Received', day: 'Day 0', color: 'bg-[#1A5C8A]' },
+  { name: 'Processing', day: 'Day 1-2', color: 'bg-[#22A87A]' },
+  { name: 'Shipped', day: 'Day 3-4', color: 'bg-[#2E86C1]' },
+  { name: 'In Transit', day: 'Day 5-7', color: 'bg-[#1A5C8A]' },
+  { name: 'Delivered', day: 'Day 5-7', color: 'bg-[#22A87A]' },
 ];
 
 const ShippingTimeline = () => {
   return (
-    <section className="w-full max-w-5xl mx-auto px-4 mt-16 mb-10">
+    <section className="w-full max-w-6xl mx-auto px-4 mt-16 mb-10">
       <h2 className="text-2xl md:text-3xl font-semibold text-center text-slate-900 mb-10">
         Shipping Timeline
       </h2>
@@ -72,10 +72,18 @@ const ShippingTimeline = () => {
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-red-50 border border-red-100 rounded-xl px-6 py-4 text-[13px] text-slate-700 leading-relaxed">
+        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 py-8 flex items-start gap-3">
+          <Shield className="w-[18px] h-[18px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+          <p className="text-gray-700 text-xs leading-relaxed">
+            <strong className="text-[#ef4444]">Prescription & Pharmacy Disclaimer:</strong>
+            : All medications dispensed through our platform require a valid prescription from a licensed provider. We partner only with NABP-accredited or PCAB-accredited pharmacies. Compounded medications are not FDA-approved drug products and are prepared by state-licensed compounding pharmacies.
+          </p>
+        </div>
+        {/* ============ */}
+      {/* <div className="bg-red-50 border border-red-100 rounded-xl px-6 py-4 text-[13px] text-slate-700 leading-relaxed">
         <span className="font-bold text-slate-900">Prescription & Pharmacy Disclaimer: </span>
         All medications dispensed through our platform require a valid prescription from a licensed provider. We partner only with NABP-accredited or PCAB-accredited pharmacies. Compounded medications are not FDA-approved drug products and are prepared by state-licensed compounding pharmacies.
-      </div>
+      </div> */}
     </section>
   );
 };

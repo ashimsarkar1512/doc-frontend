@@ -35,9 +35,9 @@ const pharmacies = [
 
 const PartnerPharmacyNetwork = () => {
   return (
-    <section className="w-full max-w-5xl mx-auto px-4 mt-16 mb-4">
+    <section className="w-full max-w-6xl mx-auto px-4 mt-16 mb-4">
       <h2 className="text-2xl md:text-3xl font-semibold text-center text-slate-900 mb-10">
-        Partner Pharmacy Network
+        Partner Pharmacy Network 
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">

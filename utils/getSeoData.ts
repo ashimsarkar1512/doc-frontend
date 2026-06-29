@@ -1,8 +1,9 @@
+// utils/getSeoData.ts
+
 export async function getSeoData() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const apiUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
-    // ✅ Build এর সময় URL না থাকলে null return করো — error দেবে না
     if (!apiUrl) return null;
 
     const res = await fetch(`${apiUrl}/admin/website-settings`, {
