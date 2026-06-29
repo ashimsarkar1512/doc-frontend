@@ -112,18 +112,18 @@ const DiscountBanner = () => {
       ref={bannerRef}
       role="banner"
       aria-label="Promotional discount banner"
-      className="relative z-40 flex min-h-[44px] flex-wrap items-center justify-center gap-2.5 bg-[linear-gradient(90deg,#1a1a2e,#16213e_50%,#0f3460)] px-4 py-2.5 pr-10 text-sm text-white shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+      className="relative z-40 flex min-h-[44px] flex-wrap items-center justify-center gap-2.5  text-sm text-black "
     >
       {/* Left decorative line */}
-      <span
+      {/* <span
         aria-hidden
         className="block h-0.5 w-12 shrink-0 rounded-full bg-[linear-gradient(90deg,transparent,#e53e3e)]"
-      />
+      /> */}
 
       {/* Message */}
       <span className="whitespace-nowrap font-normal">
         Get UP-TO{' '}
-        <strong className="text-white">{discount.value}% Discount</strong>. Use coupon code{' '}
+        <strong className="text-[#0E4E45]">{discount.value}% Discount</strong>. Use coupon code{' '}
       </span>
 
       {/* Coupon code — click to copy */}
@@ -133,7 +133,7 @@ const DiscountBanner = () => {
         aria-label={`Copy coupon code ${discount.code}`}
         className="inline-flex cursor-pointer border-none bg-transparent p-0"
       >
-        <span className="text-sm font-bold tracking-[0.04em] text-[#e53e3e] underline underline-offset-[3px]">
+        <span className="text-sm font-bold tracking-[0.04em] text-[#1D4ED8] underline underline-offset-[3px]">
           {copied ? 'Copied!' : discount.code}
         </span>
       </button>
@@ -141,16 +141,16 @@ const DiscountBanner = () => {
       {/* Countdown timer */}
       <span
         aria-live="off"
-        className="inline-flex min-w-[92px] shrink-0 items-center justify-center rounded-md bg-[#2563EB] px-2.5 py-[3px] text-[0.8rem] font-semibold tracking-wide [font-variant-numeric:tabular-nums]"
+        className="inline-flex min-w-[92px] shrink-0 items-center justify-center rounded-md bg-[#2563EB] px-2.5 py-[3px] text-[0.8rem] font-semibold tracking-wide [font-variant-numeric:tabular-nums] text-white"
       >
         {pad(timeLeft.hours)}h {pad(timeLeft.minutes)}m {pad(timeLeft.seconds)}s
       </span>
 
       {/* Right decorative line */}
-      <span
+      {/* <span
         aria-hidden
         className="block h-0.5 w-12 shrink-0 rounded-full bg-[linear-gradient(90deg,#e53e3e,transparent)]"
-      />
+      /> */}
 
       {/* Dismiss */}
       <button
