@@ -10,6 +10,8 @@ import { useGetTestimonialsQuery } from "@/Redux/features/testimonials/testimoni
 const TestiMonial: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
   const { data: testimonialsData } = useGetTestimonialsQuery();
+
+
   const reviews = testimonialsData?.data || [];
 
   const title = content?.testimonialTitle || "Read from Hundreds of success stories";
@@ -133,7 +135,7 @@ const TestiMonial: React.FC = () => {
 
                       {/* Actual Review Text Area */}
                       <p className="text-sm text-gray-300 leading-relaxed font-normal line-clamp-6">
-                        {review.text || review.content}
+                        {review.feedback || review.feedback}
                       </p>
                     </div>
                   </div>

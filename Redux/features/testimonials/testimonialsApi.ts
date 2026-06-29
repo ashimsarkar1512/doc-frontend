@@ -9,6 +9,7 @@ export interface Testimonial {
   rating: number
   content?: string
   text?: string
+  feedback?:string
 }
 
 export interface TestimonialMeta {
