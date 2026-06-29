@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Quicksand } from "next/font/google";
 import Script from "next/script";
@@ -40,10 +41,10 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  console.log("SEO Data", seo);
+  // console.log("SEO Data", seo);
 
-  console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
-  console.log("SEO DATA check:", seo?.metaDescription);
+  // console.log("SEO DATA check:", seo?.title, seo?.faviconLight?.fileUrl);
+  // console.log("SEO DATA check:", seo?.metaDescription);
 
   const faviconLightUrl = seo?.faviconLight?.fileUrl || "/favicon.ico";
   const faviconDarkUrl = seo?.faviconDark?.fileUrl || "/favicon.ico";
