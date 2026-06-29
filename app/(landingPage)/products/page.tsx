@@ -28,13 +28,26 @@ function ProductsInner() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
 
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem("submissionId");
+    if (id) setSubmissionId(id);
+  }, []);
+
   // ── API queries ──
   const { data: productsData, isLoading: productsLoading } =
     useGetProductsByCategoryIdQuery(categoryId, { skip: !categoryId });
 
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
+  
+  const queryParams: { discountCode?: string; submissionId?: string } = {};
+  if (couponApplied) queryParams.discountCode = couponInput.trim();
+  if (submissionId) queryParams.submissionId = submissionId;
+  const hasParams = Object.keys(queryParams).length > 0;
+
   const { data: summaryData, isFetching: summaryFetching, isError: summaryError } = useGetCartSummaryQuery(
-    couponApplied ? couponInput.trim() : undefined
+    hasParams ? queryParams : undefined
   );
 
   useEffect(() => {

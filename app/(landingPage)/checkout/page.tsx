@@ -69,10 +69,23 @@ export default function CheckoutPage() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
 
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem("submissionId");
+    if (id) setSubmissionId(id);
+  }, []);
+
   // ── API queries ──
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
+  
+  const queryParams: { discountCode?: string; submissionId?: string } = {};
+  if (couponApplied) queryParams.discountCode = couponInput.trim();
+  if (submissionId) queryParams.submissionId = submissionId;
+  const hasParams = Object.keys(queryParams).length > 0;
+
   const { data: summaryData, isFetching: summaryFetching, isError: summaryError } = useGetCartSummaryQuery(
-    couponApplied ? couponInput.trim() : undefined
+    hasParams ? queryParams : undefined
   );
 
   useEffect(() => {
@@ -1082,7 +1095,7 @@ export default function CheckoutPage() {
               {/* Submit button */}
               <button
                 onClick={handleSubmit}
-                disabled={isSubmitting || cartItems.length === 0}
+                disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white text-[15px] font-semibold py-3.5 rounded-xl transition-all duration-150 shadow-md block text-center"
               >
                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}

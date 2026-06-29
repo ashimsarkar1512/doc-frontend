@@ -278,12 +278,14 @@ const patientApi = baseApi.injectEndpoints({
       query: () => '/patient/cart/my-carts',
       providesTags: ['Cart'],
     }),
-    getCartSummary: builder.query<CartSummaryResponse, string | void>({
-      query: (discountCode) => {
-        if (discountCode) {
-          return `/patient/cart/summary?discountCode=${discountCode}`
-        }
-        return '/patient/cart/summary'
+    getCartSummary: builder.query<CartSummaryResponse, { discountCode?: string; submissionId?: string } | void>({
+      query: (params) => {
+        const queryParams = new URLSearchParams();
+        if (params?.discountCode) queryParams.append('discountCode', params.discountCode);
+        if (params?.submissionId) queryParams.append('submissionId', params.submissionId);
+        
+        const qs = queryParams.toString();
+        return qs ? `/patient/cart/summary?${qs}` : '/patient/cart/summary';
       },
       providesTags: ['Cart'],
     }),
