@@ -15,6 +15,7 @@ export default function DoctorNavbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { logout, isLoading: isLoggingOut } = useLogout();
   const user = useAppSelector((state) => state.auth.user);
+  // console.log(user)
 
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
@@ -95,13 +96,14 @@ export default function DoctorNavbar() {
             >
               <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 sm:h-10 sm:w-10">
                 {user?.profile?.avatar ? (
-                  <Image
-                    src={user.profile.avatar}
-                    alt={getDisplayName()}
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                  />
+                  // <Image
+                  //   src={user.profile.avatar}
+                  //   alt={getDisplayName()}
+                  //   fill
+                  //   sizes="40px"
+                  //   className="object-cover"
+                  // />
+                  <img src={user.profile.avatar} alt={getDisplayName()} className="object-cover w-full h-full"/>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
                     {getInitials()}
