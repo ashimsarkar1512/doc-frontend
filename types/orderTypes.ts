@@ -17,6 +17,10 @@ export interface Order {
     id: string;
     assessmentTitle: string;
   };
+  category?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface MyOrdersResponse {

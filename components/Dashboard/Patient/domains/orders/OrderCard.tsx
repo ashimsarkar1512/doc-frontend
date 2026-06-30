@@ -1,6 +1,6 @@
-import React from "react";
-import { Eye, Package, User, Calendar, FileText } from "lucide-react";
 import { Order } from "@/types/orderTypes";
+import { Calendar, Eye, FileText, Package, User } from "lucide-react";
+import Link from "next/link";
 
 interface OrderCardProps {
   order: Order;
@@ -8,6 +8,9 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
+  const canReorder = order.status === "DELIVERED" && !!order.category?.id;
+  const reorderHref = `/products?categoryId=${order.category?.id ?? ""}&mode=reorder&submissionId=${order.submission?.id ?? ""}`;
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACCEPTED":
@@ -53,10 +56,13 @@ export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
         </div>
         <div>
           <h3 className="text-gray-900 font-bold text-lg leading-tight">
-            Order {order.orderNumber?.replace("ORD-", "#") || `#${order.id.slice(0, 5)}`}
+            Order{" "}
+            {order.orderNumber?.replace("ORD-", "#") ||
+              `#${order.id.slice(0, 5)}`}
           </h3>
           <p className="text-gray-500 text-sm font-medium mt-0.5">
-            {order.itemCount || 0} item(s) • ${order.total?.toFixed(2) || "0.00"}
+            {order.itemCount || 0} item(s) • $
+            {order.total?.toFixed(2) || "0.00"}
           </p>
         </div>
       </div>
@@ -85,14 +91,32 @@ export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
         </div>
       </div>
 
-      {/* Action Button */}
-      <button
-        onClick={() => onViewDetails?.(order.id)}
-        className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors mt-auto"
-      >
-        <Eye className="w-4 h-4" />
-        View Details
-      </button>
+      {/* Action Buttons */}
+      <div className="flex flex-col gap-2 mt-auto">
+        <button
+          onClick={() => onViewDetails?.(order.id)}
+          className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+        >
+          <Eye className="w-4 h-4" />
+          View Details
+        </button>
+
+        {canReorder ? (
+          <Link
+            href={reorderHref}
+            className="w-full border border-[#2563eb] text-[#2563eb] hover:bg-blue-50 active:bg-blue-100 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+          >
+            Reorder Items
+          </Link>
+        ) : (
+          <button
+            disabled
+            className="w-full border border-gray-300 text-gray-400 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-not-allowed"
+          >
+            Reorder Items
+          </button>
+        )}
+      </div>
     </div>
   );
 }
