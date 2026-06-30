@@ -17,6 +17,7 @@ export default function DoctorNavbar() {
   const router = useRouter();
   const { logout, isLoading: isLoggingOut } = useLogout();
   const user = useAppSelector((state) => state.auth.user);
+  // console.log(user)
 
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
@@ -106,8 +107,9 @@ export default function DoctorNavbar() {
                   <Image
                     src={user.profile.avatar}
                     alt={getDisplayName()}
-                    fill
-                    sizes="40px"
+                    
+                    width={40}
+                    height={40}
                     className="object-cover"
                   />
                 ) : (
@@ -140,7 +142,9 @@ export default function DoctorNavbar() {
                     <p className="text-sm font-bold text-gray-900 truncate">
                       {getDisplayName()}
                     </p>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
+                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                      {user?.email}
+                    </p>
                   </div>
 
                   {/* Menu Items */}
