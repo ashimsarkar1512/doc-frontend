@@ -41,10 +41,11 @@ const Banner = () => {
                   target={content?.heroButtonNewTab ? "_blank" : "_self"}
                   rel="noopener noreferrer"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={badgeImageUrl}
                     alt={heroBadgeText || "Badge"}
+                    width={200}
+                    height={80}
                     className="h-20 w-auto object-contain"
                   />
                   {heroBadgeText && (
@@ -55,10 +56,11 @@ const Banner = () => {
                 </Link>
               ) : (
                 <div className="flex flex-col items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={badgeImageUrl}
                     alt={heroBadgeText || "Badge"}
+                    width={200}
+                    height={80}
                     className="h-20 w-auto object-contain"
                   />
                   {heroBadgeText && (
@@ -155,11 +157,12 @@ const Banner = () => {
       {/* Hero override image (if server-provided, shown as an overlay within parent) */}
       {!isLoading && heroImageUrl && (
         <div className="absolute inset-0 -z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={heroImageUrl}
             alt="Hero Background"
-            className="w-full h-full object-cover"
+            fill
+            priority
+            className="object-cover"
           />
         </div>
       )}

@@ -8,11 +8,13 @@ import { ChevronDown, LayoutDashboard, LogOut, User, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import NotificationDropdown from "./NotificationDropdown";
 
 export default function DoctorNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const { logout, isLoading: isLoggingOut } = useLogout();
   const user = useAppSelector((state) => state.auth.user);
 
@@ -44,6 +46,12 @@ export default function DoctorNavbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   const menuItems = [
     {
@@ -143,8 +151,7 @@ export default function DoctorNavbar() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="flex items-center w-full gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                         >
                           <Icon className="h-4 w-4 text-gray-400 flex-shrink-0" />
                           <span>{item.label}</span>

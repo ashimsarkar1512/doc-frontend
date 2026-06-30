@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useAppDispatch } from '../store/hooks'
 import { clearAuth } from '../features/auth/authSlice'
 import { baseApi } from '../api/baseApi'
+import { useRouter } from 'next/navigation'
 
 export function useLogout() {
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const logout = async () => {
     setIsLoading(true)
@@ -33,8 +35,9 @@ export function useLogout() {
       // 2. Reset all RTK Query cache
       dispatch(baseApi.util.resetApiState())
       // 3. Hit the server-side route which clears HttpOnly/server cookies
+      await fetch('/api/logout', { method: 'POST' })
       //    and redirects to /login — this guarantees middleware sees no token
-      window.location.href = '/api/logout'
+      router.push('/login')
     }
   }
 

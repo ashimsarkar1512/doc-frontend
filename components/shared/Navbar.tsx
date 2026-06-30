@@ -9,6 +9,7 @@ import Logo from "../ui/Logo";
 import ServicesMegaMenu from "./ServicesMegaMenu";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { useLogout } from "@/Redux/hooks/useLogout";
+import { useGetCurrentUserQuery } from "@/Redux/api/authApi";
 import { useRouter, usePathname } from "next/navigation";
 
 interface NavbarProps {
@@ -46,6 +47,10 @@ const Navbar = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const { data: currentUser } = useGetCurrentUserQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
   // const handleStartConsultation = () => {
   //   setIsMobileMenuOpen(false);
   //   if (pathname === "/") {
@@ -56,13 +61,13 @@ const Navbar = ({
   //   }
   // };
   const handleStartConsultation = () => {
-  setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false);
 
-  window.open(
-    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-    "_blank"
-  );
-};
+    window.open(
+      "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+      "_blank"
+    );
+  };
 
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
@@ -81,9 +86,11 @@ const Navbar = ({
   };
 
   const getDashboardHref = () => {
-    if (!user?.role) return "/";
-    const role = user.role.toUpperCase();
-   
+    const activeRole = currentUser?.data?.role || user?.role;
+    if (!activeRole) return "/";
+    
+    const role = activeRole.toUpperCase();
+
     if (role === "DOCTOR" || role === "PROVIDER") return "/doctor";
     return "/patient";
   };
@@ -103,6 +110,11 @@ const Navbar = ({
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [embedded]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsProfileOpen(false);
+  }, [pathname]);
 
   // Close Services on outside click
   useEffect(() => {
@@ -173,17 +185,16 @@ const Navbar = ({
   return (
     <nav
       style={{ top: isScrolled ? '0px' : 'var(--banner-height, 0px)' }}
-      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
-        isScrolled
+      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${isScrolled
           ? isDark
             ? `bg-white/90 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-black/10`
             : `bg-black/40 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
           : overlay && !isDark
-          ? `bg-gradient-to-b from-black/45 via-black/15 to-transparent ${initialPadding}`
-          : overlay && isDark
-          ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
-          : `bg-transparent ${initialPadding}`
-      } ${className}`}
+            ? `bg-gradient-to-b from-black/45 via-black/15 to-transparent ${initialPadding}`
+            : overlay && isDark
+              ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
+              : `bg-transparent ${initialPadding}`
+        } ${className}`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
         {/* Logo */}
@@ -243,9 +254,8 @@ const Navbar = ({
             >
               <span>Our Services</span>
               <ChevronDown
-                className={`h-5 w-5 transition-transform ${
-                  isServicesOpen ? "rotate-180" : ""
-                }`}
+                className={`h-5 w-5 transition-transform ${isServicesOpen ? "rotate-180" : ""
+                  }`}
               />
             </div>
 
@@ -265,6 +275,7 @@ const Navbar = ({
 
           <Link
             href="/lab-testing"
+            prefetch={true}
             className={`${textColor} transition-colors text-xl md:text-base font-medium`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
@@ -273,7 +284,8 @@ const Navbar = ({
 
           <Link
             href="/blog"
-            className={`${textColor} transition-colors text-xl md:text-base`}
+            prefetch={true}
+            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
@@ -331,16 +343,13 @@ const Navbar = ({
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    window.location.href = getDashboardHref();
-                  }}
+                <Link
+                  href={getDashboardHref()}
                   className={`flex items-center gap-2 text-base font-medium ${textColor} w-full text-left`}
                 >
                   <LayoutDashboard className="h-5 w-5" />
                   Dashboard
-                </button>
+                </Link>
                 <button
                   onClick={handleStartConsultation}
                   className={`px-5 py-3 rounded-full border ${buttonStyle} text-left`}
@@ -459,16 +468,13 @@ const Navbar = ({
 
                     {/* Dashboard */}
                     <div className="py-2">
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          window.location.href = getDashboardHref();
-                        }}
+                      <Link
+                        href={getDashboardHref()}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                       >
                         <LayoutDashboard className="h-4 w-4 text-gray-400 flex-shrink-0" />
                         <span>Dashboard</span>
-                      </button>
+                      </Link>
                     </div>
 
                     {/* Logout */}

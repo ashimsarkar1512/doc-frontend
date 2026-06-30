@@ -3,6 +3,7 @@
 import { FilterButtonProps, PaginationButtonProps } from "@/types";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, RotateCcw } from "lucide-react";
 import {
   useGetCategoriesNamesQuery,
@@ -95,14 +96,15 @@ const AssessmentCard = ({
     border border-white/10
   `}
   >
-    {/* Background image — full card using native img for fast S3 load */}
+    {/* Background image — full card using Next.js Image for optimized loading */}
     {assessment.thumbnail && (
       <div className="absolute inset-0 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={assessment.thumbnail}
           alt={assessment.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
       </div>
     )}
@@ -140,6 +142,7 @@ const AssessmentCard = ({
       {/* Button — visible on hover */}
       <Link
         href={`/assessment/${assessment.id}`}
+        prefetch={true}
         onClick={(e) => e.stopPropagation()}
         className="
           inline-block

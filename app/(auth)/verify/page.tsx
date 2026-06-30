@@ -181,7 +181,7 @@ const VerifyPage = () => {
 
               <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
                 <div className="flex flex-col items-center justify-center space-y-6 py-4">
-                  <div className="w-full">
+                  <div className="w-full mt-6">
                     <label className="block text-sm font-medium text-white mb-4">
                       Enter OTP
                     </label>
