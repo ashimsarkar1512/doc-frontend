@@ -96,14 +96,14 @@ export default function DoctorNavbar() {
             >
               <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 sm:h-10 sm:w-10">
                 {user?.profile?.avatar ? (
-                  // <Image
-                  //   src={user.profile.avatar}
-                  //   alt={getDisplayName()}
-                  //   fill
-                  //   sizes="40px"
-                  //   className="object-cover"
-                  // />
-                  <img src={user.profile.avatar} alt={getDisplayName()} className="object-cover w-full h-full"/>
+                  <Image
+                    src={user.profile.avatar}
+                    alt={getDisplayName()}
+                    
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
                     {getInitials()}
@@ -134,7 +134,9 @@ export default function DoctorNavbar() {
                     <p className="text-sm font-bold text-gray-900 truncate">
                       {getDisplayName()}
                     </p>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
+                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                      {user?.email}
+                    </p>
                   </div>
 
                   {/* Menu Items */}

@@ -6,25 +6,25 @@ import { useAppSelector } from "@/Redux/store/hooks";
 
 export default function DoctorWelcomeData() {
   const user = useAppSelector((state) => state.auth.user);
-//   console.log(user)
+  // console.log(user)
+const fallback = "/doctor/profile-doc.png";
+  const name = user?.profile?.name || "X";
 
-  const name = user?.profile?.name || "Doctor";
-//   const avatar = user?.profile?.avatar || "/doctor/profile-doc.png";
-  const avatar = user?.profile?.avatar ;
+const avatar =
+  user?.profile?.avatar ?? fallback; // use ?? instead of ||
+  // const avatar = user?.profile?.avatar ;
 
   return (
     <div className="flex items-center gap-5 mb-8 ">
       <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-sm border border-gray-100">
-        {/* <Image
-          src={avatar}
-          alt={name}
-           unoptimized
-          fill
-          className="object-cover"
-        /> */}
-        <img src={avatar} alt="name"
-         className="w-full h-full object-cover"
-         />
+     <Image
+    src={avatar}
+    alt={name}
+    width={80}
+    height={80}
+    className="object-cover w-full h-full"
+  /> 
+       
       </div>
 
       <div>
