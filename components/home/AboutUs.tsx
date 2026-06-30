@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 const services = [
   {
@@ -69,6 +69,29 @@ const services = [
   },
 ];
 
+// Word-by-word animation component
+const AnimatedText = ({ text, className }: { text: string; className?: string }) => {
+  const words = text.split(" ");
+
+  return (
+    <span className={className}>
+      {words.map((word, index) => (
+        <motion.span
+          key={index}
+          initial={{ color: "#9CA3AF" }}
+          whileInView={{ color: "#111827" }}
+          viewport={{ once: false, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: index * 0.08, ease: "easeOut" }}
+          className="inline-block"
+        >
+          {word}
+          {index < words.length - 1 && " "}
+        </motion.span>
+      ))}
+    </span>
+  );
+};
+
 const AboutUs = () => {
   const { content, isLoading } = useHomepageContent();
 
@@ -80,7 +103,7 @@ const AboutUs = () => {
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center font-sans">
       {/* Top Badge */}
-      <span className="bg-gray-100 text-gray-600 text-lg  font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
+      <span className="bg-gray-100 text-gray-600 text-lg font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
         {subtitle}
       </span>
 
@@ -88,52 +111,28 @@ const AboutUs = () => {
       {isLoading ? (
         <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-12" />
       ) : title ? (
-        <h2 className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12">
-          {title} <span className="text-[#AEAEAE]">{description}</span>
-        </h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-100px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
+        >
+          {title}{" "}
+          <AnimatedText text={description || ""} />
+        </motion.h2>
       ) : (
-        <h2 className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12"
+        >
           Weight Loss MD was built by a team of physicians and technologists who
           knew there had to be a better way.{" "}
-          <span className="text-gray-400">
-            By leveraging secure telehealth technology, we&apos;ve created a
-            clinic that lives on your schedule, not ours.
-          </span>
-        </h2>
-      )}
-
-      {/* Description */}
-      {/* {description && (
-        <p className="text-center text-gray-500 text-base max-w-2xl mb-10 leading-relaxed">
-          {description}
-        </p>
-      )} */}
-
-      {/* Bullets */}
-      {bullets.length > 0 && (
-        <ul className="flex flex-wrap justify-center gap-3 mb-10">
-          {bullets.map((bullet, i) => (
-            <li
-              key={i}
-              className="flex items-center gap-2 bg-blue-50 text-blue-700 text-sm font-medium px-4 py-2 rounded-full"
-            >
-              <svg
-                className="w-4 h-4 text-blue-500 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.5 12.75l6 6 9-13.5"
-                />
-              </svg>
-              {bullet}
-            </li>
-          ))}
-        </ul>
+          <AnimatedText text="By leveraging secure telehealth technology, we've created a clinic that lives on your schedule, not ours." />
+        </motion.h2>
       )}
 
       {/* Services Grid */}
