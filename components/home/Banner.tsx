@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -8,14 +8,10 @@ const Banner = () => {
   const { content, isLoading } = useHomepageContent();
 
   // Resolve hero image URL
-  const heroImageUrl =
-    content?.heroMedia?.fileUrl ||
-    null;
+  const heroImageUrl = content?.heroMedia?.fileUrl || null;
 
   // Resolve badge image URL
-  const badgeImageUrl =
-    content?.heroBadgeImage?.fileUrl ||
-    null;
+  const badgeImageUrl = content?.heroBadgeImage?.fileUrl || null;
 
   const heroTitle = content?.heroTitle || "Medical Weight Management Program";
   const heroDescription =
@@ -108,21 +104,20 @@ const Banner = () => {
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
-                className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden"
+                className="relative w-10 h-10 rounded-full overflow-hidden"
               >
                 <Image
                   src={`/banner/avater/Ellipse ${n}.png`}
                   alt="Avatar"
-                  fill
+                  width={40}
+                  height={40}
                   className="object-cover"
-                  sizes="40px"
                 />
               </div>
             ))}
           </div>
         )}
       </div>
-
 
       {/* Heading */}
       {isLoading ? (

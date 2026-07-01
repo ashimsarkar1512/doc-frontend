@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { ArrowLeft, Eye, EyeOff, Loader2, Lock } from 'lucide-react';
+import React, { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ArrowLeft, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 
-import Navbar from '@/components/shared/Navbar';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import Logo from "@/components/ui/Logo";
 
-import { useResetPasswordMutation } from '@/Redux/api/authApi';
-import { useAppSelector } from '@/Redux/store/hooks';
+import { useResetPasswordMutation } from "@/Redux/api/authApi";
+import { useAppSelector } from "@/Redux/store/hooks";
+import Link from "next/link";
 
 const ResetPasswordPage = () => {
   const router = useRouter();
   const otpPending = useAppSelector((state) => state.auth.otpPending);
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -28,13 +29,13 @@ const ResetPasswordPage = () => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match.');
+      toast.error("Passwords do not match.");
       return;
     }
 
     if (!otpPending?.challengeId) {
-      toast.error('Session expired. Please start again.');
-      router.push('/forgot-password');
+      toast.error("Session expired. Please start again.");
+      router.push("/forgot-password");
       return;
     }
 
@@ -46,11 +47,11 @@ const ResetPasswordPage = () => {
       }).unwrap();
 
       toast.success(res.message);
-      router.push('/login');
+      router.push("/login");
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Failed to reset password. Please try again.';
+        "Failed to reset password. Please try again.";
       toast.error(message);
     }
   };
@@ -94,12 +95,16 @@ const ResetPasswordPage = () => {
                   Reset Password
                 </h2>
                 <p className="text-xs text-white/70 mt-2 font-light max-w-xs mx-auto leading-relaxed">
-                  Enter your new password below. Make sure it's strong and memorable.
+                  Enter your new password below. Make sure it's strong and
+                  memorable.
                 </p>
               </header>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between mt-4">
+              <form
+                onSubmit={handleSubmit}
+                className="flex-grow flex flex-col justify-between mt-4"
+              >
                 <div className="space-y-5 flex-grow flex flex-col justify-center">
                   {/* New Password */}
                   <div className="space-y-2">
@@ -109,7 +114,7 @@ const ResetPasswordPage = () => {
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 pointer-events-none" />
                       <input
-                        type={showNew ? 'text' : 'password'}
+                        type={showNew ? "text" : "password"}
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
@@ -120,9 +125,13 @@ const ResetPasswordPage = () => {
                         type="button"
                         onClick={() => setShowNew(!showNew)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                        aria-label={showNew ? 'Hide password' : 'Show password'}
+                        aria-label={showNew ? "Hide password" : "Show password"}
                       >
-                        {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showNew ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -135,28 +144,36 @@ const ResetPasswordPage = () => {
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 pointer-events-none" />
                       <input
-                        type={showConfirm ? 'text' : 'password'}
+                        type={showConfirm ? "text" : "password"}
                         required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm new password"
                         className={`w-full bg-white/10 border rounded-2xl pl-11 pr-12 py-4 text-white placeholder-white/30 focus:outline-none focus:bg-white/15 transition-all duration-200 text-sm ${
                           confirmPassword && newPassword !== confirmPassword
-                            ? 'border-red-400/60 focus:border-red-400'
-                            : 'border-white/10 focus:border-white/30'
+                            ? "border-red-400/60 focus:border-red-400"
+                            : "border-white/10 focus:border-white/30"
                         }`}
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirm(!showConfirm)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                        aria-label={showConfirm ? 'Hide password' : 'Show password'}
+                        aria-label={
+                          showConfirm ? "Hide password" : "Show password"
+                        }
                       >
-                        {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showConfirm ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </button>
                     </div>
                     {confirmPassword && newPassword !== confirmPassword && (
-                      <p className="text-xs text-red-400 mt-1">Passwords do not match.</p>
+                      <p className="text-xs text-red-400 mt-1">
+                        Passwords do not match.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -164,7 +181,10 @@ const ResetPasswordPage = () => {
                 <footer className="mt-auto">
                   <button
                     type="submit"
-                    disabled={isLoading || (!!confirmPassword && newPassword !== confirmPassword)}
+                    disabled={
+                      isLoading ||
+                      (!!confirmPassword && newPassword !== confirmPassword)
+                    }
                     className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     {isLoading ? (
@@ -173,18 +193,19 @@ const ResetPasswordPage = () => {
                         Resetting…
                       </>
                     ) : (
-                      <>Reset Password <span className="text-base">→</span></>
+                      <>
+                        Reset Password <span className="text-base">→</span>
+                      </>
                     )}
                   </button>
 
                   <div className="text-center pt-4">
-                    <button
-                      type="button"
-                      onClick={() => router.push('/login')}
+                    <Link
+                      href="/login"
                       className="text-xs font-light text-white/80 hover:text-white transition-colors underline underline-offset-4"
                     >
                       Back to Login
-                    </button>
+                    </Link>
                   </div>
                 </footer>
               </form>
