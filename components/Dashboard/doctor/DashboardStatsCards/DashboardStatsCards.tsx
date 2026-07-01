@@ -23,7 +23,7 @@ export default function DashboardStatsCards() {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div className="bg-[#e6ecfd] rounded-2xl p-6 flex items-start justify-between shadow-sm">
+        <div className="bg-[rgba(29,78,216,0.16)]  rounded-2xl p-6 flex items-start justify-between shadow-sm">
           <div>
             <h2 className="text-3xl font-bold text-[#355ff5] mb-2">{metaData?.totalConsulted || 0}</h2>
             <p className="text-gray-700 font-medium text-sm">Total Consulted</p>
