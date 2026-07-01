@@ -28,7 +28,7 @@ const BlogList = () => {
         }
         const responseData = await res.json();
         const data = responseData.data || [];
-        
+
         const formattedPosts: BlogPost[] = data.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -38,12 +38,12 @@ const BlogList = () => {
           providerImage: item.provider?.avatar?.fileUrl,
           providerName: item.provider?.name,
         }));
-        
+
         setPosts(formattedPosts);
-        
+
         const uniqueCategories = Array.from(new Set(formattedPosts.map((post) => post.category)));
         setCategories(["All Blogs", ...uniqueCategories]);
-        
+
       } catch (err) {
         console.error("Error fetching blogs:", err);
         setError("Failed to load blogs.");
@@ -51,10 +51,10 @@ const BlogList = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchBlogs();
   }, []);
-  
+
   const filteredPosts =
     activeCategory === "All Blogs"
       ? posts
@@ -63,9 +63,9 @@ const BlogList = () => {
   const displayedPosts = filteredPosts.slice(0, visibleCount);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 mb-20">
+    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-2 mb-20">
       {/* Category Filter */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+      <div className="flex flex-wrap items-center justify-start gap-2 mb-10">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -73,11 +73,10 @@ const BlogList = () => {
               setActiveCategory(cat);
               setVisibleCount(10);
             }}
-            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
-              activeCategory === cat
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${activeCategory === cat
                 ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+                : "bg-[#E5E7EB] text-gray-700 hover:bg-gray-300"
+              }`}
           >
             {cat}
           </button>
@@ -100,13 +99,13 @@ const BlogList = () => {
                   <BlogCard key={post.id} post={post} />
                 ))}
               </div>
-              
+
               {/* Load More Button */}
               {filteredPosts.length > visibleCount && (
                 <div className="flex justify-start mt-10">
-                  <button 
+                  <button
                     onClick={() => setVisibleCount((prev) => prev + 10)}
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-8 py-3 rounded-full transition-colors"
+                    className="bg-[#E5E7EB] hover:bg-gray-300 text-gray-700 text-sm font-semibold px-8 py-2.5 rounded-full transition-colors"
                   >
                     Load More
                   </button>
@@ -115,11 +114,9 @@ const BlogList = () => {
             </>
           )}
         </div>
-        
+
         <div className="lg:col-span-1">
-          <BlogSidebar 
-            providerImage={posts[0]?.providerImage}
-            providerName={posts[0]?.providerName}
+          <BlogSidebar
           />
         </div>
       </div>

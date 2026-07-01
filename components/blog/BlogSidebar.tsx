@@ -4,43 +4,52 @@ import Image from "next/image";
 import React from "react";
 import fallbackDoctorImg from "@/public/doctor-blog.png";
 
-interface BlogSidebarProps {
-  providerImage?: string;
-  providerName?: string;
-}
-
-const BlogSidebar = ({ providerImage, providerName }: BlogSidebarProps) => {
+const BlogSidebar = () => {
   return (
-    <div className="sticky top-32 w-full bg-[#F3F4F6] rounded-3xl p-8 flex flex-col items-center text-center overflow-hidden h-fit">
-      <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-snug mb-8 uppercase tracking-wide">
+    <div className="sticky top-32 w-full bg-[#EBEEF2] rounded-[2rem] pt-10 px-0 pb-0 flex flex-col items-center text-center overflow-hidden h-fit">
+      <h3 className="text-[28px] md:text-[34px] font-bold text-black leading-[1.2] pb-4  uppercase text-center px-6">
         Medical Weight<br />Management<br />Program
       </h3>
       
       <div className="relative w-full h-[350px] flex justify-center mt-auto">
-
         
-        {/* Doctor image (dynamic or fallback) */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-24">
-          <div className="absolute inset-0 w-full h-full">
+        {/* WLMD Watermark */}
+<div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 px-4 pb-6 -translate-y-14">
+  <Image
+    src="/WLMD.png"
+    alt="WLMD Watermark"
+    fill
+    className="object-contain"
+  />
+</div>
+        {/* Doctor image (fixed) */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-end">
+          <div className="absolute inset-x-0 bottom-0 top-0">
             <Image
-              src={providerImage || fallbackDoctorImg} 
-              alt={providerName || "Doctor"}
+              src={fallbackDoctorImg} 
+              alt="Doctor"
               fill
-              unoptimized
-              className="object-contain object-bottom drop-shadow-2xl scale-110 origin-bottom"
+              className="object-contain object-bottom drop-shadow-2xl"
             />
           </div>
         </div>
 
         {/* Action Button */}
-        <div className="absolute bottom-6 w-full z-20 px-2">
-          <button
-            onClick={() => window.open("https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434", "_blank")}
-            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium py-3.5 rounded-full transition-all shadow-md shadow-blue-500/30"
-          >
-            Book a consultation
-          </button>
-        </div>
+    <div className="absolute bottom-5 z-20 flex justify-center w-full">
+  <div className="relative z-10 inline-block p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
+    <button
+      onClick={() =>
+        window.open(
+          "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+          "_blank"
+        )
+      }
+      className="bg-[#1D4ED8] hover:bg-[#143499] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
+    >
+      Book a consultation
+    </button>
+  </div>
+</div>
       </div>
     </div>
   );
