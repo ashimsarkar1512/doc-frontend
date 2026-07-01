@@ -77,7 +77,7 @@ export default function ActionBar({
 
       {/* Right side: Request New Consultation Action */}
       <Link
-        href="/"
+        href="https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434"
         className="flex items-center justify-center gap-2 px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-semibold rounded-2xl shadow-sm text-[14px] transition-all duration-150 active:scale-[0.98] tracking-wide"
       >
         <span>Request New Consultation</span>

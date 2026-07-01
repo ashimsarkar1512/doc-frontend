@@ -105,6 +105,7 @@ export interface UpdateProfileRequest {
   city?: string
   state?: string
   zipCode?: string
+  phone?: string
 }
 
 export interface UpdateProfileResponse {
