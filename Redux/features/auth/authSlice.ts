@@ -59,11 +59,14 @@ export const tokenStorage = {
     return localStorage.getItem(TOKEN_KEY)
   },
 
-  set: (token: string): void => {
+  set: (token: string, userRole?: string): void => {
     if (typeof window === 'undefined') return
     localStorage.setItem(TOKEN_KEY, token)
     // Cookie for middleware (server-side) to read — 7 days
     document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+    if (userRole) {
+      document.cookie = `userRole=${userRole}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+    }
   },
 
   remove: (): void => {
@@ -75,7 +78,7 @@ export const tokenStorage = {
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('accessToken')
     // Clear all auth cookies (both ours and server-set)
-    const cookiesToClear = ['authToken', 'token', 'refreshToken', 'accessToken']
+    const cookiesToClear = ['authToken', 'token', 'refreshToken', 'accessToken', 'userRole']
     cookiesToClear.forEach((name) => {
       document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`
     })
@@ -145,7 +148,7 @@ const authSlice = createSlice({
       state.token = action.payload.accessToken
       state.isAuthenticated = true
       state.otpPending = null
-      tokenStorage.set(action.payload.accessToken)
+      tokenStorage.set(action.payload.accessToken, action.payload.user.roles?.[0] || action.payload.user.role)
       userStorage.set(action.payload.user)
     },
 

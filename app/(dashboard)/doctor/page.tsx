@@ -23,6 +23,7 @@ import DoctorNavbar from "@/components/Dashboard/doctor/DoctorNavbar";
 import DoctorSettings from "@/components/Dashboard/doctor/DoctorSettings";
 import DashboardStatsCards from "@/components/Dashboard/doctor/DashboardStatsCards/DashboardStatsCards";
 import DoctorNotificationWrapper from "@/components/Dashboard/doctor/DoctorNotificationWrapper";
+import DoctorWelcomeData from "@/components/Dashboard/doctor/DashboardStatsCards/DoctorWelcomeData";
 
 
 
@@ -148,24 +149,8 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-28">
         {/* Welcome Section */}
-        <div className="flex items-center gap-5 mb-8">
-          <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-sm border border-gray-100">
-            <Image
-              src="/doctor/profile-doc.png"
-              alt="Dr. Runa"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-800 mb-1">
-              Welcome Back, Dr. Runa! (shaikot)
-            </h1>
-            <p className="text-gray-500 text-sm">
-              Manage your patients and consultations
-            </p>
-          </div>
-        </div>
+      
+        <DoctorWelcomeData/>
 
         {/* Stats Cards */}
         <DashboardStatsCards/>

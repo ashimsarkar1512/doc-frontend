@@ -12,13 +12,13 @@ export default function Page() {
   return (
     <HomepageContentProvider>
       <main>
-        <Home/>
-        <Assesments/>
-        <AboutUs/>
-        <Expert/>
-        <HowItsWork/>
-        <TestiMonial/>
-        <QNA/>
+        <Home />
+        <Assesments />
+        <AboutUs />
+        <Expert />
+        <HowItsWork />
+        <TestiMonial />
+        <QNA />
       </main>
     </HomepageContentProvider>
   );

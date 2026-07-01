@@ -8,13 +8,16 @@ import { ChevronDown, LayoutDashboard, LogOut, User, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import NotificationDropdown from "./NotificationDropdown";
 
 export default function DoctorNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const { logout, isLoading: isLoggingOut } = useLogout();
   const user = useAppSelector((state) => state.auth.user);
+  // console.log(user)
 
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
@@ -44,6 +47,12 @@ export default function DoctorNavbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   const menuItems = [
     {
@@ -98,8 +107,9 @@ export default function DoctorNavbar() {
                   <Image
                     src={user.profile.avatar}
                     alt={getDisplayName()}
-                    fill
-                    sizes="40px"
+                    
+                    width={40}
+                    height={40}
                     className="object-cover"
                   />
                 ) : (
@@ -132,7 +142,9 @@ export default function DoctorNavbar() {
                     <p className="text-sm font-bold text-gray-900 truncate">
                       {getDisplayName()}
                     </p>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
+                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                      {user?.email}
+                    </p>
                   </div>
 
                   {/* Menu Items */}
@@ -143,8 +155,7 @@ export default function DoctorNavbar() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="flex items-center w-full gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                         >
                           <Icon className="h-4 w-4 text-gray-400 flex-shrink-0" />
                           <span>{item.label}</span>

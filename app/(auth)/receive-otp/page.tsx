@@ -125,9 +125,9 @@ const ReceiveOtpPage = () => {
 
               <form
                 onSubmit={handleSubmit}
-                className="flex-grow flex flex-col justify-between"
+                className="flex-grow flex flex-col justify-between mt-12"
               >
-                <div className="flex flex-col space-y-4 py-4 w-full max-w-md mx-auto">
+                <div className="flex flex-col space-y-6 py-4 w-full max-w-md mx-auto">
                   {/* Email Option */}
                   <label
                     className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${

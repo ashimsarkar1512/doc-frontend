@@ -26,11 +26,12 @@ const Home = () => {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             {heroImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={heroImageUrl}
                 alt="Hero background"
-                className="w-full h-full object-cover"
+                fill
+                priority
+                className="object-cover"
               />
             ) : (
               <Image
