@@ -1,7 +1,7 @@
 "use client";
 
-import { AlertCircle, CheckCircle, HelpCircle, Shield } from "lucide-react";
-import { useState, useEffect, Suspense } from "react";
+import { AlertCircle, BadgeDollarSign, CheckCircle, HelpCircle, Shield, ShieldBan } from "lucide-react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ActionBar from "./ActionBar";
 import ConsultationCard from "./ConsultationCard";
@@ -16,89 +16,12 @@ import ChatWindow from "./domains/messages/ChatWindow";
 import MessageList from "./domains/messages/MessageList";
 import { useGetDashboardStatsQuery } from "@/Redux/features/patient/dashboard/dashboardApi";
 import { useGetMyAssessmentsQuery } from "@/Redux/features/patient/assessmentSubmission/assessmentSubmissionApi";
+import { useGetMyOrdersQuery } from "@/Redux/features/patient/orders/orderApi";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { Consultation, TabType } from "@/types/patientTypes";
 import NotificationCenter from "./domains/notifications/NotificationCenter";
 import SettingsCenter from "./domains/settings/SettingsCenter";
 
-
-// Hardcoded stock data for illustration.
-  // const initialConsultations: Consultation[] = [
-  //   {
-  //     id: "#001216",
-  //     title: "Weight Loss",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001217",
-  //     title: "Individual Therapy",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001218",
-  //     title: "Anxiety & Stress",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001219",
-  //     title: "Clarity Consult",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001210",
-  //     title: "Personal Training",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001211",
-  //     title: "Dietary Consultation",
-  //     category: "Hormone Therapy",
-  //     status: "Approved",
-  //     image:
-  //       "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   // Pending Consultations
-  //   {
-  //     id: "#001231",
-  //     title: "Testosterone Check",
-  //     category: "Hormone Therapy",
-  //     status: "Pending",
-  //     image:
-  //       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   {
-  //     id: "#001232",
-  //     title: "Fat Burner Injection",
-  //     category: "Hormone Therapy",
-  //     status: "Pending",
-  //     image:
-  //       "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600&auto=format&fit=crop",
-  //   },
-  //   // Declined Consultations
-  //   {
-  //     id: "#001241",
-  //     title: "PRP Hair Regrowth",
-  //     category: "Regrow Hair",
-  //     status: "Declined",
-  //     image:
-  //       "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=600&auto=format&fit=crop",
-  //   },
-  // ];
 
 export default function PatientPortalHome() {
   const user = useAppSelector((state) => state.auth.user);
@@ -118,6 +41,9 @@ export default function PatientPortalHome() {
   }, { skip: activeTab === "My Orders" });
   const submissions = assessmentsResponse?.submissions || [];
   const counts = assessmentsResponse?.counts || {};
+
+  const { data: ordersResponse } = useGetMyOrdersQuery({}, { pollingInterval: 5000 });
+  const totalOrders = ordersResponse?.orders?.length || 0;
 
   const mappedConsultations: Consultation[] = submissions.map((sub) => ({
     id: sub.id,
@@ -205,32 +131,32 @@ export default function PatientPortalHome() {
           value={stats?.TotalPending?.toString().padStart(2, "0") || "00"}
           label="Pending Requests"
           icon={Shield}
-          bgColor="bg-[#FFF9E6]"
-          textColor="text-[#d97706]"
+          bgColor="bg-[#FDC70029]"
+          textColor="text-[#D4AF37]"
           borderColor="border-[#FEF0CF]"
         />
         <KpiCard
           value={stats?.TotalApproved?.toString().padStart(2, "0") || "00"}
           label="Total Approved"
           icon={CheckCircle}
-          bgColor="bg-[#E2F6EC]"
-          textColor="text-[#059669]"
+          bgColor="bg-[#24B57B29]"
+          textColor="text-[#24B57B]"
           borderColor="border-[#D1FAE5]"
         />
         <KpiCard
           value={stats?.TotalDeclined?.toString().padStart(2, "0") || "00"}
           label="Total Declined"
-          icon={AlertCircle}
-          bgColor="bg-[#FBECE9]"
-          textColor="text-[#dc2626]"
+          icon={ShieldBan}
+          bgColor="bg-[#D4563729]"
+          textColor="text-[#D45637]"
           borderColor="border-[#FEE2E2]"
         />
         <KpiCard
           value={`$${stats?.TotalPayment || 0}`}
           label="Total Paid"
-          icon={Shield}
-          bgColor="bg-[#E1EBFD]"
-          textColor="text-[#2563eb]"
+          icon={BadgeDollarSign}
+          bgColor="bg-[#1D4ED829]"
+          textColor="text-[#1D4ED8]"
           borderColor="border-[#DBEAFE]"
         />
       </div>
@@ -258,6 +184,7 @@ export default function PatientPortalHome() {
               activeTab={activeTab}
               onChangeTab={setActiveTab}
               counts={counts}
+              totalOrders={totalOrders}
             />
           )}
 

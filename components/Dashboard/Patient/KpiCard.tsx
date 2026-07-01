@@ -1,6 +1,5 @@
-import { KpiCardProps } from '@/types/patientTypes';
-import React from 'react';
-
+import { KpiCardProps } from "@/types/patientTypes";
+import React from "react";
 
 export default function KpiCard({
   value,
@@ -8,26 +7,28 @@ export default function KpiCard({
   icon: Icon,
   bgColor,
   textColor,
-  borderColor
+  borderColor,
 }: KpiCardProps) {
   return (
-    <div 
+    <div
       className={`
         ${bgColor} ${borderColor} border rounded-[22px] p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)]
-        flex items-center justify-between transition-all duration-300 hover:shadow-md
+         transition-all duration-300 hover:shadow-md
       `}
     >
-      <div className="flex flex-col gap-1.5">
-        <span className={`text-[2.2rem] font-bold tracking-tight ${textColor} leading-none`}>
+      <div className="flex justify-between items-center mb-4">
+        <span
+          className={`text-4xl font-bold tracking-tight ${textColor} leading-none`}
+        >
           {value}
         </span>
-        <span className="text-[13px] font-medium text-gray-500 leading-none">
-          {label}
-        </span>
+
+          <Icon className={`h-10 w-10 ${textColor}`} />
       </div>
-      <div className={`p-3.5 bg-white/60 rounded-2xl border border-white/40 flex items-center justify-center`}>
-        <Icon className={`h-6 w-6 ${textColor}`} />
-      </div>
+      <span className="text-xl font-medium text-[#272628] leading-none ">
+        {label}
+      </span>
+     
     </div>
   );
 }

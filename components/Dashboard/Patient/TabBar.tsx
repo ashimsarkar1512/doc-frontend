@@ -13,12 +13,14 @@ interface TabBarProps {
     REFIL_REQUESTED?: number;
     REJECTED?: number;
   };
+  totalOrders?: number;
 }
 
 export default function TabBar({
   activeTab,
   onChangeTab,
-  counts
+  counts,
+  totalOrders = 0
 }: TabBarProps) {
   const tabs = [
 
@@ -27,7 +29,7 @@ export default function TabBar({
     { type: 'ACCEPTED' as TabType, label: 'Accepted', count: counts.ACCEPTED || 0, badgeColor: 'bg-[#10b981]' },
     { type: 'REFIL_REQUESTED' as TabType, label: 'Refill Requested', count: counts.REFIL_REQUESTED || 0, badgeColor: 'bg-[#8b5cf6]' },
     { type: 'REJECTED' as TabType, label: 'Rejected', count: counts.REJECTED || 0, badgeColor: 'bg-[#ef4444]' },
-    { type: 'My Orders' as TabType, label: 'My Orders', count: null, badgeColor: '' }
+    { type: 'My Orders' as TabType, label: 'My Orders', count: totalOrders, badgeColor: 'bg-[#2563eb]' }
   ];
 
   return (

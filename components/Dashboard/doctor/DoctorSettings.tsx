@@ -90,6 +90,7 @@ export default function DoctorSettings() {
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
   const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
   const [avatarId, setAvatarId] = useState<string | undefined>();
   const [profileImage, setProfileImage] = useState("/doctor/profile-doc.png");
 
@@ -97,6 +98,7 @@ export default function DoctorSettings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -128,6 +130,8 @@ export default function DoctorSettings() {
       setZip(user.profile?.zipCode || "");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setBio(user.profile?.bio || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPhone(user.phone || "");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvatarId(user.profile?.avatarId);
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -171,6 +175,7 @@ export default function DoctorSettings() {
       await updateProfile({
         avatarId,
         name: fullName,
+        phone,
         bio,
         title,
         specialty,
@@ -182,8 +187,17 @@ export default function DoctorSettings() {
       }).unwrap();
       toast.success("Profile updated successfully");
       refetch();
-    } catch (error) {
-      toast.error("Failed to update profile");
+    } catch (error: any) {
+      if (
+        error?.data?.message?.toLowerCase().includes("phone") ||
+        error?.status === 409
+      ) {
+        toast.error(
+          "this phone number already use please use another phone number"
+        );
+      } else {
+        toast.error(error?.data?.message || "Failed to update profile");
+      }
     }
   };
 
@@ -335,8 +349,8 @@ export default function DoctorSettings() {
               <label className={labelClassName}>Contact Number</label>
               <input
                 className={inputClassName}
-                value={user?.phone || ""}
-                disabled
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="Contact Number"
               />
             </div>
@@ -432,12 +446,23 @@ export default function DoctorSettings() {
             <label className={labelClassName}>Current Password</label>
             <div className="relative">
               <input
-                type="password"
+                type={showCurrentPassword ? "text" : "password"}
                 className={`${inputClassName} pr-10`}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter current password"
               />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showCurrentPassword ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeOff className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </div>
 
