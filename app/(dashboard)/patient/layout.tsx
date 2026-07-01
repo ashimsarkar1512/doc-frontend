@@ -5,16 +5,7 @@ import Logo from "@/components/ui/Logo";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ChevronDown,
-  LayoutDashboard,
-  LogOut,
-  Mail,
-  Menu,
-  Settings,
-  X,
-  Home,
-} from "lucide-react";
+import { ChevronDown, LogOut, Mail, Menu, X, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -79,7 +70,10 @@ export default function PatientLayout({
       <header className="w-full bg-white border-b border-gray-150 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
           {/* Brand Logo */}
-          <button onClick={() => window.location.href = "/"} className="flex items-center gap-1 cursor-pointer">
+          <button
+            onClick={() => (window.location.href = "/")}
+            className="flex items-center gap-1 cursor-pointer"
+          >
             <Logo />
           </button>
 
@@ -97,7 +91,10 @@ export default function PatientLayout({
           </nav>
 
           {/* Desktop Patient Profile */}
-          <div ref={profileRef} className="hidden md:flex items-center gap-3 relative">
+          <div
+            ref={profileRef}
+            className="hidden md:flex items-center gap-3 relative"
+          >
             <button
               onClick={() => setIsProfileDropdownOpen((p) => !p)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-all select-none focus:outline-none"
@@ -167,7 +164,9 @@ export default function PatientLayout({
                       </p>
                       <div className="flex items-center gap-1 mt-0.5">
                         <Mail className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -263,7 +262,9 @@ export default function PatientLayout({
                       <p className="text-sm font-semibold text-gray-900 truncate">
                         {getDisplayName()}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                      <p className="text-xs text-gray-400 truncate">
+                        {user?.email}
+                      </p>
                     </div>
                   </div>
 
