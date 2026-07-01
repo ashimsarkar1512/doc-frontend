@@ -27,6 +27,7 @@ export default function PreviewDetailsPage() {
   const router = useRouter();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [checkoutPayload, setCheckoutPayload] = useState<any>(null);
+  const [discountCode, setDiscountCode] = useState<string | null>(null);
   const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -38,11 +39,25 @@ export default function PreviewDetailsPage() {
     }
 
     const payloadStr = localStorage.getItem("checkoutPayload");
+    let hasDiscountInPayload = false;
+    
     if (payloadStr) {
       try {
-        setCheckoutPayload(JSON.parse(payloadStr));
+        const payload = JSON.parse(payloadStr);
+        setCheckoutPayload(payload);
+        if (payload.discountCode) {
+          setDiscountCode(payload.discountCode);
+          hasDiscountInPayload = true;
+        }
       } catch (e) {
         console.error("Failed to parse checkout payload", e);
+      }
+    }
+
+    if (!hasDiscountInPayload) {
+      const savedCoupon = localStorage.getItem("appliedCoupon");
+      if (savedCoupon) {
+        setDiscountCode(savedCoupon);
       }
     }
   }, [router]);
@@ -52,8 +67,15 @@ export default function PreviewDetailsPage() {
   });
 
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
+  
+  const queryParams: any = {};
+  if (submissionId) queryParams.submissionId = submissionId;
+  if (discountCode) queryParams.discountCode = discountCode;
+  const hasParams = Object.keys(queryParams).length > 0;
+
   const { data: summaryData } = useGetCartSummaryQuery(
-    submissionId ? { submissionId } : undefined
+    hasParams ? queryParams : undefined,
+    { skip: !submissionId }
   );
 
   const [editAssessmentSubmission, { isLoading: isSaving }] = useEditAssessmentSubmissionMutation();
@@ -196,10 +218,11 @@ export default function PreviewDetailsPage() {
         return;
       }
 
-      // Merge the latest submissionId into the checkout payload
+      // Merge the latest submissionId and discountCode into the checkout payload
       const finalPayload = {
         ...checkoutPayload,
         submissionId: submissionId,
+        discountCode: discountCode || checkoutPayload.discountCode || undefined,
       };
 
       const res = await checkout(finalPayload).unwrap();
@@ -208,6 +231,7 @@ export default function PreviewDetailsPage() {
         toast.success("Payment successful! Assessment submitted for review.");
         localStorage.removeItem("submissionId");
         localStorage.removeItem("checkoutPayload");
+        localStorage.removeItem("appliedCoupon");
         router.push("/patient");
       }
     } catch (e: any) {

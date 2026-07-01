@@ -74,6 +74,12 @@ export default function CheckoutPage() {
   useEffect(() => {
     const id = localStorage.getItem("submissionId");
     if (id) setSubmissionId(id);
+
+    const savedCoupon = localStorage.getItem("appliedCoupon");
+    if (savedCoupon) {
+      setCouponInput(savedCoupon);
+      setCouponApplied(true);
+    }
   }, []);
 
   // ── API queries ──
@@ -94,6 +100,7 @@ export default function CheckoutPage() {
       setCouponError("Invalid or expired coupon code.");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCouponApplied(false);
+      localStorage.removeItem("appliedCoupon");
     }
   }, [summaryError, couponApplied]);
 
@@ -311,6 +318,7 @@ export default function CheckoutPage() {
     }
     setCouponApplied(true);
     setCouponError("");
+    localStorage.setItem("appliedCoupon", code);
   };
 
   const formatServiceDuration = (sd?: string) => {
@@ -975,6 +983,7 @@ export default function CheckoutPage() {
                         setCouponInput(e.target.value);
                         setCouponError("");
                         setCouponApplied(false);
+                        localStorage.removeItem("appliedCoupon");
                       }}
                       onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                       placeholder="Enter coupon code"
