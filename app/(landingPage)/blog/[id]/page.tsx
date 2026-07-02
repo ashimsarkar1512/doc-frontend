@@ -139,8 +139,7 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <BlogSidebar
-              providerImage={blog.provider?.avatar?.fileUrl}
-              providerName={blog.provider?.name}
+            
             />
           </div>
         </div>

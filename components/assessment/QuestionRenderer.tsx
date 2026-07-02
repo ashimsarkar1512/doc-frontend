@@ -38,18 +38,16 @@ export function RenderOption({
       {/* Option button */}
       <button
         onClick={onToggle}
-        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${
-          isSelected
+        className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
             ? "bg-white border-blue-500 shadow-sm"
             : "bg-white border-transparent hover:border-gray-300"
-        }`}
+          }`}
       >
         <span
-          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${
-            isSelected
+          className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${isSelected
               ? "border-blue-600 bg-blue-600"
               : "border-gray-400 bg-gray-300"
-          }`}
+            }`}
         >
           {isSelected &&
             (isCheckbox ? (
@@ -389,54 +387,21 @@ export function RenderQuestion({
                       {option.label}
                     </label>
                   )}
-                  <div className="relative">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                      {isNumber ? (
-                        <svg
-                          className="w-4 h-4 text-gray-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-gray-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    <input
-                      type={isNumber ? "number" : "text"}
-                      placeholder={
-                        option.placeholder?.trim() ||
-                        (isNumber ? "Enter a number..." : "Write here...")
-                      }
-                      value={answers.text[option.id] ?? ""}
-                      onChange={(e) =>
-                        setAnswers((prev) => ({
-                          ...prev,
-                          text: { ...prev.text, [option.id]: e.target.value },
-                        }))
-                      }
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-150"
-                    />
-                  </div>
+                  <input
+                    type={isNumber ? "number" : "text"}
+                    placeholder={
+                      option.placeholder?.trim() ||
+                      (isNumber ? "Enter a number..." : "Write here...")
+                    }
+                    value={answers.text[option.id] ?? ""}
+                    onChange={(e) =>
+                      setAnswers((prev) => ({
+                        ...prev,
+                        text: { ...prev.text, [option.id]: e.target.value },
+                      }))
+                    }
+                    className="w-full px-4 py-3.5 rounded-xl border-none bg-[#E5E7EB] text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150"
+                  />
                 </div>
               );
             })}

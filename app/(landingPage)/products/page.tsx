@@ -27,6 +27,7 @@ function ProductsInner() {
   const [couponInput, setCouponInput] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
@@ -65,6 +66,12 @@ function ProductsInner() {
     }
   }, [summaryError, couponApplied]);
 
+  useEffect(() => {
+    if (!summaryFetching) {
+      setIsApplyingCoupon(false);
+    }
+  }, [summaryFetching]);
+
   // ── API mutations ──
   const [addToCart] = useAddToCartMutation();
   const [removeFromCart] = useRemoveFromCartMutation();
@@ -81,6 +88,9 @@ function ProductsInner() {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // ── Optimistic UI State ──
+  const [optimisticSizes, setOptimisticSizes] = useState<Record<string, string>>({});
 
   // ── Checkbox state (controlled so checkmark works) ──
   const [recurring, setRecurring] = useState(true);
@@ -133,12 +143,34 @@ function ProductsInner() {
     }
   };
 
+  const handleVariantChange = async (itemId: string, newSize: string) => {
+    setUpdatingId(`${itemId}-size`);
+    // Optimistic UI update
+    setOptimisticSizes((prev) => ({ ...prev, [itemId]: newSize }));
+    try {
+      await updateCartItem({ id: itemId, size: newSize }).unwrap();
+      toast.success("Size updated successfully");
+    } catch (e: unknown) {
+      // Revert on failure
+      setOptimisticSizes((prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      });
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to update size");
+      console.error("Update size failed:", e);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleApplyCoupon = () => {
     const code = couponInput.trim();
     if (!code) {
       setCouponError("Please enter a coupon code.");
       return;
     }
+    setIsApplyingCoupon(true);
     setCouponApplied(true);
     setCouponError("");
     localStorage.setItem("appliedCoupon", code);
@@ -312,11 +344,34 @@ function ProductsInner() {
                             </p>
                           </div>
 
-                          {/* Size badge */}
-                          {item.size && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <span className="text-[11px] text-gray-500">Size:</span>
-                              <span className="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                          {/* Variant/Size badge */}
+                          {item.product?.variants && item.product.variants.length > 0 ? (
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2.5 mb-1.5">
+                              <span className="text-[13px] text-gray-700 font-medium mr-1">Size:</span>
+                              {item.product.variants.map((v) => {
+                                const currentSize = optimisticSizes[item.id] || item.size;
+                                const isSelected = currentSize === v.size;
+                                const isUpdatingVariant = updatingId === `${item.id}-size` && !isSelected;
+                                return (
+                                  <button
+                                    key={v.id}
+                                    onClick={() => !isSelected && handleVariantChange(item.id, v.size!)}
+                                    disabled={isUpdatingVariant}
+                                    className={`text-[12px] font-medium px-3 py-1 rounded-full transition-colors ${
+                                      isSelected
+                                        ? "bg-blue-600 text-white shadow-sm"
+                                        : "bg-[#DEE7FB] text-gray-600 hover:bg-[#D1DFF8]"
+                                    } ${isUpdatingVariant ? "opacity-50 cursor-not-allowed" : ""}`}
+                                  >
+                                    {v.size}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : item.size && (
+                            <div className="flex items-center gap-1 mt-2 mb-1">
+                              <span className="text-[13px] text-gray-600 font-medium">Size:</span>
+                              <span className="bg-[#E2E8F0] text-gray-700 text-[12px] font-medium px-3 py-1 rounded-full">
                                 {item.size}
                               </span>
                             </div>
@@ -405,13 +460,13 @@ function ProductsInner() {
                       placeholder="Enter coupon code"
                       className="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none min-w-0"
                     />
-                    {couponApplied && !summaryFetching && !summaryError && (
+                    {couponApplied && !isApplyingCoupon && !summaryError && (
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                   <button
                     onClick={handleApplyCoupon}
-                    disabled={summaryFetching}
+                    disabled={isApplyingCoupon}
                     className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     Apply
@@ -421,12 +476,12 @@ function ProductsInner() {
                 {couponError && (
                   <p className="text-red-500 text-[11px] mt-1.5 ml-1">{couponError}</p>
                 )}
-                {summaryFetching && couponApplied && (
+                {isApplyingCoupon && (
                   <p className="text-blue-600 text-[11px] mt-1.5 ml-1 font-medium flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" /> Applying coupon...
                   </p>
                 )}
-                {couponApplied && !summaryFetching && !summaryError && (
+                {couponApplied && !isApplyingCoupon && !summaryError && (
                   <p className="text-green-600 text-[11px] mt-1.5 ml-1 font-medium">
                     ✓ Coupon applied successfully!
                   </p>
@@ -524,9 +579,9 @@ function ProductsInner() {
                   onClick={() => setRecurring((v) => !v)}
                 >
                   Active monthly{" "}
-                  <span className="underline font-medium text-gray-700">
+                  <Link href="/billing-and-cancellation" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="underline font-medium text-gray-700 hover:text-blue-600 transition-colors">
                     recurring subscriptions
-                  </span>
+                  </Link>
                 </span>
               </label>
 
