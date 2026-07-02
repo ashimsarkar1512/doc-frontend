@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useGetMyConsultationsQuery } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
 import  fallBackImg from "@/public/p-image-fallback.jpg"
+import { ClipLoader } from "react-spinners";
 
 export default function DoctorTabs() {
   const [activeTab, setActiveTab] = useState("ACTIVE_CONSULTATION");
@@ -145,7 +146,9 @@ export default function DoctorTabs() {
 
       {/* ================= LOADING ================= */}
       {isLoading ? (
-        <div className="py-10 text-center text-gray-400">Loading...</div>
+        <div className="w-full min-h-[300px] flex items-center justify-center">
+        <ClipLoader size={50} color="#2563eb" />
+      </div>
       ) : (
         <>
           {/* ================= CARDS ================= */}
@@ -179,15 +182,15 @@ export default function DoctorTabs() {
 
                 {/* Body */}
                 <div className="flex flex-col flex-grow">
-                  <span className="bg-blue-50 text-blue-600 text-xs font-medium px-3 py-1 rounded-full w-fit mb-2">
+                  <span className="bg-[#EAF3FF] text-[#272628] text-base font-medium px-4 py-2 rounded-full w-fit mb-2">
                     {card.category}
                   </span>
 
-                  <h3 className="text-base font-bold text-gray-900 mb-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
                     {card.title}
                   </h3>
 
-                  <p className="text-gray-500 text-sm mb-4">
+                  <p className="text-gray-500 text-base mb-4">
                     Patient:{" "}
                     <span className="text-gray-700 font-medium">
                       {card.patientName}
@@ -220,7 +223,7 @@ export default function DoctorTabs() {
             <button
               onClick={prevPage}
               disabled={page === 1}
-              className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
+              className="px-4 py-2 bg-gray-100 text-black rounded disabled:opacity-50"
             >
               Prev
             </button>
@@ -232,7 +235,7 @@ export default function DoctorTabs() {
             <button
               onClick={nextPage}
               disabled={page >= (meta?.totalPages || 1)}
-              className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
+              className="px-4 py-2 bg-gray-100 text-black rounded disabled:opacity-50"
             >
               Next
             </button>

@@ -10,7 +10,7 @@ import AssessmentDeclineModal from "./AssessmentDeclineModal";
 import { useSearchParams } from "next/navigation";
 import { useGetConsultationByIdQuery } from "@/Redux/features/doctorDashboard/doctorDashboardApi";
 import ApproveConsultationModal from "./ApproveConsultationModal";
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, ClipLoader } from "react-spinners";
 
 // ====================================================================
 // Question Renderer Components
@@ -103,7 +103,7 @@ function QuestionRenderer({ question }: { question: any }) {
       case "INFORMATION_ONLY":
         return (
           <div
-            className="text-sm text-gray-700"
+            className="text-base text-gray-700"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         );
@@ -218,12 +218,12 @@ function QuestionRenderer({ question }: { question: any }) {
         <h3 className="text-base font-bold text-gray-900 mb-2">{heading}</h3>
       )}
       {questionText && (
-        <h4 className="font-semibold text-gray-800 text-sm mb-3">
+        <h4 className="font-semibold text-gray-800 text-lg mb-3">
           {questionText}
         </h4>
       )}
       {description && type !== "INFORMATION_ONLY" && (
-        <p className="text-xs text-gray-500 mb-4">{description}</p>
+        <p className="text-base text-gray-500 mb-4">{description}</p>
       )}
       {renderAnswer()}
     </div>
@@ -233,7 +233,7 @@ function QuestionRenderer({ question }: { question: any }) {
 import { toast } from "sonner";
 import { useCreateConversationMutation } from "@/Redux/api/messageApi";
 import { useAppSelector } from "@/Redux/store/hooks";
-import notFoundImag from "@/public/Image-not-found-m.png"
+import notFoundImag from "@/public/Image-not-found-m.png";
 import { useRouter } from "next/navigation";
 
 // for the bottom part  complinceConfiramation
@@ -267,7 +267,7 @@ function ComplianceCheckItem({
           </svg>
         )}
       </span>
-      <span className="text-gray-700">{label}</span>
+      <span className="text-gray-700 text-base">{label}</span>
     </div>
   );
 }
@@ -315,7 +315,7 @@ function ComplianceConfirmationSection({
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-8">
-      <h3 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-4">
+      <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
         <ShieldCheck className="w-5 h-5 text-blue-600" />
         Compliance Confirmation:
       </h3>
@@ -341,7 +341,6 @@ export default function ConsultationDetails() {
   const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 
-
   const searchParams = useSearchParams();
   const id = searchParams.get("consultationId");
 
@@ -350,10 +349,15 @@ export default function ConsultationDetails() {
   console.log(detailesData);
   const user = useAppSelector((state) => state.auth.user);
   console.log(user);
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="w-full min-h-[300px] flex items-center justify-center">
+        <ClipLoader size={50} color="#2563eb" />
+      </div>
+    );
   if (isError || !detailesData)
     return (
-      <div className="p-8 text-center text-gray-500">
+      <div className="p-8 text-center text-gray-00">
         Consultation details not found.
       </div>
     );
@@ -365,6 +369,14 @@ export default function ConsultationDetails() {
   const paymentSummary = detailesData?.paymentSummary; // { products, subtotal, ... }
   const complianceConfirmation = detailesData?.complianceConfirmation;
 
+  // date formate 
+  const formattedDate = detailesData?.submissionDate
+  ? new Date(detailesData.submissionDate).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+  : "N/A";
   // Backend doesn't send a dedicated `patientName` field yet.
   // We fall back to whichever question's text contains "name" (matches your
   // "Your name?" question) and use its typed answer as the patient's name.
@@ -372,15 +384,15 @@ export default function ConsultationDetails() {
     q.questionText?.toLowerCase().includes("name"),
   );
   const patientName = nameQuestion?.patientAnswer?.textResponse || "Patient";
-  const patientImage =detailesData?.patientImage
-  console.log(patientImage)
+  const patientImage = detailesData?.patientImage;
+  console.log(patientImage);
 
   return (
     <div className="mb-12">
       {/* Back Link — text now comes from assessment.title instead of being hardcoded */}
       <Link
         href="/doctor"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
+        className="inline-flex items-center gap-2 text-xl font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         {assessment?.title || "Back to Dashboard"}
@@ -393,26 +405,30 @@ export default function ConsultationDetails() {
             <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100">
               {/* Using a placeholder as patient image is not in the data */}
               <Image
-                src={patientImage ||notFoundImag}
+                src={patientImage || notFoundImag}
                 alt="Patient"
                 fill
+                loading="lazy"
                 className="object-cover"
               />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">
-                Patient: {patientName}
+              <h2 className="text-lg font-bold text-gray-900">
+                Patient: {patientName || ' '}
               </h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-0.5">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-gray-500 mt-0.5">
                 <span>
                   Consultation ID: #{detailesData?.submissionCode || "N/A"}
                 </span>
                 {/* Add submitted date if available in API */}
+                 <span>
+                  Submitted: {formattedDate}
+                </span>
               </div>
             </div>
           </div>
           {assessment?.category && (
-            <div className="bg-[#eff6ff] text-[#2563eb] text-xs font-semibold px-3 py-1.5 rounded-full w-fit">
+            <div className="bg-[#EAF3FF] text-black text-base font-semibold px-6 py-3 rounded-full w-fit">
               {assessment.category}
             </div>
           )}
@@ -424,6 +440,7 @@ export default function ConsultationDetails() {
               src={assessment.thumbnail}
               alt={assessment.title || "Assessment"}
               fill
+              loading="lazy"
               className="object-cover"
             />
           </div>
@@ -455,7 +472,7 @@ export default function ConsultationDetails() {
           Product & Payment Summary
         </h3>
         {paymentSummary?.products?.length > 0 && (
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-base text-gray-500 mb-6">
             Patient selected {paymentSummary.products.length} product(s):
           </p>
         )}
@@ -471,9 +488,10 @@ export default function ConsultationDetails() {
                   {product?.image && (
                     <Image
                       src={product.image || notFoundImag}
-                        // src={product.image || notFoundImag.src}
+                      // src={product.image || notFoundImag.src}
                       alt={product.name}
                       fill
+                      loading="lazy"
                       className="object-cover opacity-70"
                     />
                   )}
@@ -483,11 +501,11 @@ export default function ConsultationDetails() {
                     <h4 className="font-semibold text-sm text-gray-900">
                       {product.name}
                     </h4>
-                    <span className="font-semibold text-sm text-blue-600">
+                    <span className="font-semibold text-base text-blue-600">
                       ${product.price?.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-base text-gray-500">
                     {product.size || "N/A"}
                   </p>
                 </div>
@@ -496,7 +514,7 @@ export default function ConsultationDetails() {
           </div>
 
           {paymentSummary && (
-            <div className="w-full md:w-64 space-y-2.5 text-sm pt-2 md:pt-0">
+            <div className="w-full md:w-64 space-y-2.5 text-base pt-2 md:pt-0">
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>Subtotal</span>
                 <span>${paymentSummary.subtotal?.toFixed(2)}</span>
@@ -598,21 +616,22 @@ export default function ConsultationDetails() {
         onClose={() => setIsApproveModalOpen(false)}
         patientName={patientName}
         consultationId={id ?? ""}
-        submittedDate={detailesData?.submittedAt}
+        submittedDate={detailesData?.submissionDate}
+        
       />
       <RequestRefillModal
         isOpen={isRefillModalOpen}
         onClose={() => setIsRefillModalOpen(false)}
         patientName={patientName}
         consultationId={id ?? ""}
-        submittedDate={detailesData?.submittedAt}
+        submittedDate={detailesData?.submissionDate}
       />
       <AssessmentDeclineModal
         isOpen={isDeclineModalOpen}
         onClose={() => setIsDeclineModalOpen(false)}
         patientName={patientName}
         consultationId={id ?? ""}
-        submittedDate={detailesData?.submittedAt}
+        submittedDate={detailesData?.submissionDate}
       />
     </div>
   );
