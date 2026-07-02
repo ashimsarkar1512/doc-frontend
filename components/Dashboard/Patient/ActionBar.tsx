@@ -49,6 +49,15 @@ export default function ActionBar({
           <MessageSquare className="h-5 w-5" />
         </button>
 
+        {/* Notifications Control */}
+        {/* <button
+          onClick={() => onChangeDomain("notifications")}
+          aria-label="Notifications"
+          className={`${getButtonClass("notifications")} md:hidden`}
+        >
+          <Bell className="h-5 w-5" />
+        </button> */}
+
         {/* Settings Control */}
         <button
           onClick={() => onChangeDomain("settings")}

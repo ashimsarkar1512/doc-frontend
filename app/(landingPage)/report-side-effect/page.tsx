@@ -26,7 +26,7 @@ const ReportSideEffectPage = () => {
           <div className="flex-1 min-w-0">
             <ReportForm />
           </div>
-          <div className="w-full md:w-[480px] shrink-0">
+          <div className="w-full md:w-[480px] shrink-0 sticky top-24 self-start">
             <ContactInfoCards />
           </div>
         </div>

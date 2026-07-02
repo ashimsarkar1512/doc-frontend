@@ -424,9 +424,9 @@ export default function ContactPage() {
         </div>
 
         {/* RIGHT: OFFICE HOURS CARD */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 sticky top-24 self-start">
           <div
-            className="rounded-[24px] overflow-hidden flex flex-col items-center pt-10 relative h-full min-h-[500px] border border-gray-200"
+            className="rounded-[24px] overflow-hidden flex flex-col items-center pt-10 relative min-h-[500px] border border-gray-200"
             style={{ background: "#eef2f6" }}
           >
             <div className="text-center px-6 relative z-10 w-full">
