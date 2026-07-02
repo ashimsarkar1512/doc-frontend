@@ -102,6 +102,7 @@ const Footer = () => {
                   alt="Logo"
                   width={180}
                   height={80}
+                   loading="lazy" 
                   className=" h-9 sm:h-10 md:h-11 w-auto max-w-[132px] sm:max-w-[150px] md:max-w-[180px] object-left"
                 />
                 {/* <Logo variant="light" /> */}

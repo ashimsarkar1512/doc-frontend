@@ -386,6 +386,7 @@ export default function ConsultationDetails() {
   const patientName = nameQuestion?.patientAnswer?.textResponse || "Patient";
   const patientImage = detailesData?.patientImage;
   console.log(patientImage);
+  console.log(detailesData?.submissionCode);
 
   return (
     <div className="mb-12">
@@ -615,7 +616,7 @@ export default function ConsultationDetails() {
         isOpen={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
         patientName={patientName}
-        consultationId={id ?? ""}
+        consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
         
       />
@@ -623,14 +624,14 @@ export default function ConsultationDetails() {
         isOpen={isRefillModalOpen}
         onClose={() => setIsRefillModalOpen(false)}
         patientName={patientName}
-        consultationId={id ?? ""}
+        consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
       />
       <AssessmentDeclineModal
         isOpen={isDeclineModalOpen}
         onClose={() => setIsDeclineModalOpen(false)}
         patientName={patientName}
-        consultationId={id ?? ""}
+        consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
       />
     </div>
