@@ -19,7 +19,6 @@ import Footer from "@/components/shared/Footer";
 import ConsultationDetails from "@/components/Dashboard/doctor/ConsultationDetails";
 import ChatView from "@/components/Dashboard/doctor/ChatView";
 import MessagesPanel from "@/components/Dashboard/doctor/MessagesPanel";
-import DoctorNavbar from "@/components/Dashboard/doctor/DoctorNavbar";
 import DoctorSettings from "@/components/Dashboard/doctor/DoctorSettings";
 import DashboardStatsCards from "@/components/Dashboard/doctor/DashboardStatsCards/DashboardStatsCards";
 import DoctorNotificationWrapper from "@/components/Dashboard/doctor/DoctorNotificationWrapper";
@@ -144,10 +143,8 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
-      <DoctorNavbar />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-28">
+    <div className="min-h-screen flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-8">
         {/* Welcome Section */}
       
         <DoctorWelcomeData/>

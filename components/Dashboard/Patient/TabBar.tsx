@@ -33,7 +33,7 @@ export default function TabBar({
   ];
 
   return (
-    <div className="flex items-center gap-6 md:gap-8 border-b border-gray-150 mb-8 overflow-x-auto select-none scrollbar-none">
+    <div className="flex items-center gap-6 md:gap-8 border-b border-gray-150 mb-2 overflow-x-auto select-none scrollbar-none">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.type;
         return (

@@ -16,6 +16,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import Logo from "../ui/Logo";
 import ServicesMegaMenu from "./ServicesMegaMenu";
+import NotificationDropdown from "@/components/Dashboard/Patient/NotificationDropdown";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useGetCurrentUserQuery } from "@/Redux/api/authApi";
@@ -30,6 +31,8 @@ interface NavbarProps {
   overlay?: boolean;
   /** Position inside a relative hero container instead of viewport-fixed */
   embedded?: boolean;
+  /** Always show the solid background regardless of scroll position */
+  alwaysSolidBg?: boolean;
 }
 
 const Navbar = ({
@@ -39,6 +42,7 @@ const Navbar = ({
   className = "",
   overlay = false,
   embedded = false,
+  alwaysSolidBg = false,
 }: NavbarProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -170,8 +174,18 @@ const Navbar = ({
   const borderColor = isDark ? "border-black/20" : "border-white/20";
   const mobileBg = isDark ? "bg-white/90" : "bg-black/70";
 
+  const isDashboard = pathname?.startsWith("/patient") || pathname?.startsWith("/doctor") || pathname?.startsWith("/admin");
+
   const toggleServices = () => setIsServicesOpen((p) => !p);
   const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
+
+  const getLinkClass = (path: string) => {
+    const isActive = pathname === path || (path !== '/' && pathname?.startsWith(path));
+    if (isActive) {
+      return isDark ? "text-[#1D4ED8] font-semibold" : "text-[#1D4ED8] font-semibold";
+    }
+    return `${textColor} font-medium transition-colors`;
+  };
 
   const handleServicesMouseEnter = () => {
     if (closeTimeoutRef.current) {
@@ -197,10 +211,10 @@ const Navbar = ({
     <nav
       style={{ top: isScrolled ? "0px" : "var(--banner-height, 0px)" }}
       className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
-        isScrolled
+        isScrolled || alwaysSolidBg
           ? isDark
-            ? `bg-white/90 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-black/10`
-            : `bg-black/40 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
+            ? `bg-white/90 backdrop-blur-md shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/10`
+            : `bg-black/40 backdrop-blur-md shadow-md ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-white/10`
           : overlay && !isDark
             ? `bg-gradient-to-b from-black/45 via-black/15 to-transparent ${initialPadding}`
             : overlay && isDark
@@ -247,7 +261,7 @@ const Navbar = ({
         >
           <Link
             href="/"
-            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            className={`text-xl md:text-base ${getLinkClass("/")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
@@ -261,7 +275,7 @@ const Navbar = ({
             onMouseLeave={handleServicesMouseLeave}
           >
             <div
-              className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors`}
+              className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors font-medium`}
               onClick={toggleServices}
             >
               <span>Our Services</span>
@@ -289,7 +303,7 @@ const Navbar = ({
           <Link
             href="/lab-testing"
             prefetch={true}
-            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            className={`text-xl md:text-base ${getLinkClass("/lab-testing")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Lab Testing
@@ -298,7 +312,7 @@ const Navbar = ({
           <Link
             href="/blog"
             prefetch={true}
-            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            className={`text-xl md:text-base ${getLinkClass("/blog")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
@@ -306,7 +320,7 @@ const Navbar = ({
 
           <Link
             href="/eligibility"
-            className={`${textColor} transition-colors text-xl md:text-base font-medium`}
+            className={`text-xl md:text-base ${getLinkClass("/eligibility")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Eligibility
@@ -314,14 +328,16 @@ const Navbar = ({
 
           <Link
             href="/about"
-            className={`${textColor} transition-colors text-xl md:text-base`}
+            className={`text-xl md:text-base ${getLinkClass("/about")}`}
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             About
           </Link>
 
           <Link
             href="/contact"
-            className={`${textColor} transition-colors text-xl md:text-base`}
+            className={`text-xl md:text-base ${getLinkClass("/contact")}`}
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             Contact
           </Link>
@@ -396,12 +412,14 @@ const Navbar = ({
                   <User className="h-5 w-5" />
                   Login
                 </Link>
-                <button
-                  onClick={handleStartConsultation}
-                  className={`px-5 py-3 rounded-full border ${buttonStyle}`}
-                >
-                  Start Consultation
-                </button>
+                {!isDashboard && (
+                  <button
+                    onClick={handleStartConsultation}
+                    className={`px-5 py-3 rounded-full border ${buttonStyle}`}
+                  >
+                    Start Consultation
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -412,8 +430,17 @@ const Navbar = ({
           className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}
         >
           {isAuthenticated && user ? (
-            /* ── Profile Widget ── */
-            <div ref={profileRef} className="relative">
+            <>
+              {/* Notification Bell */}
+              <div className="flex items-center">
+                <NotificationDropdown 
+                  iconColor={textColor} 
+                  hoverBgClass={isDark ? "hover:bg-black/5" : "hover:bg-white/10"}
+                />
+              </div>
+
+              {/* ── Profile Widget ── */}
+              <div ref={profileRef} className="relative">
               <button
                 type="button"
                 onClick={() => setIsProfileOpen((p) => !p)}
@@ -500,10 +527,19 @@ const Navbar = ({
                     <div className="py-2">
                       <Link
                         href={getDashboardHref()}
+                        onClick={() => setIsProfileOpen(false)}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
                       >
                         <LayoutDashboard className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span>Dashboard</span>
+                        <span>My Portal</span>
+                      </Link>
+                      <Link
+                        href={`${getDashboardHref()}?domain=settings`}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                      >
+                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <span>My Profile</span>
                       </Link>
                     </div>
 
@@ -525,6 +561,7 @@ const Navbar = ({
                 )}
               </AnimatePresence>
             </div>
+            </>
           ) : (
             /* ── Guest: Login ── */
             <Link
@@ -536,13 +573,15 @@ const Navbar = ({
             </Link>
           )}
 
-          {/* Start Consultation — always visible */}
-          <button
-            onClick={handleStartConsultation}
-            className={`px-5 py-2 rounded-full border ${buttonStyle} transition-colors`}
-          >
-            Start Consultation
-          </button>
+          {/* Start Consultation — conditionally visible */}
+          {!isDashboard && (
+            <button
+              onClick={handleStartConsultation}
+              className={`px-5 py-2 rounded-full border ${buttonStyle} transition-colors`}
+            >
+              Start Consultation
+            </button>
+          )}
         </div>
       </div>
     </nav>

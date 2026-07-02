@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, BadgeDollarSign, CheckCircle, HelpCircle, Shield, ShieldBan } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ActionBar from "./ActionBar";
 import ConsultationCard from "./ConsultationCard";
@@ -64,6 +64,13 @@ export default function PatientPortalHome() {
   const [activeDomain, setActiveDomain] = useState<
     "dashboard" | "messages" | "notifications" | "settings"
   >(initialDomain);
+
+  useEffect(() => {
+    const domain = searchParams.get("domain") as any;
+    if (domain && domain !== activeDomain) {
+      setActiveDomain(domain);
+    }
+  }, [searchParams]);
 
   const handleDomainChange = (domain: "dashboard" | "messages" | "notifications" | "settings") => {
     setActiveDomain(domain);

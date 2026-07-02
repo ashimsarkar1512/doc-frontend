@@ -49,7 +49,14 @@ console.log(selectedOrderId)
     dateRange: selectedDate !== "ALL" ? selectedDate : undefined,
   }, { pollingInterval: 5000 });
 
+  // Fetch counts regardless of selected status (only filtered by date)
+  const { data: countsResponse } = useGetMyOrdersQuery({
+    dateRange: selectedDate !== "ALL" ? selectedDate : undefined,
+  }, { pollingInterval: 5000 });
+
   const orders = ordersResponse?.orders || [];
+  const counts = countsResponse?.counts || {};
+  const totalCount = countsResponse?.orders?.length || 0;
 
 
 
@@ -61,30 +68,30 @@ console.log(selectedOrderId)
     <div className="flex flex-col w-full animate-in fade-in duration-300">
       
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-150 pt-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-150 pt-2 pb-4">
         {/* Status Tabs */}
-        <div className="flex items-center gap-6 overflow-x-auto select-none scrollbar-none w-full sm:w-auto">
+        <div className="flex items-center gap-3 flex-wrap select-none w-full sm:w-auto">
           {statuses.map((status) => {
             const isActive = selectedStatus === status.value;
+            const count = status.value === "ALL" ? totalCount : ((counts as any)[status.value] || 0);
+            
             return (
               <button
                 key={status.value}
                 onClick={() => setSelectedStatus(status.value as any)}
                 className={`
-                  pb-4 text-[14px] font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-150 border-b-2
+                  px-4 py-2 text-[13px] font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-150 rounded-full
                   ${
                     isActive
-                      ? "text-[#2563eb] border-[#2563eb]"
-                      : "text-gray-500 border-transparent hover:text-gray-800"
+                      ? "bg-[#2563eb] text-white shadow-sm"
+                      : "text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-800"
                   }
                 `}
               >
                 <span>{status.label}</span>
-                {isActive && (
-                  <span className="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white bg-[#2563eb]">
-                    {orders.length}
-                  </span>
-                )}
+                <span className={`min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center ${isActive ? "text-[#2563eb] bg-white" : "text-gray-500 bg-gray-200"}`}>
+                  {count}
+                </span>
               </button>
             );
           })}

@@ -4,57 +4,63 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
-import { Testimonial, useGetTestimonialsQuery } from "@/Redux/features/testimonials/testimonialsApi";
+import {
+  Testimonial,
+  useGetTestimonialsQuery,
+} from "@/Redux/features/testimonials/testimonialsApi";
 import { FcGoogle } from "react-icons/fc";
 import { IoStarSharp } from "react-icons/io5";
 const TestiMonial: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
   const { data: testimonialsData } = useGetTestimonialsQuery();
 
-const dummyReviews: Testimonial[] = [
-  {
-    id: "d1",
-    author: "Sarah M.",
-    feedback:
-      "I lost 25 lbs in 3 months! The process was so easy and the doctors were amazing.",
-    rating: 5,
-    createdAt: "2023-10-01T00:00:00Z",
-  },
-  {
-    id: "d2",
-    author: "James K.",
-    feedback:
-      "Finally a weight loss program that actually works. The continuous support makes all the difference.",
-    rating: 5,
-    createdAt: "2023-09-28T00:00:00Z",
-  },
-  {
-    id: "d3",
-    author: "Elena R.",
-    feedback:
-      "The personalized plan and medications helped me break through my plateau. Highly recommended!",
-    rating: 5,
-    createdAt: "2023-09-15T00:00:00Z",
-  },
-  {
-    id: "d4",
-    author: "Michael B.",
-    feedback:
-      "I feel 10 years younger. My energy levels are up and I've reached my goal weight.",
-    rating: 5,
-    createdAt: "2023-08-30T00:00:00Z",
-  },
-];
+  const dummyReviews: Testimonial[] = [
+    {
+      id: "d1",
+      author: "Sarah M.",
+      feedback:
+        "I lost 25 lbs in 3 months! The process was so easy and the doctors were amazing.",
+      rating: 5,
+      createdAt: "2023-10-01T00:00:00Z",
+    },
+    {
+      id: "d2",
+      author: "James K.",
+      feedback:
+        "Finally a weight loss program that actually works. The continuous support makes all the difference.",
+      rating: 5,
+      createdAt: "2023-09-28T00:00:00Z",
+    },
+    {
+      id: "d3",
+      author: "Elena R.",
+      feedback:
+        "The personalized plan and medications helped me break through my plateau. Highly recommended!",
+      rating: 5,
+      createdAt: "2023-09-15T00:00:00Z",
+    },
+    {
+      id: "d4",
+      author: "Michael B.",
+      feedback:
+        "I feel 10 years younger. My energy levels are up and I've reached my goal weight.",
+      rating: 5,
+      createdAt: "2023-08-30T00:00:00Z",
+    },
+  ];
 
-  const reviews = testimonialsData?.data?.length ? testimonialsData.data : dummyReviews;
+  const reviews = testimonialsData?.data?.length
+    ? testimonialsData.data
+    : dummyReviews;
 
-  const title = content?.testimonialTitle || "Read from Hundreds of success stories";
+  const title =
+    content?.testimonialTitle || "Read from Hundreds of success stories";
   const subtitle = content?.testimonialCardTitle || "Client's Testimonial";
-  const description = content?.testimonialCardDescription || "See how Weight Loss MD has helped people feel stronger, healthier, and more balanced.";
+  const description =
+    content?.testimonialCardDescription ||
+    "See how Weight Loss MD has helped people feel stronger, healthier, and more balanced.";
   const buttonLink = content?.testimonialButtonLink || "#";
   const buttonNewTab = content?.testimonialButtonNewTab ?? false;
-
-
 
   return (
     <section className="w-full bg-[#121314] py-10 font-sans overflow-hidden text-white">
@@ -75,7 +81,7 @@ const dummyReviews: Testimonial[] = [
             </span>
             {[...Array(5)].map((_, i) => (
               <span key={i} className="text-[#FFA64D] text-xl">
-               <IoStarSharp />
+                <IoStarSharp />
               </span>
             ))}
           </div>
@@ -98,15 +104,13 @@ const dummyReviews: Testimonial[] = [
             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-gradient-to-tr from-blue-600 via-blue-500/90 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-700" />
 
             <div className="relative z-10 flex flex-col gap-4">
-              <h3 className="text-2xl font-bold tracking-tight">
-                {subtitle}
-              </h3>
+              <h3 className="text-2xl font-bold tracking-tight">{subtitle}</h3>
               <p className="text-lg text-[#FFFFFF] leading-relaxed max-w-xs font-normal">
                 {description}
               </p>
             </div>
 
-            <Link 
+            <Link
               href={buttonLink}
               target={buttonNewTab ? "_blank" : "_self"}
               rel={buttonNewTab ? "noopener noreferrer" : undefined}
@@ -119,12 +123,12 @@ const dummyReviews: Testimonial[] = [
           {/* Dynamic Carousel Slide Viewport */}
           <div className="lg:col-span-8 overflow-hidden relative w-full flex items-center">
             {/* Gradient masks for smooth edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#121314] to-transparent z-10"></div>
+           
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#121314] to-transparent z-10"></div>
 
             <motion.div
-              className="flex gap-10 h-full min-w-max"
-              animate={{ x: ["0%", "-50%"] }}
+              className="flex gap-5 h-full min-w-max"
+              animate={{ x: ["0%", "-40%"] }}
               transition={{
                 duration: reviews.length * 5,
                 ease: "linear",
@@ -137,17 +141,19 @@ const dummyReviews: Testimonial[] = [
                   className="w-[320px] sm:w-[400px] flex-shrink-0"
                 >
                   {/* Google Review Card Markup */}
-                  <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-8 flex flex-col gap-5 h-[500px] w-[424px] justify-between hover:border-gray-700/50 transition-colors duration-300 ">
+                  <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-6 sm:p-8 flex flex-col gap-5 h-[450px] sm:h-[500px] w-full justify-between hover:border-gray-700/50 transition-colors duration-300 ">
                     <div>
                       {/* Top Row: Google G-Icon Asset & Star Rating */}
                       <div className="flex flex-col gap-3 mb-4">
                         <div className="w-10.5 h-10.5 rounded-full bg-[#383C3D] flex items-center justify-center font-bold text-xs shadow-sm select-none">
-                          <span className="text-[#4285F4]"><FcGoogle size={30}/></span>
+                          <span className="text-[#4285F4]">
+                            <FcGoogle size={30} />
+                          </span>
                         </div>
                         <div className="flex gap-0.5">
                           {[...Array(review.rating || 5)].map((_, i) => (
                             <span key={i} className="text-[#FBBC05] text-lg">
-                            <IoStarSharp/>
+                              <IoStarSharp />
                             </span>
                           ))}
                         </div>
@@ -160,7 +166,9 @@ const dummyReviews: Testimonial[] = [
                         </h4>
                         <span className="text-sm text-[#929292] font-medium">
                           {review.date || review.createdAt
-                            ? new Date(review.date || review.createdAt).toLocaleDateString()
+                            ? new Date(
+                                review.date || review.createdAt,
+                              ).toLocaleDateString()
                             : ""}
                         </span>
                       </div>

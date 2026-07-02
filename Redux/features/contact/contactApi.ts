@@ -45,7 +45,7 @@ export const contactApi = baseApi.injectEndpoints({
         if (data.attachments) formData.append("attachments", data.attachments);
 
         return {
-          url: "/admin/contact-leads",
+          url: "/public/contact-leads",
           method: "POST",
           body: formData,
           // Let the browser set Content-Type with the multipart boundary

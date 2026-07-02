@@ -119,7 +119,7 @@ export const sideEffectApi = baseApi.injectEndpoints({
       SideEffectReportPayload
     >({
       query: (data) => ({
-        url: "/compliance/side-effect-reports",
+        url: "/public/side-effect-reports",
         method: "POST",
         body: data,
       }),

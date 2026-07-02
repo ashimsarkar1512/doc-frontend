@@ -12,7 +12,19 @@ import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-export default function NotificationDropdown() {
+import { useAppSelector } from "@/Redux/store/hooks";
+
+interface NotificationDropdownProps {
+  iconColor?: string;
+  hoverBgClass?: string;
+}
+
+export default function NotificationDropdown({ 
+  iconColor = "text-gray-500 hover:text-emerald-600",
+  hoverBgClass = "hover:bg-gray-50"
+}: NotificationDropdownProps) {
+  const user = useAppSelector((state) => state.auth.user);
+  const role = user?.role?.toUpperCase();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -47,14 +59,25 @@ export default function NotificationDropdown() {
   const handleNotificationClick = async (notification: AppNotification) => {
     await handleMarkAsRead(notification.id, notification.isRead);
     setIsOpen(false);
-    if (notification.actionType === "NEW_MESSAGE") {
-      router.push(`/patient?domain=messages`);
-    } else if (notification.actionType.startsWith("ASSESSMENT_")) {
-      router.push(`/patient?domain=dashboard`);
-    } else if (notification.actionType === "ORDER_STATUS_UPDATED") {
-      router.push(`/patient?domain=dashboard`);
+    
+    if (role === "DOCTOR" || role === "PROVIDER") {
+      if (notification.actionType === "NEW_MESSAGE") {
+        router.push(`/doctor?view=messages&chatId=${notification.referenceId || ''}`);
+      } else if (notification.actionType.startsWith("ASSESSMENT_")) {
+        router.push(`/doctor?view=consultations&consultationId=${notification.referenceId || ''}`);
+      } else {
+        router.push(`/doctor`);
+      }
     } else {
-      router.push(`/patient?domain=dashboard`);
+      if (notification.actionType === "NEW_MESSAGE") {
+        router.push(`/patient?domain=messages`);
+      } else if (notification.actionType.startsWith("ASSESSMENT_")) {
+        router.push(`/patient?domain=dashboard`);
+      } else if (notification.actionType === "ORDER_STATUS_UPDATED") {
+        router.push(`/patient?domain=dashboard`);
+      } else {
+        router.push(`/patient?domain=dashboard`);
+      }
     }
   };
 
@@ -158,11 +181,13 @@ export default function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-500 hover:text-emerald-600 hover:bg-gray-50 rounded-full transition-colors relative"
+        className={`p-2 rounded-full transition-colors relative flex items-center justify-center ${iconColor} ${hoverBgClass}`}
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+          <span className="absolute top-0 right-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white border border-white">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
         )}
       </button>
 

@@ -16,6 +16,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import Navbar from "@/components/shared/Navbar";
 
 interface SidebarItem {
   name: string;
@@ -199,10 +200,10 @@ export default function DashboardLayout({
 
       {/* --- Main Window Wrapper --- */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-
+        <Navbar variant="dark" initialPadding="py-3" scrolledPadding="py-3" alwaysSolidBg />
 
         {/* --- Dynamic Content Area --- */}
-        <main className="flex-1 overflow-y-auto bg-[#f8fafc]">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-[#f8fafc] pt-20">{children}</main>
       </div>
     </div>
   );

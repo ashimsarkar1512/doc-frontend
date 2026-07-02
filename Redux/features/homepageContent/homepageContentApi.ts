@@ -110,7 +110,7 @@ export interface HomepageContentResponse {
 const homepageContentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getHomepageContent: builder.query<HomepageContent, void>({
-      query: () => '/admin/homepage-content',
+      query: () => '/public/homepage-content',
       providesTags: ['HomepageContent'],
       transformResponse: (response: HomepageContentResponse | HomepageContent) => {
         if ('data' in response && response.data && typeof response.data === 'object') {
