@@ -24,8 +24,8 @@ const DUMMY_MODE = true
 
 const DUMMY_DISCOUNT: Discount = {
   id: 'test-1',
-  code: 'TESTCODE20',
-  value: 20,
+  code: 'SUMMER2026',
+  value: 10,
   type: 'PERCENTAGE',
   isActive: true,
   createdAt: '2026-01-01T00:00:00.000Z',
