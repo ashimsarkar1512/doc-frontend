@@ -4,36 +4,39 @@ import React from "react";
 
 const BlogCTA = () => {
   return (
-    <section className="w-full max-w-[85rem] mx-auto px-4 md:px-8 pb-24">
-      <div className="relative w-full rounded-[2.5rem] overflow-hidden bg-[#1E293B] flex flex-col md:flex-row items-center justify-between p-8 md:p-14 min-h-[180px]">
-        
-        {/* Blue Glow Effect */}
-        <div className="absolute right-0 top-0 w-2/3 h-[150%] bg-[#2563EB] opacity-40 blur-[100px] z-0 rounded-full mix-blend-screen -translate-y-1/4" />
-
-        <div className="relative z-10 flex items-center gap-6 mb-8 md:mb-0">
-          {/* Logo Mark */}
-          <div className="w-14 h-14 relative flex-shrink-0">
-             <Image 
-                src="/logo.png" 
-                alt="Logo mark" 
-                fill 
-                className="object-cover object-left invert brightness-0" 
-             />
+    <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
+      <div
+        className="w-full rounded-[20px] sm:rounded-[24px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:px-14 md:py-12 shadow-xl relative overflow-hidden text-center md:text-left"
+        style={{
+          background:
+            "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+        }}
+      >
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-8 mb-6 md:mb-0 relative z-10">
+          <div className="relative w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] md:w-[72px] md:h-[72px] flex-shrink-0">
+            <Image
+              src="/weight-loss.png"
+              alt="Weight Loss MD Logo"
+              fill
+              className="object-contain"
+            />
           </div>
-          <h2 className="text-3xl md:text-4xl font-normal text-white leading-tight">
-            Contact Us at Weight Loss<br className="hidden md:block" />MD Today
+          <h2 className="text-[20px] sm:text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+            Contact Us at Weight Loss MD
+            <br className="hidden sm:block" /> Today
           </h2>
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
           <button
-               onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
-            )
-          }
-           className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-4 rounded-full transition-all shadow-lg shadow-blue-500/30">
+            onClick={() =>
+              window.open(
+                "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                "_blank",
+              )
+            }
+            className="bg-[#1D4ED8] hover:bg-[#1D4ED8] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
+          >
             Book a consultation
           </button>
         </div>

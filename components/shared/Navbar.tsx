@@ -3,7 +3,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, User, Menu, X, LayoutDashboard, LogOut, Mail, Home } from "lucide-react";
+import {
+  ChevronDown,
+  User,
+  Menu,
+  X,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Home,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Logo from "../ui/Logo";
 import ServicesMegaMenu from "./ServicesMegaMenu";
@@ -65,7 +74,7 @@ const Navbar = ({
 
     window.open(
       "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-      "_blank"
+      "_blank",
     );
   };
 
@@ -88,7 +97,7 @@ const Navbar = ({
   const getDashboardHref = () => {
     const activeRole = currentUser?.data?.role || user?.role;
     if (!activeRole) return "/";
-    
+
     const role = activeRole.toUpperCase();
 
     if (role === "DOCTOR" || role === "PROVIDER") return "/doctor";
@@ -100,7 +109,9 @@ const Navbar = ({
       // Use the actual banner height as the scroll threshold so the navbar
       // switches exactly when the banner leaves the viewport — no delay.
       const bannerH = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue('--banner-height') || '0'
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--banner-height",
+        ) || "0",
       );
       const threshold = bannerH > 0 ? bannerH : 20;
       setIsScrolled(window.scrollY > threshold);
@@ -184,8 +195,9 @@ const Navbar = ({
 
   return (
     <nav
-      style={{ top: isScrolled ? '0px' : 'var(--banner-height, 0px)' }}
-      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${isScrolled
+      style={{ top: isScrolled ? "0px" : "var(--banner-height, 0px)" }}
+      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
+        isScrolled
           ? isDark
             ? `bg-white/90 backdrop-blur-md shadow-sm ${scrolledPadding} border-b border-black/10`
             : `bg-black/40 backdrop-blur-md shadow-md ${scrolledPadding} border-b border-white/10`
@@ -194,7 +206,7 @@ const Navbar = ({
             : overlay && isDark
               ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
               : `bg-transparent ${initialPadding}`
-        } ${className}`}
+      } ${className}`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
         {/* Logo */}
@@ -254,8 +266,9 @@ const Navbar = ({
             >
               <span>Our Services</span>
               <ChevronDown
-                className={`h-5 w-5 transition-transform ${isServicesOpen ? "rotate-180" : ""
-                  }`}
+                className={`h-5 w-5 transition-transform ${
+                  isServicesOpen ? "rotate-180" : ""
+                }`}
               />
             </div>
 
@@ -314,7 +327,9 @@ const Navbar = ({
           </Link>
 
           {/* Mobile actions */}
-          <div className={`md:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}>
+          <div
+            className={`md:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}
+          >
             {isAuthenticated && user ? (
               <>
                 {/* Mobile user info */}
@@ -335,10 +350,14 @@ const Navbar = ({
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-base font-semibold truncate ${isDark ? "text-gray-900" : "text-white"}`}>
+                    <p
+                      className={`text-base font-semibold truncate ${isDark ? "text-gray-900" : "text-white"}`}
+                    >
                       {getDisplayName()}
                     </p>
-                    <p className={`text-xs truncate ${isDark ? "text-gray-500" : "text-white/70"}`}>
+                    <p
+                      className={`text-xs truncate ${isDark ? "text-gray-500" : "text-white/70"}`}
+                    >
                       {user.email}
                     </p>
                   </div>
@@ -357,7 +376,10 @@ const Navbar = ({
                   Start Consultation
                 </button>
                 <button
-                  onClick={() => { setIsMobileMenuOpen(false); logout(); }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
                   disabled={isLoggingOut}
                   className="flex items-center gap-2 text-base font-medium text-red-400 disabled:opacity-50"
                 >
@@ -386,7 +408,9 @@ const Navbar = ({
         </div>
 
         {/* Desktop actions */}
-        <div className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}>
+        <div
+          className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}
+        >
           {isAuthenticated && user ? (
             /* ── Profile Widget ── */
             <div ref={profileRef} className="relative">
@@ -415,7 +439,9 @@ const Navbar = ({
                 </div>
 
                 {/* Name */}
-                <span className={`text-sm font-semibold max-w-[120px] truncate ${isDark ? "text-gray-900" : "text-white"}`}>
+                <span
+                  className={`text-sm font-semibold max-w-[120px] truncate ${isDark ? "text-gray-900" : "text-white"}`}
+                >
                   {getDisplayName()}
                 </span>
 
@@ -423,7 +449,9 @@ const Navbar = ({
                   animate={{ rotate: isProfileOpen ? 180 : 0 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <ChevronDown className={`h-4 w-4 ${isDark ? "text-gray-500" : "text-white/70"}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 ${isDark ? "text-gray-500" : "text-white/70"}`}
+                  />
                 </motion.div>
               </button>
 
@@ -461,7 +489,9 @@ const Navbar = ({
                         </p>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Mail className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {user.email}
+                          </p>
                         </div>
                       </div>
                     </div>

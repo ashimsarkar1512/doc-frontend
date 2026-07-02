@@ -1,13 +1,12 @@
-
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useGetCategoryNamesQuery,
   useGetProductsByCategoryQuery,
 } from "@/Redux/features/navbarServices/navbarServicesApi";
+import Link from "next/link";
 
 interface CategoryItem {
   id: string;
@@ -23,14 +22,6 @@ interface ServicesMegaMenuProps {
   variant?: "desktop" | "mobile";
 }
 
-// "Weight Loss" -> "weight-loss"
-const slugify = (name: string) =>
-  name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-");
-
 const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
   const router = useRouter();
 
@@ -40,7 +31,7 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
 
   // only holds an EXPLICIT hover selection — used for the preview list on the right
   const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(
-    null
+    null,
   );
 
   const currentCategoryId = hoveredCategoryId ?? categoryList[0]?.id ?? null;
@@ -53,20 +44,8 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
 
   const productList: ProductItem[] = productsRes?.data ?? [];
 
-  // const activeCategory = categoryList.find(
-  //   (category) => category.id === currentCategoryId
-  // );
-
   const handleCategoryHover = (id: string) => {
     setHoveredCategoryId(id);
-  };
-
-  // ✅ click -> redirect to product route, categoryId as query param for the API call
-  const handleCategoryClick = (category: CategoryItem) => {
-    const slug = slugify(category.name);
-    // router.push(`/common-services/categoryId=${category.id}`);  // DEVELOPER NOTE: redirect ar jonno ai khane route ta chnage kore  dilei hbe
-    router.push(`/common-services/${category.id}`);
-    // router.push(`/common-services/${slug}-${category.id}`);
   };
 
   const isDesktop = variant === "desktop";
@@ -87,8 +66,7 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
         Medical Weight Management Program
       </h3>
 
-
-      <div 
+      <div
         className={
           isDesktop
             ? "grid grid-cols-[190px_minmax(0,1fr)_220px] gap-0 items-start"
@@ -107,14 +85,10 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
             const isActive = category.id === currentCategoryId;
 
             return (
-              <button
+              <Link
                 key={category.id}
-                type="button"
+                href={`/common-services/${category.id}`}
                 onMouseEnter={() => handleCategoryHover(category.id)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCategoryClick(category);
-                }}
                 className={`rounded-full font-medium transition-colors whitespace-nowrap ${
                   isDesktop ? "px-5 py-2 text-[14px]" : "px-4 py-2 text-[13px]"
                 } ${
@@ -124,7 +98,7 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
                 }`}
               >
                 {category.name}
-              </button>
+              </Link>
             );
           })}
         </div>

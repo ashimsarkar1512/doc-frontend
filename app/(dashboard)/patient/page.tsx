@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import PatientPortalHome from '@/components/Dashboard/Patient/PatientPortalHome';
-import ProtectedRoute from '@/components/shared/ProtectedRoute';
+import PatientPortalHome from "@/components/Dashboard/Patient/PatientPortalHome";
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
 
 export default function PatientDashboardPage() {
   return (
-    <ProtectedRoute allowedRoles={['PATIENT']}>
+    <ProtectedRoute allowedRoles={["PATIENT"]}>
       <PatientPortalHome />
     </ProtectedRoute>
   );

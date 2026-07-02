@@ -1,25 +1,28 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import React, { useState, useRef } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
-import Navbar from '@/components/shared/Navbar';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import Logo from "@/components/ui/Logo";
 
-import { useVerifyOtpMutation, useResendOtpMutation } from '@/Redux/api/authApi';
-import { setCredentials } from '@/Redux/features/auth/authSlice';
-import { useAppDispatch, useAppSelector } from '@/Redux/store/hooks';
+import {
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+} from "@/Redux/api/authApi";
+import { setCredentials } from "@/Redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/store/hooks";
 
 const VerifyPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   const otpPending = useAppSelector((state) => state.auth.otpPending);
-  const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
+  const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
@@ -27,7 +30,10 @@ const VerifyPage = () => {
 
   // ── OTP input handlers ──────────────────────────────────────────────────────
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     const value = e.target.value;
     if (isNaN(Number(value))) return;
 
@@ -40,15 +46,21 @@ const VerifyPage = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const digitsOnly = e.clipboardData.getData('text/plain').replace(/\D/g, '').slice(0, 6);
+    const digitsOnly = e.clipboardData
+      .getData("text/plain")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     if (!digitsOnly) return;
 
     const newOtp = [...otp];
@@ -61,16 +73,16 @@ const VerifyPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = otp.join('');
+    const otpCode = otp.join("");
 
     if (otpCode.length < 6) {
-      toast.error('Please enter the full 6-digit code.');
+      toast.error("Please enter the full 6-digit code.");
       return;
     }
 
     if (!otpPending?.challengeId) {
-      toast.error('Session expired. Please log in again.');
-      router.push('/login');
+      toast.error("Session expired. Please log in again.");
+      router.push("/login");
       return;
     }
 
@@ -83,8 +95,8 @@ const VerifyPage = () => {
       toast.success(res.message);
 
       // FORGOT_PASSWORD flow — go to reset-password, no credentials to store
-      if (otpPending.purpose === 'FORGOT_PASSWORD') {
-        router.push('/reset-password');
+      if (otpPending.purpose === "FORGOT_PASSWORD") {
+        router.push("/reset-password");
         return;
       }
 
@@ -93,19 +105,19 @@ const VerifyPage = () => {
         setCredentials({
           user: res.data.user,
           accessToken: res.data.accessToken,
-        })
+        }),
       );
 
       const roles = res.data.user.roles ?? [];
-      if (roles.includes('DOCTOR')) {
-        router.push('/doctor');
+      if (roles.includes("DOCTOR")) {
+        router.push("/doctor");
       } else {
-        router.push('/patient');
+        router.push("/patient");
       }
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Invalid OTP. Please try again.';
+        "Invalid OTP. Please try again.";
       toast.error(message);
     }
   };
@@ -114,8 +126,8 @@ const VerifyPage = () => {
 
   const handleResend = async () => {
     if (!otpPending?.userId || !otpPending?.challengeId) {
-      toast.error('Session expired. Please log in again.');
-      router.push('/login');
+      toast.error("Session expired. Please log in again.");
+      router.push("/login");
       return;
     }
 
@@ -127,12 +139,12 @@ const VerifyPage = () => {
       }).unwrap();
 
       toast.success(resendRes.message);
-      setOtp(new Array(6).fill(''));
+      setOtp(new Array(6).fill(""));
       inputRefs.current[0]?.focus();
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Failed to resend OTP.';
+        "Failed to resend OTP.";
       toast.error(message);
     }
   };
@@ -174,8 +186,8 @@ const VerifyPage = () => {
                   Verify Authentication
                 </h2>
                 <p className="text-sm md:text-base text-white/80 max-w-md mx-auto leading-relaxed">
-                  Enter the 6-digit code sent to your{' '}
-                  {otpPending?.method === 'PHONE' ? 'phone' : 'email'}.
+                  Enter the 6-digit code sent to your{" "}
+                  {otpPending?.method === "PHONE" ? "phone" : "email"}.
                 </p>
               </header>
 
@@ -189,7 +201,9 @@ const VerifyPage = () => {
                       {otp.map((digit, index) => (
                         <input
                           key={index}
-                          ref={(el) => { inputRefs.current[index] = el; }}
+                          ref={(el) => {
+                            inputRefs.current[index] = el;
+                          }}
                           type="text"
                           inputMode="numeric"
                           maxLength={1}
@@ -217,12 +231,16 @@ const VerifyPage = () => {
                         Verifying…
                       </>
                     ) : (
-                      <>Verify Authentication <ArrowRight className="h-5 w-5" /></>
+                      <>
+                        Verify Authentication <ArrowRight className="h-5 w-5" />
+                      </>
                     )}
                   </button>
 
                   <div className="flex flex-col items-center gap-2 text-sm">
-                    <span className="text-white/80 font-light">Didn&apos;t receive the code?</span>
+                    <span className="text-white/80 font-light">
+                      Didn&apos;t receive the code?
+                    </span>
                     <button
                       type="button"
                       disabled={isResending}
@@ -235,7 +253,7 @@ const VerifyPage = () => {
                           Sending…
                         </>
                       ) : (
-                        'Resend'
+                        "Resend"
                       )}
                     </button>
                   </div>

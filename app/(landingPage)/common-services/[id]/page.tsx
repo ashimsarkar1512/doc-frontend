@@ -1,39 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
-import {
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  ClockFading,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useGetProductsByCategoryIdQuery } from "@/Redux/features/patient/assesmentcategory";
 import { useRouter } from "next/navigation";
 import image from "@/public/common.png";
+import Link from "next/link";
 
 export default function CommonServicesPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id;
 
-  console.log(id);
   const [openFaq, setOpenFaq] = useState<number>(0);
   const [activeFaqTab, setActiveFaqTab] = useState("GLP-1");
-  // const [showPopup, setShowPopup] = useState(false);
   const [showPopup, setShowPopup] = useState<string | null>(null);
 
   const { data } = useGetProductsByCategoryIdQuery(id as string);
   const detailesData = data?.data;
-  console.log("iam the product data", detailesData);
-
-  const servicesProduct = detailesData?.[0]?.products;
-  console.log(servicesProduct);
 
   const faqs = [
     {
@@ -89,7 +77,10 @@ export default function CommonServicesPage() {
 
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-10">
             <p className="text-white text-[15px] font-light tracking-wide mb-8 flex items-center gap-1.5 drop-shadow-md">
-              Services <ChevronRight className="w-4 h-4" />{" "}
+              <Link href="/" className="hover:underline cursor-pointer">
+                Services
+              </Link>{" "}
+              <ChevronRight className="w-4 h-4" />{" "}
               {detailesData?.[0]?.categoryName}
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white max-w-[1000px] leading-[1.15] mb-12 drop-shadow-lg tracking-tight">
@@ -101,7 +92,7 @@ export default function CommonServicesPage() {
             </button> */}
             <div
               className="relative inline-block"
-               onMouseEnter={() => setShowPopup("hero")}
+              onMouseEnter={() => setShowPopup("hero")}
               onMouseLeave={() => setShowPopup(null)}
             >
               <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full transition-all duration-300 shadow-md text-[16px] tracking-wide">
@@ -117,13 +108,13 @@ export default function CommonServicesPage() {
                   }`}
               >
                 {detailesData?.[0]?.assessments?.map((item: any) => (
-                  <div
+                  <Link
                     key={item.id}
-                    onClick={() => router.push(`/assessment/${item.id}`)}
+                    href={`/assessment/${item.id}`}
                     className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md transition"
                   >
                     {item.title}
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -367,13 +358,14 @@ export default function CommonServicesPage() {
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             <button
-                onClick={() =>
+              onClick={() =>
                 window.open(
                   "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                   "_blank",
                 )
               }
-             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
+            >
               Book a consultation
             </button>
           </div>

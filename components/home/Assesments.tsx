@@ -69,8 +69,8 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
       ${
         isActive
-          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
-          : "bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:shadow-md"
+          ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
+          : "bg-[#E6E6E6] text-gray-700 hover:bg-gray-300"
       }
     `}
     aria-pressed={isActive}
@@ -113,7 +113,7 @@ const AssessmentCard = ({
     <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/45 to-black/85 z-10" />
 
     {/* Content */}
-    <div className="relative z-20 flex flex-col h-full p-5">
+    <div className="relative z-20 flex flex-col h-full p-6">
       {/* Fees badge */}
       {assessment.paymentPlan && (
         <div className="self-start mb-3">
@@ -145,12 +145,12 @@ const AssessmentCard = ({
         prefetch={true}
         onClick={(e) => e.stopPropagation()}
         className="
-          inline-block
+          inline-block self-start
           opacity-0 translate-y-2
           group-hover:opacity-100 group-hover:translate-y-0
           bg-blue-600 hover:bg-blue-700 active:scale-95
-          text-white text-base font-bold
-          w-full py-3.5 rounded-full shadow-lg text-center
+          text-white text-[15px] font-medium
+          px-6 py-2.5 rounded-full shadow-lg text-center
           transition-all duration-300 ease-out
           focus:outline-none focus:ring-2 focus:ring-blue-400
         "
@@ -271,7 +271,7 @@ export default function Assessments() {
         </div>
 
         {/* Filters with scroll into view on filter change */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <div className="flex flex-wrap justify-start gap-3 mb-12">
           {filters.map((filter) => (
             <FilterButton
               key={filter}
