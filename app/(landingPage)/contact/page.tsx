@@ -424,12 +424,12 @@ export default function ContactPage() {
         </div>
 
         {/* RIGHT: OFFICE HOURS CARD */}
-        <div className="lg:col-span-1 sticky top-24 self-start">
+        <div className="lg:col-span-1 h-[510px] mt-7 sticky top-24 self-start">
           <div
-            className="rounded-[24px] overflow-hidden flex flex-col items-center pt-10 relative min-h-[500px] border border-gray-200"
+            className="rounded-[24px] overflow-hidden flex flex-col items-center pt-10 relative h-full border border-gray-200"
             style={{ background: "#eef2f6" }}
           >
-            <div className="text-center px-6 relative z-10 w-full">
+            <div className="text-center px-6 relative z-10 w-full mb-6">
               <h3 className="font-bold text-gray-900 text-[20px] mb-4 tracking-tight">
                 Office Hours
               </h3>
@@ -457,13 +457,10 @@ export default function ContactPage() {
                   </p>
 
                   {/* TODO: Ensure phone and email are set correctly in admin settings */}
-                  <p className="text-[13px] font-bold text-gray-900">
-                    {contactInfo?.phone && contactInfo?.email
-                      ? `${contactInfo.phone} - ${contactInfo.email}`
-                      : contactInfo?.phone ||
-                        contactInfo?.email ||
-                        "(720) 279-1164 - Info@wlmd.net"}
-                  </p>
+                  <div className="text-[13px] font-bold text-gray-900 flex flex-col items-center gap-1.5 z-20">
+                    <span>{contactInfo?.phone || "(720) 279-1164"}</span>
+                    <span>{contactInfo?.email || "Info@wlmd.net"}</span>
+                  </div>
                 </>
               )}
             </div>
@@ -484,8 +481,8 @@ export default function ContactPage() {
                 WLMD
               </span>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 z-[2] flex justify-center">
-              <div className="relative w-full h-[320px]">
+            <div className="absolute bottom-0 left-0 right-0 z-[2] flex justify-center pointer-events-none">
+              <div className="relative w-full h-[280px]">
                 <Image
                   src="/doctor-blog.png"
                   alt="Doctor"

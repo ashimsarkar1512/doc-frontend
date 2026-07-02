@@ -163,7 +163,9 @@ const Navbar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isProfileOpen]);
 
-  const isDark = variant === "dark";
+  // Determine effective theme based on scroll state
+  const isDark = variant === "dark" || isScrolled || alwaysSolidBg;
+  const effectiveVariant = isDark ? "dark" : "light";
 
   const textColor = isDark
     ? "text-black hover:text-gray-700"
@@ -214,9 +216,7 @@ const Navbar = ({
       style={{ top: isScrolled ? "0px" : "var(--banner-height, 0px)" }}
       className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
         isScrolled || alwaysSolidBg
-          ? isDark
-            ? `bg-white/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/5`
-            : `bg-[#111111]/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-md ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-white/10`
+          ? `bg-white/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/5`
           : overlay && !isDark
             ? `bg-gradient-to-b from-black via-black/15 to-transparent ${initialPadding}`
             : overlay && isDark
@@ -224,11 +224,11 @@ const Navbar = ({
               : `bg-transparent ${initialPadding}`
       } ${className}`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
+      <div className="max-w-[1604px] mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
         {/* Logo */}
         <div className="flex items-center flex-shrink-0 min-w-0 relative z-[60]">
           <Link href="/" className="block py-1">
-            <Logo variant={variant} />
+            <Logo variant={effectiveVariant} />
           </Link>
         </div>
 
@@ -262,9 +262,9 @@ const Navbar = ({
           style={{ WebkitBackdropFilter: "blur(24px) saturate(1.5)" }}
           className={`
             fixed lg:static top-0 left-0 w-full lg:w-auto h-screen lg:h-auto
-            ${mobileBg} backdrop-blur-2xl backdrop-saturate-150 transform-gpu lg:backdrop-blur-none lg:backdrop-saturate-100 lg:bg-transparent
+            ${mobileBg}  lg:bg-transparent
             px-8 pt-40 lg:pt-0 lg:px-0
-            flex-col lg:flex-row items-start lg:items-center gap-8
+            flex-col lg:flex-row items-start lg:items-center gap-4 xl:gap-8
             transition-transform duration-300 ease-in-out z-[50]
             overflow-y-auto lg:overflow-visible
             ${isMobileMenuOpen ? "flex translate-x-0" : "hidden lg:flex translate-x-full lg:translate-x-0"}
@@ -438,7 +438,7 @@ const Navbar = ({
 
         {/* Desktop actions */}
         <div
-          className={`hidden lg:flex items-center gap-4 pl-4 border-l ${borderColor}`}
+          className={`hidden lg:flex items-center gap-2 xl:gap-4 pl-4 border-l ${borderColor}`}
         >
           {isAuthenticated && user ? (
             <>
