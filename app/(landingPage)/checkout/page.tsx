@@ -71,6 +71,17 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
+  // ── Groupon state (dummy) ──
+  const [grouponCode, setGrouponCode] = useState("SUMMER2026");
+  const [grouponApplied, setGrouponApplied] = useState(false);
+  const [showGrouponDropdown, setShowGrouponDropdown] = useState(false);
+  const [grouponMessage, setGrouponMessage] = useState("");
+
+  const handleApplyGroupon = () => {
+    setGrouponApplied(true);
+    setGrouponMessage("");
+  };
+
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -572,8 +583,21 @@ export default function CheckoutPage() {
                     <FieldError message={touched.city ? errors.city : undefined} />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    <label className="flex items-center gap-1.5 text-gray-800 text-[14px] font-medium mb-1.5 relative group cursor-pointer w-fit">
                       State
+                      <svg className="w-4 h-4 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[400px] bg-white shadow-[0_4px_25px_rgba(0,0,0,0.12)] border border-gray-100 rounded-[16px] px-5 py-4 text-[15px] text-[#272628] font-normal font-[Inter] leading-[1.6] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        Service is only available in states where our providers hold an active license.{" "}
+                        <Link href="/coverage" target="_blank" rel="noopener noreferrer" className="text-[#2563EB] underline underline-offset-4 decoration-[#2563EB]">
+                          Learn more.
+                        </Link>
+                        {/* Tooltip arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[8px] border-transparent border-t-white"></div>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-[0px] border-[9px] border-transparent border-t-gray-100 -z-10"></div>
+                      </div>
                     </label>
                     <input
                       type="text"
@@ -798,10 +822,10 @@ export default function CheckoutPage() {
             {/* Compliance Confirmation */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <ShieldCheck className="w-[22px] h-[22px] text-blue-600" />
-                <h2 className="text-[18px] font-bold text-gray-900">Compliance Confirmation:</h2>
+                <ShieldCheck className="w-[28px] h-[28px] text-blue-600" />
+                <h2 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-none">Compliance Confirmation:</h2>
               </div>
-              <p className="text-gray-500 text-[14.5px] mb-6 leading-relaxed max-w-[95%]">
+              <p className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] mb-6 max-w-[95%]">
                 Before completing your submission, please confirm you understand the following
                 important information about our telemedicine service:
               </p>
@@ -818,9 +842,9 @@ export default function CheckoutPage() {
                         agreedToTermsAndPrivacy: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
                   />
-                  <label htmlFor="compliance-terms" className="text-gray-700 text-[14px] cursor-pointer">
+                  <label htmlFor="compliance-terms" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
                     I have reviewed and agree to the{" "}
                     <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-blue-600 transition-colors">Terms of Service</Link>
                     {" "}and{" "}
@@ -838,9 +862,9 @@ export default function CheckoutPage() {
                         certifiedInfoAccurate: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
                   />
-                  <label htmlFor="compliance-accurate" className="text-gray-700 text-[14px] cursor-pointer">
+                  <label htmlFor="compliance-accurate" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
                     I certify that all information provided is accurate and complete.
                   </label>
                 </div>
@@ -855,9 +879,9 @@ export default function CheckoutPage() {
                         understoodFalseInfoConsequences: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
                   />
-                  <label htmlFor="compliance-false-info" className="text-gray-700 text-[14px] cursor-pointer">
+                  <label htmlFor="compliance-false-info" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
                     I understand that providing false or misleading information may result in
                     denial of treatment.
                   </label>
@@ -873,9 +897,9 @@ export default function CheckoutPage() {
                         understoodRecommendationsBasis: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
                   />
-                  <label htmlFor="compliance-recommendations" className="text-gray-700 text-[14px] cursor-pointer">
+                  <label htmlFor="compliance-recommendations" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
                     I understand that treatment recommendations are based on the information I
                     have provided.
                   </label>
@@ -891,9 +915,9 @@ export default function CheckoutPage() {
                         understoodAdditionalInfoMayBeRequested: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
                   />
-                  <label htmlFor="compliance-additional-info" className="text-gray-700 text-[14px] cursor-pointer">
+                  <label htmlFor="compliance-additional-info" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
                     I understand that additional information may be requested before treatment is
                     approved.
                   </label>
@@ -908,20 +932,21 @@ export default function CheckoutPage() {
           </div>
 
           {/* RIGHT: Order Summary Panel */}
-          <div 
-            className="w-full lg:w-[370px] lg:sticky lg:top-[100px] flex-shrink-0 self-start max-h-[calc(100vh-100px)] overflow-y-auto rounded-2xl" 
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          <div
+            className="w-full lg:w-[450px] lg:sticky lg:top-[100px] flex-shrink-0 self-start"
           >
-            <div className="rounded-2xl p-5 shadow-sm" style={{ background: "#EEF2FF" }}>
+            <div className="rounded-2xl p-7 shadow-sm" style={{ background: "#EAF3FF", fontFamily: "Quicksand, sans-serif" }}>
               {/* Header */}
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-[18px] font-bold text-gray-900">Order Summary</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2]">Order Summary</h3>
                 {itemCount > 0 && (
-                  <span className="bg-[#DEE7FB] text-blue-600 text-[11px] font-bold px-3 py-1 rounded-full tracking-widest uppercase">
+                  <span className="bg-[#1D4ED8]/10 text-[#1D4ED8] font-[Inter] text-[12px] font-normal leading-none px-3 py-1 rounded-[50px] uppercase">
                     {itemCount} ITEM{itemCount !== 1 ? "S" : ""}
                   </span>
                 )}
               </div>
+
+              <div className="border-b border-[#1D4ED8] mb-5 w-full opacity-80" />
 
               {/* Cart items */}
               {cartLoading ? (
@@ -934,7 +959,7 @@ export default function CheckoutPage() {
                   <p className="text-gray-400 text-[13px]">Your cart is empty.</p>
                 </div>
               ) : (
-                <div className="flex flex-col divide-y divide-blue-100 mb-4">
+                <div className="flex flex-col gap-4 mb-12">
                   {cartItems.map((item) => {
                     const img = item.product?.images?.[0]?.fileUrl ?? "";
                     const isRemoving = removingId === item.id;
@@ -942,11 +967,11 @@ export default function CheckoutPage() {
                     const isUpdatingDec = updatingId === `${item.id}-dec`;
 
                     return (
-                      <div key={item.id} className="py-3.5 flex gap-3">
+                      <div key={item.id} className="flex gap-4">
                         {/* Thumbnail */}
                         <div
-                          className="relative w-[56px] h-[56px] flex-shrink-0 rounded-xl overflow-hidden"
-                          style={{ backgroundColor: "#1E2224" }}
+                          className="relative w-[70px] h-[70px] flex-shrink-0 rounded-2xl overflow-hidden shadow-sm p-1.5"
+                          style={{ backgroundColor: "#292C2D" }}
                         >
                           {img && (
                             <Image
@@ -955,26 +980,31 @@ export default function CheckoutPage() {
                               fill
                               unoptimized
                               className="object-contain p-1.5"
-                              sizes="56px"
+                              sizes="70px"
                             />
                           )}
                         </div>
 
                         {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start gap-2">
-                            <p className="text-gray-900 text-[13px] font-semibold leading-snug">
-                              {item.product?.name || "Unknown Product"}
-                            </p>
-                            <p className="text-gray-900 text-[13px] font-bold flex-shrink-0">
+                        <div className="flex-1 min-w-0 flex flex-col">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-gray-900 text-[14px] font-bold leading-snug">
+                                {item.product?.name || "Unknown Product"}
+                              </p>
+                              {item.product?.description && (
+                                <p className="text-[#272628] font-[Quicksand] text-[16px] font-normal leading-none mt-1 line-clamp-1">{item.product.description}</p>
+                              )}
+                            </div>
+                            <p className="text-[#2563EB] text-[14px] font-bold flex-shrink-0">
                               ${parseFloat(item.itemTotal).toFixed(2)}
                             </p>
                           </div>
 
                           {/* Variant/Size badge */}
                           {item.product?.variants && item.product.variants.length > 0 ? (
-                            <div className="flex flex-wrap items-center gap-1.5 mt-2.5 mb-1.5">
-                              <span className="text-[13px] text-gray-700 font-medium mr-1">Size:</span>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                              <span className="text-[12px] text-gray-600 font-medium mr-1">Size:</span>
                               {item.product.variants.map((v) => {
                                 const currentSize = optimisticSizes[item.id] || item.size;
                                 const isSelected = currentSize === v.size;
@@ -984,11 +1014,10 @@ export default function CheckoutPage() {
                                     key={v.id}
                                     onClick={() => !isSelected && handleVariantChange(item.id, v.size!)}
                                     disabled={isUpdatingVariant}
-                                    className={`text-[12px] font-medium px-3 py-1 rounded-full transition-colors ${
-                                      isSelected
-                                        ? "bg-blue-600 text-white shadow-sm"
+                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${isSelected
+                                        ? "bg-[#2563EB] text-white shadow-sm"
                                         : "bg-[#DEE7FB] text-gray-600 hover:bg-[#D1DFF8]"
-                                    } ${isUpdatingVariant ? "opacity-50 cursor-not-allowed" : ""}`}
+                                      } ${isUpdatingVariant ? "opacity-50 cursor-not-allowed" : ""}`}
                                   >
                                     {v.size}
                                   </button>
@@ -996,46 +1025,35 @@ export default function CheckoutPage() {
                               })}
                             </div>
                           ) : item.size && (
-                            <div className="flex items-center gap-1 mt-2 mb-1">
-                              <span className="text-[13px] text-gray-600 font-medium">Size:</span>
-                              <span className="bg-[#E2E8F0] text-gray-700 text-[12px] font-medium px-3 py-1 rounded-full">
+                            <div className="flex items-center gap-1.5 mt-2">
+                              <span className="text-[12px] text-gray-600 font-medium">Size:</span>
+                              <span className="bg-[#DEE7FB] text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
                                 {item.size}
                               </span>
                             </div>
                           )}
 
                           {/* Qty + Delete row */}
-                          <div className="flex items-center justify-between mt-2">
-                            {/* Qty controls */}
+                          <div className="flex items-center justify-between mt-3">
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleQtyChange(item.id, item.quantity, -1)}
                                 disabled={isUpdatingDec || item.quantity <= 1}
-                                className="w-6 h-6 rounded-full bg-white border border-blue-200 text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[13px] font-bold transition-colors"
+                                className="w-5 h-5 rounded-full bg-[#DEE7FB] text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[12px] font-bold transition-colors"
                               >
-                                {isUpdatingDec ? (
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                ) : (
-                                  "−"
-                                )}
+                                {isUpdatingDec ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : "−"}
                               </button>
-                              <span className="text-gray-800 text-[13px] font-semibold w-4 text-center">
+                              <span className="text-gray-800 text-[13px] font-semibold w-3 text-center">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() => handleQtyChange(item.id, item.quantity, 1)}
                                 disabled={isUpdatingInc}
-                                className="w-6 h-6 rounded-full bg-white border border-blue-200 text-gray-600 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[13px] font-bold transition-colors"
+                                className="w-5 h-5 rounded-full bg-[#DEE7FB] text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center text-[12px] font-bold transition-colors"
                               >
-                                {isUpdatingInc ? (
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                ) : (
-                                  "+"
-                                )}
+                                {isUpdatingInc ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : "+"}
                               </button>
                             </div>
-
-                            {/* Delete icon */}
                             <button
                               onClick={() => handleRemove(item.id)}
                               disabled={isRemoving}
@@ -1056,42 +1074,94 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Divider */}
-              <div className="border-t border-blue-200 my-4" />
-
-              {/* Coupon Code */}
-              <div className="mb-4">
-                <div className="flex items-center gap-1.5 mb-2.5">
-                  <Tag className="w-3.5 h-3.5 text-gray-500" />
-                  <span className="text-gray-700 text-[13px] font-semibold">Coupon Code</span>
+              {/* Groupon section (dummy) */}
+              <div className="mb-6 mt-12">
+                <div className="flex items-center gap-1 mb-4">
+                  <span className="text-[#272628] font-[Quicksand] text-[20px] font-semibold leading-none">Discount :</span>
+                  <span className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none ml-1">Powered by:</span>
+                  <div className="ml-1 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="73" height="12" viewBox="0 0 73 12" fill="none">
+                      <path d="M11.655 5.27698C11.671 5.53722 11.6876 5.79684 11.6876 6.04089C11.6876 7.34032 11.3671 8.44435 10.7099 9.41862C10.1667 10.2145 9.44086 10.8652 8.59471 11.3148C7.74857 11.7644 6.8074 11.9995 5.85185 12C4.16835 12 2.7413 11.3672 1.61937 10.1651C0.544342 9.01234 0 7.58309 0 5.878C0 4.28649 0.609043 2.82541 1.73097 1.7045C2.85349 0.584194 4.26451 0 5.8833 0C8.32066 0 10.4523 1.51037 11.3665 3.97877H8.19187C7.48665 3.2323 6.74877 2.85846 5.85124 2.85846C4.18437 2.85846 2.86952 4.23841 2.86952 5.89426C2.86952 7.72917 4.27994 9.14155 5.85124 9.14155C6.90962 9.14155 7.85529 8.58982 8.41624 7.58248H5.16205V5.27698H11.655ZM18.0209 7.81028L20.8103 11.7722H17.3632L15.1828 8.05372V11.7722L12.3934 11.7728V0.227187H16.1771C17.3792 0.227187 18.2934 0.308325 19.0627 0.861267C20.073 1.57528 20.6019 2.66373 20.6019 4.09237C20.6025 5.95972 19.6402 7.3553 18.0209 7.81028ZM17.7799 4.15728C17.7799 3.19924 17.1868 2.80918 15.9521 2.80918H15.1828V5.55345H15.7278C17.1067 5.55345 17.7799 5.19584 17.7799 4.15728ZM70.2112 0.227187V6.64128L66.0263 0.227187H63.5098V11.7728H66.2986V5.34309L70.5472 11.7734H73V0.227187H70.2112ZM61.1997 1.72193C62.3542 2.87469 62.9641 4.35261 62.9641 5.92788C62.9641 7.5837 62.386 9.06161 61.3122 10.1825C60.206 11.3515 58.698 11.985 57.1114 11.985C55.4277 11.985 53.9849 11.3684 52.8629 10.1663C51.7885 9.01356 51.243 7.58492 51.243 5.87922C51.243 4.2871 51.852 2.82541 52.9739 1.7051C54.0964 0.584793 55.5068 0.0168287 57.1268 0.0168287C58.6513 0.0168287 60.0935 0.617853 61.1997 1.72193ZM60.0776 5.91107C60.0776 4.22219 58.7468 2.87469 57.1433 2.87469C55.4442 2.87469 54.1131 4.22219 54.1131 5.91107C54.1131 7.72978 55.5403 9.12591 57.112 9.12591C58.7468 9.12591 60.0776 7.79408 60.0776 5.91107ZM30.9913 1.72193C32.1459 2.87469 32.7555 4.35261 32.7555 5.92788C32.7555 7.5837 32.1779 9.06161 31.1041 10.1825C29.9976 11.3515 28.4904 11.985 26.9031 11.985C25.2196 11.985 23.7765 11.3684 22.6546 10.1663C21.5802 9.01356 21.0352 7.58492 21.0352 5.87922C21.0352 4.2871 21.6443 2.82541 22.7668 1.7051C23.8893 0.584793 25.2997 0.0168287 26.9197 0.0168287C28.4424 0.0168287 29.8848 0.617853 30.9913 1.72193ZM29.8688 5.91107C29.8688 4.22219 28.5379 2.87469 26.9346 2.87469C25.2351 2.87469 23.9042 4.22219 23.9042 5.91107C23.9042 7.72978 25.3312 9.12591 26.9025 9.12591C28.5385 9.12591 29.8688 7.79408 29.8688 5.91107ZM50.8755 4.10859C50.8755 5.60271 50.2018 6.83662 49.0638 7.53444C48.342 7.97256 47.4439 8.05372 46.2572 8.05372H45.4552V11.7722L42.6659 11.7728V0.227187H46.4495C47.651 0.227187 48.5652 0.308325 49.3351 0.861267C50.346 1.57528 50.8755 2.66373 50.8755 4.10859ZM48.0529 4.15728C48.0529 3.19924 47.4599 2.80918 46.2252 2.80918H45.4879V5.55345H46.0002C47.3797 5.55345 48.0529 5.19584 48.0529 4.15728ZM39.0721 7.33971C39.0721 8.65473 38.6074 9.30444 37.6291 9.30444C36.6835 9.30444 36.2822 8.63853 36.2822 7.33971V0.227187H33.4762V7.45327C33.4762 10.3442 35.0308 11.9507 37.6125 11.9507C40.1614 11.9507 41.861 10.2787 41.861 7.45327V0.227187H39.0721V7.33971Z" fill="#007C1F" />
+                    </svg>
+                  </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 flex items-center bg-white border border-gray-200 rounded-xl px-3 py-2.5 gap-2 focus-within:border-blue-400 transition-colors">
+                <div className="flex items-stretch gap-2 h-[42px]">
+                  <div className="flex-1 flex relative">
                     <input
                       type="text"
-                      value={couponInput}
-                      onChange={(e) => {
-                        setCouponInput(e.target.value);
-                        setCouponError("");
-                        setCouponApplied(false);
-                        localStorage.removeItem("appliedCoupon");
-                      }}
-                      onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-                      placeholder="Enter coupon code"
-                      className="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none min-w-0"
+                      value={grouponCode}
+                      onChange={(e) => { setGrouponCode(e.target.value); setGrouponApplied(false); }}
+                      className="flex-1 bg-[#E2E8F0] text-gray-700 text-[13px] px-3 outline-none rounded-l-[12px] border border-transparent focus:border-blue-400"
                     />
-                    {couponApplied && !isApplyingCoupon && !summaryError && (
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <button
+                      onClick={() => setShowGrouponDropdown(!showGrouponDropdown)}
+                      className="bg-[#1D4ED8] hover:bg-[#1e40af] text-white w-[42px] h-[42px] rounded-r-[12px] flex flex-col items-center justify-center gap-[10px] transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+
+                    {showGrouponDropdown && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-lg z-10 overflow-hidden">
+                        <div className="text-[13px] text-gray-700 px-3 py-2 hover:bg-gray-50 cursor-pointer" onClick={() => { setGrouponCode("SUMMER2026"); setShowGrouponDropdown(false); setGrouponApplied(false); }}>SUMMER2026</div>
+                        <div className="text-[13px] text-gray-700 px-3 py-2 hover:bg-gray-50 cursor-pointer" onClick={() => { setGrouponCode("WINTER2026"); setShowGrouponDropdown(false); setGrouponApplied(false); }}>WINTER2026</div>
+                        <div className="text-[13px] text-gray-700 px-3 py-2 hover:bg-gray-50 cursor-pointer" onClick={() => { setGrouponCode("SPRING2026"); setShowGrouponDropdown(false); setGrouponApplied(false); }}>SPRING2026</div>
+                      </div>
                     )}
                   </div>
-                  <button
-                    onClick={handleApplyCoupon}
-                    disabled={isApplyingCoupon}
-                    className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    Apply
-                  </button>
+                  {grouponApplied ? (
+                    <button
+                      disabled
+                      className="flex w-[87px] h-[42px] px-[16px] py-[4px] justify-center items-center gap-[5px] rounded-[12px] bg-[#CCD4DE] text-[#272628] font-[Quicksand] text-[16px] font-semibold"
+                    >
+                      Applied
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleApplyGroupon}
+                      className="bg-[#1D4ED8] hover:bg-[#1e40af] text-white text-[13px] font-bold px-4 rounded-[12px] h-[42px] transition-colors shadow-sm w-[87px]"
+                    >
+                      Apply
+                    </button>
+                  )}
+                </div>
+                {grouponMessage && <p className="text-red-500 text-[11px] mt-1.5 ml-1 font-medium">{grouponMessage}</p>}
+              </div>
+
+              {/* Coupon Code section */}
+              <div className="mb-3 mt-4">
+                <p className="text-[#272628] font-[Quicksand] text-[20px] font-semibold leading-none mb-3">Coupon Code:</p>
+                <div className="flex items-center gap-2 h-[42px]">
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value);
+                      setCouponError("");
+                      setCouponApplied(false);
+                      localStorage.removeItem("appliedCoupon");
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                    placeholder="Enter coupon"
+                    className="flex-1 bg-[#E2E8F0] text-gray-700 text-[13px] px-3 h-full rounded-[12px] outline-none border border-transparent focus:border-blue-400"
+                  />
+
+                  {/* Styled apply button to match Groupon's Applied button color pattern */}
+                  {couponApplied && !isApplyingCoupon && !summaryError ? (
+                    <button
+                      disabled
+                      className="flex w-[87px] h-[42px] px-[16px] py-[4px] justify-center items-center gap-[5px] rounded-[12px] bg-[#CCD4DE] text-[#272628] font-[Quicksand] text-[16px] font-semibold"
+                    >
+                      Applied
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={isApplyingCoupon}
+                      className="bg-[#1D4ED8] hover:bg-[#1e40af] text-white text-[13px] font-bold px-4 h-[42px] rounded-[12px] transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed w-[87px]"
+                    >
+                      Apply
+                    </button>
+                  )}
                 </div>
 
                 {couponError && (
@@ -1109,70 +1179,44 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Divider */}
-              <div className="border-t border-blue-200 my-4" />
+              <div className="border-b border-[#1D4ED8] opacity-80 mb-6 mt-8 w-full" />
 
               {/* Price Summary */}
-              <div className="flex flex-col gap-2.5 mb-4">
+              <div className="flex flex-col gap-4 mb-5">
                 {[
-                  {
-                    label: "Subtotal",
-                    value: summary?.subtotal ? `$${parseFloat(summary.subtotal).toFixed(2)}` : "—",
-                  },
-                  {
-                    label: "Service Duration",
-                    value: formatServiceDuration(summary?.serviceDuration),
-                  },
-                  {
-                    label: "Service Fees",
-                    value: summary?.serviceFees
-                      ? `$${parseFloat(summary.serviceFees).toFixed(2)}`
-                      : "—",
-                  },
-                  {
-                    label: "Shipping Charge",
-                    value: summary?.shippingCharge
-                      ? `$${parseFloat(summary.shippingCharge).toFixed(2)}`
-                      : "—",
-                  },
-                  {
-                    label: "Discount",
-                    value:
-                      summary?.discount && parseFloat(summary.discount) > 0
-                        ? `- $${parseFloat(summary.discount).toFixed(2)}`
-                        : "$0.00",
-                    accent: true,
-                  },
+                  { label: "Subtotal", value: summary?.subtotal ? `$${parseFloat(summary.subtotal).toFixed(2)}` : "—" },
+                  { label: "Service Duration", value: formatServiceDuration(summary?.serviceDuration) },
+                  { label: "Service Fees", value: summary?.serviceFees ? `$${parseFloat(summary.serviceFees).toFixed(2)}` : "—" },
+                  { label: "Shipping charge", value: summary?.shippingCharge ? `$${parseFloat(summary.shippingCharge).toFixed(2)}` : "—" },
+                  { label: "Discount", value: summary?.discount && parseFloat(summary.discount) > 0 ? `- $${parseFloat(summary.discount).toFixed(2)}` : "$0.00", accent: true },
                 ].map(({ label, value, accent }) => (
                   <div key={label} className="flex justify-between">
-                    <span className="text-gray-500 text-[13px]">{label}</span>
-                    <span
-                      className={`text-[13px] font-medium ${accent ? "text-red-500" : "text-gray-800"}`}
-                    >
+                    <span className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none">{label}</span>
+                    <span className={`font-[Quicksand] text-[20px] font-normal leading-none ${accent ? "text-red-500" : "text-[#272628]"}`}>
                       {value}
                     </span>
                   </div>
                 ))}
+              </div>
 
-                {/* Total */}
-                <div className="flex justify-between items-center pt-2 border-t border-blue-200">
-                  <span className="text-gray-900 text-[15px] font-bold">Total</span>
-                  <span className="text-[#2563EB] text-[17px] font-bold">
-                    {summary?.total ? `$${parseFloat(summary.total).toFixed(2)}` : "—"}
-                  </span>
-                </div>
+              {/* Total */}
+              <div className="border-t border-[#1D4ED8] opacity-80 pt-4 pb-2 flex justify-between items-center mb-4 mt-2">
+                <span className="text-[#272628] font-[Quicksand] text-[20px] font-bold leading-none">Total</span>
+                <span className="text-[#1D4ED8] font-[Quicksand] text-[20px] font-bold leading-none">
+                  {summary?.total ? `$${parseFloat(summary.total).toFixed(2)}` : "—"}
+                </span>
               </div>
 
               {/* Recurring checkbox */}
-              <label className="flex items-start gap-2.5 mb-5 cursor-pointer select-none">
+              <label className="flex items-start gap-3 mb-6 cursor-pointer select-none">
                 <div
                   onClick={() => setRecurring((v) => !v)}
-                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${recurring ? "bg-blue-600 border-blue-600" : "bg-white border-blue-400"
+                  className={`mt-1 w-5 h-5 rounded flex-shrink-0 border-2 flex items-center justify-center transition-colors cursor-pointer ${recurring ? "bg-blue-600 border-blue-600" : "bg-white border-blue-400"
                     }`}
                 >
                   {recurring && (
                     <svg
-                      className="w-2.5 h-2.5 text-white"
+                      className="w-3.5 h-3.5 text-white"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -1183,11 +1227,11 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <span
-                  className="text-gray-600 text-[12px] leading-relaxed"
+                  className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-tight"
                   onClick={() => setRecurring((v) => !v)}
                 >
                   Active monthly{" "}
-                  <Link href="/billing-and-cancellation" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="underline font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                  <Link href="/billing-and-cancellation" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-[Quicksand] font-semibold underline underline-offset-4 decoration-solid decoration-[#272628] text-[#272628] hover:text-blue-600 transition-colors">
                     recurring subscriptions
                   </Link>
                 </span>
@@ -1197,7 +1241,7 @@ export default function CheckoutPage() {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white text-[15px] font-semibold py-3.5 rounded-xl transition-all duration-150 shadow-md block text-center"
+                className="flex py-[12px] px-[16px] justify-center items-center gap-[15px] self-stretch rounded-[46px] bg-[#1D4ED8] hover:bg-[#1e40af] text-white font-[Quicksand] text-[20px] font-bold transition-colors w-full disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                 Preview & Submit
