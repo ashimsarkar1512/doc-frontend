@@ -13,6 +13,7 @@ import {
 import {
   Camera,
   ChevronDown,
+  ChevronRight,
   Eye,
   EyeOff,
   Laptop,
@@ -23,7 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import type { ChangeEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const inputClassName =
@@ -584,61 +585,55 @@ console.log(currentUserData)
             Your Device & active sessions
           </h3>
 
-          {sessionsData?.data?.map((device, idx) => (
-            <div
+          {sessionsData?.data?.map((device, idx) => {
+            const isDesktop = device.deviceName.toLowerCase().includes("windows") || device.deviceName.toLowerCase().includes("mac") || device.deviceName.toLowerCase().includes("desktop");
+            return (
+            <details
               key={idx}
-              className="mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+              className="group mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+              open={idx === 0}
             >
-              <div className="mb-4 flex items-center justify-between">
+              <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
                 <div className="flex items-center gap-3">
-                  {device.deviceName.toLowerCase().includes("windows") ? (
+                  {isDesktop ? (
                     <Laptop className="h-5 w-5 text-[#C46A0A]" />
                   ) : (
                     <Smartphone className="h-5 w-5 text-[#C46A0A]" />
                   )}
                   <span className="font-medium text-[#A95600]">
-                    {device.deviceName}{" "}
-                    {device.isActiveNow ? "- Active now" : ""}
+                    {device.deviceName}
+                    {device.isActiveNow ? " - Active now" : ""}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm text-[#C46A0A]"
-                >
-                  {device.sessionCount} sessions
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-y-4 text-sm text-[#A95600]">
-                {device.sessions.map((session, sIdx) => (
-                  <>
-                    <div
-                      key={`${idx}-${sIdx}-1`}
-                      className="flex items-center gap-2"
-                    >
+                <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
+                  {device.sessionCount} sessions on {device.deviceName}
+                  <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
+                </div>
+              </summary>
+              <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
+                {device.sessions.map((session, sIdx) => {
+                  const d = new Date(session.lastLogin);
+                  const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
+                  
+                  return (
+                  <React.Fragment key={`${idx}-${sIdx}`}>
+                    <div className="flex items-center gap-2">
                       <p>Last login:</p>
-                      <p>{new Date(session.lastLogin).toLocaleString()}</p>
+                      <p>{formattedDate}</p>
                     </div>
-                    <div
-                      key={`${idx}-${sIdx}-2`}
-                      className="flex items-center gap-2"
-                    >
+                    <div className="flex items-center gap-2">
                       <p>IP Address:</p>
                       <p>{session.ipAddress}</p>
                     </div>
-                    <div
-                      key={`${idx}-${sIdx}-3`}
-                      className="flex items-center gap-2"
-                    >
+                    <div className="flex items-center gap-2">
                       <p>Session Due:</p>
                       <p>{session.sessionDue}</p>
                     </div>
-                  </>
-                ))}
+                  </React.Fragment>
+                )})}
               </div>
-            </div>
-          ))}
+            </details>
+          )})}
         </div>
       </div>
 

@@ -53,7 +53,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   };
 
   return (
-    <div className="min-h-screen flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
+    <div className="h-full flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
       <main className={`flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}>
         {/* Action Buttons at the Top */}
         <div className="flex gap-4 mb-8">

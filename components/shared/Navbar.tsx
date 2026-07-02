@@ -230,8 +230,16 @@ const Navbar = ({
           </Link>
         </div>
 
-        {/* Mobile menu button */}
-        <div className="lg:hidden relative z-[60] flex-shrink-0 ml-3">
+        {/* Mobile controls */}
+        <div className="lg:hidden relative z-[60] flex items-center gap-2 ml-3 flex-shrink-0">
+          {isAuthenticated && user && (
+            <div className="flex items-center">
+              <NotificationDropdown 
+                iconColor={textColor} 
+                hoverBgClass={mobileMenuBtnClass}
+              />
+            </div>
+          )}
           <button
             type="button"
             onClick={toggleMobileMenu}

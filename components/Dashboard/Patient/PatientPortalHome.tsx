@@ -62,7 +62,7 @@ export default function PatientPortalHome() {
   // High scaleable Shell Orchestration Domain State
   const initialDomain = (searchParams.get("domain") as any) || "dashboard";
   const [activeDomain, setActiveDomain] = useState<
-    "dashboard" | "messages" | "notifications" | "settings"
+    "dashboard" | "messages" |"notifications"| "settings"
   >(initialDomain);
 
   useEffect(() => {

@@ -17,7 +17,7 @@ export default function PatientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
+    <div className="h-full flex flex-col bg-[#f8fafc]">
       <Navbar variant="dark" initialPadding="py-3" scrolledPadding="py-3" alwaysSolidBg />
       {/* --- Dynamic Content Area --- */}
       <main className="flex-1 flex flex-col mt-10">{children}</main>
