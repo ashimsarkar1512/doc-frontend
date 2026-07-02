@@ -64,7 +64,7 @@ const Footer = () => {
                       key={office.id}
                       className={`${paddingClass} py-6 md:py-0`}
                     >
-                      <h3 className="font-medium text-pink-800 mb-2  text-2xl">
+                      <h3 className="font-medium text-white mb-2  text-2xl">
                         {office.name}
                       </h3>
                       <p className="text-xl text-gray-300  font-light">
