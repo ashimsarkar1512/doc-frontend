@@ -231,7 +231,7 @@ const Navbar = ({
         </div>
 
         {/* Mobile menu button */}
-        <div className="md:hidden relative z-[60] flex-shrink-0 ml-3">
+        <div className="lg:hidden relative z-[60] flex-shrink-0 ml-3">
           <button
             type="button"
             onClick={toggleMobileMenu}
@@ -250,18 +250,18 @@ const Navbar = ({
         {/* NAV LINKS */}
         <div
           className={`
-            fixed md:static top-0 left-0 w-full md:w-auto h-screen md:h-auto
-            ${mobileBg} backdrop-blur-2xl md:backdrop-blur-none md:bg-transparent
-            px-8 pt-28 md:pt-0 md:px-0
-            flex-col md:flex-row items-start md:items-center gap-8
+            fixed lg:static top-0 left-0 w-full lg:w-auto h-screen lg:h-auto
+            ${mobileBg} backdrop-blur-2xl lg:backdrop-blur-none lg:bg-transparent
+            px-8 pt-28 lg:pt-0 lg:px-0
+            flex-col lg:flex-row items-start lg:items-center gap-8
             transition-transform duration-300 ease-in-out z-[50]
-            overflow-y-auto md:overflow-visible
-            ${isMobileMenuOpen ? "flex translate-x-0" : "hidden md:flex translate-x-full md:translate-x-0"}
+            overflow-y-auto lg:overflow-visible
+            ${isMobileMenuOpen ? "flex translate-x-0" : "hidden lg:flex translate-x-full lg:translate-x-0"}
           `}
         >
           <Link
             href="/"
-            className={`text-xl md:text-base ${getLinkClass("/")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
@@ -270,7 +270,7 @@ const Navbar = ({
           {/* Services */}
           <div
             ref={servicesRef}
-            className="relative w-full md:w-auto"
+            className="relative w-full lg:w-auto"
             onMouseEnter={handleServicesMouseEnter}
             onMouseLeave={handleServicesMouseLeave}
           >
@@ -289,11 +289,11 @@ const Navbar = ({
             {isServicesOpen && (
               <>
                 {/* desktop */}
-                <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-5 z-50">
+                <div className="hidden lg:block absolute top-full left-1/2 -translate-x-1/2 mt-5 z-50">
                   <ServicesMegaMenu variant="desktop" />
                 </div>
                 {/* mobile */}
-                <div className="md:hidden mt-4">
+                <div className="lg:hidden mt-4">
                   <ServicesMegaMenu variant="mobile" />
                 </div>
               </>
@@ -303,7 +303,7 @@ const Navbar = ({
           <Link
             href="/lab-testing"
             prefetch={true}
-            className={`text-xl md:text-base ${getLinkClass("/lab-testing")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/lab-testing")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Lab Testing
@@ -312,7 +312,7 @@ const Navbar = ({
           <Link
             href="/blog"
             prefetch={true}
-            className={`text-xl md:text-base ${getLinkClass("/blog")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/blog")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
@@ -320,7 +320,7 @@ const Navbar = ({
 
           <Link
             href="/eligibility"
-            className={`text-xl md:text-base ${getLinkClass("/eligibility")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/eligibility")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Eligibility
@@ -328,7 +328,7 @@ const Navbar = ({
 
           <Link
             href="/about"
-            className={`text-xl md:text-base ${getLinkClass("/about")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/about")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             About
@@ -336,7 +336,7 @@ const Navbar = ({
 
           <Link
             href="/contact"
-            className={`text-xl md:text-base ${getLinkClass("/contact")}`}
+            className={`text-xl lg:text-base ${getLinkClass("/contact")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Contact
@@ -344,7 +344,7 @@ const Navbar = ({
 
           {/* Mobile actions */}
           <div
-            className={`md:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}
+            className={`lg:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}
           >
             {isAuthenticated && user ? (
               <>
@@ -427,7 +427,7 @@ const Navbar = ({
 
         {/* Desktop actions */}
         <div
-          className={`hidden md:flex items-center gap-4 pl-4 border-l ${borderColor}`}
+          className={`hidden lg:flex items-center gap-4 pl-4 border-l ${borderColor}`}
         >
           {isAuthenticated && user ? (
             <>

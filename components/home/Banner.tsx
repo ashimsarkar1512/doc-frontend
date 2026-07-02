@@ -123,7 +123,7 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-16 w-2/3 bg-white/20 animate-pulse rounded-xl mb-6" />
       ) : (
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 max-w-3xl tracking-tight leading-tight drop-shadow-lg">
+        <h1 className="text-2xl md:text-6xl font-bold text-white mb-6 max-w-3xl tracking-tight leading-tight drop-shadow-lg">
           {heroTitle}
         </h1>
       )}
@@ -132,7 +132,7 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-8 w-1/2 bg-white/20 animate-pulse rounded-xl mb-10" />
       ) : (
-        <p className="text-base md:text-lg text-gray-200 mb-10 max-w-4xl leading-relaxed drop-shadow-md">
+        <p className="text-xs  md:text-lg text-gray-200 mb-10 max-w-4xl leading-relaxed drop-shadow-md">
           {heroDescription}
         </p>
       )}

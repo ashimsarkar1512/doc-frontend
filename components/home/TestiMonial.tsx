@@ -10,9 +10,23 @@ import {
 } from "@/Redux/features/testimonials/testimonialsApi";
 import { FcGoogle } from "react-icons/fc";
 import { IoStarSharp } from "react-icons/io5";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+
 const TestiMonial: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
   const { data: testimonialsData } = useGetTestimonialsQuery();
+
+  const [emblaRef] = useEmblaCarousel(
+    { loop: true, align: "start", dragFree: true },
+    [
+      Autoplay({
+        delay: 3500,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ]
+  );
 
   const dummyReviews: Testimonial[] = [
     {
@@ -123,23 +137,16 @@ const TestiMonial: React.FC = () => {
           {/* Dynamic Carousel Slide Viewport */}
           <div className="lg:col-span-8 overflow-hidden relative w-full flex items-center">
             {/* Gradient masks for smooth edges */}
-           
-            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#121314] to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#121314] to-transparent z-10 pointer-events-none"></div>
 
-            <motion.div
-              className="flex gap-5 h-full min-w-max"
-              animate={{ x: ["0%", "-40%"] }}
-              transition={{
-                duration: reviews.length * 5,
-                ease: "linear",
-                repeat: Infinity,
-              }}
-            >
-              {[...reviews, ...reviews].map((review, idx) => (
-                <div
-                  key={`${review.id}-${idx}`}
-                  className="w-[320px] sm:w-[400px] flex-shrink-0"
-                >
+            {/* Embla Viewport */}
+            <div className="overflow-hidden w-full h-full cursor-grab active:cursor-grabbing" ref={emblaRef}>
+              <div className="flex h-full">
+                {reviews.map((review, idx) => (
+                  <div
+                    key={`${review.id}-${idx}`}
+                    className="w-[320px] sm:w-[400px] flex-shrink-0 mr-5"
+                  >
                   {/* Google Review Card Markup */}
                   <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-6 sm:p-8 flex flex-col gap-5 h-[450px] sm:h-[500px] w-full justify-between hover:border-gray-700/50 transition-colors duration-300 ">
                     <div>
@@ -181,7 +188,8 @@ const TestiMonial: React.FC = () => {
                   </div>
                 </div>
               ))}
-            </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
