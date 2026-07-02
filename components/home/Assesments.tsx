@@ -135,7 +135,7 @@ const AssessmentCard = ({
       <div className="flex-1" />
 
       {/* Description */}
-      <p className="text-white/80 text-[15px] leading-relaxed mb-5 line-clamp-3">
+      <p className="text-[#272628] text-[15px] leading-relaxed mb-5 line-clamp-3">
         {assessment.description}
       </p>
 

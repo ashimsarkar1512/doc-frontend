@@ -92,7 +92,7 @@ const AboutUs = () => {
       ) : title ? (
         <ScrollRevealText
           text={`${title} ${description}`}
-          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] leading-snug tracking-tight mb-12"
+          className="text-center max-w-4xl text-3xl font-semibold md:text-4xl lg:text-6xl leading-snug tracking-tight mb-12"
         />
       ) : (
         <ScrollRevealText

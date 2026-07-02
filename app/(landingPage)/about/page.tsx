@@ -18,7 +18,7 @@ export default function AboutPage() {
     "Focus on long-term wellness and sustainable lifestyle improvements",
   ];
 
-  const { data } = useGetHomepageContentQuery();
+  const { data } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true });
   console.log(data);
 
   const blobDefs = (
