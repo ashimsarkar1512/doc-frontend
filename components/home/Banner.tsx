@@ -45,7 +45,7 @@ const Banner = () => {
                     className="h-20 w-auto object-contain"
                   />
                   {heroBadgeText && (
-                    <span className="text-white text-sm font-medium mt-1 block">
+                    <span className="text-white text-sm font-medium mt-1 block bg-blur">
                       {heroBadgeText}
                     </span>
                   )}
