@@ -243,47 +243,53 @@ function ProductsInner() {
                   return (
                     <div
                       key={p.id}
-                      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
+                      className="flex flex-col gap-3"
                     >
                       {/* Image */}
                       <div
-                        className="flex items-center justify-center h-[200px] p-6"
-                        style={{ backgroundColor: "#292C2D" }}
+                        className="relative w-full rounded-[16px] overflow-hidden flex items-center justify-center p-4"
+                        style={{ backgroundColor: "#292C2D", aspectRatio: "113/80" }}
                       >
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={p.image}
-                            alt={p.name}
-                            fill
-                            unoptimized
-                            className="object-contain drop-shadow-xl"
-                            sizes="240px"
-                          />
-                        </div>
+                        <Image
+                          src={p.image}
+                          alt={p.name}
+                          fill
+                          unoptimized
+                          className="object-contain p-6 drop-shadow-xl"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
                       </div>
 
-                      {/* Info — NO description */}
-                      <div className="p-4 flex flex-col flex-1">
-                        <p className="text-gray-900 text-[15px] font-semibold mb-1 line-clamp-2">
+                      {/* Info */}
+                      <div className="flex flex-col gap-[10px] mt-1">
+                        <h3 style={{ color: "#272628", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 700, lineHeight: "100%" }} className="truncate">
                           {p.name}
-                        </p>
-                        <p className="text-[#2563EB] text-[16px] font-bold mb-4">
+                        </h3>
+                        <p style={{ color: "#1D4ED8", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 700, lineHeight: "100%" }}>
                           ${parseFloat(p.price).toFixed(2)}
                         </p>
 
-                        {/* Add to Cart — only THIS button shows spinner */}
-                        <button
-                          onClick={() => handleAddToCart(p)}
-                          disabled={isAdding}
-                          className="mt-auto flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 text-white text-[13px] font-medium px-5 py-2.5 rounded-full transition-all duration-150 shadow-sm"
-                        >
-                          {isAdding ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <span className="text-[15px] font-bold leading-none">+</span>
-                          )}
-                          Add to Cart
-                        </button>
+                        <div className="flex items-center gap-4 mt-1">
+                          <button
+                            onClick={() => handleAddToCart(p)}
+                            disabled={isAdding}
+                            style={{ background: "#1D4ED8", height: "34px" }}
+                            className="flex items-center justify-center gap-[5px] px-4 py-1 rounded-[50px] disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 text-white transition-all shadow-sm"
+                          >
+                            {isAdding ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <span className="text-[16px] font-bold leading-none mb-[2px]">+</span>
+                            )}
+                            <span className="text-[14px] font-semibold font-[Quicksand]">Add to cart</span>
+                          </button>
+                          
+                          <button 
+                            className="text-[#1D4ED8] font-[Quicksand] text-[14px] font-semibold underline underline-offset-4 decoration-solid hover:text-blue-800 transition-colors"
+                          >
+                            View details
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );

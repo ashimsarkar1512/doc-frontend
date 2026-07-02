@@ -128,14 +128,14 @@ const AssessmentCard = ({
       )}
 
       {/* Title */}
-      <h3 className="text-white font-bold text-2xl leading-tight tracking-tight capitalize">
+      <h3 style={{ color: "#FFF", fontFamily: "Quicksand, sans-serif", fontSize: "26px", fontWeight: 700, lineHeight: "150%" }} className="capitalize">
         {assessment.title.replace(/-/g, " ")}
       </h3>
 
       <div className="flex-1" />
 
       {/* Description */}
-      <p className="text-[#272628] text-[15px] leading-relaxed mb-5 line-clamp-3">
+      <p style={{ color: "#FFF", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 400, lineHeight: "25.2px" }} className="mb-5 line-clamp-3">
         {assessment.description}
       </p>
 
