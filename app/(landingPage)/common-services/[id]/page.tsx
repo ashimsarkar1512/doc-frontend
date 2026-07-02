@@ -96,31 +96,31 @@ export default function CommonServicesPage() {
             {/* <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full transition-all duration-300 shadow-md text-[16px] tracking-wide">
               Start Assessment
             </button> */}
-           <div
-  className="relative inline-block"
-  onMouseEnter={() => setShowPopup("hero")}
-  onMouseLeave={() => setShowPopup(null)}   // 👈 ADD THIS (MAIN FIX)
->
-  <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full">
-    Start Assessment
-  </button>
+            <div
+              className="relative inline-block"
+              onMouseEnter={() => setShowPopup("hero")}
+              onMouseLeave={() => setShowPopup(null)} // 👈 ADD THIS (MAIN FIX)
+            >
+              <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full">
+                Start Assessment 
+              </button>
 
-  {showPopup === "hero" && (   // 👈 ALSO IMPORTANT (conditional render)
-    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-0.5 w-64 bg-white rounded-xl shadow-lg p-2 z-50">
-      <div className="flex flex-col">
-        {detailesData?.[0]?.assessments?.map((item: any) => (
-          <Link
-            key={item.id}
-            href={`/assessment/${item.id}`}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md"
-          >
-            {item.title}
-          </Link>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
+              {showPopup === "hero" && ( // 👈 ALSO IMPORTANT (conditional render)
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-0.5 w-64 bg-white rounded-xl shadow-lg p-2 z-50">
+                  <div className="flex flex-col">
+                    {detailesData?.[0]?.assessments?.map((item: any) => (
+                      <Link
+                        key={item.id}
+                        href={`/assessment/${item.id}`}
+                        className="px-4 py-1 text-left text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md"
+                      >
+                        {item.title}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -238,7 +238,7 @@ export default function CommonServicesPage() {
                   >
                     {/* BUTTON */}
                     <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] text-white px-6 py-2.5 rounded-full">
-                      Get Started
+                      Get Started 
                     </button>
 
                     {/* POPUP */}
