@@ -21,6 +21,7 @@ import { useAppSelector } from "@/Redux/store/hooks";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useGetCurrentUserQuery } from "@/Redux/api/authApi";
 import { useRouter, usePathname } from "next/navigation";
+import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDataApi";
 
 interface NavbarProps {
   variant?: "light" | "dark";
@@ -73,6 +74,7 @@ const Navbar = ({
   //     router.push("/#assessments");
   //   }
   // };
+
   const handleStartConsultation = () => {
     setIsMobileMenuOpen(false);
 
