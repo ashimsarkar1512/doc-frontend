@@ -25,7 +25,7 @@ const Footer = () => {
     <footer className="w-full bg-[#0a0a0a] font-sans p-5 pt-12">
       {/* Office Locations Section (Constrained Width like Figma) */}
       <div className="max-w-[90%] mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
-        <h2 className="text-[2.5rem] font-medium text-center mb-14 text-white tracking-wide">
+        <h2 className="lg:text-4xl md:text-3xl text-2xl font-medium text-center mb-14 text-white tracking-wide">
           Our office locations
         </h2>
 
@@ -64,7 +64,7 @@ const Footer = () => {
                       key={office.id}
                       className={`${paddingClass} py-6 md:py-0`}
                     >
-                      <h3 className="font-medium text-pink-800 mb-2  text-2xl">
+                      <h3 className="font-medium text-white mb-2  text-2xl">
                         {office.name}
                       </h3>
                       <p className="text-xl text-gray-300  font-light">

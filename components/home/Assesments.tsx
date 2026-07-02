@@ -258,20 +258,20 @@ export default function Assessments() {
       id="assessments"
       className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1520px] mx-auto">
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold leading-[1.3] mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-5xl font-semibold leading-[1.3] mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
             {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
-          <p className="text-[#272628] text-lg md:text-2xl lg:text-3xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#272628] text-lg md:text-sm lg:text-lg max-w-5xl mx-auto leading-relaxed">
             {content?.assessmentDescription ||
               "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
         </div>
 
         {/* Filters with scroll into view on filter change */}
-        <div className="flex flex-wrap justify-start gap-3 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {filters.map((filter) => (
             <FilterButton
               key={filter}
@@ -285,20 +285,34 @@ export default function Assessments() {
         </div>
 
         {/* Cards Grid */}
-        <div className="cards-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div 
+          className={`cards-grid gap-6 ${
+            visibleCards.length > 0 && visibleCards.length < 4
+              ? "flex flex-wrap justify-center"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          }`}
+        >
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[420px] rounded-2xl bg-gray-200 animate-pulse"
+                  className="h-[420px] rounded-2xl bg-gray-200 animate-pulse w-full"
                 />
               ))
             : visibleCards.map((assessment, i) => (
-                <AssessmentCard
+                <div
                   key={assessment.id}
-                  assessment={assessment}
-                  index={currentPage * PAGE_SIZE + i}
-                />
+                  className={
+                    visibleCards.length > 0 && visibleCards.length < 4
+                      ? "w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+                      : ""
+                  }
+                >
+                  <AssessmentCard
+                    assessment={assessment}
+                    index={currentPage * PAGE_SIZE + i}
+                  />
+                </div>
               ))}
         </div>
 

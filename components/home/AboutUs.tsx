@@ -33,7 +33,7 @@ const AboutUs = () => {
   const bullets: string[] = [];
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 py-5 flex flex-col items-center font-sans">
+    <section className="w-full max-w-7xl mx-auto px-4 py-5 flex flex-col items-center font-sans">
       {/* Top Badge */}
       <span className="bg-gray-100 text-gray-600 text-lg font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
         {subtitle}
