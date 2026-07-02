@@ -188,61 +188,61 @@ export default function PatientPortalHome() {
           </div>
 
           <div className="flex flex-col gap-6 w-full">
-          {!selectedConsultationId && !directSubmissionId && (
-            <TabBar
-              activeTab={activeTab}
-              onChangeTab={setActiveTab}
-              counts={counts}
-              totalOrders={totalOrders}
-            />
-          )}
+            {!selectedConsultationId && !directSubmissionId && (
+              <TabBar
+                activeTab={activeTab}
+                onChangeTab={setActiveTab}
+                counts={counts}
+                totalOrders={totalOrders}
+              />
+            )}
 
-          {directSubmissionId ? (
-            // Navigated directly from chat or orders — build a minimal shell, ConsultationDetails fetches the real data
-            <ConsultationDetails
-              consultation={{ id: directSubmissionId, title: '', category: '', status: 'ACCEPTED' as any, image: '' }}
-              onBack={() => {
-                setDirectSubmissionId(null);
-                if (directSubmissionReturnTo === "messages") {
-                  setActiveDomain('messages');
-                } else {
-                  setActiveDomain('dashboard');
-                }
-              }}
-            />
-          ) : activeTab === "My Orders" ? (
-            <MyOrdersDomain onViewSubmission={(id) => {
-              setDirectSubmissionReturnTo("orders");
-              setDirectSubmissionId(id);
-            }} />
-          ) : selectedConsultationId && activeConsultation ? (
-            <ConsultationDetails
-              consultation={activeConsultation}
-              onBack={() => setSelectedConsultationId(null)}
-            />
-          ) : filteredList.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {filteredList.map((item) => (
-                <ConsultationCard
-                  key={item.id}
-                  consultation={item}
-                  onOpen={handleOpenConsultation}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="w-full py-16 flex flex-col items-center justify-center bg-white rounded-3xl border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)] mb-12">
-              <HelpCircle className="h-10 w-10 text-gray-300 mb-3" />
-              <h4 className="font-semibold text-gray-800 text-base">
-                No Consultations Found
-              </h4>
-              <p className="text-xs text-gray-400 mt-1">
-                There are no {activeTab.toLowerCase()} consultations listed
-                right now.
-              </p>
-            </div>
-          )}
-        </div>
+            {directSubmissionId ? (
+              // Navigated directly from chat or orders — build a minimal shell, ConsultationDetails fetches the real data
+              <ConsultationDetails
+                consultation={{ id: directSubmissionId, title: '', category: '', status: 'ACCEPTED' as any, image: '' }}
+                onBack={() => {
+                  setDirectSubmissionId(null);
+                  if (directSubmissionReturnTo === "messages") {
+                    setActiveDomain('messages');
+                  } else {
+                    setActiveDomain('dashboard');
+                  }
+                }}
+              />
+            ) : activeTab === "My Orders" ? (
+              <MyOrdersDomain onViewSubmission={(id) => {
+                setDirectSubmissionReturnTo("orders");
+                setDirectSubmissionId(id);
+              }} />
+            ) : selectedConsultationId && activeConsultation ? (
+              <ConsultationDetails
+                consultation={activeConsultation}
+                onBack={() => setSelectedConsultationId(null)}
+              />
+            ) : filteredList.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                {filteredList.map((item) => (
+                  <ConsultationCard
+                    key={item.id}
+                    consultation={item}
+                    onOpen={handleOpenConsultation}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full py-16 flex flex-col items-center justify-center bg-white rounded-3xl border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)] mb-12">
+                <HelpCircle className="h-10 w-10 text-gray-300 mb-3" />
+                <h4 className="font-semibold text-gray-800 text-base">
+                  No Consultations Found
+                </h4>
+                <p className="text-xs text-gray-400 mt-1">
+                  There are no {activeTab.toLowerCase()} consultations listed
+                  right now.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -259,7 +259,7 @@ export default function PatientPortalHome() {
               }}
             />
           </div>
-          <div className="flex-1 min-w-0 pt-[42px]">
+          <div className="flex-1 min-w-0">
             {selectedChatId ? (
               <ChatWindow
                 chatId={selectedChatId}

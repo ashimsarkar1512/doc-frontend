@@ -29,7 +29,7 @@ import DoctorWelcomeData from "@/components/Dashboard/doctor/DashboardStatsCards
 type SearchParams = Promise<{ consultationId?: string; view?: string; chatId?: string; domain?: string }>;
 
 export default async function DoctorDashboard({ searchParams }: { searchParams: SearchParams }) {
-  
+
   const params = await searchParams;
   const consultationId = params.consultationId;
   const view = params.view || params.domain;
@@ -42,7 +42,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
   const getContent = () => {
     // if (consultationId) return <ConsultationDetails id={consultationId} />;
-    if (consultationId) return <ConsultationDetails  />;
+    if (consultationId) return <ConsultationDetails />;
     if (isMessages && chatId) return <ChatView chatId={chatId} />;
     if (isMessages) return <MessagesPanel />;
     if (isSettings) return <DoctorSettings />;
@@ -78,19 +78,19 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         {!view && !consultationId && (
           <>
             {/* Welcome Section */}
-            <DoctorWelcomeData/>
+            <DoctorWelcomeData />
 
             {/* Stats Cards */}
-            <DashboardStatsCards/>
+            <DashboardStatsCards />
           </>
         )}
 
         {isMessages ? (
           <div className="w-full flex gap-8 min-h-[750px]">
             <div className="flex-shrink-0 sticky top-10">
-               <MessagesPanel />
+              <MessagesPanel />
             </div>
-            <div className="flex-1 min-w-0 pt-[42px]">
+            <div className="flex-1 min-w-0">
               {chatId ? (
                 <ChatView chatId={chatId} />
               ) : (
