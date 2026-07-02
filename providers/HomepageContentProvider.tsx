@@ -15,7 +15,7 @@ const HomepageContext = createContext<HomepageContextValue>({
 })
 
 export const HomepageContentProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data, isLoading } = useGetHomepageContentQuery()
+  const { data, isLoading } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true })
   return (
     <HomepageContext.Provider value={{ content: data, isLoading }}>
       {children}

@@ -44,7 +44,7 @@ const defaultFaqData: FAQItem[] = [
 ];
 
 const QNA: React.FC = () => {
-  const { data: content, isLoading } = useGetHomepageContentQuery();
+  const { data: content, isLoading } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true });
   
   // Track open state using unique ID string or null for clean closing control
   const [openId, setOpenId] = useState<string | null>('1');

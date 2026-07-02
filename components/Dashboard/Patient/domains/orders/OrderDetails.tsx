@@ -87,7 +87,7 @@ export default function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
         >
           <ArrowLeft className="w-5 h-5 text-gray-800" />
         </button>
-        <h2 className="text-[22px] font-bold tracking-tight">
+        <h2 className="text-2xl font-bold tracking-tight">
           Order {order.orderNumber?.replace("ORD-", "#") || `#${order.id.slice(0, 5)}`}
         </h2>
       </div>
@@ -114,10 +114,10 @@ export default function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
                 </div>
                 {/* Text Row */}
                 <div className="flex flex-col">
-                  <span className={`text-[13px] font-medium ${isCompleted ? 'text-gray-900' : 'text-gray-500'}`}>
+                  <span className={`text-xl font-medium ${isCompleted ? 'text-[#0A0A0A]' : 'text-gray-500'}`}>
                     {step.label}
                   </span>
-                  <span className="text-[11px] text-gray-400 mt-1">
+                  <span className="text-sm text-[#6A7282] mt-1">
                     Date: {formatDate(step.date)}
                   </span>
                 </div>
