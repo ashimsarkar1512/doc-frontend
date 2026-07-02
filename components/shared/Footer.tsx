@@ -22,9 +22,9 @@ const Footer = () => {
   return (
     <footer className="w-full bg-[#0a0a0a] font-sans p-5 pt-12">
       {/* Office Locations Section (Constrained Width like Figma) */}
-      <div className="max-w-7xl mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
+      <div className="max-w-[90%] mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
         <h2 className="text-[2.5rem] font-medium text-center mb-14 text-white tracking-wide">
-          Our office locations
+          Our office locations 
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/20">
@@ -175,8 +175,7 @@ const Footer = () => {
             </div>
 
             <div className="md:col-span-2">
-              {/* <h4 className="font-medium text-white mb-6 text-[17px]">Popular Services</h4> */}
-              <ul className="space-y-4 text-[15px] text-gray-200 font-light">
+              <ul className="space-y-4 text-[15px] text-gray-200 font-light mt-[38px]">
                 <li>
                   <Link
                     href="/coverage"
@@ -211,6 +210,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
+          
 
             <div className="md:col-span-2">
               <h4 className="font-medium text-white mb-6 text-[17px]">
