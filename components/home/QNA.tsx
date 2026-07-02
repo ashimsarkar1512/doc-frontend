@@ -103,7 +103,7 @@ const QNA: React.FC = () => {
                       className="w-full flex items-center justify-between p-5 text-left transition-colors duration-200 hover:bg-gray-800/20 group"
                       aria-expanded={isOpen}
                     >
-                      <span className="text-sm md:text-base font-medium text-gray-100 group-hover:text-white tracking-tight transition-colors">
+                      <span className="text-xl md:text-semibold font-medium text-gray-100 group-hover:text-white tracking-tight transition-colors">
                         {item.question}
                       </span>
                       {/* State Symbol Indicator */}
@@ -119,7 +119,7 @@ const QNA: React.FC = () => {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="px-5 pb-5 text-xs md:text-sm text-gray-400 leading-relaxed font-normal whitespace-pre-wrap">
+                        <p className="px-5 pb-5 text-sm md:text-lg text-[#FFFFFF] leading-relaxed font-base whitespace-pre-wrap">
                           {item.answer}
                         </p>
                       </div>
@@ -147,10 +147,10 @@ const QNA: React.FC = () => {
 
             {/* Callout Typography Stack */}
             <div className="relative z-10 flex flex-col gap-3">
-              <h3 className="text-3xl md:text-4xl font-normal tracking-tight">
+              <h3 className="text-3xl md:text-4xl font-semibold tracking-tight">
                 {content?.faqCardTitle || "Still have a Question?"}
               </h3>
-              <p className="text-sm text-gray-300 font-light max-w-sm leading-relaxed mb-6">
+              <p className="text-lg md:text-xl text-gray-300 font-light max-w-sm leading-relaxed mb-6">
                 {content?.faqCardDescription || "Everything you need to know before getting started."}
               </p>
               

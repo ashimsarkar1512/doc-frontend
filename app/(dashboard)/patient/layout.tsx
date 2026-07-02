@@ -20,10 +20,9 @@ export default function PatientLayout({
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
       <Navbar variant="dark" initialPadding="py-3" scrolledPadding="py-3" alwaysSolidBg />
       {/* --- Dynamic Content Area --- */}
-      <main className="flex-1 flex flex-col pt-20">{children}</main>
+      <main className="flex-1 flex flex-col mt-10">{children}</main>
 
-      {/* --- Footer Component --- */}
-      <Footer />
+   
     </div>
   );
 }

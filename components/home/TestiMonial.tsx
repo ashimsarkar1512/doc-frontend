@@ -25,7 +25,7 @@ const TestiMonial: React.FC = () => {
         stopOnInteraction: false,
         stopOnMouseEnter: true,
       }),
-    ]
+    ],
   );
 
   const dummyReviews: Testimonial[] = [
@@ -128,7 +128,7 @@ const TestiMonial: React.FC = () => {
               href={buttonLink}
               target={buttonNewTab ? "_blank" : "_self"}
               rel={buttonNewTab ? "noopener noreferrer" : undefined}
-              className="relative z-10 w-fit bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10 text-center"
+              className="relative z-10 w-fit bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10 text-center mb-10"
             >
               Book intake session
             </Link>
@@ -140,54 +140,57 @@ const TestiMonial: React.FC = () => {
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#121314] to-transparent z-10 pointer-events-none"></div>
 
             {/* Embla Viewport */}
-            <div className="overflow-hidden w-full h-full cursor-grab active:cursor-grabbing" ref={emblaRef}>
+            <div
+              className="overflow-hidden w-full h-full cursor-grab active:cursor-grabbing"
+              ref={emblaRef}
+            >
               <div className="flex h-full">
                 {reviews.map((review, idx) => (
                   <div
                     key={`${review.id}-${idx}`}
-                    className="w-[320px] sm:w-[400px] flex-shrink-0 mr-5"
+                    className="w-[300px] sm:w-[350px] flex-shrink-0 mr-5 h-full"
                   >
-                  {/* Google Review Card Markup */}
-                  <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-6 sm:p-8 flex flex-col gap-5 h-[450px] sm:h-[500px] w-full justify-between hover:border-gray-700/50 transition-colors duration-300 ">
-                    <div>
-                      {/* Top Row: Google G-Icon Asset & Star Rating */}
-                      <div className="flex flex-col gap-3 mb-4">
-                        <div className="w-10.5 h-10.5 rounded-full bg-[#383C3D] flex items-center justify-center font-bold text-xs shadow-sm select-none">
-                          <span className="text-[#4285F4]">
-                            <FcGoogle size={30} />
+                    {/* Google Review Card Markup */}
+                    <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-6 sm:p-7 flex flex-col gap-5 justify-between hover:border-gray-700/50 transition-colors duration-300 h-full">
+                      <div>
+                        {/* Top Row: Google G-Icon Asset & Star Rating */}
+                        <div className="flex flex-col gap-3 mb-4">
+                          <div className="w-10.5 h-10.5 rounded-full bg-[#383C3D] flex items-center justify-center font-bold text-xs shadow-sm select-none">
+                            <span className="text-[#4285F4]">
+                              <FcGoogle size={30} />
+                            </span>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {[...Array(review.rating || 5)].map((_, i) => (
+                              <span key={i} className="text-[#FBBC05] text-lg">
+                                <IoStarSharp />
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Author Meta Details */}
+                        <div className="mb-4">
+                          <h4 className=" text-lg font-bold tracking-tight text-gray-100">
+                            {review.author || review.clientName || "Anonymous"}
+                          </h4>
+                          <span className="text-sm text-[#929292] font-medium">
+                            {review.date || review.createdAt
+                              ? new Date(
+                                  review.date || review.createdAt,
+                                ).toLocaleDateString()
+                              : ""}
                           </span>
                         </div>
-                        <div className="flex gap-0.5">
-                          {[...Array(review.rating || 5)].map((_, i) => (
-                            <span key={i} className="text-[#FBBC05] text-lg">
-                              <IoStarSharp />
-                            </span>
-                          ))}
-                        </div>
-                      </div>
 
-                      {/* Author Meta Details */}
-                      <div className="mb-4">
-                        <h4 className=" text-lg font-bold tracking-tight text-gray-100">
-                          {review.author || review.clientName || "Anonymous"}
-                        </h4>
-                        <span className="text-sm text-[#929292] font-medium">
-                          {review.date || review.createdAt
-                            ? new Date(
-                                review.date || review.createdAt,
-                              ).toLocaleDateString()
-                            : ""}
-                        </span>
+                        {/* Actual Review Text Area */}
+                        <p className="text-lg text-[#FFFFFF] leading-relaxed font-normal line-clamp-6">
+                          {review.feedback || review.feedback}
+                        </p>
                       </div>
-
-                      {/* Actual Review Text Area */}
-                      <p className="text-lg text-[#FFFFFF] leading-relaxed font-normal line-clamp-6">
-                        {review.feedback || review.feedback}
-                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             </div>
           </div>

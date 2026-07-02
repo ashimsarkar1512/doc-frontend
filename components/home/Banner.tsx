@@ -24,7 +24,7 @@ const Banner = () => {
   const heroBadgeLink = content?.heroBadgeLink || null;
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 pt-20">
+    <div className="relative z-10 flex flex-col items-center justify-center md:min-h-[90vh] text-center px-4 pt-32 pb-16 md:pt-20 md:pb-0">
       {/* Badges/Avatars Area */}
       <div className="flex flex-col items-center gap-4 mb-8">
         {/* Badge Image or Default Wreath Badge */}
@@ -123,7 +123,7 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-16 w-2/3 bg-white/20 animate-pulse rounded-xl mb-6" />
       ) : (
-        <h1 className="text-2xl md:text-6xl font-bold text-white mb-6 max-w-3xl tracking-tight leading-tight drop-shadow-lg">
+        <h1 className="text-2xl md:text-6xl font-bold text-[#FFFFFF] mb-6 max-w-3xl tracking-tight leading-tight drop-shadow-lg">
           {heroTitle}
         </h1>
       )}
@@ -132,7 +132,7 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-8 w-1/2 bg-white/20 animate-pulse rounded-xl mb-10" />
       ) : (
-        <p className="text-xs  md:text-lg text-gray-200 mb-10 max-w-4xl leading-relaxed drop-shadow-md">
+        <p className="text-lg  md:text-lg text-[#FFFFFF] mb-10 max-w-4xl leading-relaxed drop-shadow-md">
           {heroDescription}
         </p>
       )}
@@ -149,18 +149,6 @@ const Banner = () => {
         </Link>
       )}
 
-      {/* Hero override image (if server-provided, shown as an overlay within parent) */}
-      {!isLoading && heroImageUrl && (
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src={heroImageUrl}
-            alt="Hero Background"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-      )}
     </div>
   );
 };

@@ -172,7 +172,7 @@ const Navbar = ({
     : "border-white text-white hover:bg-white hover:text-black";
 
   const borderColor = isDark ? "border-black/20" : "border-white/20";
-  const mobileBg = isDark ? "bg-white/90" : "bg-black/70";
+  const mobileBg = isDark ? "bg-white/95" : "bg-[#111111]/95";
 
   const isDashboard = pathname?.startsWith("/patient") || pathname?.startsWith("/doctor") || pathname?.startsWith("/admin");
 
@@ -213,10 +213,10 @@ const Navbar = ({
       className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
         isScrolled || alwaysSolidBg
           ? isDark
-            ? `bg-white/90 backdrop-blur-md shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/10`
-            : `bg-black/40 backdrop-blur-md shadow-md ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-white/10`
+            ? `bg-white/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/5`
+            : `bg-[#111111]/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-md ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-white/10`
           : overlay && !isDark
-            ? `bg-gradient-to-b from-black/45 via-black/15 to-transparent ${initialPadding}`
+            ? `bg-gradient-to-b from-black via-black/15 to-transparent ${initialPadding}`
             : overlay && isDark
               ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
               : `bg-transparent ${initialPadding}`
@@ -249,10 +249,11 @@ const Navbar = ({
 
         {/* NAV LINKS */}
         <div
+          style={{ WebkitBackdropFilter: "blur(24px) saturate(1.5)" }}
           className={`
             fixed lg:static top-0 left-0 w-full lg:w-auto h-screen lg:h-auto
-            ${mobileBg} backdrop-blur-2xl lg:backdrop-blur-none lg:bg-transparent
-            px-8 pt-28 lg:pt-0 lg:px-0
+            ${mobileBg} backdrop-blur-2xl backdrop-saturate-150 transform-gpu lg:backdrop-blur-none lg:backdrop-saturate-100 lg:bg-transparent
+            px-8 pt-40 lg:pt-0 lg:px-0
             flex-col lg:flex-row items-start lg:items-center gap-8
             transition-transform duration-300 ease-in-out z-[50]
             overflow-y-auto lg:overflow-visible

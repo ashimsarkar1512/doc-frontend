@@ -117,10 +117,26 @@ export default function PatientPortalHome() {
   };
 
   return (
-    <div className={`max-w-7xl mx-auto px-6 w-full flex-1 flex flex-col font-sans ${activeDomain === 'messages' ? '-mt-4 pb-10' : 'py-10'}`}>
-      {activeDomain !== "messages" && (
-        <>
-          {/* Welcome Banner */}
+    <div className={`max-w-7xl mx-auto px-6 w-full flex-1 flex flex-col font-sans `}>
+      {/* Action Navigation Controls at the Top */}
+      <ActionBar
+        activeDomain={activeDomain}
+        onChangeDomain={(domain) => {
+          handleDomainChange(domain);
+          // Auto reset sub views when switching primary modules
+          setSelectedConsultationId(null);
+          setSelectedChatId(null);
+          setDirectSubmissionId(null);
+        }}
+        onRequestNewConsultation={handleRequestConsultation}
+      />
+
+      {/* Primary Domain Dynamic Router */}
+
+      {/* 1. Dashboard Domain view */}
+      {activeDomain === "dashboard" && (
+        <div className="flex flex-col w-full">
+          {/* Welcome Banner & KPI Cards only on Dashboard home */}
           <div className="flex items-center gap-4 mb-8">
             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center shadow-sm select-none border-2 border-white">
               {getInitials()}
@@ -171,26 +187,7 @@ export default function PatientPortalHome() {
             />
           </div>
 
-          {/* Action Navigation Controls */}
-          <ActionBar
-            activeDomain={activeDomain}
-            onChangeDomain={(domain) => {
-              handleDomainChange(domain);
-              // Auto reset sub views when switching primary modules
-              setSelectedConsultationId(null);
-              setSelectedChatId(null);
-              setDirectSubmissionId(null);
-            }}
-            onRequestNewConsultation={handleRequestConsultation}
-          />
-        </>
-      )}
-
-      {/* Primary Domain Dynamic Router */}
-
-      {/* 1. Dashboard Domain view */}
-      {activeDomain === "dashboard" && (
-        <div className="flex flex-col gap-6 w-full">
+          <div className="flex flex-col gap-6 w-full">
           {!selectedConsultationId && !directSubmissionId && (
             <TabBar
               activeTab={activeTab}
@@ -245,6 +242,7 @@ export default function PatientPortalHome() {
               </p>
             </div>
           )}
+        </div>
         </div>
       )}
 

@@ -4,69 +4,23 @@ import { useHomepageContent } from "@/providers/HomepageContentProvider";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ScrollRevealText } from "../shared/ScrollRevealText";
+import { Dna, Dumbbell, Sparkles } from "lucide-react";
 
 const services = [
   {
     id: "hormone",
     title: "HORMONE THERAPY",
-    icon: (
-      <svg
-        className="w-6 h-6 text-blue-600"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
-        />
-      </svg>
-    ),
+    icon: <Dna className="w-10 h-10 text-[#1D4ED8]" />
   },
   {
     id: "coolsculpting",
     title: "COOLSCULPTING®",
-    icon: (
-      <svg
-        className="w-6 h-6 text-blue-600"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M11.48 3.499c.105-.183.303-.299.52-.299s.416.116.52.299l2.14 3.706a.75.75 0 0 1-.214.992l-3.11 1.794a.75.75 0 0 1-.744 0l-3.11-1.794a.75.75 0 0 1-.214-.992l2.14-3.706Z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 14.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z"
-        />
-      </svg>
-    ),
+    icon: <Sparkles className="w-10 h-10 text-[#1D4ED8]" />
   },
   {
     id: "weightloss",
     title: "WEIGHT LOSS",
-    icon: (
-      <svg
-        className="w-6 h-6 text-blue-600"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M20.25 7.5V6A2.25 2.25 0 0 0 18 3.75h-1.5M3.75 16.5V18a2.25 2.25 0 0 0 2.25 2.25h1.5m9 0H18A2.25 2.25 0 0 0 20.25 18v-1.5M9 12h6m-6-3h6m-6 6h6"
-        />
-      </svg>
-    ),
+    icon: <Dumbbell className="w-10 h-10 text-[#1D4ED8]" />
   },
 ];
 
@@ -79,7 +33,7 @@ const AboutUs = () => {
   const bullets: string[] = [];
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center font-sans">
+    <section className="w-full max-w-6xl mx-auto px-4 py-5 flex flex-col items-center font-sans">
       {/* Top Badge */}
       <span className="bg-gray-100 text-gray-600 text-lg font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
         {subtitle}
@@ -91,48 +45,46 @@ const AboutUs = () => {
       ) : title ? (
         <ScrollRevealText
           text={`${title} ${description}`}
-          className="text-center max-w-7xl text-sm font-semibold md:text-4xl lg:text-5xl leading-snug tracking-tight mb-12"
+          className="text-center max-w-7xl text-lg font-semibold md:text-4xl lg:text-5xl leading-snug tracking-tight mb-12"
         />
       ) : (
         <ScrollRevealText
-          text="Weight Loss MD was built by a team of physicians and technologists who knew there had to be a better way. By leveraging secure telehealth technology, we've created a clinic that lives on your schedule, not ours."
-          className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12"
+          text="Weight Loss MD was built by a team of physicians and technologists who knew there had to be a better way. By leveraging secure telehealth technology  ok"
+          className="text-center max-w-7xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12"
         />
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full mb-16">
         {services.map((service) => (
           <div
             key={service.id}
-            className="bg-blue-50/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center gap-4 border border-blue-50/20 hover:shadow-sm transition-all duration-300 min-h-[140px]"
+            className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-3 hover:shadow-md transition-all duration-300 min-h-[130px] h-full"
           >
-            <div className="p-2 bg-white rounded-xl shadow-sm">
+            <div className="flex items-center justify-center">
               {service.icon}
             </div>
-            <span className="text-xs font-bold text-gray-800 tracking-wider">
+            <span className="text-[13px] sm:text-[14px] font-semibold text-[#1F2937] tracking-wider uppercase">
               {service.title}
             </span>
           </div>
         ))}
 
         {/* CTA Card */}
-        <div className="bg-blue-50/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 border border-blue-50/20 min-h-[140px]">
-          <span className="text-sm font-semibold text-gray-800">
+        <div className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-all duration-300 min-h-[130px] h-full">
+          <span className="text-[14px] font-semibold text-[#1F2937]">
             20+ More Services
           </span>
-          <div className="flex flex-col gap-2 w-full items-center">
-            <Link
-              href={content?.aboutButtonLink || "#"}
-              target={content?.aboutButtonNewTab ? "_blank" : "_self"}
-              rel={
-                content?.aboutButtonNewTab ? "noopener noreferrer" : undefined
-              }
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-6 py-2.5 rounded-full transition-colors duration-200 shadow-md shadow-blue-600/10 active:scale-98"
-            >
-              {content?.aboutButtonText || "Learn More"}
-            </Link>
-          </div>
+          <Link
+            href={content?.aboutButtonLink || "#"}
+            target={content?.aboutButtonNewTab ? "_blank" : "_self"}
+            rel={
+              content?.aboutButtonNewTab ? "noopener noreferrer" : undefined
+            }
+            className="bg-[#2563EB] hover:bg-blue-700 text-white font-medium text-sm px-6 py-2 rounded-full transition-colors duration-200"
+          >
+            {content?.aboutButtonText || "Learn More"}
+          </Link>
         </div>
       </div>
 
