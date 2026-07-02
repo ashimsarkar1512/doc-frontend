@@ -10,6 +10,7 @@ export interface Testimonial {
   content?: string
   text?: string
   feedback?:string
+ 
 }
 
 export interface TestimonialMeta {

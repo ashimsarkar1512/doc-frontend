@@ -173,8 +173,10 @@ const ReportForm = () => {
 
       try {
         const formPayload = new FormData();
-        formPayload.append('file', file);
-        const res = await uploadAttachment(formPayload).unwrap();
+      formPayload.append("context", "SIDE_EFFECT_REPORT_ATTACHMENT");
+formPayload.append("files", file);
+       toast.success(`${file.name} uploaded successfully!`);
+const res = await uploadAttachment(formPayload).unwrap();
         setUploadedFiles((prev) => [
           ...prev,
           { id: res.data.id, name: file.name, type: file.type, size: file.size },

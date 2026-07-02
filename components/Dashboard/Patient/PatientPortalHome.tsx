@@ -29,7 +29,7 @@ export default function PatientPortalHome() {
   console.log("statsResponse",statsResponse)
   const stats = statsResponse?.data;
   
-  const [activeTab, setActiveTab] = useState<TabType>("ACCEPTED");
+  const [activeTab, setActiveTab] = useState<TabType>("PENDING");
 
   const getApiStatus = (tab: TabType) => {
     if (tab === "My Orders") return undefined; // Don't filter, or just don't fetch
@@ -89,7 +89,7 @@ export default function PatientPortalHome() {
   };
 
   const handleRequestConsultation = () => {
-    console.log("Initiating new consultation flow...");
+    router.push("/#assessments");
   };
 
   const getDisplayName = () => {

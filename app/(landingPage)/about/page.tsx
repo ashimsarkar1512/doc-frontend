@@ -6,6 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 import Expert from "@/components/home/Expert";
 import QNA from "@/components/home/QNA";
 import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
+import { ScrollRevealText } from "@/components/shared/ScrollRevealText";
 
 export default function AboutPage() {
   const benefits = [
@@ -97,10 +98,10 @@ export default function AboutPage() {
           About us
         </span>
 
-        <h2 className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12">
-          {data?.aboutTitle}{" "}
-          <span className="text-[#AEAEAE]">{data?.aboutDescription}</span>
-        </h2>
+        <ScrollRevealText
+          text={`${data?.aboutTitle} ${data?.aboutDescription}`}
+          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
+        />
 
         <div className="w-full relative overflow-hidden rounded-[2.5rem]  h-[00px] md:h-[500px] lg:h-[600px]">
           <Image
