@@ -181,9 +181,9 @@ const Navbar = ({
 
   const getLinkClass = (path: string) => {
     const isActive = pathname === path || (path !== '/' && pathname?.startsWith(path));
-    if (isActive) {
-      return isDark ? "text-[#1D4ED8] font-semibold" : "text-[#1D4ED8] font-semibold";
-    }
+    // if (isActive) {
+    //   return isDark ? "text-[#1D4ED8] font-semibold" : "text-[#1D4ED8] font-semibold";
+    // }
     return `${textColor} font-medium transition-colors`;
   };
 
