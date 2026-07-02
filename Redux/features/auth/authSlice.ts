@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { authApi } from '../../api/authApi'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -174,6 +175,26 @@ const authSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      authApi.endpoints.getCurrentUser.matchFulfilled,
+      (state, { payload }) => {
+        if (payload.data) {
+          state.user = payload.data
+          userStorage.set(payload.data)
+        }
+      }
+    )
+    builder.addMatcher(
+      authApi.endpoints.updateProfile.matchFulfilled,
+      (state, { payload }) => {
+        if (payload.data) {
+          state.user = payload.data
+          userStorage.set(payload.data)
+        }
+      }
+    )
+  }
 })
 
 export const { hydrateAuth, setOtpPending, setCredentials, clearAuth, updateUser } =

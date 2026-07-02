@@ -10,7 +10,7 @@ import {
   useUpdateProfileMutation,
   useUploadAttachmentMutation,
 } from "@/Redux/api/authApi";
-import { Camera, Lock, Mail, ShieldCheck, Smartphone } from "lucide-react";
+import { Camera, Lock, Mail, ShieldCheck, Smartphone, Eye, EyeOff } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -39,12 +39,16 @@ export default function SettingsCenter() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
+  const [phone, setPhone] = useState("");
   const [avatarId, setAvatarId] = useState<string | undefined>();
 
   // Password form state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Preferences state
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -68,6 +72,8 @@ export default function SettingsCenter() {
       setState(user.profile?.state || "");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setZip(user.profile?.zipCode || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPhone(user.phone || "");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvatarId(user.profile?.avatarId);
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -128,6 +134,7 @@ export default function SettingsCenter() {
       await updateProfile({
         avatarId,
         name: fullName,
+        phone,
         bio,
         address,
         city,
@@ -136,8 +143,17 @@ export default function SettingsCenter() {
       }).unwrap();
       toast.success("Profile updated successfully");
       refetch();
-    } catch (error) {
-      toast.error("Failed to update profile");
+    } catch (error: any) {
+      if (
+        error?.data?.message?.toLowerCase().includes("phone") ||
+        error?.status === 409
+      ) {
+        toast.error(
+          "this phone number already use please use another phone number"
+        );
+      } else {
+        toast.error(error?.data?.message || "Failed to update profile");
+      }
     }
   };
 
@@ -278,9 +294,9 @@ export default function SettingsCenter() {
                 </label>
                 <input
                   type="text"
-                  value={user?.phone || ""}
-                  disabled
-                  className="h-10 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-500 outline-none cursor-not-allowed"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -376,12 +392,23 @@ export default function SettingsCenter() {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showCurrentPassword ? "text" : "password"}
                   placeholder="Enter current password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 pr-10 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrentPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -392,12 +419,23 @@ export default function SettingsCenter() {
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showNewPassword ? "text" : "password"}
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 pr-10 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showNewPassword ? (
+                      <Eye className="h-5 w-5" />
+                    ) : (
+                      <EyeOff className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
               <div>
@@ -406,12 +444,23 @@ export default function SettingsCenter() {
                 </label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 pr-10 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? (
+                      <Eye className="h-5 w-5" />
+                    ) : (
+                      <EyeOff className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

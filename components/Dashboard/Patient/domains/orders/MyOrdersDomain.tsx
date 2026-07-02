@@ -29,6 +29,8 @@ console.log(selectedOrderId)
     { label: "Refunded", value: "REFUNDED" },
   ];
 
+
+
   const dateRanges: { label: string; value: OrderDateRange }[] = [
     { label: "All Time", value: "ALL" },
     { label: "Today", value: "TODAY" },
@@ -45,7 +47,7 @@ console.log(selectedOrderId)
   const { data: ordersResponse, isLoading } = useGetMyOrdersQuery({
     status: getQueryStatus(),
     dateRange: selectedDate !== "ALL" ? selectedDate : undefined,
-  });
+  }, { pollingInterval: 5000 });
 
   const orders = ordersResponse?.orders || [];
 
@@ -59,49 +61,47 @@ console.log(selectedOrderId)
     <div className="flex flex-col w-full animate-in fade-in duration-300">
       
       {/* Filters */}
-      <div className="flex justify-end gap-4 mb-8 border-b border-gray-150 pb-4">
-        {/* Dropdowns */}
-        <div className="flex items-center gap-3 w-full lg:w-auto ml-auto">
-          {/* Status Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsStatusOpen(!isStatusOpen)}
-              onBlur={() => setTimeout(() => setIsStatusOpen(false), 200)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              {statuses.find(s => s.value === selectedStatus)?.label}
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </button>
-            
-            {isStatusOpen && (
-              <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-10 py-1 overflow-hidden">
-                {statuses.map((s) => (
-                  <button
-                    key={s.value}
-                    onClick={() => {
-                      setSelectedStatus(s.value);
-                      setIsStatusOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${selectedStatus === s.value ? 'bg-blue-50/50 text-blue-600 font-medium' : 'text-gray-700'}`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-150 pt-2">
+        {/* Status Tabs */}
+        <div className="flex items-center gap-6 overflow-x-auto select-none scrollbar-none w-full sm:w-auto">
+          {statuses.map((status) => {
+            const isActive = selectedStatus === status.value;
+            return (
+              <button
+                key={status.value}
+                onClick={() => setSelectedStatus(status.value as any)}
+                className={`
+                  pb-4 text-[14px] font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-150 border-b-2
+                  ${
+                    isActive
+                      ? "text-[#2563eb] border-[#2563eb]"
+                      : "text-gray-500 border-transparent hover:text-gray-800"
+                  }
+                `}
+              >
+                <span>{status.label}</span>
+                {isActive && (
+                  <span className="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white bg-[#2563eb]">
+                    {orders.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Date Dropdown */}
+        {/* Date Dropdown */}
+        <div className="flex items-center pb-4 sm:pb-0">
           <div className="relative">
             <button
               onClick={() => setIsDateOpen(!isDateOpen)}
               onBlur={() => setTimeout(() => setIsDateOpen(false), 200)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              {dateRanges.find(d => d.value === selectedDate)?.label}
+              {dateRanges.find((d) => d.value === selectedDate)?.label}
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </button>
-            
+
             {isDateOpen && (
               <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg z-10 py-1 overflow-hidden">
                 {dateRanges.map((d) => (
@@ -111,7 +111,11 @@ console.log(selectedOrderId)
                       setSelectedDate(d.value);
                       setIsDateOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${selectedDate === d.value ? 'bg-blue-50/50 text-blue-600 font-medium' : 'text-gray-700'}`}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${
+                      selectedDate === d.value
+                        ? "bg-blue-50/50 text-blue-600 font-medium"
+                        : "text-gray-700"
+                    }`}
                   >
                     {d.label}
                   </button>

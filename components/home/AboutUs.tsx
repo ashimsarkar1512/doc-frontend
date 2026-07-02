@@ -69,6 +69,55 @@ const services = [
   },
 ];
 
+
+
+
+const AnimatedTitle = ({ text }: { text: string }) => {
+  return (
+    <motion.span
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: false }}
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: 0.04,
+          },
+        },
+      }}
+    >
+      {text.split("").map((char, index) => (
+        <motion.span
+          key={index}
+          variants={{
+            hidden: {
+              opacity: 0,
+              color: "#9ca3af",
+            },
+            visible: {
+              opacity: 1,
+              color: "#111827",
+              transition: {
+                duration: 0.1,
+              },
+            },
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+};
+
+
+
+
+
+
+
+
+
 // Word-by-word animation component
 const AnimatedText = ({ text, className }: { text: string; className?: string }) => {
   const words = text.split(" ");
@@ -112,15 +161,10 @@ const AboutUs = () => {
         <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-12" />
       ) : title ? (
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
-        >
-          {title}{" "}
-          <AnimatedText text={description || ""} />
-        </motion.h2>
+  className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] leading-snug tracking-tight mb-12"
+>
+  <AnimatedTitle text={`${title} ${description}`} />
+</motion.h2>
       ) : (
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
