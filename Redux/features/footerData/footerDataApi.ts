@@ -8,7 +8,8 @@ export const footerDataApi = baseApi.injectEndpoints({
     // ✅ Get Website Settings
     getWebsiteSettings: builder.query<any, void>({
       query: () => ({
-        url: '/admin/website-settings',
+        // url: '/admin/website-settings',
+        url:'/public/website-settings',
         method: 'GET',
       }),
       providesTags: ['WebsiteSettings'],

@@ -105,7 +105,7 @@ export default function CommonServicesPage() {
                 Start Assessment 
               </button>
 
-              {showPopup === "hero" && ( // 👈 ALSO IMPORTANT (conditional render)
+              {showPopup === "hero" && ( //  ALSO IMPORTANT (conditional render)
                 <div className="absolute left-full top-1/2 -translate-y-1/2 ml-0.5 w-64 bg-white rounded-xl shadow-lg p-2 z-50">
                   <div className="flex flex-col">
                     {detailesData?.[0]?.assessments?.map((item: any) => (
