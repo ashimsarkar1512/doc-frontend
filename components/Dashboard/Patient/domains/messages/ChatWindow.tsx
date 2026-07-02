@@ -108,7 +108,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   const [rejectProposal] = useRejectProposalMutation();
 
   const { socket, isConnected, joinConversation, leaveConversation, sendMessage, emitTyping, emitStopTyping } = useSocket();
-  const { decrypt, encrypt } = useE2EE();
+  const { decrypt, encrypt, isInitializing } = useE2EE();
   const user = useAppSelector((state) => state.auth.user);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -134,7 +134,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   // Load and decrypt message history
   useEffect(() => {
     const decryptHistory = async () => {
-      if (!historyData?.data?.messages) return;
+      if (!historyData?.data?.messages || isInitializing) return;
 
       const incoming = historyData.data.messages;
 
@@ -157,7 +157,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
     };
     decryptHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historyData]);
+  }, [historyData, isInitializing]);
 
   // Listen for new real-time messages
   useEffect(() => {
@@ -411,20 +411,6 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200">
-
-      {/* Back navigation */}
-      <div className="flex items-center gap-2 text-gray-800 font-sans">
-        <button
-          onClick={onBack}
-          className="p-1 hover:bg-gray-150 rounded-lg transition-colors flex items-center justify-center"
-        >
-          <ArrowLeft className="h-5 w-5 text-gray-800" />
-        </button>
-        <span className="text-base font-semibold tracking-tight text-gray-900">
-          {conversation?.service?.name || 'Chat'}
-        </span>
-      </div>
-
       {/* Main Grid: Chat & Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
 
@@ -432,7 +418,15 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         <div className="lg:col-span-8 bg-white border border-gray-150 rounded-[24px] shadow-[0_2px_8px_rgba(0,0,0,0.01)] overflow-hidden flex flex-col h-[700px]">
 
           {/* Doctor header banner */}
-          <div className="bg-[#2563eb] px-6 py-4 flex items-center gap-3 text-white">
+          <div 
+            className="flex items-center self-stretch text-white gap-3"
+            style={{
+              padding: '20px',
+              borderRadius: '16px 16px 0 0',
+              borderBottom: '1px solid rgba(217, 217, 217, 0.40)',
+              background: 'var(--Blue, #1D4ED8)'
+            }}
+          >
             <div className="relative">
               <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-emerald-50">
                 {doctor?.avatar ? (
@@ -444,14 +438,14 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 )}
               </div>
               {isOnline && (
-                <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#2563eb]" />
+                <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]" />
               )}
             </div>
             <div>
               <h4 className="text-sm font-bold leading-tight">
                 {doctor?.name || 'Unknown Provider'}
               </h4>
-              <p className="text-[11px] text-blue-100 font-light mt-0.5 leading-none">
+              <p className="text-[11px] text-white/80 font-light mt-0.5 leading-none">
                 {isOnline ? 'Online' : 'Offline'}
               </p>
             </div>
