@@ -259,7 +259,7 @@ export default function PreviewDetailsPage() {
   );
 
   const Question = ({ text }: { text: string }) => (
-    <h3 className="text-[15px] font-bold text-gray-900 mb-3 leading-snug">{text}</h3>
+    <h3 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-[1.5] mb-3">{text}</h3>
   );
 
   const CheckboxRow = ({ text }: { text: string }) => (
