@@ -27,6 +27,7 @@ import {
   useRemoveFromCartMutation,
   useCheckoutMutation,
 } from "@/Redux/features/patient/assesmentcategory";
+import { useGetCurrentUserQuery } from "@/Redux/api/authApi";
 import {
   formatCardNumber,
   validateCardNumber,
@@ -68,6 +69,7 @@ export default function CheckoutPage() {
   const [couponInput, setCouponInput] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
@@ -84,7 +86,7 @@ export default function CheckoutPage() {
 
   // ── API queries ──
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
-  
+
   const queryParams: { discountCode?: string; submissionId?: string } = {};
   if (couponApplied) queryParams.discountCode = couponInput.trim();
   if (submissionId) queryParams.submissionId = submissionId;
@@ -103,6 +105,12 @@ export default function CheckoutPage() {
       localStorage.removeItem("appliedCoupon");
     }
   }, [summaryError, couponApplied]);
+
+  useEffect(() => {
+    if (!summaryFetching) {
+      setIsApplyingCoupon(false);
+    }
+  }, [summaryFetching]);
 
   // ── API mutations ──
   const [removeFromCart] = useRemoveFromCartMutation();
@@ -128,6 +136,32 @@ export default function CheckoutPage() {
     zip: "",
   });
 
+  // ── Pre-fill Shipping Info from Profile ──
+  const { data: currentUserData } = useGetCurrentUserQuery();
+
+  useEffect(() => {
+    if (currentUserData?.data) {
+      const user = currentUserData.data;
+      const profile = user.profile;
+
+      setShippingInfo(prev => {
+        // The PhoneInput component auto-initializes the state to "+1" (or similar dial code)
+        // on mount, so we check if it's practically empty (just a country code).
+        const isPhoneEmpty = !prev.contactNumber || prev.contactNumber.length <= 4;
+
+        return {
+          ...prev,
+          fullName: prev.fullName.trim() === "" ? (profile?.name || "") : prev.fullName,
+          contactNumber: isPhoneEmpty && user.phone ? user.phone : prev.contactNumber,
+          address: prev.address.trim() === "" ? (profile?.address || "") : prev.address,
+          city: prev.city.trim() === "" ? (profile?.city || "") : prev.city,
+          state: prev.state.trim() === "" ? (profile?.state || "") : prev.state,
+          zip: prev.zip.trim() === "" ? (profile?.zipCode || "") : prev.zip,
+        };
+      });
+    }
+  }, [currentUserData]);
+
   const [paymentInfo, setPaymentInfo] = useState({
     method: "CLOVER",
     cardHolderName: "",
@@ -149,6 +183,9 @@ export default function CheckoutPage() {
   // ── Field-level errors (only shown after the field has been touched / on submit) ──
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  // ── Optimistic UI State ──
+  const [optimisticSizes, setOptimisticSizes] = useState<Record<string, string>>({});
 
   const markTouched = (field: string) =>
     setTouched((t) => ({ ...t, [field]: true }));
@@ -310,12 +347,34 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleVariantChange = async (itemId: string, newSize: string) => {
+    setUpdatingId(`${itemId}-size`);
+    // Optimistic UI update
+    setOptimisticSizes((prev) => ({ ...prev, [itemId]: newSize }));
+    try {
+      await updateCartItem({ id: itemId, size: newSize }).unwrap();
+      toast.success("Size updated successfully");
+    } catch (e: unknown) {
+      // Revert on failure
+      setOptimisticSizes((prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      });
+      toast.error((e as { data?: { message?: string } })?.data?.message || "Failed to update size");
+      console.error("Update size failed:", e);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleApplyCoupon = () => {
     const code = couponInput.trim();
     if (!code) {
       setCouponError("Please enter a coupon code.");
       return;
     }
+    setIsApplyingCoupon(true);
     setCouponApplied(true);
     setCouponError("");
     localStorage.setItem("appliedCoupon", code);
@@ -439,8 +498,8 @@ export default function CheckoutPage() {
                   {/* International phone input with built-in country selector + format validation */}
                   <div
                     className={`flex items-center w-full bg-[#F3F4F6] rounded-lg border transition-colors ${errors.contactNumber && touched.contactNumber
-                        ? "border-red-400 bg-red-50"
-                        : "border-transparent focus-within:border-blue-500 focus-within:bg-white"
+                      ? "border-red-400 bg-red-50"
+                      : "border-transparent focus-within:border-blue-500 focus-within:bg-white"
                       }`}
                   >
                     <PhoneInput
@@ -699,8 +758,8 @@ export default function CheckoutPage() {
                                   applyExpiryFromPicker(currentMonth, y)
                                 }
                                 className={`text-[12px] px-2.5 py-1 rounded-md border transition-colors ${isSelectedYear
-                                    ? "bg-blue-600 text-white border-blue-600"
-                                    : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
+                                  ? "bg-blue-600 text-white border-blue-600"
+                                  : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
                                   }`}
                               >
                                 {y}
@@ -748,8 +807,9 @@ export default function CheckoutPage() {
               </p>
 
               <div className="flex flex-col gap-3 mb-6">
-                <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
                   <input
+                    id="compliance-terms"
                     type="checkbox"
                     checked={complianceConfirmation.agreedToTermsAndPrivacy}
                     onChange={(e) =>
@@ -758,15 +818,18 @@ export default function CheckoutPage() {
                         agreedToTermsAndPrivacy: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
                   />
-                  <span className="text-gray-700 text-[14px]">
+                  <label htmlFor="compliance-terms" className="text-gray-700 text-[14px] cursor-pointer">
                     I have reviewed and agree to the{" "}
-                    <span className="font-bold underline">Terms of Service and Privacy Policy.</span>
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-blue-600 transition-colors">Terms of Service</Link>
+                    {" "}and{" "}
+                    <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-blue-600 transition-colors">Privacy Policy</Link>.
+                  </label>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
                   <input
+                    id="compliance-accurate"
                     type="checkbox"
                     checked={complianceConfirmation.certifiedInfoAccurate}
                     onChange={(e) =>
@@ -775,14 +838,15 @@ export default function CheckoutPage() {
                         certifiedInfoAccurate: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
                   />
-                  <span className="text-gray-700 text-[14px]">
+                  <label htmlFor="compliance-accurate" className="text-gray-700 text-[14px] cursor-pointer">
                     I certify that all information provided is accurate and complete.
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                  </label>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
                   <input
+                    id="compliance-false-info"
                     type="checkbox"
                     checked={complianceConfirmation.understoodFalseInfoConsequences}
                     onChange={(e) =>
@@ -791,15 +855,16 @@ export default function CheckoutPage() {
                         understoodFalseInfoConsequences: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
                   />
-                  <span className="text-gray-700 text-[14px]">
+                  <label htmlFor="compliance-false-info" className="text-gray-700 text-[14px] cursor-pointer">
                     I understand that providing false or misleading information may result in
                     denial of treatment.
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                  </label>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
                   <input
+                    id="compliance-recommendations"
                     type="checkbox"
                     checked={complianceConfirmation.understoodRecommendationsBasis}
                     onChange={(e) =>
@@ -808,15 +873,16 @@ export default function CheckoutPage() {
                         understoodRecommendationsBasis: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
                   />
-                  <span className="text-gray-700 text-[14px]">
+                  <label htmlFor="compliance-recommendations" className="text-gray-700 text-[14px] cursor-pointer">
                     I understand that treatment recommendations are based on the information I
                     have provided.
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                  </label>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
                   <input
+                    id="compliance-additional-info"
                     type="checkbox"
                     checked={complianceConfirmation.understoodAdditionalInfoMayBeRequested}
                     onChange={(e) =>
@@ -825,13 +891,13 @@ export default function CheckoutPage() {
                         understoodAdditionalInfoMayBeRequested: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0"
+                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-0.5 sm:mt-0"
                   />
-                  <span className="text-gray-700 text-[14px]">
+                  <label htmlFor="compliance-additional-info" className="text-gray-700 text-[14px] cursor-pointer">
                     I understand that additional information may be requested before treatment is
                     approved.
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
 
               <div className="bg-[#EBF1FF] text-[#3B82F6] text-[14px] rounded-lg p-4 font-medium">
@@ -842,7 +908,10 @@ export default function CheckoutPage() {
           </div>
 
           {/* RIGHT: Order Summary Panel */}
-          <div className="w-full lg:w-[370px] lg:sticky lg:top-[100px] flex-shrink-0 self-start">
+          <div 
+            className="w-full lg:w-[370px] lg:sticky lg:top-[100px] flex-shrink-0 self-start max-h-[calc(100vh-100px)] overflow-y-auto rounded-2xl" 
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             <div className="rounded-2xl p-5 shadow-sm" style={{ background: "#EEF2FF" }}>
               {/* Header */}
               <div className="flex items-center justify-between mb-5">
@@ -902,11 +971,34 @@ export default function CheckoutPage() {
                             </p>
                           </div>
 
-                          {/* Size badge */}
-                          {item.size && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <span className="text-[11px] text-gray-500">Size:</span>
-                              <span className="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                          {/* Variant/Size badge */}
+                          {item.product?.variants && item.product.variants.length > 0 ? (
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2.5 mb-1.5">
+                              <span className="text-[13px] text-gray-700 font-medium mr-1">Size:</span>
+                              {item.product.variants.map((v) => {
+                                const currentSize = optimisticSizes[item.id] || item.size;
+                                const isSelected = currentSize === v.size;
+                                const isUpdatingVariant = updatingId === `${item.id}-size` && !isSelected;
+                                return (
+                                  <button
+                                    key={v.id}
+                                    onClick={() => !isSelected && handleVariantChange(item.id, v.size!)}
+                                    disabled={isUpdatingVariant}
+                                    className={`text-[12px] font-medium px-3 py-1 rounded-full transition-colors ${
+                                      isSelected
+                                        ? "bg-blue-600 text-white shadow-sm"
+                                        : "bg-[#DEE7FB] text-gray-600 hover:bg-[#D1DFF8]"
+                                    } ${isUpdatingVariant ? "opacity-50 cursor-not-allowed" : ""}`}
+                                  >
+                                    {v.size}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : item.size && (
+                            <div className="flex items-center gap-1 mt-2 mb-1">
+                              <span className="text-[13px] text-gray-600 font-medium">Size:</span>
+                              <span className="bg-[#E2E8F0] text-gray-700 text-[12px] font-medium px-3 py-1 rounded-full">
                                 {item.size}
                               </span>
                             </div>
@@ -989,13 +1081,13 @@ export default function CheckoutPage() {
                       placeholder="Enter coupon code"
                       className="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none min-w-0"
                     />
-                    {couponApplied && !summaryFetching && !summaryError && (
+                    {couponApplied && !isApplyingCoupon && !summaryError && (
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                   <button
                     onClick={handleApplyCoupon}
-                    disabled={summaryFetching}
+                    disabled={isApplyingCoupon}
                     className="bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-all duration-150 whitespace-nowrap flex-shrink-0 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     Apply
@@ -1005,12 +1097,12 @@ export default function CheckoutPage() {
                 {couponError && (
                   <p className="text-red-500 text-[11px] mt-1.5 ml-1">{couponError}</p>
                 )}
-                {summaryFetching && couponApplied && (
+                {isApplyingCoupon && (
                   <p className="text-blue-600 text-[11px] mt-1.5 ml-1 font-medium flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" /> Applying coupon...
                   </p>
                 )}
-                {couponApplied && !summaryFetching && !summaryError && (
+                {couponApplied && !isApplyingCoupon && !summaryError && (
                   <p className="text-green-600 text-[11px] mt-1.5 ml-1 font-medium">
                     ✓ Coupon applied successfully!
                   </p>
@@ -1095,9 +1187,9 @@ export default function CheckoutPage() {
                   onClick={() => setRecurring((v) => !v)}
                 >
                   Active monthly{" "}
-                  <span className="underline font-medium text-gray-700">
+                  <Link href="/billing-and-cancellation" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="underline font-medium text-gray-700 hover:text-blue-600 transition-colors">
                     recurring subscriptions
-                  </span>
+                  </Link>
                 </span>
               </label>
 

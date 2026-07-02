@@ -18,10 +18,8 @@ const Blogpage = () => {
         scrolledPadding="py-2" 
       />
       <div className="xl:lg:pt-20 p-9" /> {/* matches navbar height */}
-      <div className="max-w-7xl mx-auto w-full px-4 md:px-8 flex flex-col gap-8">
         <BlogHero />
         <BlogList />
-      </div>
       <BlogCTA />
     </main>
   );
