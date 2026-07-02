@@ -215,10 +215,10 @@ function QuestionRenderer({ question }: { question: any }) {
   return (
     <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 transition-colors bg-white">
       {heading && (
-        <h3 className="text-base font-bold text-gray-900 mb-2">{heading}</h3>
+        <h3 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-[1.5] mb-2">{heading}</h3>
       )}
       {questionText && (
-        <h4 className="font-semibold text-gray-800 text-lg mb-3">
+        <h4 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-[1.5] mb-3">
           {questionText}
         </h4>
       )}
