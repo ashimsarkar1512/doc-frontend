@@ -25,6 +25,16 @@ export default function ApproveConsultationModal({
   const [updateConsultationStatus, { isLoading }] =
     useUpdateConsultationStatusMutation();
 
+
+const formattedDate = submittedDate
+  ? new Date(submittedDate).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).replace(/ (\d{4})$/, ", $1")
+  : "N/A";
+
+
 const handleSubmit = async () => {
   try {
     const res = await updateConsultationStatus({
@@ -77,9 +87,9 @@ const handleSubmit = async () => {
             <p className="text-gray-900 font-semibold mb-1">
               Patient: {patientName}
             </p>
-            <p className="text-xs text-gray-500 space-x-4">
+            <p className="text-sm text-gray-500 space-x-4">
               <span>Consultation id: #{consultationId}</span>
-              <span>Submitted: {submittedDate}</span>
+              <span>Submitted: {formattedDate}</span>
             </p>
           </div>
 

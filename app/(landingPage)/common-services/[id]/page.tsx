@@ -57,7 +57,13 @@ export default function CommonServicesPage() {
     "B12 Injections",
     "Lipotropic Injections",
   ];
+  const handleEnter = (id: string) => {
+    setShowPopup(id);
+  };
 
+  const handleLeave = () => {
+    setShowPopup(null);
+  };
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar variant="dark" />
@@ -93,30 +99,27 @@ export default function CommonServicesPage() {
             <div
               className="relative inline-block"
               onMouseEnter={() => setShowPopup("hero")}
-              onMouseLeave={() => setShowPopup(null)}
+              onMouseLeave={() => setShowPopup(null)} // 👈 ADD THIS (MAIN FIX)
             >
-              <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full transition-all duration-300 shadow-md text-[16px] tracking-wide">
-                Start Assessment
+              <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full">
+                Start Assessment 
               </button>
 
-              <div
-                className={`absolute left-full top-1/2 -translate-y-1/2 ml-3 w-64 bg-white rounded-xl shadow-lg  p-2 z-50 transition-all duration-300 ease-out
-                  ${
-                    showPopup === "hero"
-                      ? "opacity-100 translate-x-0 pointer-events-auto"
-                      : "opacity-0 translate-x-3 pointer-events-none"
-                  }`}
-              >
-                {detailesData?.[0]?.assessments?.map((item: any) => (
-                  <Link
-                    key={item.id}
-                    href={`/assessment/${item.id}`}
-                    className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md transition"
-                  >
-                    {item.title}
-                  </Link>
-                ))}
-              </div>
+              {showPopup === "hero" && ( // 👈 ALSO IMPORTANT (conditional render)
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-0.5 w-64 bg-white rounded-xl shadow-lg p-2 z-50">
+                  <div className="flex flex-col">
+                    {detailesData?.[0]?.assessments?.map((item: any) => (
+                      <Link
+                        key={item.id}
+                        href={`/assessment/${item.id}`}
+                        className="px-4 py-1 text-left text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md"
+                      >
+                        {item.title}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -127,7 +130,7 @@ export default function CommonServicesPage() {
         <h2 className="text-[28px] md:text-[32px] font-bold text-gray-900 mb-6 tracking-tight">
           Weight Loss Shots at WLMD
         </h2>
-        <p className="text-[14px] md:text-[15px] text-gray-500 leading-[1.8] mb-8 font-light">
+        <p className="text-[14px] md:text-base text-gray-500 leading-[1.8] mb-8 font-light">
           We provide medical weight loss plans for our patients in Colorado. We
           offer programs customized to fit your specific needs, focusing on
           steady, consistent weight loss over time. Your customized program may
@@ -215,11 +218,11 @@ export default function CommonServicesPage() {
 
                 {/* Content */}
                 <div className="flex flex-col flex-1 px-1">
-                  <h3 className="text-[17px] font-bold text-[#111827] mb-2 tracking-tight">
+                  <h3 className="text-lg font-bold text-[#111827] mb-2 tracking-tight">
                     {service.title}
                   </h3>
 
-                  <p className="text-[13.5px] text-[#6B7280] leading-[1.5] flex-grow mb-5 font-normal">
+                  <p className="text-base text-[#3B3B3B] font-normal  font-[Quicksand] flex-grow mb-5">
                     {service.desc}
                   </p>
 
@@ -231,30 +234,31 @@ export default function CommonServicesPage() {
                   <div
                     className="relative inline-block"
                     onMouseEnter={() => setShowPopup(service.id)}
-                    onMouseLeave={() => setShowPopup(null)}
+                    onMouseLeave={() => setShowPopup(null)} // 👈 now this will ALWAYS fire
                   >
-                    <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] active:scale-95 text-white text-[14px] font-medium px-6 py-2.5 rounded-full transition-all duration-150 shadow-sm">
-                      Get Started
+                    {/* BUTTON */}
+                    <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] text-white px-6 py-2.5 rounded-full">
+                      Get Started 
                     </button>
 
-                    <div
-                      className={`absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-lg p-2 z-50 transition-all duration-200 ease-out
-                      ${
-                        showPopup === service.id
-                          ? "opacity-100 translate-y-0 pointer-events-auto"
-                          : "opacity-0 -translate-y-1 pointer-events-none"
-                      }`}
-                    >
-                      {detailesData?.[0]?.assessments?.map((item: any) => (
-                        <div
-                          key={item.id}
-                          onClick={() => router.push(`/assessment/${item.id}`)}
-                          className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md transition"
-                        >
-                          {item.title}
+                    {/* POPUP */}
+                    {showPopup === service.id && (
+                      <div className="absolute top-full left-0 mt-0 w-60 bg-white rounded-xl shadow-lg p-2 z-50">
+                        <div className="flex flex-col">
+                          {detailesData?.[0]?.assessments?.map((item: any) => (
+                            <div
+                              key={item.id}
+                              onClick={() =>
+                                router.push(`/assessment/${item.id}`)
+                              }
+                              className="px-4 py-2 text-base text-gray-700 hover:bg-blue-50 cursor-pointer rounded-md"
+                            >
+                              {item.title}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -279,7 +283,7 @@ export default function CommonServicesPage() {
               <button
                 key={tab}
                 onClick={() => setActiveFaqTab(tab)}
-                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-[14px] font-medium transition-colors snap-center ${
+                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-base font-medium transition-colors snap-center ${
                   activeFaqTab === tab
                     ? "bg-[#2563eb] text-white"
                     : "bg-[#e5e7eb] text-gray-700 hover:bg-gray-300"
@@ -308,7 +312,7 @@ export default function CommonServicesPage() {
                 className="w-full flex items-center justify-between p-5 text-left focus:outline-none"
                 onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
               >
-                <span className="text-[14px] font-semibold text-gray-800">
+                <span className="text-base font-semibold text-gray-800">
                   {faq.q}
                 </span>
                 <ChevronDown
@@ -323,7 +327,7 @@ export default function CommonServicesPage() {
                     : "max-h-0 opacity-0"
                 }`}
               >
-                <div className="p-5 pt-0 text-[14px] text-gray-500 leading-relaxed font-light">
+                <div className="p-5 pt-0 text-base text-gray-500 leading-relaxed font-light">
                   {faq.a}
                 </div>
               </div>
