@@ -261,10 +261,10 @@ export default function Assessments() {
       <div className="max-w-6xl mx-auto">
         {/* Header with modern gradient text */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold leading-[1.3] mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
             {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
-          <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
             {content?.assessmentDescription ||
               "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>

@@ -64,6 +64,11 @@ const ToggleSwitch = ({
 
 export default function DoctorSettings() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
+
+console.log(currentUserData)
+
+
+
   const user = currentUserData?.data;
 
   const [updateProfile, { isLoading: isUpdatingProfile }] =
@@ -134,6 +139,10 @@ export default function DoctorSettings() {
       setPhone(user.phone || "");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvatarId(user.profile?.avatarId);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (user.profile?.avatar) {
+        setProfileImage(user.profile.avatar);
+      }
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTwoFactorVerification(user.mfaEnabled);
     }

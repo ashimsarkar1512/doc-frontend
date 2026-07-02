@@ -83,8 +83,9 @@ export default function PatientPortalHome() {
   >(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [stripeModalOpen, setStripeModalOpen] = useState(false);
-  // Holds an ID navigated directly from chat (bypasses tab filtering)
+  // Holds an ID navigated directly from chat or orders (bypasses tab filtering)
   const [directSubmissionId, setDirectSubmissionId] = useState<string | null>(null);
+  const [directSubmissionReturnTo, setDirectSubmissionReturnTo] = useState<"messages" | "orders">("messages");
 
   const activeConsultation = mappedConsultations.find(
     (c) => c.id === selectedConsultationId,
@@ -195,17 +196,24 @@ export default function PatientPortalHome() {
             />
           )}
 
-          {activeTab === "My Orders" ? (
-            <MyOrdersDomain />
-          ) : directSubmissionId ? (
-            // Navigated directly from chat — build a minimal shell, ConsultationDetails fetches the real data
+          {directSubmissionId ? (
+            // Navigated directly from chat or orders — build a minimal shell, ConsultationDetails fetches the real data
             <ConsultationDetails
               consultation={{ id: directSubmissionId, title: '', category: '', status: 'ACCEPTED' as any, image: '' }}
               onBack={() => {
                 setDirectSubmissionId(null);
-                setActiveDomain('messages');
+                if (directSubmissionReturnTo === "messages") {
+                  setActiveDomain('messages');
+                } else {
+                  setActiveDomain('dashboard');
+                }
               }}
             />
+          ) : activeTab === "My Orders" ? (
+            <MyOrdersDomain onViewSubmission={(id) => {
+               setDirectSubmissionReturnTo("orders");
+               setDirectSubmissionId(id);
+            }} />
           ) : selectedConsultationId && activeConsultation ? (
             <ConsultationDetails
               consultation={activeConsultation}
@@ -245,6 +253,7 @@ export default function PatientPortalHome() {
               onBack={() => setSelectedChatId(null)}
               onTriggerPayment={() => setStripeModalOpen(true)}
               onViewDetails={(submissionId) => {
+                setDirectSubmissionReturnTo('messages');
                 setActiveDomain('dashboard');
                 setDirectSubmissionId(submissionId);
                 setSelectedConsultationId(null);

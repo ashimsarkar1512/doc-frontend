@@ -26,13 +26,13 @@ import DoctorWelcomeData from "@/components/Dashboard/doctor/DashboardStatsCards
 
 
 
-type SearchParams = Promise<{ consultationId?: string; view?: string; chatId?: string }>;
+type SearchParams = Promise<{ consultationId?: string; view?: string; chatId?: string; domain?: string }>;
 
 export default async function DoctorDashboard({ searchParams }: { searchParams: SearchParams }) {
   
   const params = await searchParams;
   const consultationId = params.consultationId;
-  const view = params.view;
+  const view = params.view || params.domain;
   const chatId = params.chatId;
   const isMessages = view === "messages";
   const isNotifications = view === "notifications";
@@ -145,12 +145,13 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   return (
     <div className="min-h-screen flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-8">
-        {/* Welcome Section */}
-      
-        <DoctorWelcomeData/>
-
-        {/* Stats Cards */}
-        <DashboardStatsCards/>
+        {/* Welcome Section & Stats Cards */}
+        {!view && !consultationId && (
+          <>
+            <DoctorWelcomeData />
+            <DashboardStatsCards />
+          </>
+        )}
       
         {/* Action Buttons  i cone*/}
         <div className="flex gap-4 mb-8">

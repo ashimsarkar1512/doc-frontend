@@ -70,7 +70,6 @@ const services = [
   },
 ];
 
-
 const AboutUs = () => {
   const { content, isLoading } = useHomepageContent();
 
@@ -92,7 +91,7 @@ const AboutUs = () => {
       ) : title ? (
         <ScrollRevealText
           text={`${title} ${description}`}
-          className="text-center max-w-4xl text-3xl font-semibold md:text-4xl lg:text-6xl leading-snug tracking-tight mb-12"
+          className="text-center max-w-7xl text-3xl font-semibold md:text-4xl lg:text-6xl leading-snug tracking-tight mb-12"
         />
       ) : (
         <ScrollRevealText
@@ -137,22 +136,38 @@ const AboutUs = () => {
         </div>
       </div>
 
-      {/* Video Banner */}
+      {/* Video/Media Banner */}
       <div className="w-full relative group overflow-hidden rounded-2xl">
-        <video
-          className="w-full aspect-18/9 md:aspect-18/8 object-cover transition-transform duration-700 group-hover:scale-102"
-          style={{
-            clipPath:
-              "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
-          }}
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="/aboutUs.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {content?.aboutMedia?.fileType?.startsWith("image/") ? (
+          <img
+            src={content.aboutMedia.fileUrl}
+            alt="About Us"
+            className="w-full aspect-18/9 md:aspect-18/8 object-cover transition-transform duration-700 group-hover:scale-102"
+            style={{
+              clipPath:
+                "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
+            }}
+          />
+        ) : (
+          <video
+            key={content?.aboutMedia?.fileUrl || "default-video"}
+            className="w-full aspect-18/9 md:aspect-18/8 object-cover transition-transform duration-700 group-hover:scale-102"
+            style={{
+              clipPath:
+                "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
+            }}
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source
+              src={content?.aboutMedia?.fileUrl || "/aboutUs.mp4"}
+              type={content?.aboutMedia?.fileType || "video/mp4"}
+            />
+            Your browser does not support the video tag.
+          </video>
+        )}
 
         <div
           className="absolute inset-0 bg-black/5 pointer-events-none"

@@ -7,14 +7,11 @@ import { OrderDateRange, OrderStatus } from "@/types/orderTypes";
 import OrderDetails from "./OrderDetails";
 
 
-export default function MyOrdersDomain() {
+export default function MyOrdersDomain({ onViewSubmission }: { onViewSubmission?: (submissionId: string) => void }) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "ALL">("ALL");
   const [selectedDate, setSelectedDate] = useState<OrderDateRange>("ALL");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-console.log(selectedOrderId)
-
-  
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isDateOpen, setIsDateOpen] = useState(false);
 
@@ -28,8 +25,6 @@ console.log(selectedOrderId)
     { label: "Cancelled", value: "CANCELLED" },
     { label: "Refunded", value: "REFUNDED" },
   ];
-
-
 
   const dateRanges: { label: string; value: OrderDateRange }[] = [
     { label: "All Time", value: "ALL" },
@@ -58,10 +53,8 @@ console.log(selectedOrderId)
   const counts = countsResponse?.counts || {};
   const totalCount = countsResponse?.orders?.length || 0;
 
-
-
   if (selectedOrderId) {
-    return <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />;
+    return <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} onViewSubmission={onViewSubmission} />;
   }
 
   return (

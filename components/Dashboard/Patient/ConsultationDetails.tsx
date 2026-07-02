@@ -20,6 +20,11 @@ export default function ConsultationDetails({
   
   const { data: response, isLoading, isError } = useGetMyAssessmentByIdQuery(consultation.id);
   const data = response?.data;
+  const topRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   // Helper to format date
   const formatDate = (dateString?: string) => {
@@ -114,6 +119,7 @@ export default function ConsultationDetails({
 
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200 pb-12">
+      <div ref={topRef} />
       {/* Path header / Back button */}
       <div className="flex items-center gap-2 text-gray-800 font-sans">
         <button
