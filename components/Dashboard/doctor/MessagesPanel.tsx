@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Search, MoreHorizontal, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useGetConversationsQuery } from "@/Redux/api/messageApi";
 import { useSocket } from "@/providers/SocketProvider";
 
@@ -12,6 +13,9 @@ export default function MessagesPanel() {
   const { data, isLoading } = useGetConversationsQuery({ search });
   const { socket } = useSocket();
   const [conversations, setConversations] = useState<any[]>([]);
+
+  const searchParams = useSearchParams();
+  const activeChatId = searchParams.get('chatId');
 
   useEffect(() => {
     if (data?.data) {
@@ -48,76 +52,99 @@ export default function MessagesPanel() {
   }, [socket]);
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-5">Messages</h2>
-
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search patients..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 caret-[#2563eb] bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-colors"
-        />
+    <div className="w-full flex flex-col gap-4 animate-in fade-in duration-200 h-full">
+      {/* Title */}
+      <div className="flex items-center gap-2 text-gray-900 font-sans px-1 h-[26px]">
+        <h3 className="text-xl font-bold leading-none">Messages</h3>
       </div>
 
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Patients:</p>
+      {/* Blue Sidebar Box */}
+      <div 
+        className="flex flex-col items-start self-stretch shrink-0"
+        style={{
+          width: '350px',
+          padding: '16px',
+          gap: '16px',
+          borderRadius: '16px',
+          background: 'var(--Blue, #1D4ED8)',
+          height: '700px'
+        }}
+      >
+        {/* Search Input */}
+        <div className="relative w-full">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-white/70" />
+          </span>
+          <input
+            type="text"
+            placeholder="Search patients..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-[10px] text-sm text-white placeholder-white/70 focus:outline-none focus:bg-white/20 transition-all shadow-none"
+          />
+        </div>
 
-      <div className="divide-y divide-gray-100">
         {isLoading ? (
-          <p className="text-sm text-gray-400 text-center py-8">Loading...</p>
-        ) : conversations.length > 0 ? (
-          conversations.map((thread) => {
-            const patient = thread.patient || {};
-            const isOnline = thread.isPatientOnline;
-            
-            return (
-              <div key={thread.id} className="flex items-center gap-4 py-4 hover:bg-gray-50 rounded-xl px-2 -mx-2 transition-colors group">
-                <Link
-                  href={`/doctor?view=messages&chatId=${thread.id}`}
-                  className="flex items-center gap-4 flex-1 min-w-0"
-                >
-                  <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0 border border-gray-100">
-                    {patient?.avatar ? (
-                      <Image
-                        src={patient.avatar}
-                        alt={patient.name || 'Patient'}
-                        fill
-                        sizes="44px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600">
-                        <User className="h-5 w-5" />
-                      </div>
-                    )}
-                    {isOnline && (
-                      <span className="absolute bottom-0.5 right-0.5 block h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{patient?.name || 'Unknown Patient'}</p>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">
-                      {thread.service.name}
-                      {thread.submission && (
-                        <>
-                          <span className="mx-1 text-gray-300">·</span>
-                          Consultation id: {thread.submission.submissionCode}
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </Link>
-                <button className="text-gray-400 hover:text-gray-700 p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </div>
-            );
-          })
+          <div className="p-4 text-center text-white/70 text-sm w-full">Loading...</div>
         ) : (
-          <p className="text-sm text-gray-400 text-center py-8">No patients found.</p>
+          <div className="w-full flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+            {conversations.length > 0 && (
+              <div className="w-full flex flex-col gap-2">
+                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2">
+                  ACTIVE PATIENTS
+                </h4>
+                {conversations.map((thread) => {
+                  const patient = thread.patient || {};
+                  const isOnline = thread.isPatientOnline;
+                  const isSelected = activeChatId === thread.id;
+                  
+                  return (
+                    <Link
+                      key={thread.id}
+                      href={`/doctor?view=messages&chatId=${thread.id}`}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-all border w-full ${
+                        isSelected 
+                          ? 'bg-white/20 border-white/20 shadow-sm' 
+                          : 'hover:bg-white/10 border-transparent'
+                      }`}
+                    >
+                      <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0 border border-white/20">
+                        {patient?.avatar ? (
+                          <Image
+                            src={patient.avatar}
+                            alt={patient.name || 'Patient'}
+                            fill
+                            sizes="44px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600">
+                            <User className="h-5 w-5" />
+                          </div>
+                        )}
+                        {isOnline && (
+                          <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]"></span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="text-sm font-semibold text-white truncate max-w-[140px]">
+                            {patient?.name || 'Unknown Patient'}
+                          </h4>
+                        </div>
+                        <p className="text-[11px] text-white/70 truncate">
+                          {thread.service.name}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            {conversations.length === 0 && (
+              <p className="text-sm text-white/70 text-center py-8 w-full">No patients found.</p>
+            )}
+          </div>
         )}
       </div>
     </div>

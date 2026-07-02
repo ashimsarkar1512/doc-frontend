@@ -117,70 +117,74 @@ export default function PatientPortalHome() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 w-full flex-1 flex flex-col font-sans">
-      {/* Welcome Banner */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center shadow-sm select-none border-2 border-white">
-          {getInitials()}
-        </div>
-        <div className="flex flex-col">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight">
-            Welcome Back, {getDisplayName()}!
-          </h2>
-          <p className="text-sm text-gray-400 font-light mt-0.5 leading-none">
-            Manage your daily activities.
-          </p>
-        </div>
-      </div>
+    <div className={`max-w-7xl mx-auto px-6 w-full flex-1 flex flex-col font-sans ${activeDomain === 'messages' ? '-mt-4 pb-10' : 'py-10'}`}>
+      {activeDomain !== "messages" && (
+        <>
+          {/* Welcome Banner */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center shadow-sm select-none border-2 border-white">
+              {getInitials()}
+            </div>
+            <div className="flex flex-col">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight">
+                Welcome Back, {getDisplayName()}!
+              </h2>
+              <p className="text-sm text-gray-400 font-light mt-0.5 leading-none">
+                Manage your daily activities.
+              </p>
+            </div>
+          </div>
 
-      {/* KPI Cards Grid - Uniform and elegant flat styling */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <KpiCard
-          value={stats?.TotalPending?.toString().padStart(2, "0") || "00"}
-          label="Pending Requests"
-          icon={Shield}
-          bgColor="bg-[#FDC70029]"
-          textColor="text-[#D4AF37]"
-          borderColor="border-[#FEF0CF]"
-        />
-        <KpiCard
-          value={stats?.TotalApproved?.toString().padStart(2, "0") || "00"}
-          label="Total Approved"
-          icon={CheckCircle}
-          bgColor="bg-[#24B57B29]"
-          textColor="text-[#24B57B]"
-          borderColor="border-[#D1FAE5]"
-        />
-        <KpiCard
-          value={stats?.TotalDeclined?.toString().padStart(2, "0") || "00"}
-          label="Total Declined"
-          icon={ShieldBan}
-          bgColor="bg-[#D4563729]"
-          textColor="text-[#D45637]"
-          borderColor="border-[#FEE2E2]"
-        />
-        <KpiCard
-          value={`$${stats?.TotalPayment || 0}`}
-          label="Total Paid"
-          icon={BadgeDollarSign}
-          bgColor="bg-[#1D4ED829]"
-          textColor="text-[#1D4ED8]"
-          borderColor="border-[#DBEAFE]"
-        />
-      </div>
+          {/* KPI Cards Grid - Uniform and elegant flat styling */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <KpiCard
+              value={stats?.TotalPending?.toString().padStart(2, "0") || "00"}
+              label="Pending Requests"
+              icon={Shield}
+              bgColor="bg-[#FDC70029]"
+              textColor="text-[#D4AF37]"
+              borderColor="border-[#FEF0CF]"
+            />
+            <KpiCard
+              value={stats?.TotalApproved?.toString().padStart(2, "0") || "00"}
+              label="Total Approved"
+              icon={CheckCircle}
+              bgColor="bg-[#24B57B29]"
+              textColor="text-[#24B57B]"
+              borderColor="border-[#D1FAE5]"
+            />
+            <KpiCard
+              value={stats?.TotalDeclined?.toString().padStart(2, "0") || "00"}
+              label="Total Declined"
+              icon={ShieldBan}
+              bgColor="bg-[#D4563729]"
+              textColor="text-[#D45637]"
+              borderColor="border-[#FEE2E2]"
+            />
+            <KpiCard
+              value={`$${stats?.TotalPayment || 0}`}
+              label="Total Paid"
+              icon={BadgeDollarSign}
+              bgColor="bg-[#1D4ED829]"
+              textColor="text-[#1D4ED8]"
+              borderColor="border-[#DBEAFE]"
+            />
+          </div>
 
-      {/* Action Navigation Controls */}
-      <ActionBar
-        activeDomain={activeDomain}
-        onChangeDomain={(domain) => {
-          handleDomainChange(domain);
-          // Auto reset sub views when switching primary modules
-          setSelectedConsultationId(null);
-          setSelectedChatId(null);
-          setDirectSubmissionId(null);
-        }}
-        onRequestNewConsultation={handleRequestConsultation}
-      />
+          {/* Action Navigation Controls */}
+          <ActionBar
+            activeDomain={activeDomain}
+            onChangeDomain={(domain) => {
+              handleDomainChange(domain);
+              // Auto reset sub views when switching primary modules
+              setSelectedConsultationId(null);
+              setSelectedChatId(null);
+              setDirectSubmissionId(null);
+            }}
+            onRequestNewConsultation={handleRequestConsultation}
+          />
+        </>
+      )}
 
       {/* Primary Domain Dynamic Router */}
 
@@ -246,22 +250,37 @@ export default function PatientPortalHome() {
 
       {/* 2. Messages & Chat Domain view */}
       {activeDomain === "messages" && (
-        <div className="w-full">
-          {selectedChatId ? (
-            <ChatWindow
-              chatId={selectedChatId}
-              onBack={() => setSelectedChatId(null)}
-              onTriggerPayment={() => setStripeModalOpen(true)}
-              onViewDetails={(submissionId) => {
-                setDirectSubmissionReturnTo('messages');
-                setActiveDomain('dashboard');
-                setDirectSubmissionId(submissionId);
-                setSelectedConsultationId(null);
-              }}
-            />
-          ) : (
-            <MessageList onSelectChat={setSelectedChatId} />
-          )}
+        <div className="w-full flex gap-8 min-h-[750px]">
+          <div className="flex-shrink-0 sticky top-10">
+             <MessageList 
+               onSelectChat={setSelectedChatId} 
+               selectedChatId={selectedChatId}
+               onBack={() => {
+                 setActiveDomain('dashboard');
+                 setSelectedChatId(null);
+               }} 
+             />
+          </div>
+          <div className="flex-1 min-w-0 pt-[42px]">
+            {selectedChatId ? (
+              <ChatWindow
+                chatId={selectedChatId}
+                onBack={() => setSelectedChatId(null)}
+                onTriggerPayment={() => setStripeModalOpen(true)}
+                onViewDetails={(submissionId) => {
+                  setActiveDomain('dashboard');
+                  setDirectSubmissionId(submissionId);
+                  setSelectedConsultationId(null);
+                }}
+              />
+            ) : (
+              <div className="w-full h-[700px] flex items-center justify-center bg-gray-50/50 rounded-[24px] border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+                <div className="bg-gray-100 rounded-full px-6 py-2.5 text-gray-500 text-sm font-medium">
+                  Select a consultation to start messging
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
