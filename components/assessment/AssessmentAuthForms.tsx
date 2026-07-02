@@ -8,10 +8,10 @@ export function AuthChoiceForm({ authChoice, setAuthChoice }: any) {
       className="rounded-2xl p-6 mb-7"
       style={{ backgroundColor: "#EFEFEF" }}
     >
-      <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+      <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontWeight: 700, lineHeight: "150%" }} className="mb-1">
         Almost there! Do you have any account?
       </p>
-      <p className="text-gray-500 text-[14px] mb-5">
+      <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 500, lineHeight: "150%" }} className="mb-5">
         Login or create an account to submit the assessment for
         approval
       </p>

@@ -139,13 +139,11 @@ export function RenderQuestion({
           </div>
         )}
         <div className={`px-1 pb-1 ${alignClass}`}>
-          {question.heading?.trim() && (
-            <h2 className="text-gray-900 text-[18px] font-bold mb-2 leading-snug">
-              {question.heading}
-            </h2>
-          )}
+          <h2 className="text-gray-900 text-[24px] font-bold mb-3 leading-snug font-[Quicksand]">
+            Your goal is within reach.
+          </h2>
           {question.description?.trim() && (
-            <p className="text-gray-700 text-[15px] leading-relaxed">
+            <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 500, lineHeight: "150%" }}>
               {question.description}
             </p>
           )}
