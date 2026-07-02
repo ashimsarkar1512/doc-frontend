@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDataApi";
 // import Image from "next/image";
 // import React from "react";
