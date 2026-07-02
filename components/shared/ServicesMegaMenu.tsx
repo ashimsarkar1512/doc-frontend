@@ -110,12 +110,12 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
           ) : productList.length === 0 ? (
             <p className="text-[#9CA3AF] text-[14px]">No products found</p>
           ) : (
-            <ul className="space-y-3.5">
+            <ul className="space-y-0.5">
               {productList.map((product) => (
                 <li
                   key={product.id}
-                  className={`text-[#374151] leading-snug ${
-                    isDesktop ? "text-[15px]" : "text-[14px]"
+                  className={`text-[#374151]  ${
+                    isDesktop ? "text-base" : "text-[14px]"
                   }`}
                 >
                   {product.name}

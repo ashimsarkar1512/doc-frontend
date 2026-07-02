@@ -29,9 +29,9 @@ const avatar =
 
       <div>
         <h1 className="text-3xl font-semibold text-gray-800 mb-1">
-          Welcome Back, Dr. {name} !
+          Welcome Back, {name} !
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-base">
           Manage your patients and consultations
         </p>
       </div>
