@@ -5,11 +5,12 @@ import Logo from "@/components/ui/Logo";
 import { useLogout } from "@/Redux/hooks/useLogout";
 import { useAppSelector } from "@/Redux/store/hooks";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, LogOut, Mail, Menu, X, Home } from "lucide-react";
+import { ChevronDown, LogOut, Mail, Menu, X, Home, Bell, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import NotificationDropdown from "@/components/Dashboard/Patient/NotificationDropdown";
 
 export default function PatientLayout({
   children,
@@ -64,7 +65,7 @@ export default function PatientLayout({
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Our Services", href: "#services" },
+    { name: "Our Services", href: "/#assessments" },
     { name: "Blog", href: "/blog" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
@@ -93,11 +94,14 @@ export default function PatientLayout({
             ))}
           </nav>
 
-          {/* Desktop Patient Profile */}
-          <div
-            ref={profileRef}
-            className="hidden md:flex items-center gap-3 relative"
-          >
+          {/* Desktop Notifications and Profile */}
+          <div className="hidden md:flex items-center gap-4 relative" ref={profileRef}>
+            {/* Notification Bell */}
+            <NotificationDropdown />
+            <div className="h-5 w-px bg-gray-200 mx-1"></div>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
             <button
               onClick={() => setIsProfileDropdownOpen((p) => !p)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-all select-none focus:outline-none"
@@ -174,7 +178,7 @@ export default function PatientLayout({
                     </div>
                   </div>
 
-                  {/* Home link */}
+                  {/* Links */}
                   <div className="py-2">
                     <Link
                       href="/"
@@ -182,6 +186,14 @@ export default function PatientLayout({
                     >
                       <Home className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <span>Home</span>
+                    </Link>
+                    <Link
+                      href="/patient?domain=settings"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span>My Profile</span>
                     </Link>
                   </div>
 
@@ -202,6 +214,7 @@ export default function PatientLayout({
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           </div>
 
           {/* Mobile Hamburger Toggle */}

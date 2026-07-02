@@ -3,6 +3,7 @@
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ScrollRevealText } from "../shared/ScrollRevealText";
 
 const services = [
   {
@@ -70,77 +71,6 @@ const services = [
 ];
 
 
-
-
-const AnimatedTitle = ({ text }: { text: string }) => {
-  return (
-    <motion.span
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: false }}
-      variants={{
-        visible: {
-          transition: {
-            staggerChildren: 0.04,
-          },
-        },
-      }}
-    >
-      {text.split("").map((char, index) => (
-        <motion.span
-          key={index}
-          variants={{
-            hidden: {
-              opacity: 0,
-              color: "#9ca3af",
-            },
-            visible: {
-              opacity: 1,
-              color: "#111827",
-              transition: {
-                duration: 0.1,
-              },
-            },
-          }}
-        >
-          {char}
-        </motion.span>
-      ))}
-    </motion.span>
-  );
-};
-
-
-
-
-
-
-
-
-
-// Word-by-word animation component
-const AnimatedText = ({ text, className }: { text: string; className?: string }) => {
-  const words = text.split(" ");
-
-  return (
-    <span className={className}>
-      {words.map((word, index) => (
-        <motion.span
-          key={index}
-          initial={{ color: "#9CA3AF" }}
-          whileInView={{ color: "#111827" }}
-          viewport={{ once: false, margin: "-100px" }}
-          transition={{ duration: 0.6, delay: index * 0.08, ease: "easeOut" }}
-          className="inline-block"
-        >
-          {word}
-          {index < words.length - 1 && " "}
-        </motion.span>
-      ))}
-    </span>
-  );
-};
-
 const AboutUs = () => {
   const { content, isLoading } = useHomepageContent();
 
@@ -160,23 +90,15 @@ const AboutUs = () => {
       {isLoading ? (
         <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-12" />
       ) : title ? (
-        <motion.h2
-  className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] leading-snug tracking-tight mb-12"
->
-  <AnimatedTitle text={`${title} ${description}`} />
-</motion.h2>
+        <ScrollRevealText
+          text={`${title} ${description}`}
+          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] leading-snug tracking-tight mb-12"
+        />
       ) : (
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+        <ScrollRevealText
+          text="Weight Loss MD was built by a team of physicians and technologists who knew there had to be a better way. By leveraging secure telehealth technology, we've created a clinic that lives on your schedule, not ours."
           className="text-center max-w-4xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12"
-        >
-          Weight Loss MD was built by a team of physicians and technologists who
-          knew there had to be a better way.{" "}
-          <AnimatedText text="By leveraging secure telehealth technology, we've created a clinic that lives on your schedule, not ours." />
-        </motion.h2>
+        />
       )}
 
       {/* Services Grid */}
