@@ -326,9 +326,9 @@ export default function PreviewDetailsPage() {
           {/* Card 1: Patient info & image */}
           <Card>
             <div className="flex items-center gap-4 mb-5">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
                 {user?.profile?.avatar ? (
-                  <img src={user.profile.avatar} alt="Patient" className="w-full h-full object-cover" />
+                  <Image src={user.profile.avatar} alt="Patient" fill sizes="48px" className="object-cover" />
                 ) : (
                   <User className="w-6 h-6 text-blue-500" />
                 )}

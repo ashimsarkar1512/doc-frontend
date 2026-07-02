@@ -54,39 +54,61 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
   return (
     <div className="min-h-screen flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 pt-8">
-        {/* Welcome Section */}
-      
-        <DoctorWelcomeData/>
+      <main className={`flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 font-sans ${isMessages ? 'pt-4 pb-10' : 'py-8 pt-8'}`}>
+        {!isMessages && (
+          <>
+            {/* Welcome Section */}
+            <DoctorWelcomeData/>
 
-        {/* Stats Cards */}
-        <DashboardStatsCards/>
-      
-        {/* Action Buttons  i cone*/}
-        <div className="flex gap-4 mb-8">
-          <Link href="/doctor">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <Home className="w-5 h-5" />
-            </span>
-          </Link>
-          <Link href="/doctor?view=messages">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <MessageSquare className="w-5 h-5" />
-            </span>
-          </Link>
-          <Link href="/doctor?view=notifications">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isNotifications ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <Bell className="w-5 h-5" />
-            </span>
-          </Link>
-          <Link href="/doctor?view=settings">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isSettings ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <Settings className="w-5 h-5" />
-            </span>
-          </Link>
-        </div>
+            {/* Stats Cards */}
+            <DashboardStatsCards/>
+          
+            {/* Action Buttons  i cone*/}
+            <div className="flex gap-4 mb-8">
+              <Link href="/doctor">
+                <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
+                  <Home className="w-5 h-5" />
+                </span>
+              </Link>
+              <Link href="/doctor?view=messages">
+                <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
+                  <MessageSquare className="w-5 h-5" />
+                </span>
+              </Link>
+              <Link href="/doctor?view=notifications">
+                <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isNotifications ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
+                  <Bell className="w-5 h-5" />
+                </span>
+              </Link>
+              <Link href="/doctor?view=settings">
+                <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isSettings ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
+                  <Settings className="w-5 h-5" />
+                </span>
+              </Link>
+            </div>
+          </>
+        )}
 
-        {getContent()}
+        {isMessages ? (
+          <div className="w-full flex gap-8 min-h-[750px]">
+            <div className="flex-shrink-0 sticky top-10">
+               <MessagesPanel />
+            </div>
+            <div className="flex-1 min-w-0 pt-[42px]">
+              {chatId ? (
+                <ChatView chatId={chatId} />
+              ) : (
+                <div className="w-full h-[700px] flex items-center justify-center bg-gray-50/50 rounded-[24px] border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+                  <div className="bg-gray-100 rounded-full px-6 py-2.5 text-gray-500 text-sm font-medium">
+                    Select a patient to start messaging
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          getContent()
+        )}
       </main>
 
       <Footer />

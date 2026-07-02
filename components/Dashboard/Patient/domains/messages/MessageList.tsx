@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, ChevronRight, User } from 'lucide-react';
+import { Search, User, ArrowLeft } from 'lucide-react';
 import { useGetConversationsQuery } from '@/Redux/api/messageApi';
 import { useSocket } from '@/providers/SocketProvider';
 
 interface MessageListProps {
   onSelectChat: (id: string) => void;
+  selectedChatId?: string | null;
+  onBack?: () => void;
 }
 
-export default function MessageList({ onSelectChat }: MessageListProps) {
+export default function MessageList({ onSelectChat, selectedChatId, onBack }: MessageListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading } = useGetConversationsQuery({ search: searchQuery });
   const { socket } = useSocket();
@@ -49,90 +51,142 @@ export default function MessageList({ onSelectChat }: MessageListProps) {
     };
   }, [socket]);
 
+  // Temporary split: Assume all are active unless they have a specific paused status.
+  // We'll use service status if it exists, otherwise put all in active for now.
+  const activeConversations = conversations.filter(c => c.status !== 'PAUSED');
+  const pausedConversations = conversations.filter(c => c.status === 'PAUSED');
+
+  const renderThread = (thread: any) => {
+    const isOnline = thread.isProviderOnline;
+    const doctor = thread.provider || {};
+    const isSelected = selectedChatId === thread.id;
+    
+    // Format relative time (mock logic for "10m ago" etc)
+    const timeAgo = (() => {
+      if (!thread.updatedAt) return '';
+      const diff = (Date.now() - new Date(thread.updatedAt).getTime()) / 60000;
+      if (diff < 1) return 'just now';
+      if (diff < 60) return `${Math.floor(diff)}m ago`;
+      if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+      return `${Math.floor(diff / 1440)}d ago`;
+    })();
+
+    return (
+      <button
+        key={thread.id}
+        onClick={() => onSelectChat(thread.id)}
+        className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+      >
+        <div className="relative flex-shrink-0">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-white">
+            {doctor?.avatar ? (
+              <img
+                src={doctor.avatar}
+                alt={doctor.name || 'Provider'}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-blue-50 text-[#1D4ED8]">
+                <User className="h-5 w-5" />
+              </div>
+            )}
+          </div>
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]"></span>
+          )}
+        </div>
+        
+        <div className="min-w-0 flex-1 flex flex-col justify-center">
+          <div className="flex justify-between items-center w-full">
+             <h4 className="text-sm font-bold text-white truncate pr-2">
+               {doctor?.name || 'Unknown Provider'}
+             </h4>
+             <span className="text-[10px] text-white/60 whitespace-nowrap">
+                {timeAgo}
+             </span>
+          </div>
+          <p className="text-[11px] text-white/80 mt-0.5 truncate font-light">
+            {thread.service?.name} - CID: #{thread.submission?.submissionCode || '001236'}
+          </p>
+        </div>
+      </button>
+    );
+  };
+
   return (
-    <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200">
-      {/* Title */}
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 leading-none">Messages</h3>
+    <div className="w-full flex flex-col gap-4 animate-in fade-in duration-200 h-full">
+      {/* Title with Back Button */}
+      <div className="flex items-center gap-2 text-gray-900 font-sans px-1">
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="p-1 hover:bg-gray-150 rounded-lg transition-colors flex items-center justify-center"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-800" />
+          </button>
+        )}
+        <h3 className="text-xl font-bold leading-none">Messages</h3>
       </div>
 
-      {/* Search Input */}
-      <div className="relative w-full">
-        <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
-        </span>
-        <input
-          type="text"
-          placeholder="Search by name or category..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 bg-white border border-gray-150 rounded-[14px] text-sm text-gray-800 focus:outline-none focus:border-blue-500 placeholder-gray-400 shadow-sm shadow-black/5"
-        />
-      </div>
+      {/* Blue Sidebar Box */}
+      <div 
+        className="flex flex-col items-start self-stretch shrink-0"
+        style={{
+          width: '350px',
+          padding: '16px',
+          gap: '16px',
+          borderRadius: '16px',
+          background: 'var(--Blue, #1D4ED8)',
+          height: '700px'
+        }}
+      >
+        {/* Search Input */}
+        <div className="relative w-full">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-white/70" />
+          </span>
+          <input
+            type="text"
+            placeholder="Search.."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-[10px] text-sm text-white placeholder-white/70 focus:outline-none focus:bg-white/20 transition-all shadow-none"
+          />
+        </div>
 
-      {/* Message Chat List */}
-      <div className="bg-white rounded-3xl border border-gray-150 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex flex-col divide-y divide-gray-100">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-400 text-sm">Loading conversations...</div>
-        ) : conversations.length > 0 ? (
-          conversations.map((thread) => {
-            const isOnline = thread.isProviderOnline; // For patient view, we care about doctor's status
-            const doctor = thread.provider || {};
-            
-            return (
-              <button
-                key={thread.id}
-                onClick={() => onSelectChat(thread.id)}
-                className="w-full flex items-center justify-between p-5 hover:bg-gray-50/50 text-left transition-all duration-150 group"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  {/* Avatar with indicator */}
-                  <div className="relative flex-shrink-0">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100 bg-emerald-50">
-                      {doctor?.avatar ? (
-                        <img
-                          src={doctor.avatar}
-                          alt={doctor.name || 'Provider'}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600">
-                          <User className="h-6 w-6" />
-                        </div>
-                      )}
-                    </div>
-                    {isOnline && (
-                      <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-500 border-2 border-white"></span>
-                    )}
-                  </div>
-
-                  {/* Details */}
-                  <div className="min-w-0">
-                    <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">
-                      {doctor?.name || 'Unknown Provider'}
-                    </h4>
-                    <p className="text-xs text-gray-400 mt-1 font-light flex flex-wrap items-center gap-1.5 leading-none">
-                      <span className="font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider text-[10px]">
-                        {thread.service.name}
-                      </span>
-                      {thread.submission && (
-                        <>
-                          <span>&bull;</span>
-                          <span>{thread.submission.submissionCode}</span>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right Chevron */}
-                <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-              </button>
-            );
-          })
+          <div className="p-4 text-center text-white/70 text-sm w-full">Loading...</div>
         ) : (
-          <div className="p-8 text-center text-gray-400 text-sm">
-            No active message threads found.
+          <div className="w-full flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+            {/* ACTIVE SERVICE */}
+            {activeConversations.length > 0 && (
+              <div className="w-full flex flex-col gap-2">
+                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2">
+                  ACTIVE SERVICE
+                </h4>
+                <div className="flex flex-col w-full gap-1">
+                  {activeConversations.map(renderThread)}
+                </div>
+              </div>
+            )}
+            
+            {/* PAUSED SERVICE */}
+            {pausedConversations.length > 0 && (
+              <div className="w-full flex flex-col gap-2">
+                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2 mt-2 border-t border-white/10 pt-4">
+                  PAUSED SERVICE
+                </h4>
+                <div className="flex flex-col w-full gap-1">
+                  {pausedConversations.map(renderThread)}
+                </div>
+              </div>
+            )}
+
+            {conversations.length === 0 && (
+              <div className="p-4 text-center text-white/60 text-sm w-full">
+                No active message threads found.
+              </div>
+            )}
           </div>
         )}
       </div>

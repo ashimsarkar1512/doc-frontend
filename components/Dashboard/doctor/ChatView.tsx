@@ -26,7 +26,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
   const { data: serviceInfoRes } = useGetServiceInfoQuery(chatId, { skip: !chatId });
   const serviceInfo = serviceInfoRes?.data;
   const { socket, isConnected, joinConversation, leaveConversation, sendMessage, emitTyping, emitStopTyping } = useSocket();
-  const { decrypt, encrypt } = useE2EE();
+  const { decrypt, encrypt, isInitializing } = useE2EE();
   const user = useAppSelector((state) => state.auth.user);
   const [uploadAttachment] = useUploadMessageAttachmentMutation();
   const [rejectProposal] = useRejectProposalMutation();
@@ -97,7 +97,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
 
   useEffect(() => {
     const decryptHistory = async () => {
-      if (!historyData?.data?.messages) return;
+      if (!historyData?.data?.messages || isInitializing) return;
       const incoming = historyData.data.messages;
       if (incoming.length < 50) setHasMore(false);
       const decrypted = await Promise.all(
@@ -114,7 +114,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
     };
     decryptHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historyData]);
+  }, [historyData, isInitializing]);
 
   useEffect(() => {
     if (!socket) return;
@@ -283,18 +283,20 @@ export default function ChatView({ chatId }: { chatId: string }) {
 
   return (
     <>
-      <Link
-        href="/doctor?view=messages"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-800 mb-5 hover:text-blue-600 transition-colors w-fit"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {conversation?.service?.name || 'Chat'}
-      </Link>
+      {/* The side-by-side layout replaces the need for a back button */}
 
       <div className="flex gap-6 mb-10">
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm h-[800px]">
-          <div className="bg-[#2563eb] px-5 py-4 flex items-center gap-3">
+          <div className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm h-[700px]">
+          <div 
+            className="flex items-center self-stretch text-white gap-3"
+            style={{
+              padding: '20px',
+              borderRadius: '16px 16px 0 0',
+              borderBottom: '1px solid rgba(217, 217, 217, 0.40)',
+              background: 'var(--Blue, #1D4ED8)'
+            }}
+          >
             <div className="relative">
               <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
                 {patient?.avatar ? (
@@ -306,12 +308,12 @@ export default function ChatView({ chatId }: { chatId: string }) {
                 )}
               </div>
               {conversation?.isPatientOnline && (
-                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#22c55e] border-2 border-[#2563eb] rounded-full"></div>
+                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#22c55e] border-2 border-[#1D4ED8] rounded-full"></div>
               )}
             </div>
             <div>
               <h2 className="text-white font-bold text-lg leading-tight">{patient?.name || 'Unknown Patient'}</h2>
-              <p className="text-blue-100 text-[11px] mt-0.5 font-medium">
+              <p className="text-white/80 text-[11px] mt-0.5 font-medium">
                 Patient - {conversation?.submission?.submissionCode}
               </p>
             </div>
