@@ -102,6 +102,9 @@ function ProductsInner() {
   // ── Optimistic UI State ──
   const [optimisticSizes, setOptimisticSizes] = useState<Record<string, string>>({});
 
+  // ── View Details State ──
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   // ── Checkbox state (controlled so checkmark works) ──
   const [recurring, setRecurring] = useState(true);
 
@@ -200,23 +203,61 @@ function ProductsInner() {
 
       <div className="pt-36 pb-16 max-w-[1320px] mx-auto px-4 sm:px-6">
 
-        {/* ── Page headings ── */}
-        <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-gray-900 mb-1">
-            Supplements
-          </h1>
-          <p className="text-[15px] text-gray-500">
-            {categoryName
-              ? `Available — ${categoryName}`
-              : "Available Weight Loss Medicine"}
-          </p>
-        </div>
-
         {/* ── Two-column layout ── */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* ══ LEFT — Product Grid ══ */}
           <div className="flex-1 min-w-0">
+            {selectedProduct ? (
+              <>
+                <div className="mb-8 flex items-center gap-2">
+                  <button onClick={() => setSelectedProduct(null)} className="text-[#191B1C] font-[Quicksand] text-[24px] font-bold flex items-center gap-2 hover:text-blue-600 transition-colors cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    {selectedProduct.name} details
+                  </button>
+                </div>
+                
+                <div className="w-full max-w-[450px] aspect-[4/3] rounded-[16px] overflow-hidden flex items-center justify-center p-4 mb-6 shadow-sm" style={{ backgroundColor: "#292C2D" }}>
+                  <Image src={selectedProduct.image || "/medicine-1.png"} alt={selectedProduct.name} width={300} height={300} unoptimized className="object-contain p-6 drop-shadow-xl" />
+                </div>
+
+                <div className="mb-8 text-[#272628] font-[Quicksand] text-[16px]">
+                  Available size: <span className="font-normal text-gray-500">20mg / 37.5mg / 45mg</span>
+                </div>
+
+                <div className="flex flex-col gap-8 text-[#545454] font-[Quicksand] text-[16px] leading-[1.6]">
+                  <div>
+                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">Indications</h2>
+                    <p className="mb-4">{selectedProduct.name} is a Schedule IV controlled substance that may be prescribed for short-term use in eligible patients following an evaluation by a licensed medical provider. Treatment is provided only when clinically appropriate and in accordance with applicable federal and state regulations.</p>
+                    <p className="mb-4">{selectedProduct.name} may be associated with side effects and potential risks, including the possibility of dependence, and may not be appropriate for all individuals. All prescribing decisions are made at the discretion of a licensed medical provider based on individual medical history, symptoms, and clinical judgment.</p>
+                    <p>Results vary by individual, and no specific outcomes are guaranteed. This information is for educational purposes only and does not constitute medical advice.</p>
+                  </div>
+
+                  <div>
+                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">What This Medication Does in Terms of Weight Loss</h2>
+                    <p className="mb-4">{selectedProduct.name} is a weight loss medication that works as an appetite suppressant to help individuals manage their food intake. It stimulates the central nervous system, increasing heart rate and energy levels while reducing hunger signals. By curbing cravings and decreasing appetite, {selectedProduct.name.toLowerCase()} makes it easier to follow a calorie-controlled diet, leading to effective weight loss.</p>
+                    <p>When combined with healthy eating habits and regular exercise, {selectedProduct.name.toLowerCase()} can enhance weight loss results for those struggling with obesity or excess weight. If you&apos;re considering {selectedProduct.name.toLowerCase()} for weight loss, consult with a medical provider at Weight Loss MD in Colorado to determine if it&apos;s the right solution for you.</p>
+                  </div>
+
+                  <div>
+                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">Common Side Effects Our Colorado Clients Often Notice</h2>
+                    <p>{selectedProduct.name} is a popular prescription weight loss medication, but like any drug, it may cause side effects. At Weight Loss MD, we closely monitor our patients to ensure safe and effective use of this medication. Understanding potential side effects can help you make an informed decision and know what to expect during your weight loss journey.</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* ── Page headings ── */}
+            <div className="mb-8">
+              <h1 className="text-[28px] font-bold text-gray-900 mb-1">
+                Supplements
+              </h1>
+              <p className="text-[15px] text-gray-500">
+                {categoryName
+                  ? `Available — ${categoryName}`
+                  : "Available Weight Loss Medicine"}
+              </p>
+            </div>
             {productsLoading ? (
               <div className="flex items-center justify-center py-32">
                 <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -284,7 +325,8 @@ function ProductsInner() {
                             <span className="text-[14px] font-semibold font-[Quicksand]">Add to cart</span>
                           </button>
                           
-                          <button 
+                          <button
+                            onClick={() => setSelectedProduct(p)}
                             className="text-[#1D4ED8] font-[Quicksand] text-[14px] font-semibold underline underline-offset-4 decoration-solid hover:text-blue-800 transition-colors"
                           >
                             View details
@@ -296,10 +338,12 @@ function ProductsInner() {
                 })}
               </div>
             )}
+            </>
+            )}
           </div>
 
           {/* ══ RIGHT — Order Cart Panel ══ */}
-          <div className="w-full lg:w-[450px] lg:sticky lg:top-[100px] flex-shrink-0 self-start">
+          <div className="w-full lg:w-[450px] lg:sticky lg:top-[140px] flex-shrink-0 self-start">
             <div className="rounded-2xl p-7 shadow-sm" style={{ background: "#EAF3FF", fontFamily: "Quicksand, sans-serif" }}>
               {/* Header */}
               <div className="flex items-center justify-between mb-3">

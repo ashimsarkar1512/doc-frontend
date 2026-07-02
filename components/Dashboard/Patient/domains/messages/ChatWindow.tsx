@@ -170,7 +170,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         if (prev.some(m => m.id === msg.id)) return prev;
         const isDuplicate = prev.some(m => m.senderId === msg.senderId && m.decryptedText === text && m.id.startsWith('opt-'));
         if (isDuplicate) {
-           return prev.map(m => (m.senderId === msg.senderId && m.decryptedText === text && m.id.startsWith('opt-')) ? { ...msg, decryptedText: text } : m);
+          return prev.map(m => (m.senderId === msg.senderId && m.decryptedText === text && m.id.startsWith('opt-')) ? { ...msg, decryptedText: text } : m);
         }
         return [...prev, { ...msg, decryptedText: text }];
       });
@@ -209,7 +209,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
       if (!recipientKeyData?.data?.publicKey) toast.error('Recipient public key not found');
       return;
     }
-    
+
     setIsUploading(true);
     let attachmentId = null;
 
@@ -235,39 +235,39 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         setIsUploading(false);
         return;
       }
-      
-      const optimisticMsg = {
-          id: `opt-${Date.now()}`,
-          conversationId: chatId,
-          senderId: user?.id,
-          messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
-          createdAt: new Date().toISOString(),
-          sender: {
-            id: user?.id,
-            name: user?.profile?.name,
-            avatar: user?.profile?.avatar,
-          },
-          decryptedText: textToSend,
-          attachments: selectedFile ? [{
-            id: 'temp',
-            fileName: selectedFile.name,
-            fileType: selectedFile.type,
-            fileSize: selectedFile.size,
-            fileUrl: URL.createObjectURL(selectedFile)
-          }] : []
-        };
-        setMessages((prev) => [...prev, optimisticMsg]);
 
-        sendMessage({
-          conversationId: chatId,
-          ...encrypted,
-          messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
-          attachmentId,
-          senderId: user?.id
-        });
-        setTypedMessage('');
-        setSelectedFile(null);
-        emitStopTyping(chatId);
+      const optimisticMsg = {
+        id: `opt-${Date.now()}`,
+        conversationId: chatId,
+        senderId: user?.id,
+        messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: user?.id,
+          name: user?.profile?.name,
+          avatar: user?.profile?.avatar,
+        },
+        decryptedText: textToSend,
+        attachments: selectedFile ? [{
+          id: 'temp',
+          fileName: selectedFile.name,
+          fileType: selectedFile.type,
+          fileSize: selectedFile.size,
+          fileUrl: URL.createObjectURL(selectedFile)
+        }] : []
+      };
+      setMessages((prev) => [...prev, optimisticMsg]);
+
+      sendMessage({
+        conversationId: chatId,
+        ...encrypted,
+        messageType: attachmentId ? 'ATTACHMENT' : 'TEXT',
+        attachmentId,
+        senderId: user?.id
+      });
+      setTypedMessage('');
+      setSelectedFile(null);
+      emitStopTyping(chatId);
     } catch (error) {
       toast.error('Failed to encrypt message');
     }
@@ -351,8 +351,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
       msg.senderId === conversation?.patientId
         ? { name: conversation?.patient?.name, avatar: conversation?.patient?.avatar }
         : msg.senderId === conversation?.providerId
-        ? { name: conversation?.provider?.name, avatar: conversation?.provider?.avatar }
-        : { name: null, avatar: null };
+          ? { name: conversation?.provider?.name, avatar: conversation?.provider?.avatar }
+          : { name: null, avatar: null };
     return {
       name: msg.sender?.name || fromConversation.name || null,
       avatar: msg.sender?.avatar || fromConversation.avatar || null,
@@ -364,11 +364,11 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
     const d = new Date(dateStr);
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfMsg   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const startOfMsg = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const diffDays = Math.round((startOfToday.getTime() - startOfMsg.getTime()) / 86400000);
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7)  return d.toLocaleDateString('en-US', { weekday: 'long' });
+    if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
     return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) +
       ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
@@ -395,8 +395,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   const isDifferentDay = (a: string, b: string) => {
     const da = new Date(a); const db = new Date(b);
     return da.getFullYear() !== db.getFullYear() ||
-           da.getMonth()    !== db.getMonth()    ||
-           da.getDate()     !== db.getDate();
+      da.getMonth() !== db.getMonth() ||
+      da.getDate() !== db.getDate();
   };
 
   // Collect all attachment files from messages (for sidebar) + API files response
@@ -418,7 +418,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         <div className="lg:col-span-8 bg-white border border-gray-150 rounded-[24px] shadow-[0_2px_8px_rgba(0,0,0,0.01)] overflow-hidden flex flex-col h-[700px]">
 
           {/* Doctor header banner */}
-          <div 
+          <div
             className="flex items-center self-stretch text-white gap-3"
             style={{
               padding: '20px',
@@ -576,18 +576,17 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                                 </button>
                               </div>
                             ) : (
-                              <div className={`text-[11px] font-bold py-1.5 px-3 rounded-full w-fit ${
-                                proposal.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-700' :
-                                proposal.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
-                                'bg-amber-100 text-amber-700'
-                              }`}>
+                              <div className={`text-[11px] font-bold py-1.5 px-3 rounded-full w-fit ${proposal.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-700' :
+                                  proposal.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                                    'bg-amber-100 text-amber-700'
+                                }`}>
                                 {proposal.status === 'ACCEPTED' ? '✓ You accepted this proposal' :
-                                 proposal.status === 'REJECTED' ? (
-                                   proposal.rejectedBy === user?.id ? '✕ You declined this proposal' :
-                                   proposal.rejectedBy === conversation?.providerId ? '✕ Doctor withdrew this proposal' :
-                                   '✕ Proposal Cancelled'
-                                 ) :
-                                 'Awaiting your response'}
+                                  proposal.status === 'REJECTED' ? (
+                                    proposal.rejectedBy === user?.id ? '✕ You declined this proposal' :
+                                      proposal.rejectedBy === conversation?.providerId ? '✕ Doctor withdrew this proposal' :
+                                        '✕ Proposal Cancelled'
+                                  ) :
+                                    'Awaiting your response'}
                               </div>
                             )}
                           </div>
@@ -603,23 +602,20 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 // ── TEXT / ATTACHMENT bubble ──
                 // Border radius: Messenger style — top corners sharp for grouped, bottom sharp for first
                 const myRadius = isMe
-                  ? `rounded-[20px] ${
-                      !isFirstInGroup && !isLastInGroup ? 'rounded-tr-[5px] rounded-br-[5px]' :
-                      isFirstInGroup && !isLastInGroup  ? 'rounded-tr-[5px]' :
-                      !isFirstInGroup && isLastInGroup  ? 'rounded-br-[5px]' : ''
-                    }`
-                  : `rounded-[20px] ${
-                      !isFirstInGroup && !isLastInGroup ? 'rounded-tl-[5px] rounded-bl-[5px]' :
-                      isFirstInGroup && !isLastInGroup  ? 'rounded-tl-[5px]' :
-                      !isFirstInGroup && isLastInGroup  ? 'rounded-bl-[5px]' : ''
-                    }`;
+                  ? `rounded-[20px] ${!isFirstInGroup && !isLastInGroup ? 'rounded-tr-[5px] rounded-br-[5px]' :
+                    isFirstInGroup && !isLastInGroup ? 'rounded-tr-[5px]' :
+                      !isFirstInGroup && isLastInGroup ? 'rounded-br-[5px]' : ''
+                  }`
+                  : `rounded-[20px] ${!isFirstInGroup && !isLastInGroup ? 'rounded-tl-[5px] rounded-bl-[5px]' :
+                    isFirstInGroup && !isLastInGroup ? 'rounded-tl-[5px]' :
+                      !isFirstInGroup && isLastInGroup ? 'rounded-bl-[5px]' : ''
+                  }`;
 
                 rendered.push(
                   <div
                     key={msg.id}
-                    className={`flex items-end gap-2 ${
-                      isMe ? 'flex-row-reverse justify-start' : 'flex-row justify-start'
-                    } ${isLastInGroup ? 'mb-3' : 'mb-[2px]'}`}
+                    className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse justify-start' : 'flex-row justify-start'
+                      } ${isLastInGroup ? 'mb-3' : 'mb-[2px]'}`}
                   >
                     {/* Avatar — only on last message in group */}
                     <div className="w-7 h-7 flex-shrink-0">
@@ -632,9 +628,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                       ) : null}
                     </div>
 
-                    <div className={`flex flex-col ${
-                      isMe ? 'items-end max-w-[65%]' : 'items-start max-w-[65%]'
-                    }`}>
+                    <div className={`flex flex-col ${isMe ? 'items-end max-w-[65%]' : 'items-start max-w-[65%]'
+                      }`}>
                       {/* Sender name — only on first message in group for others */}
                       {!isMe && isFirstInGroup && (
                         <span className="text-[10px] font-semibold text-gray-400 mb-1 ml-1">
@@ -643,11 +638,10 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                       )}
 
                       {/* Bubble */}
-                      <div className={`px-4 py-2.5 text-sm leading-relaxed ${
-                        isMe
+                      <div className={`px-4 py-2.5 text-sm leading-relaxed ${isMe
                           ? `bg-[#2563eb] text-white ${myRadius}`
                           : `bg-[#e2e8f0] text-gray-800 ${myRadius}`
-                      }`}>
+                        }`}>
                         {msg.decryptedText || '...'}
 
                         {msg.messageType === 'ATTACHMENT' && msg.attachments?.map((file: any) => {
@@ -656,8 +650,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                             return (
                               <div key={file.id} className="mt-2 rounded-xl overflow-hidden border border-black/10 relative group bg-black/5">
                                 <img src={file.fileUrl} alt={file.fileName} className="max-w-full max-h-[250px] object-contain" />
-                                <a 
-                                  href={file.fileUrl} 
+                                <a
+                                  href={file.fileUrl}
                                   onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
                                   className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                                 >
@@ -667,19 +661,17 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                             );
                           }
                           return (
-                            <div key={file.id} className={`mt-2 p-2 rounded-lg border flex items-center justify-between gap-3 min-w-[180px] max-w-full ${
-                              isMe ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
-                            }`}>
+                            <div key={file.id} className={`mt-2 p-2 rounded-lg border flex items-center justify-between gap-3 min-w-[180px] max-w-full ${isMe ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
+                              }`}>
                               <div className="flex items-center gap-2 overflow-hidden">
                                 <FileText className="h-5 w-5 flex-shrink-0 opacity-80" />
                                 <span className="truncate text-xs font-medium">{file.fileName}</span>
                               </div>
-                              <a 
-                                href={file.fileUrl} 
+                              <a
+                                href={file.fileUrl}
                                 onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
-                                className={`p-1.5 rounded-md transition-colors flex-shrink-0 ${
-                                  isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-black/10 text-gray-700'
-                                }`}
+                                className={`p-1.5 rounded-md transition-colors flex-shrink-0 ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-black/10 text-gray-700'
+                                  }`}
                               >
                                 <Download className="h-4 w-4" />
                               </a>
@@ -690,9 +682,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
                       {/* Timestamp — only on last message in group */}
                       {isLastInGroup && (
-                        <span className={`text-[10px] text-gray-400 mt-1 ${
-                          isMe ? 'text-right pr-1' : 'text-left pl-1'
-                        }`}>
+                        <span className={`text-[10px] text-gray-400 mt-1 ${isMe ? 'text-right pr-1' : 'text-left pl-1'
+                          }`}>
                           {new Date(msg.createdAt).toLocaleTimeString('en-US', {
                             hour: 'numeric', minute: '2-digit', hour12: true
                           })}
@@ -740,8 +731,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                   <span className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</span>
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedFile(null)} 
+              <button
+                onClick={() => setSelectedFile(null)}
                 disabled={isUploading}
                 className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-colors disabled:opacity-50"
               >
@@ -781,7 +772,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         <div className="lg:col-span-4 flex flex-col gap-5">
           <div className="bg-[#f0f4f8] rounded-xl p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">Service Information</h3>
-            
+
             <div className="space-y-3 text-[13px] mt-4 mb-4">
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Service Started</span>
@@ -802,7 +793,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
             </div>
 
             <div className="flex flex-col gap-3 mt-5">
-              <button 
+              <button
                 onClick={() => {
                   if (conversation?.submission?.id) {
                     if (onViewDetails) {
@@ -833,20 +824,21 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 // Determine who sent the file to mimic the "by you:" or "by [Doctor]:" grouping
                 // For a simpler flat list that matches the new design
                 return (
-                <div key={file.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/50 transition-colors group">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
-                    <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file.fileName}</span>
+                  <div key={file.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/50 transition-colors group">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <FileText className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
+                      <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file.fileName}</span>
+                    </div>
+                    <a
+                      href={file.fileUrl}
+                      onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
+                      className="p-2 hover:bg-black/5 rounded-md transition-colors flex-shrink-0"
+                    >
+                      <Download className="h-4 w-4 text-gray-500 hover:text-gray-900" />
+                    </a>
                   </div>
-                  <a
-                    href={file.fileUrl}
-                    onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
-                    className="p-2 hover:bg-black/5 rounded-md transition-colors flex-shrink-0"
-                  >
-                    <Download className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                  </a>
-                </div>
-              )}) : (
+                )
+              }) : (
                 <p className="text-xs text-gray-400 text-center py-4">No attachments yet</p>
               )}
             </div>

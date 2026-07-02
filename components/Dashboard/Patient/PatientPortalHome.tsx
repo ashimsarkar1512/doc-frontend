@@ -26,9 +26,9 @@ import SettingsCenter from "./domains/settings/SettingsCenter";
 export default function PatientPortalHome() {
   const user = useAppSelector((state) => state.auth.user);
   const { data: statsResponse } = useGetDashboardStatsQuery();
-  console.log("statsResponse",statsResponse)
+  console.log("statsResponse", statsResponse)
   const stats = statsResponse?.data;
-  
+
   const [activeTab, setActiveTab] = useState<TabType>("PENDING");
 
   const getApiStatus = (tab: TabType) => {
@@ -215,8 +215,8 @@ export default function PatientPortalHome() {
             />
           ) : activeTab === "My Orders" ? (
             <MyOrdersDomain onViewSubmission={(id) => {
-               setDirectSubmissionReturnTo("orders");
-               setDirectSubmissionId(id);
+              setDirectSubmissionReturnTo("orders");
+              setDirectSubmissionId(id);
             }} />
           ) : selectedConsultationId && activeConsultation ? (
             <ConsultationDetails
@@ -252,14 +252,14 @@ export default function PatientPortalHome() {
       {activeDomain === "messages" && (
         <div className="w-full flex gap-8 min-h-[750px]">
           <div className="flex-shrink-0 sticky top-10">
-             <MessageList 
-               onSelectChat={setSelectedChatId} 
-               selectedChatId={selectedChatId}
-               onBack={() => {
-                 setActiveDomain('dashboard');
-                 setSelectedChatId(null);
-               }} 
-             />
+            <MessageList
+              onSelectChat={setSelectedChatId}
+              selectedChatId={selectedChatId}
+              onBack={() => {
+                setActiveDomain('dashboard');
+                setSelectedChatId(null);
+              }}
+            />
           </div>
           <div className="flex-1 min-w-0 pt-[42px]">
             {selectedChatId ? (
@@ -289,16 +289,16 @@ export default function PatientPortalHome() {
         <div className="w-full">
           <NotificationCenter
             onNotificationClick={(notif) => {
-               if (notif.actionType === "NEW_MESSAGE") {
-                  setActiveDomain("messages");
-                  setSelectedChatId(notif.referenceId);
-               } else if (notif.actionType.startsWith("ASSESSMENT_")) {
-                  setActiveDomain("dashboard");
-                  setSelectedConsultationId(notif.referenceId);
-               } else if (notif.actionType === "ORDER_STATUS_UPDATED") {
-                  setActiveDomain("dashboard");
-                  setActiveTab("My Orders");
-               }
+              if (notif.actionType === "NEW_MESSAGE") {
+                setActiveDomain("messages");
+                setSelectedChatId(notif.referenceId);
+              } else if (notif.actionType.startsWith("ASSESSMENT_")) {
+                setActiveDomain("dashboard");
+                setSelectedConsultationId(notif.referenceId);
+              } else if (notif.actionType === "ORDER_STATUS_UPDATED") {
+                setActiveDomain("dashboard");
+                setActiveTab("My Orders");
+              }
             }}
           />
         </div>
