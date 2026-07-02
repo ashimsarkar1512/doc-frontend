@@ -281,7 +281,7 @@ export default function PreviewDetailsPage() {
   return (
     <div className="min-h-screen bg-white pb-10">
       <Navbar variant="dark" />
-      <div className="pt-32 max-w-[850px] mx-auto px-4 sm:px-6">
+      <div className="pt-32 max-w-[950px] mx-auto px-4 sm:px-6">
 
         <button
           type="button"
@@ -342,11 +342,11 @@ export default function PreviewDetailsPage() {
             </div>
 
             {assessment.thumbnail && (
-              <div className="w-full h-[250px] md:h-[350px] rounded-xl overflow-hidden mb-5 bg-[#FAFAFA] border border-gray-200 flex items-center justify-center p-4 shadow-sm">
+              <div className="relative w-full rounded-xl overflow-hidden mb-5 shadow-sm border border-gray-100" style={{ aspectRatio: "16/9" }}>
                 <img
                   src={assessment.thumbnail}
                   alt={assessment.title || "Assessment Thumbnail"}
-                  className="max-w-full max-h-full object-contain"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             )}
@@ -559,10 +559,10 @@ export default function PreviewDetailsPage() {
           {/* Compliance Confirmation - Exact copy from checkout page */}
           <Card>
             <div className="flex items-center gap-2 mb-3">
-              <ShieldCheck className="w-[22px] h-[22px] text-blue-600" />
-              <h3 className="text-[18px] font-bold text-gray-900">Compliance Confirmation:</h3>
+              <ShieldCheck className="w-[28px] h-[28px] text-blue-600" />
+              <h2 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-none">Compliance Confirmation:</h2>
             </div>
-            <p className="text-gray-500 text-[14.5px] mb-6 leading-relaxed max-w-[95%]">
+            <p className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] mb-6 max-w-[95%]">
               Before completing your submission, please confirm you understand the following important information about our telemedicine service:
             </p>
 
@@ -578,7 +578,7 @@ export default function PreviewDetailsPage() {
                   <div className="w-4 h-4 accent-blue-600 shrink-0 bg-blue-600 rounded flex items-center justify-center">
                     <Check className="w-2.5 h-2.5 text-white" strokeWidth={3.5} />
                   </div>
-                  <span className="text-gray-700 text-[14px]" dangerouslySetInnerHTML={{ __html: item.text }} />
+                  <span className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal" dangerouslySetInnerHTML={{ __html: item.text }} />
                 </div>
               ))}
             </div>
@@ -588,41 +588,65 @@ export default function PreviewDetailsPage() {
             </div>
           </Card>
 
-          {/* Payment Summary - From checkout state & cart data */}
+          {/* Payment Summary - matches reference design */}
           <Card>
-            <h3 className="text-[18px] font-bold text-gray-900 mb-1">Payment Summary</h3>
-            <p className="text-[13px] text-gray-500 mb-6">
+            {/* Title */}
+            <h3 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2] mb-1">Payment Summary</h3>
+            {/* Subtitle — checkout: text-gray-500 text-[13px] */}
+            <p className="text-[13px] text-gray-500 mb-5">
               Patient selected {cartItems.length} product{cartItems.length !== 1 ? 's' : ''}:
             </p>
 
-            <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
-              {/* Products */}
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+              {/* LEFT: Products */}
               <div className="flex-1 flex flex-col gap-4">
                 {cartItems.map((item: any) => {
                   const img = item.product?.images?.[0]?.fileUrl ?? "";
+                  const desc = item.product?.description;
+                  const name = item.product?.name || "Unknown Product";
+                  const showDesc = desc && desc !== name;
                   return (
-                    <div key={item.id} className="flex gap-3">
-                      <div className="relative w-[56px] h-[56px] shrink-0 rounded-xl overflow-hidden bg-[#1E2224]">
+                    <div key={item.id} className="flex gap-4">
+                      {/* Thumbnail — checkout: w-[70px] h-[70px] rounded-2xl bg-[#292C2D] */}
+                      <div
+                        className="relative w-[70px] h-[70px] flex-shrink-0 rounded-2xl overflow-hidden shadow-sm"
+                        style={{ backgroundColor: "#292C2D" }}
+                      >
                         {img && (
                           <Image
                             src={img}
-                            alt={item.product?.name || "Product"}
+                            alt={name}
                             fill
                             unoptimized
                             className="object-contain p-1.5"
-                            sizes="56px"
+                            sizes="70px"
                           />
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between">
-                          <p className="text-[13px] font-bold text-gray-900 truncate pr-2">{item.product?.name || "Unknown Product"}</p>
-                          <p className="text-[13px] font-bold text-[#2563EB] shrink-0">${parseFloat(item.itemTotal).toFixed(2)}</p>
+
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        {/* Name left, Price right — checkout styles */}
+                        <div className="flex justify-between items-start">
+                          <div>
+                            {/* checkout: text-gray-900 text-[14px] font-bold leading-snug */}
+                            <p className="text-gray-900 text-[14px] font-bold leading-snug">{name}</p>
+                            {/* Description — checkout: Quicksand 16px normal, only if different from name */}
+                            {showDesc && (
+                              <p className="text-[#272628] font-[Quicksand] text-[14px] font-normal leading-snug mt-0.5 line-clamp-1 max-w-[200px]">
+                                {desc}
+                              </p>
+                            )}
+                          </div>
+                          {/* Price — checkout: text-[#2563EB] text-[14px] font-bold */}
+                          <p className="text-[#2563EB] text-[14px] font-bold flex-shrink-0 ml-3">${parseFloat(item.itemTotal).toFixed(2)}</p>
                         </div>
+
+                        {/* Size badge — checkout: text-[12px] text-gray-600 + bg-[#DEE7FB] */}
                         {item.size && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <span className="text-[11px] text-gray-500">Size:</span>
-                            <span className="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">{item.size}</span>
+                          <div className="flex items-center gap-1.5 mt-2">
+                            <span className="text-[12px] text-gray-600 font-medium">Size:</span>
+                            <span className="bg-[#DEE7FB] text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded-full">{item.size}</span>
                           </div>
                         )}
                       </div>
@@ -631,15 +655,13 @@ export default function PreviewDetailsPage() {
                 })}
               </div>
 
-              {/* Totals */}
-              <div className="flex-1 lg:max-w-[300px]">
-                <div className="flex flex-col gap-2.5">
+              {/* RIGHT: Totals — checkout: Quicksand 20px normal/bold */}
+              <div className="w-full lg:w-[260px] shrink-0">
+                <div className="flex flex-col gap-4">
                   {[
                     {
                       label: "Subtotal",
-                      value: summary?.subtotal
-                        ? `$${parseFloat(summary.subtotal).toFixed(2)}`
-                        : "—",
+                      value: summary?.subtotal ? `$${parseFloat(summary.subtotal).toFixed(2)}` : "—",
                     },
                     {
                       label: "Service Duration",
@@ -647,40 +669,32 @@ export default function PreviewDetailsPage() {
                     },
                     {
                       label: "Service Fees",
-                      value: summary?.serviceFees
-                        ? `$${parseFloat(summary.serviceFees).toFixed(2)}`
-                        : "—",
+                      value: summary?.serviceFees ? `$${parseFloat(summary.serviceFees).toFixed(2)}` : "—",
                     },
                     {
                       label: "Shipping Charge",
-                      value: summary?.shippingCharge
-                        ? `$${parseFloat(summary.shippingCharge).toFixed(2)}`
-                        : "—",
+                      value: summary?.shippingCharge ? `$${parseFloat(summary.shippingCharge).toFixed(2)}` : "—",
                     },
                     {
                       label: "Discount",
-                      value:
-                        summary?.discount && parseFloat(summary.discount) > 0
-                          ? `- $${parseFloat(summary.discount).toFixed(2)}`
-                          : "$0.00",
+                      value: summary?.discount && parseFloat(summary.discount) > 0
+                        ? `- $${parseFloat(summary.discount).toFixed(2)}`
+                        : "$0.00",
                       accent: true,
                     },
                   ].map(({ label, value, accent }) => (
                     <div key={label} className="flex justify-between">
-                      <span className="text-gray-500 text-[13px]">{label}</span>
-                      <span
-                        className={`text-[13px] font-medium ${accent ? "text-red-500" : "text-gray-800"}`}
-                      >
-                        {value}
-                      </span>
+                      {/* checkout: text-[#272628] font-[Quicksand] text-[20px] font-normal */}
+                      <span className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none">{label}</span>
+                      <span className={`font-[Quicksand] text-[20px] font-normal leading-none ${accent ? "text-red-500" : "text-[#272628]"}`}>{value}</span>
                     </div>
                   ))}
-                  <div className="flex justify-between items-center pt-2 border-t border-blue-200 mt-2">
-                    <span className="text-gray-900 text-[15px] font-bold">Total</span>
-                    <span className="text-[#2563EB] text-[17px] font-bold">
-                      {summary?.total
-                        ? `$${parseFloat(summary.total).toFixed(2)}`
-                        : "—"}
+
+                  {/* Divider + Total — checkout: Quicksand 20px bold */}
+                  <div className="flex justify-between items-center pt-3 border-t border-[#1D4ED8] mt-1">
+                    <span className="text-[#272628] font-[Quicksand] text-[20px] font-bold leading-none">Total</span>
+                    <span className="text-[#1D4ED8] font-[Quicksand] text-[20px] font-bold leading-none">
+                      {summary?.total ? `$${parseFloat(summary.total).toFixed(2)}` : "—"}
                     </span>
                   </div>
                 </div>

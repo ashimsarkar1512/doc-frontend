@@ -60,7 +60,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
     const isOnline = thread.isProviderOnline;
     const doctor = thread.provider || {};
     const isSelected = selectedChatId === thread.id;
-    
+
     // Format relative time (mock logic for "10m ago" etc)
     const timeAgo = (() => {
       if (!thread.updatedAt) return '';
@@ -95,15 +95,15 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
             <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]"></span>
           )}
         </div>
-        
+
         <div className="min-w-0 flex-1 flex flex-col justify-center">
           <div className="flex justify-between items-center w-full">
-             <h4 className="text-sm font-bold text-white truncate pr-2">
-               {doctor?.name || 'Unknown Provider'}
-             </h4>
-             <span className="text-[10px] text-white/60 whitespace-nowrap">
-                {timeAgo}
-             </span>
+            <h4 className="text-sm font-bold text-white truncate pr-2">
+              {doctor?.name || 'Unknown Provider'}
+            </h4>
+            <span className="text-[10px] text-white/60 whitespace-nowrap">
+              {timeAgo}
+            </span>
           </div>
           <p className="text-[11px] text-white/80 mt-0.5 truncate font-light">
             {thread.service?.name} - CID: #{thread.submission?.submissionCode || '001236'}
@@ -118,7 +118,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
       {/* Title with Back Button */}
       <div className="flex items-center gap-2 text-gray-900 font-sans px-1">
         {onBack && (
-          <button 
+          <button
             onClick={onBack}
             className="p-1 hover:bg-gray-150 rounded-lg transition-colors flex items-center justify-center"
           >
@@ -129,7 +129,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
       </div>
 
       {/* Blue Sidebar Box */}
-      <div 
+      <div
         className="flex flex-col items-start self-stretch shrink-0"
         style={{
           width: '350px',
@@ -169,7 +169,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
                 </div>
               </div>
             )}
-            
+
             {/* PAUSED SERVICE */}
             {pausedConversations.length > 0 && (
               <div className="w-full flex flex-col gap-2">

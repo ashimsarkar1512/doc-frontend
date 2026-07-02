@@ -17,10 +17,10 @@ export function CompletionStep() {
         />
       </div>
       <div className="px-1 pb-2 text-center">
-        <h2 className="text-gray-900 text-[20px] font-bold mb-3">
+        <h2 style={{ color: "#2B2922", textAlign: "center", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontWeight: 700, lineHeight: "150%" }} className="mb-3">
           You are all set!
         </h2>
-        <p className="text-gray-700 text-[16px] leading-relaxed">
+        <p style={{ color: "#2B2922", textAlign: "center", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 500, lineHeight: "150%" }}>
           Your assessment is done and ready to submit for review.
           <br />
           Choose the products and add to cart before submission.
