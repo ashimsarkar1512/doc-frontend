@@ -56,7 +56,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
     <div className="min-h-screen flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
       <main className={`flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}>
         {/* Action Buttons at the Top */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-8 ">
           <Link href="/doctor">
             <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
               <Home className="w-5 h-5" />

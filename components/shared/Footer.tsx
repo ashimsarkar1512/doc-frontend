@@ -64,10 +64,10 @@ const Footer = () => {
                       key={office.id}
                       className={`${paddingClass} py-6 md:py-0`}
                     >
-                      <h3 className="font-medium text-white mb-2 text-[17px]">
+                      <h3 className="font-medium text-pink-800 mb-2  text-2xl">
                         {office.name}
                       </h3>
-                      <p className="text-[15px] text-gray-300 leading-[1.6] font-light">
+                      <p className="text-xl text-gray-300  font-light">
                         {office.address}
                       </p>
                     </div>
@@ -93,21 +93,21 @@ const Footer = () => {
 
         {/* Constrain content to match the width above */}
         <div className="relative z-10 max-w-[90%] mx-auto px-6 md:px-12 pt-8 pb-8">
-          <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10">
+          <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10  pt-4">
             {/* Brand & Description */}
-            <div className="md:col-span-3 pr-0 md:pr-12">
-              <div className="flex items-center gap-1 cursor-pointer mb-6">
+            <div className="md:col-span-5 pr-0 md:pr-12">
+              <div className="flex items-center gap-1 cursor-pointer mb-4">
                 <Image
                   src={logoImg?.fileUrl}
                   alt="Logo"
                   width={180}
                   height={80}
                    loading="lazy" 
-                  className=" h-9 sm:h-10 md:h-11 w-auto max-w-[132px] sm:max-w-[150px] md:max-w-[180px] object-left"
+                  className=" h-9 sm:h-16 md:h-16 w-auto max-w-[332px]  md:max-w-[380px] object-left"
                 />
                 {/* <Logo variant="light" /> */}
               </div>
-              <p className="text-lg text-gray-200 leading-[1.7] font-light">
+              <p className="text-xl text-gray-200 leading-[1.7] font-light">
                 Weight Loss MD is a medical weight loss clinic in Colorado
                 offering GLP-1 Prescription weight loss medications
                 CoolSculpting®, Laser Hair Removal, hormone replacement therapy,
@@ -118,11 +118,11 @@ const Footer = () => {
             {/* Links Sections */}
           
 
-            <div className="md:col-span-2">
-              <h4 className="font-medium text-white mb-6 text-[17px]">
+            <div className="md:col-span-2 ">
+              <h4 className="font-medium text-white mb-6 text-2xl">
                 Others
               </h4>
-              <ul className="space-y-4 text-[15px] text-gray-200 font-light">
+              <ul className="space-y-4 text-xl text-gray-200 font-light">
                 <li>
                   <Link
                     href="/medical-team"
@@ -158,8 +158,8 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="md:col-span-2">
-              <ul className="space-y-4 text-[15px] text-gray-200 font-light mt-[38px]">
+            <div className="md:col-span-2 ">
+              <ul className="space-y-4 text-xl text-gray-200 font-light mt-[38px]">
                 <li>
                   <Link
                     href="/coverage"
@@ -195,11 +195,11 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="md:col-span-3">
-              <h4 className="font-medium text-white mb-6 text-[17px]">
+            <div className="md:col-span-2 ">
+              <h4 className="font-medium text-white mb-6 text-2xl">
                 Legal Disclaimer
               </h4>
-              <ul className="space-y-4 text-[15px] text-gray-200 font-light">
+              <ul className="space-y-4 text-xl text-gray-200 font-light">
                 <li>
                   <Link
                     href="/privacy-policy"
@@ -244,10 +244,10 @@ const Footer = () => {
             </div>
 
             <div className="md:col-span-2 ">
-              <h4 className="font-medium text-white mb-6 text-[17px]">
+              <h4 className="font-medium text-white mb-6 text-2xl">
                 Contact Us
               </h4>
-              <ul className="space-y-4 text-[15px] text-gray-200 font-light">
+              <ul className="space-y-4 text-xl text-gray-200 font-light">
                 {isLoading ? (
                   <>
                     <li>
@@ -265,9 +265,9 @@ const Footer = () => {
                   </>
                 ) : (
                   <>
-                    <li>Phone: {contactInfoData?.phone}</li>
-                    <li>Email: {contactInfoData?.email}</li>
-                    <li>{contactInfoData?.openHours}</li>
+                    <li className="whitespace-nowrap">Phone: {contactInfoData?.phone}</li>
+                    <li className="whitespace-nowrap">Email: {contactInfoData?.email}</li>
+                    <li className="whitespace-nowrap">{contactInfoData?.openHours}</li>
                     <li>{contactInfoData?.closedDays} : Closed</li>
                   </>
                 )}
@@ -304,7 +304,7 @@ const Footer = () => {
 
             {/* Right: We Support */}
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5">
-              <span className="text-white text-[13px] sm:text-[14px] md:text-[15px] font-medium whitespace-nowrap">
+              <span className="text-white text-[13px] sm:text-[14px] md:text-xl font-medium whitespace-nowrap">
                 We Support
               </span>
               <div className="flex flex-col leading-[1.1] text-white font-bold text-[9px] sm:text-[10px] tracking-wider text-center">
@@ -325,13 +325,13 @@ const Footer = () => {
           <div className="relative z-10 w-full h-[1px] bg-white/20 mb-6" />
 
           {/* Copyright & Socials */}
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-300 font-light">
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center text-xl text-gray-300 font-light">
             <p>
               &copy; {new Date().getFullYear()} Weight Loss MD. All Rights
               Reserved.
             </p>
             <div className="flex items-center gap-3 mt-4 md:mt-0">
-              <span className="mr-2">Follow us at:</span>
+              <span className="mr-2 text-xl">Follow us at:</span>
               <div className="flex gap-4 text-white items-center">
                 <Link
                   href="https://www.facebook.com/wlmdusa"
