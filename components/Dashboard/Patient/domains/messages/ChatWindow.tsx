@@ -113,6 +113,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLoadedChatIdRef = useRef<string | null>(null);
 
   const conversation = historyData?.data?.conversation;
   const recipientId = user?.id === conversation?.patientId
@@ -148,16 +149,29 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         })
       );
 
-      if (cursor) {
-        // Prepend older messages at top
-        setMessages(prev => [...decrypted, ...prev]);
-      } else {
-        setMessages(decrypted);
-      }
+      setMessages(prev => {
+        if (lastLoadedChatIdRef.current !== chatId) {
+          lastLoadedChatIdRef.current = chatId;
+          return decrypted;
+        }
+        
+        // Smart merge to prevent wiping out live/optimistic messages
+        const newMap = new Map(prev.map(m => [m.id, m]));
+        decrypted.forEach(m => {
+          if (!newMap.has(m.id)) {
+            newMap.set(m.id, m);
+          } else {
+            // Keep the decrypted text if we already had it
+            newMap.set(m.id, { ...m, decryptedText: newMap.get(m.id).decryptedText });
+          }
+        });
+        
+        return Array.from(newMap.values()).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      });
     };
     decryptHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historyData, isInitializing]);
+  }, [historyData, isInitializing, chatId]);
 
   // Listen for new real-time messages
   useEffect(() => {
@@ -452,7 +466,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           </div>
 
           {/* Message bubbles — Messenger style */}
-          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50 flex flex-col gap-0 scroll-smooth">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50 flex flex-col gap-0 scroll-smooth scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
 
             {/* Load more button */}
             {hasMore && messages.length >= 50 && (
@@ -577,8 +591,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                               </div>
                             ) : (
                               <div className={`text-[11px] font-bold py-1.5 px-3 rounded-full w-fit ${proposal.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-700' :
-                                  proposal.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
-                                    'bg-amber-100 text-amber-700'
+                                proposal.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                                  'bg-amber-100 text-amber-700'
                                 }`}>
                                 {proposal.status === 'ACCEPTED' ? '✓ You accepted this proposal' :
                                   proposal.status === 'REJECTED' ? (
@@ -600,16 +614,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 }
 
                 // ── TEXT / ATTACHMENT bubble ──
-                // Border radius: Messenger style — top corners sharp for grouped, bottom sharp for first
-                const myRadius = isMe
-                  ? `rounded-[20px] ${!isFirstInGroup && !isLastInGroup ? 'rounded-tr-[5px] rounded-br-[5px]' :
-                    isFirstInGroup && !isLastInGroup ? 'rounded-tr-[5px]' :
-                      !isFirstInGroup && isLastInGroup ? 'rounded-br-[5px]' : ''
-                  }`
-                  : `rounded-[20px] ${!isFirstInGroup && !isLastInGroup ? 'rounded-tl-[5px] rounded-bl-[5px]' :
-                    isFirstInGroup && !isLastInGroup ? 'rounded-tl-[5px]' :
-                      !isFirstInGroup && isLastInGroup ? 'rounded-bl-[5px]' : ''
-                  }`;
+                // Border radius: Charkona (rectangular/soft square) style
+                const myRadius = "rounded-[8px]";
 
                 rendered.push(
                   <div
@@ -639,8 +645,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
                       {/* Bubble */}
                       <div className={`px-4 py-2.5 text-sm leading-relaxed ${isMe
-                          ? `bg-[#2563eb] text-white ${myRadius}`
-                          : `bg-[#e2e8f0] text-gray-800 ${myRadius}`
+                        ? `bg-[#2563eb] text-white ${myRadius}`
+                        : `bg-[#e2e8f0] text-gray-800 ${myRadius}`
                         }`}>
                         {msg.decryptedText || '...'}
 
@@ -660,6 +666,24 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                               </div>
                             );
                           }
+
+                          const isVideo = file.fileType?.startsWith('video/') || file.fileName?.match(/\.(mp4|webm|ogg|mov)$/i);
+                          if (isVideo) {
+                            return (
+                              <div key={file.id} className="mt-2 rounded-xl overflow-hidden border border-black/10 relative group bg-black/90 flex justify-center items-center">
+                                <video
+                                  controls
+                                  playsInline
+                                  preload="metadata"
+                                  src={file.fileUrl}
+                                  className="max-w-full max-h-[280px] object-contain"
+                                >
+                                  Your browser does not support the video tag.
+                                </video>
+                              </div>
+                            );
+                          }
+
                           return (
                             <div key={file.id} className={`mt-2 p-2 rounded-lg border flex items-center justify-between gap-3 min-w-[180px] max-w-full ${isMe ? 'bg-white/10 border-white/20' : 'bg-black/5 border-black/10'
                               }`}>
@@ -759,7 +783,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
             <button
               onClick={handleSend}
               disabled={(!typedMessage.trim() && !selectedFile) || isUploading}
-              className="bg-[#2563eb] hover:bg-blue-700 disabled:bg-gray-300 transition-colors text-white text-sm font-semibold px-6 py-3 rounded-lg flex items-center gap-2 flex-shrink-0 shadow-sm"
+              className="bg-[#1D4ED8] hover:bg-[#1a40b3] disabled:bg-[#1D4ED8] disabled:opacity-100 transition-colors text-white text-[16px] font-semibold flex justify-center items-center px-[16px] py-[10px] gap-[11px] rounded-[12px] flex-shrink-0 shadow-sm disabled:cursor-not-allowed"
             >
               {isUploading ? 'Sending...' : (
                 <>Send <Send className="w-4 h-4" /></>

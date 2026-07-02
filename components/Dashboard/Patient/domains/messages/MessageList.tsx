@@ -16,6 +16,14 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
   const { data, isLoading } = useGetConversationsQuery({ search: searchQuery });
   const { socket } = useSocket();
   const [conversations, setConversations] = useState<any[]>([]);
+  const hasAutoSelected = React.useRef(false);
+
+  useEffect(() => {
+    if (data?.data && data.data.length > 0 && !selectedChatId && !hasAutoSelected.current) {
+      onSelectChat(data.data[0].id);
+      hasAutoSelected.current = true;
+    }
+  }, [data, selectedChatId, onSelectChat]);
 
   useEffect(() => {
     if (data?.data) {
@@ -115,18 +123,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
 
   return (
     <div className="w-full flex flex-col gap-4 animate-in fade-in duration-200 h-full">
-      {/* Title with Back Button */}
-      <div className="flex items-center gap-2 text-gray-900 font-sans px-1">
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="p-1 hover:bg-gray-150 rounded-lg transition-colors flex items-center justify-center"
-          >
-            <ArrowLeft className="h-5 w-5 text-gray-800" />
-          </button>
-        )}
-        <h3 className="text-xl font-bold leading-none">Messages</h3>
-      </div>
+
 
       {/* Blue Sidebar Box */}
       <div
