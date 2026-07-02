@@ -14,7 +14,7 @@ import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDa
 
 const Footer = () => {
   const { data, isLoading } = useGetWebsiteSettingsQuery();
-  // console.log(data);
+  console.log(data);
   const officeData = data?.offices;
   const contactInfoData = data?.contactInfo;
   const logoImg = data?.whiteLogo;
