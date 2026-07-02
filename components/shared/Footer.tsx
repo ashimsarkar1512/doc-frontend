@@ -14,9 +14,11 @@ import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDa
 
 const Footer = () => {
   const { data, isLoading } = useGetWebsiteSettingsQuery();
-  // console.log(data);
+  console.log(data);
   const officeData = data?.offices;
   const contactInfoData = data?.contactInfo;
+  const logoImg = data?.whiteLogo;
+  console.log(logoImg?.fileUrl);
   // console.log(contactInfoData);
   // console.log(officeData);
   return (
@@ -24,7 +26,7 @@ const Footer = () => {
       {/* Office Locations Section (Constrained Width like Figma) */}
       <div className="max-w-[90%] mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
         <h2 className="text-[2.5rem] font-medium text-center mb-14 text-white tracking-wide">
-          Our office locations 
+          Our office locations
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/20">
@@ -94,8 +96,26 @@ const Footer = () => {
           <div className="grid grid-cols-1 xl:lg:grid-cols-14 md:grid-cols-9  gap-x-8 gap-y-12 mb-10">
             {/* Brand & Description */}
             <div className="md:col-span-3 pr-0 md:pr-12">
-              <div className="flex items-center gap-1 cursor-pointer mb-6">
-                <Logo variant="light" />
+              <div className="flex items-center gap-1 cursor-pointer mb-6 ">
+                {/* <Image
+                  // src="/footer1.png"
+                  src={logoImg?.fileUrl}
+                  alt="LegitScript Certified"
+                  width={48}
+                  height={48}
+                  className="h-full w-full"
+                /> */}
+                <Image
+                  // src="/logo.png"
+                  src={logoImg?.fileUrl}
+                  alt="Weight Loss MD"
+                  width={180}
+                  height={80}
+                  
+                  priority
+                  className="h-9 sm:h-10 md:h-11 w-auto max-w-[132px] sm:max-w-[150px] md:max-w-[180px] object-contain object-left "
+                />
+                {/* <Logo variant="light" /> */}
               </div>
               <p className="text-lg text-gray-200 leading-[1.7] font-light">
                 Weight Loss MD is a medical weight loss clinic in Colorado
@@ -210,7 +230,6 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-          
 
             <div className="md:col-span-2">
               <h4 className="font-medium text-white mb-6 text-[17px]">
@@ -292,58 +311,62 @@ const Footer = () => {
             </div>
           </div>
 
-        {/* Badges & Payments */}
-<div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 mt-8 mb-8 pl-0 md:pl-[33.33%]">
-  {/* Left: Badge Images */}
-  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8">
-    <Image
-      src="/footer1.png"
-      alt="LegitScript Certified"
-      width={48}
-      height={48}
-      className="h-[36px] sm:h-[42px] md:h-[48px] w-auto object-contain"
-    />
-    <Image
-      src="/footer2.png"
-      alt="LegitScript"
-      width={150}
-      height={40}
-      className="h-[30px] sm:h-[35px] md:h-[40px] w-auto object-contain"
-    />
-    <Image
-      src="/footer3.png"
-      alt="HIPAA Compliant"
-      width={110}
-      height={44}
-      className="h-[32px] sm:h-[38px] md:h-[44px] w-auto object-contain"
-    />
-  </div>
+          {/* Badges & Payments */}
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 mt-8 mb-8 pl-0 md:pl-[33.33%]">
+            {/* Left: Badge Images */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8">
+              <Image
+                src="/footer1.png"
+                // src={logoImg ?? "/footer.png"}
+                alt="LegitScript Certified"
+                width={48}
+                height={48}
+                className="h-[36px] sm:h-[42px] md:h-[48px] w-auto object-contain"
+              />
+              <Image
+                src="/footer2.png"
+                alt="LegitScript"
+                width={150}
+                height={40}
+                className="h-[30px] sm:h-[35px] md:h-[40px] w-auto object-contain"
+              />
+              <Image
+                src="/footer3.png"
+                alt="HIPAA Compliant"
+                width={110}
+                height={44}
+                className="h-[32px] sm:h-[38px] md:h-[44px] w-auto object-contain"
+              />
+            </div>
 
-  {/* Right: We Support */}
-  <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5">
-    <span className="text-white text-[13px] sm:text-[14px] md:text-[15px] font-medium whitespace-nowrap">
-      We Support
-    </span>
-    <div className="flex flex-col leading-[1.1] text-white font-bold text-[9px] sm:text-[10px] tracking-wider text-center">
-      <span>AMERICAN</span>
-      <span>EXPRESS</span>
-    </div>
-    <div className="flex items-center">
-      <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#eb001b] relative z-10" />
-      <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#f79e1b] -ml-3 relative z-0" />
-    </div>
-    <div className="text-white font-black text-xl sm:text-2xl italic tracking-tighter">
-      VISA
-    </div>
-  </div>
-</div>
+            {/* Right: We Support */}
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5">
+              <span className="text-white text-[13px] sm:text-[14px] md:text-[15px] font-medium whitespace-nowrap">
+                We Support
+              </span>
+              <div className="flex flex-col leading-[1.1] text-white font-bold text-[9px] sm:text-[10px] tracking-wider text-center">
+                <span>AMERICAN</span>
+                <span>EXPRESS</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#eb001b] relative z-10" />
+                <div className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] md:w-[26px] md:h-[26px] rounded-full bg-[#f79e1b] -ml-3 relative z-0" />
+              </div>
+              <div className="text-white font-black text-xl sm:text-2xl italic tracking-tighter">
+                VISA
+              </div>
+            </div>
+          </div>
 
           {/* Divider */}
           <div className="relative z-10 w-full h-[1px] bg-white/20 mb-6" />
 
           {/* Copyright & Socials */}
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-300 font-light">
-            <p>&copy; {new Date().getFullYear()} Weight Loss MD. All Rights Reserved.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Weight Loss MD. All Rights
+              Reserved.
+            </p>
             <div className="flex items-center gap-3 mt-4 md:mt-0">
               <span className="mr-2">Follow us at:</span>
               <div className="flex gap-4 text-white items-center">

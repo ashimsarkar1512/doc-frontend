@@ -40,9 +40,11 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
   const { data: productsRes, isLoading: productsLoading } =
     useGetProductsByCategoryQuery(currentCategoryId, {
       skip: !currentCategoryId,
-    });
+  });
+    
 
   const productList: ProductItem[] = productsRes?.data ?? [];
+  console.log(productList)
 
   const handleCategoryHover = (id: string) => {
     setHoveredCategoryId(id);
