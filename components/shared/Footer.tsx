@@ -24,7 +24,7 @@ const Footer = () => {
   return (
     <footer className="w-full bg-[#0a0a0a] font-sans p-5 pt-12">
       {/* Office Locations Section (Constrained Width like Figma) */}
-      <div className="max-w-[90%] mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
+      <div className="md:max-w-[90%] mx-auto bg-[#1c1c1c] rounded-t-4xl pt-16 pb-12 px-8 md:px-12">
         <h2 className="lg:text-4xl md:text-3xl text-2xl font-medium text-center mb-14 text-white tracking-wide">
           Our office locations
         </h2>
@@ -77,7 +77,7 @@ const Footer = () => {
       </div>
 
       {/* Main Footer Section (Full Width Image as requested) */}
-      <div className="relative w-full overflow-hidden rounded-2xl ">
+      <div className="relative w-full overflow-hidden md:rounded-2xl rounded-b-2xl ">
         {/* Background image for the footer (Full Width) */}
         <div className="absolute inset-0 z-0 w-full h-full">
           <Image
@@ -98,7 +98,7 @@ const Footer = () => {
             <div className="md:col-span-5 pr-0 md:pr-12">
               <div className="flex items-center gap-1 cursor-pointer mb-4">
                 <Image
-                  src={logoImg?.fileUrl}
+                  src={logoImg?.fileUrl }
                   alt="Logo"
                   width={180}
                   height={80}
