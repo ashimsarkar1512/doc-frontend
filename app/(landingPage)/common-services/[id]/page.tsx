@@ -222,8 +222,16 @@ export default function CommonServicesPage() {
                     {service.title}
                   </h3>
 
-                  <p className="text-base text-[#3B3B3B] font-normal  font-[Quicksand] flex-grow mb-5">
-                    {service.desc}
+                  <p style={{
+                    color: '#3B3B3B',
+                    fontFamily: 'Quicksand, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 400,
+                    lineHeight: '150%',
+                  }} className="flex-grow mb-5 line-clamp-3">
+                    {service.desc
+                      ? service.desc.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#[^;]+;/g, '').trim().slice(0, 120) + (service.desc.replace(/<[^>]*>/g, '').length > 120 ? '…' : '')
+                      : 'No description available.'}
                   </p>
 
                   {/* <div>
