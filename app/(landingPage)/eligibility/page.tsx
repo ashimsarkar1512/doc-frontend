@@ -71,13 +71,13 @@ export default function EligibilityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col ">
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
+      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1520px] mx-auto w-full mt-6">
         <div
-          className="relative w-full overflow-hidden py-16 md:py-20 px-6 md:px-12 flex flex-col items-center justify-center text-center"
+          className="relative w-full overflow-hidden py-16 md:py-40 px-6 md:px-12 flex flex-col items-center justify-center text-center"
           style={{
             borderRadius: "40px",
             background:
@@ -97,8 +97,8 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── GENERAL ELIGIBILITY CRITERIA ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-10 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 mb-10 w-full">
+        <h2 className="text-2xl md:text-[54px] font-bold text-[#272628] tracking-tight mb-8 text-center">
           General Eligibility Criteria
         </h2>
 
@@ -111,7 +111,7 @@ export default function EligibilityPage() {
               style={{ background: "#E8F4FD" }}
             >
               <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
-              <span className="text-gray-700 text-sm leading-snug">{item}</span>
+              <span className="text-[#3B3B3B] text-lg leading-snug">{item}</span>
             </div>
           ))}
         </div>
@@ -131,21 +131,21 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── BMI QUALIFICATION ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
+        <h2 className="text-2xl md:text-[54px] font-bold text-[#0D2137] tracking-tight mb-8 text-center">
           BMI Qualification
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* BMI 27–29.9 */}
           <div className="rounded-[16px] p-5 bg-white border border-gray-200">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-3 text-[22px]">
               <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
                 ≥27
               </span>
-              <span className="text-[14px] font-bold text-gray-900">BMI 27–29.9</span>
+              <span className="text-[22px] font-bold text-[#0D2137]">BMI 27–29.9</span>
             </div>
-            <p className="text-gray-600 text-[13px] leading-relaxed">
+            <p className="text-[#3B3B3B] text-lg leading-relaxed">
               Eligible if accompanied by at least one weight-related health
               condition such as hypertension, type 2 diabetes, dyslipidemia,
               or sleep apnea.
@@ -154,13 +154,13 @@ export default function EligibilityPage() {
 
           {/* BMI 30+ */}
           <div className="rounded-[16px] p-5 bg-white border border-gray-200">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-3 text-[22px]">
               <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
                 ≥30
               </span>
-              <span className="text-[14px] font-bold text-gray-900">BMI 30+</span>
+              <span className="text-[22px] font-bold text-gray-900">BMI 30+</span>
             </div>
-            <p className="text-gray-600 text-[13px] leading-relaxed">
+            <p className="text-[#3B3B3B] text-lg leading-relaxed">
               Eligible for treatment regardless of presence of comorbid
               conditions. GLP-1 medications are FDA-approved for this BMI
               category.
@@ -170,8 +170,8 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── WEIGHT-RELATED CONDITIONS ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
+        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
           Weight-Related Conditions Considered
         </h2>
 
@@ -179,7 +179,7 @@ export default function EligibilityPage() {
           {weightRelatedConditions.map((condition, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-[12.5px]"
+              className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-lg text-[#272628]"
             >
               <CircleCheckBig className="w-[14px] h-[14px] text-[#1D4ED8] flex-shrink-0 stroke-[2]" />
               {condition}
@@ -189,8 +189,8 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── CONTRAINDICATIONS ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
+        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
           Contraindications
         </h2>
 
@@ -201,23 +201,23 @@ export default function EligibilityPage() {
               className="flex items-start gap-3 rounded-[14px] px-4 py-6 bg-white border border-gray-200"
             >
               <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-              <span className="text-gray-700 text-[13px] leading-snug">{item}</span>
+              <span className="text-[#3B3B3B] text-lg leading-snug">{item}</span>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-gray-400 text-[12.5px] mt-5">
+        <p className="text-center text-[#3B3B3B] text-lg mt-5">
           This list is not exhaustive. Your provider will conduct a full
           clinical review.
         </p>
       </section>
 
       {/* ── REQUIRED LAB WORK + ONGOING MONITORING ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Required Lab Work */}
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight mb-5">
+            <h2 className="text-xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-5">
               Required Lab Work
             </h2>
             <div className="flex flex-col gap-2.5">
@@ -227,7 +227,7 @@ export default function EligibilityPage() {
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2563eb] flex-shrink-0" />
-                  <span className="text-gray-700 text-[13px]">{item}</span>
+                  <span className="text-[#3B3B3B] text-lg">{item}</span>
                 </div>
               ))}
             </div>
@@ -235,7 +235,7 @@ export default function EligibilityPage() {
 
           {/* Ongoing Monitoring */}
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight mb-5">
+            <h2 className="text-xl md:text-[54px] font-semibold text-gray-900 tracking-tight mb-5">
               Ongoing Monitoring
             </h2>
             <div className="flex flex-col gap-2.5">
@@ -245,23 +245,23 @@ export default function EligibilityPage() {
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2563eb] flex-shrink-0" />
-                  <span className="text-gray-700 text-[13px]">{item}</span>
+                  <span className="text-[#3B3B3B] text-lg">{item}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <p className="text-gray-500 text-[12.5px] mt-5">
+        <p className="text-[#3B3B3B] text-lg mt-5">
           Labs from within 90 days may be accepted. Your provider will specify
           requirements.
         </p>
 
         {/* Provider Review Disclaimer — pink bg, red shield icon */}
-        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 flex items-start gap-3">
-          <Shield className="w-[18px] h-[18px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-          <p className="text-gray-700 text-xs leading-relaxed">
-            <strong className="text-[#ef4444]">Provider Review Disclaimer</strong>
+        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 text-lg flex items-start gap-3">
+          <Shield className="w-[30px] h-[30px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+          <p className="text-gray-700 text-lg leading-relaxed">
+            <strong className="text-red-500 ">Provider Review Disclaimer</strong>
             : Eligibility criteria presented here are general guidelines. All
             final treatment decisions are made exclusively by licensed
             healthcare providers. Meeting criteria on this page does not
@@ -271,8 +271,8 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── ELIGIBILITY QUESTIONS / FAQ ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-6 mb-20 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-20 w-full">
+        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
           Eligibility Questions
         </h2>
 
@@ -286,7 +286,7 @@ export default function EligibilityPage() {
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
-                <span className="text-[13.5px] font-semibold text-gray-800 pr-4">
+                <span className="text-lg font-semibold text-[#272628] pr-4">
                   {faq.q}
                 </span>
                 <span className="flex-shrink-0 text-gray-400 text-xl font-light leading-none select-none">
@@ -295,7 +295,7 @@ export default function EligibilityPage() {
               </button>
 
               {openFaq === index && (
-                <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                <div className="px-5 pb-4 text-lg text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
                   {faq.a}
                 </div>
               )}

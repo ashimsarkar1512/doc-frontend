@@ -70,7 +70,7 @@ const CustomDropdown = ({ placeholder, options, value, onChange, disabled, loadi
         type="button"
         disabled={disabled || loading}
         onClick={() => setOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-2.5 bg-gray-100 rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-60 disabled:cursor-not-allowed ${
+        className={`w-full flex items-center justify-between px-4 py-2.5 bg-gray-100 rounded-lg text-lg  transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-60 disabled:cursor-not-allowed ${
           open ? 'ring-2 ring-blue-500/50' : ''
         }`}
       >
@@ -78,7 +78,7 @@ const CustomDropdown = ({ placeholder, options, value, onChange, disabled, loadi
           {loading ? 'Loading...' : selected ? selected.name : placeholder}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-slate-400 shrink-0 font-bold transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -102,7 +102,7 @@ const CustomDropdown = ({ placeholder, options, value, onChange, disabled, loadi
                   key={opt.id}
                   type="button"
                   onClick={() => { onChange(opt.id); setOpen(false); }}
-                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                  className={`w-full text-left px-4 py-2.5 text-lg font-bold transition-colors ${
                     value === opt.id
                       ? 'bg-blue-50 text-blue-600 font-medium'
                       : 'text-slate-700 hover:bg-slate-50'
@@ -235,12 +235,12 @@ const res = await uploadAttachment(formPayload).unwrap();
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-6">Side Effect Report Form</h2>
+        <h2 className="text-xl xl:lg:text-3xl md:text-2xl font-bold text-slate-900 mb-6">Side Effect Report Form</h2>
 
         {/* Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-slate-700">First Name</label>
+            <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">First Name</label>
             <input
               type="text"
               name="firstName"
@@ -248,11 +248,11 @@ const res = await uploadAttachment(formPayload).unwrap();
               onChange={handleChange}
               placeholder="First Name"
               required
-              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-black"
+              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-slate-700">Last Name</label>
+            <label className="text-lg xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Last Name</label>
             <input
               type="text"
               name="lastName"
@@ -260,14 +260,14 @@ const res = await uploadAttachment(formPayload).unwrap();
               onChange={handleChange}
               placeholder="Last Name"
               required
-              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-black"
+              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
             />
           </div>
         </div>
 
         {/* Email */}
         <div className="flex flex-col gap-1.5 mb-5">
-          <label className="text-sm font-medium text-slate-700">Email Address</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Email Address</label>
           <input
             type="email"
             name="email"
@@ -275,13 +275,13 @@ const res = await uploadAttachment(formPayload).unwrap();
             onChange={handleChange}
             placeholder="you@example.com"
             required
-            className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-black"
+            className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
           />
         </div>
 
         {/* Service */}
         <div className="flex flex-col gap-1.5 mb-5">
-          <label className="text-sm font-medium text-slate-700">Service</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Service</label>
           <CustomDropdown
             placeholder="Select medication / service"
             options={categories}
@@ -293,7 +293,7 @@ const res = await uploadAttachment(formPayload).unwrap();
 
         {/* Provider */}
         <div className="flex flex-col gap-1.5 mb-5">
-          <label className="text-sm font-medium text-slate-700">Provider</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Provider</label>
           <CustomDropdown
             placeholder="Select provider"
             options={providers}
@@ -305,7 +305,7 @@ const res = await uploadAttachment(formPayload).unwrap();
 
         {/* Severity */}
         <div className="flex flex-col gap-2 mb-6">
-          <label className="text-sm font-medium text-slate-700 mb-1">Symptom Severity</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Symptom Severity</label>
           {severities.map((item) => (
             <label
               key={item.id}
@@ -327,7 +327,7 @@ const res = await uploadAttachment(formPayload).unwrap();
                 checked={selectedSeverity === item.id}
                 onChange={() => setSelectedSeverity(item.id)}
               />
-              <span className="text-sm text-slate-700">
+              <span className="text-lg text-[#272628]">
                 <span className="font-medium">{item.label}</span> - {item.desc}
               </span>
             </label>
@@ -336,7 +336,7 @@ const res = await uploadAttachment(formPayload).unwrap();
 
         {/* Description */}
         <div className="flex flex-col gap-1.5 mb-6">
-          <label className="text-sm font-medium text-slate-700">Describe Your Symptoms</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Describe Your Symptoms</label>
           <textarea
             name="description"
             value={formData.description}
@@ -344,13 +344,13 @@ const res = await uploadAttachment(formPayload).unwrap();
             rows={4}
             required
             placeholder="Please describe when symptoms started, how they feel, and any other relevant details..."
-            className="px-4 py-3 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm resize-none text-black"
+            className="px-4 py-3 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg resize-none text-black"
           />
         </div>
 
         {/* File Upload */}
         <div className="flex flex-col gap-1.5 mb-8">
-          <label className="text-sm font-medium text-slate-700">Supporting Documents (optional)</label>
+          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Supporting Documents (optional)</label>
 
           <div
             onClick={() => fileInputRef.current?.click()}
@@ -390,7 +390,7 @@ const res = await uploadAttachment(formPayload).unwrap();
                 return (
                   <div
                     key={file.id}
-                    className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg"
+                    className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-lg"
                   >
                     {isImage ? (
                       <ImageIcon className="w-4 h-4 text-blue-500 shrink-0" />
@@ -418,12 +418,12 @@ const res = await uploadAttachment(formPayload).unwrap();
         <button
           type="submit"
           disabled={isLoading || uploadingFiles.length > 0}
-          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2.5 px-6 rounded-full transition-colors text-sm w-fit"
+          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 px-6 rounded-full transition-colors text-[22px] w-fit"
         >
           {isLoading ? 'Submitting...' : 'Submit Report'}
         </button>
 
-        <p className="text-xs text-slate-500 mt-4">
+        <p className="text-lg text-[#272628] mt-4">
           Note: Your report is encrypted and HIPAA-protected.
         </p>
       </div>
