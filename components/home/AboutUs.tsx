@@ -33,75 +33,46 @@ const AboutUs = () => {
   const bullets: string[] = [];
 
   return (
-    <section className="w-full max-w-[1520px] mx-auto px-4 pt-[100px] pb-5 flex flex-col items-center font-sans">
+    <section className="w-full max-w-[1520px] mx-auto px-4 py-5 flex flex-col items-center font-sans">
       {/* Top Badge */}
-      <span 
-        className="bg-gray-100 rounded-full mb-[50px] px-[32px] py-2 inline-block"
-        style={{
-          color: "#272628",
-          fontFamily: "Quicksand, sans-serif",
-          fontSize: "16px",
-          fontStyle: "normal",
-          fontWeight: 600,
-          lineHeight: "150%"
-        }}
-      >
+      <span className="bg-gray-100 text-gray-600 text-lg font-bold px-4 py-1.5 rounded-full mb-8 tracking-wide">
         {subtitle}
       </span>
 
       {/* Main Header / Value Proposition */}
       {isLoading ? (
-        <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-[50px]" />
+        <div className="h-16 w-3/4 bg-gray-100 animate-pulse rounded-xl mb-12" />
       ) : title ? (
         <ScrollRevealText
           text={`${title} ${description}`}
-          className="text-center max-w-[1236px] w-full text-lg font-semibold md:text-4xl lg:text-5xl leading-snug tracking-tight mb-[50px]"
+          className="text-center max-w-7xl text-lg font-semibold md:text-4xl lg:text-5xl leading-snug tracking-tight mb-12"
         />
       ) : (
         <ScrollRevealText
           text="Weight Loss MD was built by a team of physicians and technologists who knew there had to be a better way. By leveraging secure telehealth technology  ok"
-          className="text-center max-w-[1236px] w-full text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-[50px]"
+          className="text-center max-w-7xl text-3xl md:text-4xl lg:text-[40px] font-normal text-gray-900 leading-snug tracking-tight mb-12"
         />
       )}
 
       {/* Services Grid */}
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-[29px] w-full px-0 lg:px-[80px] mb-[80px] self-stretch">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full lg:px-[80px] mb-16">
         {services.map((service) => (
           <div
             key={service.id}
-            className="flex-1 w-full bg-[#F4F8FF] rounded-2xl p-[30px] flex flex-col items-center justify-center text-center gap-3 hover:shadow-md transition-all duration-300 h-[172px]"
+            className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-3 hover:shadow-md transition-all duration-300 min-h-[130px] h-full"
           >
             <div className="flex items-center justify-center">
               {service.icon}
             </div>
-            <span 
-              className="uppercase"
-              style={{
-                color: "#2B2922",
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: "22px",
-                fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "150%"
-              }}
-            >
+            <span className="text-[13px] sm:text-[14px] font-semibold text-[#1F2937] tracking-wider uppercase">
               {service.title}
             </span>
           </div>
         ))}
 
         {/* CTA Card */}
-        <div className="flex-1 w-full bg-[#F4F8FF] rounded-2xl p-[30px] flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-all duration-300 h-[172px]">
-          <span 
-            style={{
-              color: "#2B2922",
-              fontFamily: "Quicksand, sans-serif",
-              fontSize: "22px",
-              fontStyle: "normal",
-              fontWeight: 700,
-              lineHeight: "150%"
-            }}
-          >
+        <div className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-all duration-300 min-h-[130px] h-full">
+          <span className="text-[14px] font-semibold text-[#1F2937]">
             20+ More Services
           </span>
           <Link
@@ -110,16 +81,7 @@ const AboutUs = () => {
             rel={
               content?.aboutButtonNewTab ? "noopener noreferrer" : undefined
             }
-            className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[26px] py-[18px] rounded-[46px] transition-colors duration-200"
-            style={{
-              color: "#FFF",
-              textAlign: "center",
-              fontFamily: "Quicksand, sans-serif",
-              fontSize: "22px",
-              fontStyle: "normal",
-              fontWeight: 600,
-              lineHeight: "100%"
-            }}
+            className="bg-[#2563EB] hover:bg-blue-700 text-white font-medium text-sm px-6 py-2 rounded-full transition-colors duration-200"
           >
             {content?.aboutButtonText || "Learn More"}
           </Link>
@@ -127,12 +89,12 @@ const AboutUs = () => {
       </div>
 
       {/* Video/Media Banner */}
-      <div className="w-full relative group overflow-hidden rounded-2xl self-stretch h-[577px]">
+      <div className="w-full relative group overflow-hidden rounded-2xl">
         {content?.aboutMedia?.fileType?.startsWith("image/") ? (
           <img
             src={content.aboutMedia.fileUrl}
             alt="About Us"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
+            className="w-full aspect-18/9 md:aspect-18/8 object-cover transition-transform duration-700 group-hover:scale-102"
             style={{
               clipPath:
                 "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
@@ -141,7 +103,7 @@ const AboutUs = () => {
         ) : (
           <video
             key={content?.aboutMedia?.fileUrl || "default-video"}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
+            className="w-full aspect-18/9 md:aspect-18/8 object-cover transition-transform duration-700 group-hover:scale-102"
             style={{
               clipPath:
                 "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",

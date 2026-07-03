@@ -440,6 +440,12 @@ export default function CheckoutPage() {
       return;
     }
 
+    const allAgreed = Object.values(complianceConfirmation).every((val) => val === true);
+    if (!allAgreed) {
+      toast.error("You must agree to all compliance confirmations before continuing.");
+      return;
+    }
+
     const submissionId = localStorage.getItem("submissionId");
     if (!submissionId) {
       toast.error("Valid assessment submission not found. Please complete the assessment.");
@@ -993,7 +999,9 @@ export default function CheckoutPage() {
                                 {item.product?.name || "Unknown Product"}
                               </p>
                               {item.product?.description && (
-                                <p className="text-[#272628] font-[Quicksand] text-[16px] font-normal leading-none mt-1 line-clamp-1">{item.product.description}</p>
+                                <p className="text-[#272628] font-[Quicksand] text-[16px] font-normal leading-[1.2] mt-1 line-clamp-1">
+                                  {item.product.description.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().substring(0, 35)}...
+                                </p>
                               )}
                             </div>
                             <p className="text-[#2563EB] text-[14px] font-bold flex-shrink-0">

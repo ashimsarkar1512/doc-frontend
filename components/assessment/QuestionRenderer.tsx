@@ -39,14 +39,14 @@ export function RenderOption({
       <button
         onClick={onToggle}
         className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 ${isSelected
-            ? "bg-white border-blue-500 shadow-sm"
-            : "bg-white border-transparent hover:border-gray-300"
+          ? "bg-white border-blue-500 shadow-sm"
+          : "bg-white border-transparent hover:border-gray-300"
           }`}
       >
         <span
           className={`flex-shrink-0 w-7 h-7 ${isCheckbox ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center transition-colors duration-150 ${isSelected
-              ? "border-blue-600 bg-blue-600"
-              : "border-gray-400 bg-gray-300"
+            ? "border-blue-600 bg-blue-600"
+            : "border-gray-400 bg-gray-300"
             }`}
         >
           {isSelected &&
@@ -68,14 +68,14 @@ export function RenderOption({
               <span className="w-2.5 h-2.5 rounded-full bg-white" />
             ))}
         </span>
-        <span className="text-gray-800 text-[15px] font-medium">
+        <span style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontStyle: "normal", fontWeight: 500, lineHeight: "110%" }}>
           {option.label}
         </span>
       </button>
 
       {/* SubQuestions — recursive, shown only when selected */}
       {isSelected && subQuestions.length > 0 && (
-        <div className="mt-2 ml-4 pl-4 border-l-2 border-gray-300 flex flex-col gap-3">
+        <div className="mt-2 ml-4 pl-4 border-l-2 border-gray-300 flex flex-col gap-[16px]">
           {subQuestions.map((sub) => (
             <RenderQuestion
               key={sub.id}
@@ -121,14 +121,14 @@ export function RenderQuestion({
   if (question.type === "INFORMATION_ONLY") {
     const wrapperClass = isNested
       ? "rounded-xl p-4 mb-3 bg-gray-100"
-      : "rounded-2xl p-5 mb-7";
+      : "rounded-2xl p-5 w-full";
     return (
       <div
         className={wrapperClass}
         style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
       >
         {mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-4">
+          <div className="relative w-full h-[419px] rounded-xl overflow-hidden mb-4">
             <Image
               src={mediaUrl}
               alt={title || "Info"}
@@ -157,7 +157,7 @@ export function RenderQuestion({
     const selectedId = answers.single[question.id] ?? "";
     const wrapperClass = isNested
       ? "rounded-xl p-4 bg-gray-100"
-      : "rounded-2xl p-6 mb-7";
+      : "rounded-2xl p-6 w-full";
 
     return (
       <div
@@ -165,7 +165,7 @@ export function RenderQuestion({
         style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
       >
         {!isNested && mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+          <div className="relative w-full h-[419px] rounded-xl overflow-hidden mb-5">
             <Image
               src={mediaUrl}
               alt={title || "Question"}
@@ -181,7 +181,7 @@ export function RenderQuestion({
           </h2>
         )}
         {title && (
-          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+          <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontStyle: "normal", fontWeight: 700, lineHeight: "150%" }} className="mb-[16px]">
             {title}
             {question.isRequired && (
               <span className="text-red-500 ml-1">*</span>
@@ -199,7 +199,7 @@ export function RenderQuestion({
               No options available.
             </p>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-[16px]">
               {options.map((option) => (
                 <RenderOption
                   key={option.id}
@@ -229,7 +229,7 @@ export function RenderQuestion({
     const selectedIds = answers.multi[question.id] ?? [];
     const wrapperClass = isNested
       ? "rounded-xl p-4 bg-gray-100"
-      : "rounded-2xl p-6 mb-7";
+      : "rounded-2xl p-6 w-full";
 
     return (
       <div
@@ -237,7 +237,7 @@ export function RenderQuestion({
         style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
       >
         {!isNested && mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+          <div className="relative w-full h-[419px] rounded-xl overflow-hidden mb-5">
             <Image
               src={mediaUrl}
               alt={title || "Question"}
@@ -253,7 +253,7 @@ export function RenderQuestion({
           </h2>
         )}
         {title && (
-          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+          <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontStyle: "normal", fontWeight: 700, lineHeight: "150%" }} className="mb-[16px]">
             {title}
             {question.isRequired && (
               <span className="text-red-500 ml-1">*</span>
@@ -271,7 +271,7 @@ export function RenderQuestion({
               No options available.
             </p>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-[16px]">
               {options.map((option) => (
                 <RenderOption
                   key={option.id}
@@ -308,15 +308,15 @@ export function RenderQuestion({
   if (question.type === "INPUT") {
     const wrapperClass = isNested
       ? "rounded-xl p-4 bg-gray-100"
-      : "rounded-2xl p-6 mb-7";
+      : "rounded-2xl p-6 w-full";
 
     return (
       <div
         className={wrapperClass}
-        style={isNested ? {} : { backgroundColor: "#EFEFEF" }}
+        style={isNested ? {} : { backgroundColor: "#F4F4F4" }}
       >
         {!isNested && mediaUrl && (
-          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-5">
+          <div className="relative w-full h-[419px] rounded-xl overflow-hidden mb-5">
             <Image
               src={mediaUrl}
               alt={title || "Question"}
@@ -327,7 +327,7 @@ export function RenderQuestion({
           </div>
         )}
         {title && (
-          <p className="text-gray-900 text-[17px] font-semibold mb-1 leading-snug">
+          <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontStyle: "normal", fontWeight: 700, lineHeight: "150%" }} className="mb-[16px]">
             {title}
             {question.isRequired && (
               <span className="text-red-500 ml-1">*</span>
@@ -357,9 +357,7 @@ export function RenderQuestion({
             />
           </div>
         ) : (
-          <div
-            className={`flex flex-col gap-4 ${title || question.description ? "mt-3" : ""}`}
-          >
+          <div className="flex flex-col gap-[16px]">
             {options.map((option) => {
               if (isFileInputType(option.inputType)) {
                 return (
@@ -381,7 +379,7 @@ export function RenderQuestion({
               return (
                 <div key={option.id}>
                   {option.label?.trim() && (
-                    <label className="block text-gray-800 text-[15px] font-medium mb-2">
+                    <label style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontStyle: "normal", fontWeight: 500, lineHeight: "110%" }} className="block mb-[8px]">
                       {option.label}
                     </label>
                   )}

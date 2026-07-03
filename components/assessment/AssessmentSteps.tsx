@@ -493,11 +493,18 @@ export default function AssessmentSteps() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white flex items-start justify-center px-4 pt-10">
-      <div className="w-full max-w-[700px]">
+    <div className="min-h-screen bg-white flex items-start justify-center">
+      <div className="flex flex-col p-[24px] w-[900px] max-w-full">
         {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">
+        <div className="flex items-center justify-between w-full px-1 mb-[12px]">
+          <h1 style={{
+            color: "#191B1C",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "26px",
+            fontStyle: "normal",
+            fontWeight: 700,
+            lineHeight: "120%",
+          }}>
             {pageTitle}
           </h1>
           <span className="text-sm font-medium text-gray-600">
@@ -507,7 +514,7 @@ export default function AssessmentSteps() {
 
         {/* ── Progress bar ── */}
         <div
-          className="relative w-full h-3 rounded-full mb-6"
+          className="relative w-full h-3 rounded-full mb-[24px]"
           style={{ backgroundColor: "#EBEBEB" }}
         >
           <div
@@ -589,7 +596,7 @@ export default function AssessmentSteps() {
           <CompletionStep />
         )}
         {/* ── Footer buttons ── */}
-        <div className="flex items-center justify-between px-1 pb-10">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 w-full px-1 mt-[41px]">
           {/* ── COMPLETION STEP buttons ── */}
           {currentStep === COMPLETION_STEP && (
             <>
@@ -604,7 +611,8 @@ export default function AssessmentSteps() {
                     setOtpVerifyMode(true);
                   }
                 }}
-                className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
+                className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#EFEFEF] hover:bg-gray-300 text-[#2B2922] text-[20px] font-semibold leading-[150%] transition-all duration-200"
+                style={{ fontFamily: "Quicksand, sans-serif" }}
               >
                 Previous
               </button>
@@ -614,8 +622,9 @@ export default function AssessmentSteps() {
                     `/products${assessment?.category?.id ? `?categoryId=${assessment.category.id}` : ""}`,
                   )
                 }
-                className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
-              >
+                className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
+                        style={{ fontFamily: "Quicksand, sans-serif" }}
+                      >
                 Browse products
               </button>
             </>
@@ -654,7 +663,8 @@ export default function AssessmentSteps() {
                     handlePrevious();
                   }
                 }}
-                className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
+                className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#EFEFEF] hover:bg-gray-300 text-[#2B2922] text-[20px] font-semibold leading-[150%] transition-all duration-200"
+                style={{ fontFamily: "Quicksand, sans-serif" }}
               >
                 Previous
               </button>
@@ -691,11 +701,12 @@ export default function AssessmentSteps() {
                     }
                   }}
                   disabled={isSavingAddress || isSubmitting}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                     isSavingAddress || isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                   }`}
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isSavingAddress || isSubmitting
                     ? "Saving…"
@@ -711,13 +722,14 @@ export default function AssessmentSteps() {
                     isVerifyingOtp ||
                     isSubmitting
                   }
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                     otpDigits.some((d) => d === "") ||
                     isVerifyingOtp ||
                     isSubmitting
                       ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                   }`}
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isVerifyingOtp || isSubmitting
                     ? "Verifying…"
@@ -729,11 +741,12 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleSendOtp}
                   disabled={!otpChannel || isSendingOtp}
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                     !otpChannel || isSendingOtp
                       ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                   }`}
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isSendingOtp ? "Sending…" : "Send code"}
                 </button>
@@ -747,13 +760,14 @@ export default function AssessmentSteps() {
                     !loginPassword.trim() ||
                     isLoginLoading
                   }
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                     !loginEmail.trim() ||
                     !loginPassword.trim() ||
                     isLoginLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                   }`}
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isLoginLoading ? "Signing in…" : "Login account"}
                 </button>
@@ -767,17 +781,28 @@ export default function AssessmentSteps() {
                     !registerPhone.trim() ||
                     !registerPassword.trim() ||
                     !registerConfirm.trim() ||
+                    registerPassword !== registerConfirm ||
+                    registerPassword.length < 8 ||
+                    !/[A-Z]/.test(registerPassword) ||
+                    !/[a-z]/.test(registerPassword) ||
+                    !/[\W_]/.test(registerPassword) ||
                     isRegisterLoading
                   }
-                  className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                     !registerEmail.trim() ||
                     !registerPhone.trim() ||
                     !registerPassword.trim() ||
                     !registerConfirm.trim() ||
+                    registerPassword !== registerConfirm ||
+                    registerPassword.length < 8 ||
+                    !/[A-Z]/.test(registerPassword) ||
+                    !/[a-z]/.test(registerPassword) ||
+                    !/[\W_]/.test(registerPassword) ||
                     isRegisterLoading
                       ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                   }`}
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isRegisterLoading ? "Creating account…" : "Create account"}
                 </button>
@@ -792,7 +817,8 @@ export default function AssessmentSteps() {
                     {authChoice === "Yes, I already have an account" && (
                       <button
                         onClick={() => setLoginMode(true)}
-                        className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
+                        className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
+                        style={{ fontFamily: "Quicksand, sans-serif" }}
                       >
                         Login account
                       </button>
@@ -801,7 +827,8 @@ export default function AssessmentSteps() {
                       "No, I don't have an account. Create one." && (
                       <button
                         onClick={() => setRegisterMode(true)}
-                        className="px-7 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm"
+                        className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
+                        style={{ fontFamily: "Quicksand, sans-serif" }}
                       >
                         Create account
                       </button>
@@ -809,7 +836,8 @@ export default function AssessmentSteps() {
                     {!authChoice && (
                       <button
                         disabled
-                        className="px-7 py-2.5 rounded-full bg-blue-300 text-white text-sm font-semibold tracking-wide cursor-not-allowed"
+                        className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-blue-300 text-white text-[20px] font-semibold leading-[150%] cursor-not-allowed"
+                        style={{ fontFamily: "Quicksand, sans-serif" }}
                       >
                         Next
                       </button>
@@ -824,19 +852,21 @@ export default function AssessmentSteps() {
             <>
               <button
                 onClick={handlePrevious}
-                className="px-6 py-2.5 rounded-full bg-[#EFEFEF] hover:bg-gray-300 text-gray-800 text-sm font-semibold tracking-wide transition-all duration-200"
+                className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#EFEFEF] hover:bg-gray-300 text-[#2B2922] text-[20px] font-semibold leading-[150%] transition-all duration-200"
+                style={{ fontFamily: "Quicksand, sans-serif" }}
               >
                 Previous
               </button>
               <button
                 onClick={handleNext}
                 disabled={isNextDisabled()}
-                className={`px-8 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm ${
+                className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
                   isNextDisabled()
                     ? "bg-blue-300 text-white cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
                 }`}
-              >
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
+                >
                 Next
               </button>
             </>

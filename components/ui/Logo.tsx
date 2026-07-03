@@ -44,11 +44,11 @@ import React from "react";
 
 interface LogoProps {
   variant?: "light" | "dark";
-  logoImg?:any
+  logoImg?: any
 }
 
-const Logo = ({ variant  ,}: LogoProps) => {
-      const { data, isLoading } = useGetWebsiteSettingsQuery();
+const Logo = ({ variant, }: LogoProps) => {
+  const { data, isLoading } = useGetWebsiteSettingsQuery();
 
   const whiteLogo = data?.whiteLogo;
   const blackLogo = data?.blackLogo;
@@ -59,19 +59,20 @@ const Logo = ({ variant  ,}: LogoProps) => {
       ? whiteLogo?.fileUrl
       : blackLogo?.fileUrl;
 
-  if (isLoading) return null; 
+  if (isLoading) return null;
   return (
     <div className="flex items-center">
       <Image
         // src="/logo.png"sS
         src={logoSrc || "/fallback-logo.png"}
         alt="Weight Loss MD"
-        width={180}
-        height={80}
+        width={250}
+        height={100}
         priority
-        className={`h-9 sm:h-10 md:h-11 w-auto max-w-[132px] sm:max-w-[150px] md:max-w-[180px] object-contain object-left ${
-          variant === "light" ? "invert brightness-0 drop-shadow-sm " : " "
-        }`}
+        quality={100}
+        unoptimized
+        className={`h-11 sm:h-12 md:h-14 w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px] object-contain object-left ${variant === "light" ? "invert brightness-0 drop-shadow-sm " : " "
+          }`}
       />
     </div>
   );

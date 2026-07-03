@@ -29,7 +29,7 @@ const defaultSteps = [
 
 const HowItsWork: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
-  console.log(content)
+  // console.log(content)
 
   const title = content?.howItWorksTitle || "How It Works";
   const stepsToDisplay = content
@@ -59,11 +59,11 @@ const HowItsWork: React.FC = () => {
 
 
   return (
-    <section className="w-full bg-white pt-[160px] pb-[160px] px-4 md:px-8 font-sans">
-      <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-[60px] items-stretch">
+    <section className="w-full bg-white pt-[90px] pb-[120px] px-4 md:px-8 font-sans">
+      <div className="max-w-[1520px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-[60px] items-stretch">
         {/* Left Side: Split Image Banner */}
-        <div className="lg:col-span-6 w-full h-full">
-          <div className="w-full h-full aspect-[4/3] md:aspect-[1.22] lg:aspect-auto relative rounded-[2rem] overflow-hidden shadow-sm">
+        <div className="xl:col-span-6 w-full h-full">
+          <div className="w-full h-full aspect-[4/3] md:aspect-[1.22] xl:aspect-auto relative rounded-[2rem] overflow-hidden shadow-sm">
             {/* Using an Unsplash placeholder of transformation tracking to match Figma layout */}
             <Image
               src="/howItsWork.png"
@@ -76,12 +76,12 @@ const HowItsWork: React.FC = () => {
         </div>
 
         {/* Right Side: Content & List Steps */}
-        <div className="lg:col-span-6 flex flex-col justify-start">
+        <div className="xl:col-span-6 flex flex-col justify-start">
           {/* Main Title Section */}
           {isLoading ? (
             <div className="h-10 w-2/3 bg-gray-200 animate-pulse rounded-xl mb-8" />
           ) : (
-            <h2 
+            <h2
               className="uppercase mb-[80px]"
               style={{
                 color: "#272628",

@@ -281,7 +281,7 @@ export default function PreviewDetailsPage() {
   return (
     <div className="min-h-screen bg-white pb-10">
       <Navbar variant="dark" />
-      <div className="pt-32 max-w-[950px] mx-auto px-4 sm:px-6">
+      <div className="pt-32 max-w-[1520px] mx-auto px-4 sm:px-6">
 
         <button
           type="button"
@@ -324,8 +324,19 @@ export default function PreviewDetailsPage() {
         <div className="flex flex-col">
 
           {/* Card 1: Patient info & image */}
-          <Card>
-            <div className="flex items-center gap-4 mb-5">
+          <div 
+            className="border border-gray-200 rounded-xl bg-white mb-4 shadow-sm"
+            style={{
+              display: "flex",
+              height: "613px",
+              padding: "30px",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "28px",
+              alignSelf: "stretch"
+            }}
+          >
+            <div className="flex items-center gap-4 w-full">
               <div className="relative w-12 h-12 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
                 {user?.profile?.avatar ? (
                   <Image src={user.profile.avatar} alt="Patient" fill sizes="48px" className="object-cover" />
@@ -342,7 +353,7 @@ export default function PreviewDetailsPage() {
             </div>
 
             {assessment.thumbnail && (
-              <div className="relative w-full rounded-xl overflow-hidden mb-5 shadow-sm border border-gray-100" style={{ aspectRatio: "16/9" }}>
+              <div className="relative w-full rounded-xl overflow-hidden shadow-sm border border-gray-100 flex-1">
                 <img
                   src={assessment.thumbnail}
                   alt={assessment.title || "Assessment Thumbnail"}
@@ -352,11 +363,11 @@ export default function PreviewDetailsPage() {
             )}
 
             {assessment.description && (
-              <p className="text-[13.5px] text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <p className="text-[13.5px] text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100 w-full">
                 {assessment.description}
               </p>
             )}
-          </Card>
+          </div>
 
           {/* Dynamic Questions */}
           {questions.map((q: any) => {
@@ -411,6 +422,66 @@ export default function PreviewDetailsPage() {
                                 </a>
                               </div>
                             )
+                          ) : question.options && question.options.length > 0 ? (
+                            <div className="w-full">
+                              {(() => {
+                                const textResp = question.patientAnswer?.textResponse || "";
+                                const parts = textResp.split(", ");
+                                let weightLbs = 0;
+                                let heightFeet = 0;
+
+                                const renderedOptions = question.options.map((opt: any, idx: number) => {
+                                  if (isFileInput(opt.inputType)) return null;
+                                  const val = parts[idx] || "—";
+                                  const labelLower = (opt.label || "").toLowerCase();
+                                  
+                                  let suffix = "";
+                                  if (labelLower.includes("age")) suffix = "years";
+                                  else if (labelLower.includes("height")) {
+                                    suffix = "feet";
+                                    heightFeet = parseFloat(val) || 0;
+                                  }
+                                  else if (labelLower.includes("weight")) {
+                                    suffix = "lbs";
+                                    weightLbs = parseFloat(val) || 0;
+                                  }
+                                  
+                                  return (
+                                    <div key={opt.id} className="flex items-center mb-3 last:mb-0 ml-4">
+                                      <span className="text-[#6B7280] text-[15px] font-[Quicksand] w-[80px] font-medium">{opt.label}:</span>
+                                      <span className="text-[#2B2922] text-[15px] font-[Quicksand] font-medium">{val} {suffix}</span>
+                                    </div>
+                                  );
+                                });
+
+                                let bmiDisplay = null;
+                                if (weightLbs > 0 && heightFeet > 0) {
+                                  const heightInches = heightFeet * 12;
+                                  const bmi = (703 * weightLbs) / (heightInches * heightInches);
+                                  let bmiCategory = "";
+                                  if (bmi < 18.5) bmiCategory = "Underweight";
+                                  else if (bmi < 25) bmiCategory = "Normal weight";
+                                  else if (bmi < 30) bmiCategory = "Overweight";
+                                  else bmiCategory = "Obese";
+
+                                  bmiDisplay = (
+                                    <div className="mt-4 bg-[#EBE0D8] rounded-xl px-5 py-4 w-full">
+                                      <p className="text-[#2B2922] font-[Quicksand] font-bold text-[15px] mb-1">Health Snapshot:</p>
+                                      <p className="text-[#F43F5E] font-[Quicksand] font-medium text-[15px]">BMI: {bmi.toFixed(1)} ({bmiCategory})</p>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <>
+                                    <div className="flex flex-col mt-4">
+                                      {renderedOptions}
+                                    </div>
+                                    {bmiDisplay}
+                                  </>
+                                );
+                              })()}
+                            </div>
                           ) : (
                             <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 w-full max-w-[500px]">
                               <p className="text-[14px] text-gray-700 whitespace-pre-wrap">{question.patientAnswer?.textResponse || "No response provided"}</p>
@@ -589,17 +660,17 @@ export default function PreviewDetailsPage() {
           </Card>
 
           {/* Payment Summary - matches reference design */}
-          <Card>
+          <div className="border border-gray-200 rounded-xl bg-white shadow-sm w-full flex flex-col" style={{ padding: '30px' }}>
             {/* Title */}
-            <h3 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2] mb-1">Payment Summary</h3>
-            {/* Subtitle — checkout: text-gray-500 text-[13px] */}
-            <p className="text-[13px] text-gray-500 mb-5">
+            <h3 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2] m-0" style={{ marginBottom: '17px' }}>Payment Summary</h3>
+            {/* Subtitle */}
+            <p className="text-[14px] text-gray-500 m-0" style={{ marginBottom: '17px' }}>
               Patient selected {cartItems.length} product{cartItems.length !== 1 ? 's' : ''}:
             </p>
 
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+            <div className="flex flex-col lg:flex-row justify-between items-start gap-10 w-full">
               {/* LEFT: Products */}
-              <div className="flex-1 flex flex-col gap-4">
+              <div className="flex flex-col gap-4 w-full lg:max-w-[450px]">
                 {cartItems.map((item: any) => {
                   const img = item.product?.images?.[0]?.fileUrl ?? "";
                   const desc = item.product?.description;
@@ -634,7 +705,7 @@ export default function PreviewDetailsPage() {
                             {/* Description — checkout: Quicksand 16px normal, only if different from name */}
                             {showDesc && (
                               <p className="text-[#272628] font-[Quicksand] text-[14px] font-normal leading-snug mt-0.5 line-clamp-1 max-w-[200px]">
-                                {desc}
+                                {desc.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().substring(0, 35)}...
                               </p>
                             )}
                           </div>
@@ -656,8 +727,8 @@ export default function PreviewDetailsPage() {
               </div>
 
               {/* RIGHT: Totals — checkout: Quicksand 20px normal/bold */}
-              <div className="w-full lg:w-[260px] shrink-0">
-                <div className="flex flex-col gap-4">
+              <div className="w-full lg:w-[320px] shrink-0">
+                <div className="flex flex-col gap-3">
                   {[
                     {
                       label: "Subtotal",
@@ -700,26 +771,26 @@ export default function PreviewDetailsPage() {
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
-            <div className="flex gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
               <button
                 onClick={handleConfirmAndPay}
                 disabled={isCheckingOut || isSaving}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white text-[13px] font-medium px-5 py-2 rounded-lg transition-colors"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white font-[Quicksand] text-[16px] font-semibold h-[40px] min-w-[231px] rounded-lg transition-colors"
               >
                 {(isCheckingOut || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Confirm & Pay
+                Submit for medical review
               </button>
-              <Link href="/checkout" className="flex-1 sm:flex-none text-[#EF4444] border border-[#EF4444] hover:bg-red-50 text-[13px] font-medium px-5 py-2 rounded-lg transition-colors text-center">
+              <Link href="/checkout" className="flex-1 sm:flex-none flex items-center justify-center text-[#E55B46] border border-[#E55B46] hover:bg-red-50 font-[Quicksand] text-[16px] font-semibold h-[40px] px-8 rounded-lg transition-colors">
                 Cancel
               </Link>
             </div>
 
             {submissionData.status === 'DRAFT' && !isEditing && (
-              <button onClick={() => setIsEditing(true)} className="w-full sm:w-auto text-gray-600 border border-gray-300 hover:bg-gray-50 text-[13px] font-medium px-5 py-2 rounded-lg transition-colors text-center">
+              <button onClick={() => setIsEditing(true)} className="w-full sm:w-auto flex items-center justify-center text-[#3B3B3B] border border-[#6B7280] hover:bg-gray-50 font-[Quicksand] text-[14px] font-medium h-[40px] px-6 rounded-lg transition-colors">
                 Edit before submitting
               </button>
             )}
