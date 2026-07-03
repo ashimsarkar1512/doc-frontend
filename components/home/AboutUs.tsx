@@ -33,9 +33,9 @@ const AboutUs = () => {
   const bullets: string[] = [];
 
   return (
-    <section className="w-full max-w-[1520px] mx-auto px-4 pt-[100px] pb-5 flex flex-col items-center font-sans">
+    <section className="w-full max-w-[1520px] mx-auto px-4 pt-[70px] pb-[70px] flex flex-col items-center font-sans">
       {/* Top Badge */}
-      <span 
+      <span
         className="bg-gray-100 rounded-full mb-[50px] px-[32px] py-2 inline-block"
         style={{
           color: "#272628",
@@ -74,7 +74,7 @@ const AboutUs = () => {
             <div className="flex items-center justify-center">
               {service.icon}
             </div>
-            <span 
+            <span
               className="uppercase"
               style={{
                 color: "#2B2922",
@@ -92,7 +92,7 @@ const AboutUs = () => {
 
         {/* CTA Card */}
         <div className="flex-1 w-full bg-[#F4F8FF] rounded-2xl p-[30px] flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-all duration-300 h-[172px]">
-          <span 
+          <span
             style={{
               color: "#2B2922",
               fontFamily: "Quicksand, sans-serif",
