@@ -156,11 +156,19 @@ const AssessmentCard = ({
           opacity-0 translate-y-2
           group-hover:opacity-100 group-hover:translate-y-0
           bg-[#1D4ED8] hover:bg-blue-800 active:scale-95
-          text-white text-[15px] font-medium
-          px-[32px] py-[16px] rounded-[46px] shadow-lg text-center
+          px-[32px] py-[16px] rounded-[46px] shadow-lg
           transition-all duration-300 ease-out
           focus:outline-none focus:ring-2 focus:ring-blue-400
         "
+        style={{
+          color: "#FFF",
+          textAlign: "center",
+          fontFamily: "Quicksand, sans-serif",
+          fontSize: "20px",
+          fontStyle: "normal",
+          fontWeight: 600,
+          lineHeight: "100%"
+        }}
       >
         Start Assessment
       </Link>
@@ -263,7 +271,7 @@ export default function Assessments() {
   return (
     <section
       id="assessments"
-      className="bg-gradient-to-b from-white via-gray-50 to-white pt-[100px] pb-[100px] px-6"
+      className="bg-gradient-to-b from-white via-gray-50 to-white pt-[100px] pb-[70px] px-6"
     >
       <div className="max-w-[1520px] mx-auto">
         {/* Header with modern gradient text */}
@@ -310,8 +318,8 @@ export default function Assessments() {
         {/* Cards Grid */}
         <div
           className={`cards-grid gap-[30px] ${visibleCards.length > 0 && visibleCards.length < 4
-              ? "flex flex-wrap justify-start"
-              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            ? "flex flex-wrap justify-start"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             }`}
         >
           {isLoading
@@ -326,7 +334,7 @@ export default function Assessments() {
                 key={assessment.id}
                 className={
                   visibleCards.length > 0 && visibleCards.length < 4
-                    ? "w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+                    ? "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-20px)] xl:w-[calc(25%-18px)]"
                     : ""
                 }
               >

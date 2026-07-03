@@ -5,6 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { useGetAllFeaturesDoctorQuery } from "@/Redux/features/homePageDoctor/homePageDoctorApi";
 import fallBackImg from "@/public/fallback-man.jpeg";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 const Expert: React.FC = () => {
@@ -37,10 +38,10 @@ const Expert: React.FC = () => {
   }, [emblaApi]);
 
   return (
-    <section className="w-full mt-[150px] pt-[120px] pb-[120px] relative font-sans overflow-hidden">
+    <section className="w-full mt-0 pt-[120px] pb-[90px] relative font-sans overflow-hidden">
       <div className="max-w-[1520px] mx-auto flex flex-col items-center">
         {/* Title */}
-        <h2 
+        <h2
           className="mb-[80px] text-center"
           style={{
             color: "#272628",
@@ -59,22 +60,10 @@ const Expert: React.FC = () => {
           {/* Navigation Arrow: Left */}
           <button
             onClick={scrollPrev}
-            className="absolute left-[-8px] top-[40%] -translate-y-1/2 z-10 w-[32px] h-[32px] rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
+            className="absolute left-2 2xl:-left-8 top-[40%] -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
             aria-label="Previous slide"
           >
-            <svg
-              className="w-[6px] h-[12px]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
           </button>
 
           {/* Embla Viewport */}
@@ -131,22 +120,10 @@ const Expert: React.FC = () => {
           {/* Navigation Arrow: Right */}
           <button
             onClick={scrollNext}
-            className="absolute right-[-8px] top-[40%] -translate-y-1/2 z-10 w-[32px] h-[32px] rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
+            className="absolute right-2 2xl:-right-8 top-[40%] -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
             aria-label="Next slide"
           >
-            <svg
-              className="w-[6px] h-[12px]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
           </button>
         </div>
 

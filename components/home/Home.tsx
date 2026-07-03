@@ -22,7 +22,9 @@ const Home = () => {
         className='px-4 md:px-6'
         style={{ paddingTop: 'max(8px, calc(32px - var(--banner-height, 0px)))' }}
       >
-        <div className="relative rounded-3xl md:rounded-4xl overflow-hidden md:min-h-[90vh]">
+        <div 
+          className="relative rounded-3xl md:rounded-4xl overflow-hidden md:min-h-[90vh] lg:h-[905px] w-full"
+        >
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             {heroImageUrl ? (
