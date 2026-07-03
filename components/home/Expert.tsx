@@ -10,7 +10,7 @@ import { useHomepageContent } from "@/providers/HomepageContentProvider";
 const Expert: React.FC = () => {
   const { content } = useHomepageContent();
   const { data } = useGetAllFeaturesDoctorQuery();
-  
+
   const providersTitle = content?.providersTitle || "Meet our expert providers";
   const buttonText = content?.providersButtonText || "Schedule your consultation";
   const buttonLink = content?.providersButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
@@ -37,23 +37,33 @@ const Expert: React.FC = () => {
   }, [emblaApi]);
 
   return (
-    <section className="w-full  py-20  relative font-sans overflow-hidden">
-      <div className="max-w-6xl mx-auto flex flex-col items-center">
+    <section className="w-full mt-[150px] pt-[120px] pb-[120px] relative font-sans overflow-hidden">
+      <div className="max-w-[1520px] mx-auto flex flex-col items-center">
         {/* Title */}
-        <h2 className="text-3xl md:text-[40px] font-bold text-gray-900 mb-16 tracking-tight text-center">
+        <h2 
+          className="mb-[80px] text-center"
+          style={{
+            color: "#272628",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "54px",
+            fontStyle: "normal",
+            fontWeight: 600,
+            lineHeight: "110%"
+          }}
+        >
           {providersTitle}
         </h2>
 
         {/* Carousel Container Wrapper */}
-        <div className="w-full relative px-12 mb-16">
+        <div className="w-full relative px-12 mb-[80px]">
           {/* Navigation Arrow: Left */}
           <button
             onClick={scrollPrev}
-            className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
+            className="absolute left-[-8px] top-[40%] -translate-y-1/2 z-10 w-[32px] h-[32px] rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
             aria-label="Previous slide"
           >
             <svg
-              className="w-5 h-5"
+              className="w-[6px] h-[12px]"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
@@ -69,16 +79,16 @@ const Expert: React.FC = () => {
 
           {/* Embla Viewport */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-6 select-none">
+            <div className="flex gap-[40px] select-none">
               {providersD?.map((provider) => (
                 <div
                   key={provider.id}
-                  className="flex-[0_0_100%] sm:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)] min-w-0"
+                  className="flex-[0_0_100%] sm:flex-[0_0_calc(50%-20px)] lg:flex-[0_0_calc(33.333%-26px)] min-w-0"
                 >
                   {/* Card Structure */}
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-[14px]">
                     {/* Image Container with the exact soft blue tint fill background */}
-                    <div className="w-full aspect-[4/5] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group">
+                    <div className="w-full aspect-[480/523] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group">
                       <img
                         src={provider?.thumbnail || fallBackImg.src}
                         onError={(e) => {
@@ -90,11 +100,25 @@ const Expert: React.FC = () => {
                       />
                     </div>
                     {/* Meta Text */}
-                    <div className="px-2">
-                      <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-1">
+                    <div className="flex flex-col">
+                      <h3 style={{
+                        color: "#2B2922",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "26px",
+                        fontStyle: "normal",
+                        fontWeight: 700,
+                        lineHeight: "150%"
+                      }}>
                         {provider?.fullName}
                       </h3>
-                      <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                      <p style={{
+                        color: "#2B2922",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 400,
+                        lineHeight: "150%"
+                      }}>
                         {provider?.title}
                       </p>
                     </div>
@@ -107,11 +131,11 @@ const Expert: React.FC = () => {
           {/* Navigation Arrow: Right */}
           <button
             onClick={scrollNext}
-            className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
+            className="absolute right-[-8px] top-[40%] -translate-y-1/2 z-10 w-[32px] h-[32px] rounded-full bg-blue-100/70 hover:bg-blue-200/90 text-blue-800 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-sm"
             aria-label="Next slide"
           >
             <svg
-              className="w-5 h-5"
+              className="w-[6px] h-[12px]"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
@@ -134,7 +158,16 @@ const Expert: React.FC = () => {
               buttonNewTab ? "_blank" : "_self"
             )
           }
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-8 py-4 rounded-full transition-all duration-200 shadow-md shadow-blue-600/10 active:scale-98"
+          className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[32px] py-[22px] rounded-[46px] transition-all duration-200 shadow-md active:scale-98"
+          style={{
+            color: "#FFF",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "22px",
+            fontStyle: "normal",
+            fontWeight: 600,
+            lineHeight: "100%"
+          }}
         >
           {buttonText}
         </button>

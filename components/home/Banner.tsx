@@ -26,7 +26,7 @@ const Banner = () => {
   return (
     <div className="relative z-10 flex flex-col items-center justify-center md:min-h-[90vh] text-center px-4 pt-32 pb-16 md:pt-20 md:pb-0">
       {/* Badges/Avatars Area */}
-      <div className="flex flex-col items-center gap-4 mb-8">
+      <div className="flex flex-col items-center gap-4 mb-[80px]">
         {/* Badge Image or Default Wreath Badge */}
         {!isLoading && (
           <div className="relative mb-2 flex items-center justify-center gap-1">
@@ -123,7 +123,18 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-16 w-2/3 bg-white/20 animate-pulse rounded-xl mb-6" />
       ) : (
-        <h1 className="text-2xl md:text-6xl font-bold text-[#FFFFFF] mb-6 max-w-3xl tracking-tight leading-tight drop-shadow-lg">
+        <h1 
+          className="mb-[50px] max-w-[1112px] mx-auto drop-shadow-lg"
+          style={{
+            color: "#FFF",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "84px",
+            fontStyle: "normal",
+            fontWeight: 700,
+            lineHeight: "100%"
+          }}
+        >
           {heroTitle}
         </h1>
       )}
@@ -132,7 +143,18 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-8 w-1/2 bg-white/20 animate-pulse rounded-xl mb-10" />
       ) : (
-        <p className="text-lg  md:text-lg text-[#FFFFFF] mb-10 max-w-4xl leading-relaxed drop-shadow-md">
+        <p 
+          className="mb-[50px] max-w-[796px] mx-auto drop-shadow-md"
+          style={{
+            color: "#FFF",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "20px",
+            fontStyle: "normal",
+            fontWeight: 400,
+            lineHeight: "150%"
+          }}
+        >
           {heroDescription}
         </p>
       )}

@@ -68,7 +68,7 @@ const TestiMonial: React.FC = () => {
     <section className="relative w-full bg-[#121314] py-10 font-sans overflow-hidden text-white">
       {/* Gradient fade on the right side of the screen to blend the carousel */}
       <div className="absolute top-0 right-0 bottom-0 w-24 md:w-64 bg-gradient-to-l from-[#121314] to-transparent z-30 pointer-events-none hidden md:block" />
-      
+
       <div className="max-w-[1520px] mx-auto flex flex-col items-center px-4 md:px-8">
         {/* Google Header Logo & Stars Group */}
         <div className="flex flex-col items-center gap-1 mb-4">
@@ -129,8 +129,8 @@ const TestiMonial: React.FC = () => {
           <div className="flex-1 relative w-full flex items-stretch min-h-[410px]">
             {/* 100vw container ensures cards come from the right edge of the screen */}
             <div className="absolute top-0 left-0 bottom-0 w-[100vw] overflow-hidden z-10">
-              <Marquee 
-                pauseOnHover={true} 
+              <Marquee
+                pauseOnHover={true}
                 speed={40}
                 autoFill={true}
                 className="h-full"
@@ -167,8 +167,8 @@ const TestiMonial: React.FC = () => {
                           <span className="text-sm text-[#929292] font-medium">
                             {review.date || review.createdAt
                               ? new Date(
-                                  review.date || review.createdAt,
-                                ).toLocaleDateString()
+                                review.date || review.createdAt,
+                              ).toLocaleDateString()
                               : ""}
                           </span>
                         </div>
@@ -182,7 +182,7 @@ const TestiMonial: React.FC = () => {
                   </div>
                 ))}
               </Marquee>
-          </div>
+            </div>
           </div>
         </div>
       </div>
