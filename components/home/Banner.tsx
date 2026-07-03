@@ -1,32 +1,35 @@
 "use client";
-
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
 
 const Banner = () => {
   const { content, isLoading } = useHomepageContent();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Resolve hero image URL
-  const heroImageUrl = content?.heroMedia?.fileUrl || null;
+  const heroImageUrl = mounted ? (content?.heroMedia?.fileUrl || null) : null;
 
   // Resolve badge image URL
-  const badgeImageUrl = content?.heroBadgeImage?.fileUrl || null;
+  const badgeImageUrl = mounted ? (content?.heroBadgeImage?.fileUrl || null) : null;
 
-  const heroTitle = content?.heroTitle || "Medical Weight Management Program";
-  const heroDescription =
-    content?.heroDescription ||
-    "Our medical weight management program is designed to support individuals seeking a structured, provider-guided approach to weight loss.";
-  const heroButtonText = content?.heroButtonText || "Book an Appointment";
-  const heroButtonLink = content?.heroButtonLink || "#";
-  const heroButtonNewTab = content?.heroButtonNewTab ?? false;
-  const heroBadgeText = content?.heroBadgeText || null;
-  const heroBadgeLink = content?.heroBadgeLink || null;
+  const heroTitle = mounted ? (content?.heroTitle || "Medical Weight Management Program") : "Medical Weight Management Program";
+  const heroDescription = mounted ? (content?.heroDescription || "Our medical weight management program is designed to support individuals seeking a structured, provider-guided approach to weight loss.") : "Our medical weight management program is designed to support individuals seeking a structured, provider-guided approach to weight loss.";
+  const heroButtonText = mounted ? (content?.heroButtonText || "Book an Appointment") : "Book an Appointment";
+  const heroButtonLink = mounted ? (content?.heroButtonLink || "#") : "#";
+  const heroButtonNewTab = mounted ? (content?.heroButtonNewTab ?? false) : false;
+  const heroBadgeText = mounted ? (content?.heroBadgeText || null) : null;
+  const heroBadgeLink = mounted ? (content?.heroBadgeLink || null) : null;
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center md:min-h-[90vh] text-center px-4 pt-32 pb-16 md:pt-20 md:pb-0">
+    <div className="relative z-10 flex flex-col items-center justify-center text-center self-stretch w-full px-4 pt-[140px] pb-16 md:pt-[180px] md:pb-24 lg:h-[905px] lg:pt-[80px] lg:pb-0">
       {/* Badges/Avatars Area */}
-      <div className="flex flex-col items-center gap-4 mb-[80px]">
+      <div className="flex flex-col items-center gap-[26.67px] mb-[47px]">
         {/* Badge Image or Default Wreath Badge */}
         {!isLoading && (
           <div className="relative mb-2 flex items-center justify-center gap-1">
@@ -123,16 +126,12 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-16 w-2/3 bg-white/20 animate-pulse rounded-xl mb-6" />
       ) : (
-        <h1 
-          className="mb-[50px] max-w-[1112px] mx-auto drop-shadow-lg"
+        <h1
+          className="mb-[50px] max-w-[1112px] mx-auto drop-shadow-lg text-[40px] sm:text-[50px] md:text-[60px] lg:text-[70px] xl:text-[84px] font-bold leading-none"
           style={{
             color: "#FFF",
             textAlign: "center",
             fontFamily: "Quicksand, sans-serif",
-            fontSize: "84px",
-            fontStyle: "normal",
-            fontWeight: 700,
-            lineHeight: "100%"
           }}
         >
           {heroTitle}
@@ -143,16 +142,12 @@ const Banner = () => {
       {isLoading ? (
         <div className="h-8 w-1/2 bg-white/20 animate-pulse rounded-xl mb-10" />
       ) : (
-        <p 
-          className="mb-[50px] max-w-[796px] mx-auto drop-shadow-md"
+        <p
+          className="mb-[50px] max-w-[796px] mx-auto drop-shadow-md text-[16px] md:text-[18px] xl:text-[20px] font-normal leading-relaxed"
           style={{
             color: "#FFF",
             textAlign: "center",
             fontFamily: "Quicksand, sans-serif",
-            fontSize: "20px",
-            fontStyle: "normal",
-            fontWeight: 400,
-            lineHeight: "150%"
           }}
         >
           {heroDescription}
@@ -165,7 +160,16 @@ const Banner = () => {
           href={heroButtonLink}
           target={heroButtonNewTab ? "_blank" : "_self"}
           rel={heroButtonNewTab ? "noopener noreferrer" : undefined}
-          className="bg-[#2563EB] hover:bg-blue-700 text-white px-8 py-3.5 rounded-full font-medium transition-colors text-lg shadow-lg"
+          className="flex justify-center items-center gap-[15px] px-[32px] py-[22px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-800 transition-colors shadow-lg"
+          style={{
+            color: "#FFF",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "22px",
+            fontStyle: "normal",
+            fontWeight: 600,
+            lineHeight: "100%",
+          }}
         >
           {heroButtonText}
         </Link>
