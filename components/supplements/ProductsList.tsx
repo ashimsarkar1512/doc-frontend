@@ -1,52 +1,71 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import ProductCard from "./ProductCard";
-
-const mockProducts = [
-  {
-    id: 1,
-    name: "GLP-1",
-    description:
-      "GLP-1 weight management options. Evaluation required. Medically supervised care. Results may vary.",
-    image: "/medicine-1.png", // Ensure this image path corresponds to available images in your public folder
-    category: "Weight Loss",
-  },
-  {
-    id: 2,
-    name: "Phentermine",
-    description:
-      "Phentermine weight management options. Evaluation required. Medically supervised care. Results may vary.",
-    image: "/medicine-2.png",
-    category: "Weight Loss",
-  },
-  {
-    id: 3,
-    name: "Phendimetrazine (Bontril)",
-    description:
-      "Phendimetrazine weight management options. Evaluation required. Medically supervised care. Results may vary.",
-    image: "/medicine-3.png",
-    category: "Appetite Suppressant",
-  },
-];
-
-const categories = ["All Categories", "Weight Loss", "Appetite Suppressant"];
+import { useGetPublicProductsQuery, useGetPublicCategoriesQuery } from "@/Redux/api/publicProductApi";
 
 const ProductsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryName, setSelectedCategoryName] = useState("All Categories");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
-  const filteredProducts = mockProducts.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All Categories" ||
-      product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Debounce search term
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const { data: fetchedCategories } = useGetPublicCategoriesQuery();
+  
+  const queryParams = useMemo(() => {
+    const params: { search?: string; category?: string } = {};
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (selectedCategoryId) params.category = selectedCategoryId;
+    return Object.keys(params).length > 0 ? params : undefined;
+  }, [debouncedSearch, selectedCategoryId]);
+
+  const { data: fetchedProducts, isLoading, error } = useGetPublicProductsQuery(queryParams);
+
+  const products = useMemo(() => {
+    if (!fetchedProducts) return [];
+    
+    return fetchedProducts.map((item) => {
+      let desc = item.description || "";
+      // strip HTML tags
+      desc = desc.replace(/<[^>]*>?/gm, '');
+      // replace common HTML entities
+      desc = desc.replace(/&nbsp;/g, ' ');
+      desc = desc.replace(/&amp;/g, '&');
+      desc = desc.replace(/&lt;/g, '<');
+      desc = desc.replace(/&gt;/g, '>');
+      desc = desc.replace(/&quot;/g, '"');
+      desc = desc.replace(/&#39;/g, "'");
+
+      if (desc.length > 80) {
+        desc = desc.substring(0, 80) + "..."; // truncate
+      }
+
+      return {
+        id: item.id || item.slug,
+        name: item.title,
+        description: desc,
+        image: item.image?.fileUrl || "/medicine-1.png",
+        category: item.category?.name || "Uncategorized",
+        assessments: item.assessments || [],
+      };
+    });
+  }, [fetchedProducts]);
+
+  const categories = useMemo(() => {
+    const defaultCat = { id: "", name: "All Categories" };
+    if (!fetchedCategories) return [defaultCat];
+    return [defaultCat, ...fetchedCategories];
+  }, [fetchedCategories]);
 
   return (
     <div className="w-full max-w-[1520px] mx-auto px-4 md:px-6 2xl:px-0! mb-[150px]">
@@ -72,7 +91,7 @@ const ProductsList = () => {
             onClick={() => setIsCategoryOpen(!isCategoryOpen)}
             className="w-full sm:w-auto px-4 md:px-5 py-2.5 bg-[#F4F5F6] rounded-full flex items-center justify-between gap-3 text-[15px] sm:text-base lg:text-xl text-gray-700 font-medium hover:bg-gray-200 transition-colors focus:outline-none"
           >
-            <span>{selectedCategory}</span>
+            <span>{selectedCategoryName}</span>
             <ChevronDown
               className={`h-4 w-4 transition-transform ${isCategoryOpen ? "rotate-180" : ""
                 }`}
@@ -85,20 +104,21 @@ const ProductsList = () => {
                 className="fixed inset-0 z-10"
                 onClick={() => setIsCategoryOpen(false)}
               ></div>
-              <div className="absolute right-0 mt-2 w-full sm:w-48 bg-white border border-gray-100 rounded-2xl shadow-lg z-20 overflow-hidden py-2">
+              <div className="absolute right-0 mt-2 w-full sm:w-48 sm:min-w-[220px] bg-white border border-gray-100 rounded-2xl shadow-lg z-20 overflow-y-auto max-h-[350px] py-2">
                 {categories.map((category) => (
                   <button
-                    key={category}
+                    key={category.id || 'all'}
                     onClick={() => {
-                      setSelectedCategory(category);
+                      setSelectedCategoryId(category.id);
+                      setSelectedCategoryName(category.name);
                       setIsCategoryOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-base lg:text-lg hover:bg-gray-50 transition-colors ${selectedCategory === category
+                    className={`w-full text-left px-4 py-2 text-base lg:text-lg hover:bg-gray-50 transition-colors ${selectedCategoryId === category.id
                       ? "text-blue-600 font-medium bg-blue-50/50"
                       : "text-gray-700"
                       }`}
                   >
-                    {category}
+                    {category.name}
                   </button>
                 ))}
               </div>
@@ -108,15 +128,24 @@ const ProductsList = () => {
       </div>
 
       {/* Product Grid */}
-      {filteredProducts.length > 0 ? (
+      {isLoading ? (
+        <div className="w-full py-20 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563EB]"></div>
+        </div>
+      ) : error ? (
+        <div className="w-full py-20 flex justify-center items-center text-red-500">
+          Failed to load products.
+        </div>
+      ) : products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-[30px]">
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               id={product.id}
               name={product.name}
               description={product.description}
               image={product.image}
+              assessments={product.assessments}
             />
           ))}
         </div>
@@ -128,7 +157,8 @@ const ProductsList = () => {
           <button
             onClick={() => {
               setSearchTerm("");
-              setSelectedCategory("All Categories");
+              setSelectedCategoryId("");
+              setSelectedCategoryName("All Categories");
             }}
             className="mt-4 text-blue-600 font-medium hover:underline text-xl"
           >

@@ -1,15 +1,22 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import AssessmentButton from './AssessmentButton';
+
+interface Assessment {
+  id: string;
+  title: string;
+}
 
 interface ProductCardProps {
   id: string | number;
   name: string;
   description: string;
   image: string;
+  assessments?: Assessment[];
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ id, name, description, image }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ id, name, description, image, assessments }) => {
   return (
     <div className="flex flex-col group bg-white">
       {/* Product Image Container */}
@@ -35,31 +42,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, description, image 
       </div>
 
       {/* Product Info */}
-      <div className="px-1.5 flex-grow flex flex-col">
+      <div className="px-1.5 grow flex flex-col">
         {/* Title: Exactly 22px */}
         <h3 className="text-[22px] font-bold text-[#111827] mb-4 leading-tight">
           {name}
         </h3>
 
         {/* Description: Exactly 20px */}
-        <p className="text-[#6B7280] text-lg md:text-[20px] font-light leading-relaxed mb-8 flex-grow">
+        <p className="text-[#6B7280] text-lg md:text-[20px] font-light leading-relaxed mb-8 grow">
           {description}
         </p>
 
         {/* Actions */}
         <div className="flex items-center gap-7 mt-auto pb-1">
           {/* Button text: Exactly 20px */}
-          <button
-            onClick={() =>
-              window.open(
-                "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                "_blank"
-              )
-            }
+          <AssessmentButton
+            assessments={assessments || []}
+            baseUrl=""
             className="bg-[#0251D1] hover:bg-[#0241A7] text-white text-lg md:text-[20px] font-medium px-5 md:px-8 lg:px-5 xl:px-8 py-3 rounded-full transition-colors shadow-none"
-          >
-            Get Started
-          </button>
+          />
 
           {/* Link text: Exactly 20px */}
           <Link
