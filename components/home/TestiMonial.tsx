@@ -10,23 +10,11 @@ import {
 } from "@/Redux/features/testimonials/testimonialsApi";
 import { FcGoogle } from "react-icons/fc";
 import { IoStarSharp } from "react-icons/io5";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
+import Marquee from "react-fast-marquee";
 
 const TestiMonial: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
   const { data: testimonialsData } = useGetTestimonialsQuery();
-
-  const [emblaRef] = useEmblaCarousel(
-    { loop: true, align: "start", dragFree: true },
-    [
-      Autoplay({
-        delay: 3500,
-        stopOnInteraction: false,
-        stopOnMouseEnter: true,
-      }),
-    ],
-  );
 
   const dummyReviews: Testimonial[] = [
     {
@@ -77,8 +65,11 @@ const TestiMonial: React.FC = () => {
   const buttonNewTab = content?.testimonialButtonNewTab ?? false;
 
   return (
-    <section className="w-full bg-[#121314] py-10 font-sans overflow-hidden text-white">
-      <div className="max-w-7xl mx-auto flex flex-col items-center px-4 md:px-8">
+    <section className="relative w-full bg-[#121314] py-10 font-sans overflow-hidden text-white">
+      {/* Gradient fade on the right side of the screen to blend the carousel */}
+      <div className="absolute top-0 right-0 bottom-0 w-24 md:w-64 bg-gradient-to-l from-[#121314] to-transparent z-30 pointer-events-none hidden md:block" />
+
+      <div className="max-w-[1520px] mx-auto flex flex-col items-center px-4 md:px-8">
         {/* Google Header Logo & Stars Group */}
         <div className="flex flex-col items-center gap-1 mb-4">
           <div className="flex items-center font-bold text-5xl tracking-tight select-none">
@@ -111,9 +102,9 @@ const TestiMonial: React.FC = () => {
         )}
 
         {/* Grid Structure: Fixed Callout Card + Carousel Slider */}
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch">
           {/* Static Intro Card with Modern Radial Glow Effect */}
-          <div className="lg:col-span-4 bg-[#292C2D] rounded-[2rem] p-8 flex flex-col justify-between min-h-[340px] relative overflow-hidden group border border-gray-800/40">
+          <div className="w-full lg:w-[362px] flex-shrink-0 bg-[#292C2D] rounded-[2rem] p-8 flex flex-col justify-between min-h-[316px] relative overflow-hidden group border border-gray-800/40">
             {/* Soft Radial Blue Mesh Gradient inside the box corner */}
             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-gradient-to-tr from-blue-600 via-blue-500/90 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-700" />
 
@@ -135,20 +126,19 @@ const TestiMonial: React.FC = () => {
           </div>
 
           {/* Dynamic Carousel Slide Viewport */}
-          <div className="lg:col-span-8 overflow-hidden relative w-full flex items-center">
-            {/* Gradient masks for smooth edges */}
-            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#121314] to-transparent z-10 pointer-events-none"></div>
-
-            {/* Embla Viewport */}
-            <div
-              className="overflow-hidden w-full h-full cursor-grab active:cursor-grabbing"
-              ref={emblaRef}
-            >
-              <div className="flex h-full">
+          <div className="flex-1 relative w-full flex items-stretch min-h-[410px]">
+            {/* 100vw container ensures cards come from the right edge of the screen */}
+            <div className="absolute top-0 left-0 bottom-0 w-[100vw] overflow-hidden z-10">
+              <Marquee
+                pauseOnHover={true}
+                speed={40}
+                autoFill={true}
+                className="h-full"
+              >
                 {reviews.map((review, idx) => (
                   <div
                     key={`${review.id}-${idx}`}
-                    className="w-[300px] sm:w-[350px] flex-shrink-0 mr-5 h-full"
+                    className="w-[300px] sm:w-[350px] flex-shrink-0 mr-5 h-[410px]"
                   >
                     {/* Google Review Card Markup */}
                     <div className="bg-[#292C2D] border border-gray-800/30 rounded-[2rem] p-6 sm:p-7 flex flex-col gap-5 justify-between hover:border-gray-700/50 transition-colors duration-300 h-full">
@@ -177,8 +167,8 @@ const TestiMonial: React.FC = () => {
                           <span className="text-sm text-[#929292] font-medium">
                             {review.date || review.createdAt
                               ? new Date(
-                                  review.date || review.createdAt,
-                                ).toLocaleDateString()
+                                review.date || review.createdAt,
+                              ).toLocaleDateString()
                               : ""}
                           </span>
                         </div>
@@ -191,7 +181,7 @@ const TestiMonial: React.FC = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+              </Marquee>
             </div>
           </div>
         </div>

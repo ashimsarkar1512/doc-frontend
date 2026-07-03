@@ -65,14 +65,21 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   <button
     onClick={onClick}
     className={`
-      px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200
+      flex justify-center items-center gap-[15px] px-[32px] py-[9px] rounded-full transition-all duration-200
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-      ${
-        isActive
-          ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
-          : "bg-[#E6E6E6] text-gray-700 hover:bg-gray-300"
+      ${isActive
+        ? "bg-[#2563EB] shadow-md shadow-blue-500/20"
+        : "bg-[#E6E6E6] hover:bg-gray-300"
       }
     `}
+    style={{
+      fontFamily: "Quicksand, sans-serif",
+      fontSize: "20px",
+      fontStyle: "normal",
+      fontWeight: 600,
+      lineHeight: "150%",
+      color: isActive ? "#FFF" : "#272628"
+    }}
     aria-pressed={isActive}
   >
     {label}
@@ -88,7 +95,7 @@ const AssessmentCard = ({
 }) => (
   <div
     className={`
-    group relative overflow-hidden rounded-3xl h-[420px]
+    group relative overflow-hidden rounded-[30px] h-[390px] max-h-[430px] flex-1
     bg-gradient-to-br ${GRADIENTS[index % GRADIENTS.length]}
     flex flex-col cursor-pointer
     transition-all duration-500 ease-out
@@ -113,7 +120,7 @@ const AssessmentCard = ({
     <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/45 to-black/85 z-10" />
 
     {/* Content */}
-    <div className="relative z-20 flex flex-col h-full p-6">
+    <div className="relative z-20 flex flex-col justify-between items-start h-full p-[30px] w-full">
       {/* Fees badge */}
       {assessment.paymentPlan && (
         <div className="self-start mb-3">
@@ -132,10 +139,10 @@ const AssessmentCard = ({
         {assessment.title.replace(/-/g, " ")}
       </h3>
 
-      <div className="flex-1" />
+      <div className="flex-1 w-full" />
 
       {/* Description */}
-      <p style={{ color: "#FFF", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 400, lineHeight: "25.2px" }} className="mb-5 line-clamp-3">
+      <p style={{ color: "#FFF", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 400, lineHeight: "25.2px" }} className="mb-[28px] line-clamp-3 w-full">
         {assessment.description}
       </p>
 
@@ -145,12 +152,12 @@ const AssessmentCard = ({
         prefetch={true}
         onClick={(e) => e.stopPropagation()}
         className="
-          inline-block self-start
+          flex justify-center items-center gap-[15px] self-start
           opacity-0 translate-y-2
           group-hover:opacity-100 group-hover:translate-y-0
-          bg-blue-600 hover:bg-blue-700 active:scale-95
+          bg-[#1D4ED8] hover:bg-blue-800 active:scale-95
           text-white text-[15px] font-medium
-          px-6 py-2.5 rounded-full shadow-lg text-center
+          px-[32px] py-[16px] rounded-[46px] shadow-lg text-center
           transition-all duration-300 ease-out
           focus:outline-none focus:ring-2 focus:ring-blue-400
         "
@@ -256,22 +263,38 @@ export default function Assessments() {
   return (
     <section
       id="assessments"
-      className="bg-gradient-to-b from-white via-gray-50 to-white py-20 px-6"
+      className="bg-gradient-to-b from-white via-gray-50 to-white pt-[100px] pb-[100px] px-6"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1520px] mx-auto">
         {/* Header with modern gradient text */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold leading-[1.3] mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+        <div className="text-center mb-[80px]">
+          <h2 style={{
+            color: "#272628",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "54px",
+            fontStyle: "normal",
+            fontWeight: 600,
+            lineHeight: "110%"
+          }} className="mb-[20px]">
             {content?.assessmentTitle || "Start from a tailored assessment"}
           </h2>
-          <p className="text-[#272628] text-lg md:text-2xl lg:text-3xl max-w-2xl mx-auto leading-relaxed">
+          <p style={{
+            color: "#272628",
+            textAlign: "center",
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "20px",
+            fontStyle: "normal",
+            fontWeight: 400,
+            lineHeight: "150%"
+          }} className="max-w-5xl mx-auto">
             {content?.assessmentDescription ||
               "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
         </div>
 
         {/* Filters with scroll into view on filter change */}
-        <div className="flex flex-wrap justify-start gap-3 mb-12">
+        <div className="flex flex-wrap justify-start gap-3 mb-[40px]">
           {filters.map((filter) => (
             <FilterButton
               key={filter}
@@ -285,21 +308,34 @@ export default function Assessments() {
         </div>
 
         {/* Cards Grid */}
-        <div className="cards-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          className={`cards-grid gap-[30px] ${visibleCards.length > 0 && visibleCards.length < 4
+              ? "flex flex-wrap justify-start"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            }`}
+        >
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-[420px] rounded-2xl bg-gray-200 animate-pulse"
-                />
-              ))
+              <div
+                key={i}
+                className="h-[420px] rounded-2xl bg-gray-200 animate-pulse w-full"
+              />
+            ))
             : visibleCards.map((assessment, i) => (
+              <div
+                key={assessment.id}
+                className={
+                  visibleCards.length > 0 && visibleCards.length < 4
+                    ? "w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+                    : ""
+                }
+              >
                 <AssessmentCard
-                  key={assessment.id}
                   assessment={assessment}
                   index={currentPage * PAGE_SIZE + i}
                 />
-              ))}
+              </div>
+            ))}
         </div>
 
         {/* Empty State */}
@@ -338,7 +374,7 @@ export default function Assessments() {
 
         {/* Pagination with page indicator */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-12">
+          <div className="flex justify-center items-center gap-4 mt-[40px]">
             <PaginationButton
               onClick={goToPreviousPage}
               disabled={currentPage === 0}
