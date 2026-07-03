@@ -44,6 +44,8 @@ const Home = () => {
                 priority
               />
             )}
+            {/* Overlay to improve text readability */}
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-[4px]" />
           </div>
 
           <Navbar />
