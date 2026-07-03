@@ -313,6 +313,7 @@ export function RenderQuestion({
     return (
       <div
         className={wrapperClass}
+        style={isNested ? {} : { backgroundColor: "#F4F4F4" }}
       >
         {!isNested && mediaUrl && (
           <div className="relative w-full h-[419px] rounded-xl overflow-hidden mb-5">

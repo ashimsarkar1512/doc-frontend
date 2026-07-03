@@ -266,6 +266,9 @@ const patientApi = baseApi.injectEndpoints({
         params: { categoryId },
       }),
     }),
+    getProductById: builder.query<{ success: boolean; data: any }, string>({
+      query: (id) => `/public/products/${id}`,
+    }),
     addToCart: builder.mutation<CartResponse, AddToCartRequest>({
       query: (body) => ({
         url: '/patient/cart/add-cart',
@@ -331,6 +334,7 @@ export const {
   useGetAssessmentByIdQuery,
   useSubmitAssessmentMutation,
   useGetProductsByCategoryIdQuery,
+  useGetProductByIdQuery,
   useAddToCartMutation,
   useGetMyCartQuery,
   useGetCartSummaryQuery,
