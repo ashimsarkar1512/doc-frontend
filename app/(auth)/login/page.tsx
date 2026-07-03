@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Loader2, Shield, User } from "lucide-react";
+import { Eye, EyeOff, Loader2, Shield, User, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -75,9 +75,9 @@ const LoginPage = () => {
     <div className="min-h-screen bg-white flex flex-col justify-between">
       <Navbar variant="dark" />
 
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
-        <div className="w-full max-w-[620px] flex justify-center">
-          <div className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]">
+      <main className="flex flex-col items-center px-4 sm:px-6 pt-[180px] pb-[80px] w-full">
+        <div className="w-full flex justify-center">
+          <div className="relative text-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col p-[40px] w-[620px] min-h-[620px] max-w-full">
             <Image
               src="/footer.png"
               alt="Auth Background"
@@ -86,64 +86,57 @@ const LoginPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-            <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10 pointer-events-none" />
 
-            <div className="relative z-20 flex flex-col justify-between h-full w-full">
+            <div className="relative z-20 flex flex-col items-center justify-center gap-[40px] w-full flex-grow">
               {/* Header */}
-              <header className="text-center mb-4">
-                <div className="flex justify-center mb-3">
-                  <Logo variant="light" />
+              <header className="w-full text-center flex flex-col items-center gap-[30px]">
+                <Logo variant="light" />
+                <div className="flex flex-col items-center gap-[12px] w-full">
+                  <h2 style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "30px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "100%",
+                  }}>
+                    Welcome Back
+                  </h2>
+                  <p style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "20px",
+                    fontStyle: "normal",
+                    fontWeight: 400,
+                    lineHeight: "150%",
+                  }}>
+                    Sign in to your account to continue
+                  </p>
                 </div>
-                <h2 className="text-4xl font-bold tracking-tight text-white mt-8">
-                  Welcome Back
-                </h2>
-                <p className="text-md text-white/70 mt-3 font-light">
-                  Sign in to your account to continue
-                </p>
               </header>
 
-              {/* Tabs */}
-              {/* <nav className="bg-black/25 p-1 rounded-2xl border border-white/5 flex mb-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("patient")}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === "patient"
-                      ? "bg-white text-[#0A3D3A] shadow-md scale-[1.02]"
-                      : "text-white/75 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <User className="h-3.5 w-3.5" />
-                  Patient Login
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("doctor")}
-                  className={`flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 ${
-                    activeTab === "doctor"
-                      ? "bg-white text-[#0A3D3A] shadow-md scale-[1.02]"
-                      : "text-white/75 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <Shield className="h-3.5 w-3.5" />
-                  Doctor Login
-                </button>
-                <Link
-                  href="/"
-                  className="flex-grow py-3 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all duration-300 text-white/75 hover:text-white hover:bg-white/5"
-                >
-                  New Register
-                </Link>
-              </nav> */}
+
 
               {/* Form */}
               <form
                 onSubmit={handleSubmit}
-                className="flex-grow flex flex-col justify-between mt-2"
+                className="w-full flex flex-col gap-[40px]"
               >
-                <div className="space-y-5 flex-grow flex flex-col justify-center">
+                <div className="w-full flex flex-col gap-6">
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-gray-200">
+                    <label style={{
+                      display: "block",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "100%",
+                      marginBottom: "8px"
+                    }}>
                       Email Address
                     </label>
                     <input
@@ -152,12 +145,21 @@ const LoginPage = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm"
+                      className="w-full h-[56px] bg-white/10 border border-white/10 rounded-[14px] px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-gray-200">
+                    <label style={{
+                      display: "block",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "100%",
+                      marginBottom: "8px"
+                    }}>
                       Password
                     </label>
                     <div className="relative">
@@ -167,7 +169,7 @@ const LoginPage = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
-                        className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm pr-12"
+                        className="w-full h-[56px] bg-white/10 border border-white/10 rounded-[14px] px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm pr-12"
                       />
                       <button
                         type="button"
@@ -187,33 +189,61 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                <footer className="mt-auto">
+                <div className="w-full flex flex-col gap-4">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                    style={{
+                      display: "flex",
+                      height: "60px",
+                      padding: "10px 116px",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "9px",
+                      alignSelf: "stretch",
+                      borderRadius: "14px",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "22px",
+                      fontStyle: "normal",
+                      fontWeight: 600,
+                      lineHeight: "100%",
+                    }}
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1e40af] active:bg-[#1e3a8a] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                         Signing in…
                       </>
                     ) : (
                       <>
-                        Login <span className="text-base">→</span>
+                        Login <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
                       </>
                     )}
                   </button>
 
-                  <div className="text-center pt-4">
-                    <a
+                  <div className="text-center">
+                    <Link
                       href="/forgot-password"
-                      className="text-xs font-light text-white/80 hover:text-white transition-colors underline underline-offset-4"
+                      className="hover:text-gray-200 transition-colors"
+                      style={{
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 400,
+                        lineHeight: "100%",
+                        textDecoration: "underline",
+                        textUnderlineOffset: "auto",
+                        textDecorationSkipInk: "auto",
+                        textDecorationThickness: "auto"
+                      }}
                     >
                       Forgot Password?
-                    </a>
+                    </Link>
                   </div>
-                </footer>
+                </div>
               </form>
             </div>
           </div>

@@ -35,7 +35,7 @@ const ReceiveOtpPage = () => {
 
   const otpPending = useAppSelector((state) => state.auth.otpPending);
 
-// console.log(otpPending)
+  // console.log(otpPending)
 
 
   const [selectedMethod, setSelectedMethod] = useState<"EMAIL" | "PHONE">(
@@ -83,12 +83,12 @@ const ReceiveOtpPage = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-y-auto overflow-x-hidden bg-white flex flex-col [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="min-h-screen bg-white flex flex-col justify-between">
       <Navbar variant="dark" />
 
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
-        <div className="w-full max-w-[620px] flex justify-center">
-          <div className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]">
+      <main className="flex flex-col items-center px-4 sm:px-6 pt-[180px] pb-[80px] w-full">
+        <div className="w-full flex justify-center">
+          <div className="relative text-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col p-[40px] w-[620px] min-h-[620px] max-w-full">
             <Image
               src="/footer.png"
               alt="Auth Background"
@@ -97,16 +97,15 @@ const ReceiveOtpPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-            <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10 pointer-events-none" />
 
-            <div className="relative z-20 flex flex-col h-full w-full">
-              <header className="text-center mb-6 sm:mb-10">
-                <div className="flex justify-center mb-4">
-                  <Logo variant="light" />
-                </div>
-
-                <div className="flex justify-center mb-6">
+            <div className="relative z-20 flex flex-col items-center justify-center gap-[40px] w-full flex-grow">
+              {/* Header */}
+              <header className="w-full text-center flex flex-col items-center gap-[30px]">
+                <Logo variant="light" />
+                <div className="flex justify-center">
                   <button
+                    type="button"
                     onClick={() => router.back()}
                     className="flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors duration-200 px-6 py-2.5 rounded-full text-sm font-medium text-white backdrop-blur-sm"
                   >
@@ -114,34 +113,49 @@ const ReceiveOtpPage = () => {
                     Back
                   </button>
                 </div>
-
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3 sm:mb-4">
-                  Receive OTP Code
-                </h2>
-                <p className="text-sm md:text-base text-white/80 max-w-md mx-auto leading-relaxed">
-                  Choose how you want to receive the verification code
-                </p>
+                <div className="flex flex-col items-center gap-[12px] w-full">
+                  <h2 style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "30px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "100%",
+                  }}>
+                    Receive OTP Code
+                  </h2>
+                  <p style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "20px",
+                    fontStyle: "normal",
+                    fontWeight: 400,
+                    lineHeight: "150%",
+                  }}>
+                    Choose how you want to receive the verification code
+                  </p>
+                </div>
               </header>
 
               <form
                 onSubmit={handleSubmit}
-                className="flex-grow flex flex-col justify-between mt-12"
+                className="w-full flex flex-col gap-[40px]"
               >
-                <div className="flex flex-col space-y-6 py-4 w-full max-w-md mx-auto">
+                <div className="w-full flex flex-col gap-6">
                   {/* Email Option */}
                   <label
-                    className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
-                      selectedMethod === "EMAIL"
+                    className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${selectedMethod === "EMAIL"
                         ? "bg-white/20 border-white/40 shadow-lg"
                         : "bg-white/10 border-white/10 hover:bg-white/15"
-                    }`}
+                      }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                        selectedMethod === "EMAIL"
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${selectedMethod === "EMAIL"
                           ? "border-[#2563eb] bg-white"
                           : "border-white/50 bg-white/20"
-                      }`}
+                        }`}
                     >
                       {selectedMethod === "EMAIL" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
@@ -155,7 +169,7 @@ const ReceiveOtpPage = () => {
                       onChange={() => setSelectedMethod("EMAIL")}
                       className="hidden"
                     />
-                  
+
                     <div className="flex items-center gap-1.5">
                       <span className="text-[15px] text-white/90">Email:</span>
                       {otpPending?.email && (
@@ -169,18 +183,16 @@ const ReceiveOtpPage = () => {
                   {/* Phone Option */}
                   {otpPending?.phone && (
                     <label
-                      className={`flex items-center gap-3 p-4 sm:p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
-                        selectedMethod === "PHONE"
+                      className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${selectedMethod === "PHONE"
                           ? "bg-white/20 border-white/40 shadow-lg"
                           : "bg-white/10 border-white/10 hover:bg-white/15"
-                      }`}
+                        }`}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                          selectedMethod === "PHONE"
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${selectedMethod === "PHONE"
                             ? "border-[#2563eb] bg-white"
                             : "border-white/50 bg-white/20"
-                        }`}
+                          }`}
                       >
                         {selectedMethod === "PHONE" && (
                           <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
@@ -194,7 +206,7 @@ const ReceiveOtpPage = () => {
                         onChange={() => setSelectedMethod("PHONE")}
                         className="hidden"
                       />
-                      
+
                       <div className="flex items-center gap-1.5">
                         <span className="text-[15px] text-white/90">Phone:</span>
                         <span className="text-[15px] text-white/90">
@@ -205,11 +217,27 @@ const ReceiveOtpPage = () => {
                   )}
                 </div>
 
-                <footer className="mt-8 space-y-4 text-center">
+                <div className="w-full flex flex-col gap-4">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full max-w-md mx-auto bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 md:py-5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                    style={{
+                      display: "flex",
+                      height: "60px",
+                      padding: "10px 116px",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "9px",
+                      alignSelf: "stretch",
+                      borderRadius: "14px",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "22px",
+                      fontStyle: "normal",
+                      fontWeight: 600,
+                      lineHeight: "100%",
+                    }}
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1e40af] active:bg-[#1e3a8a] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     {isLoading ? (
                       <>
@@ -218,11 +246,11 @@ const ReceiveOtpPage = () => {
                       </>
                     ) : (
                       <>
-                        Send Code <ArrowRight className="h-5 w-5" />
+                        Send Code <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
                       </>
                     )}
                   </button>
-                </footer>
+                </div>
               </form>
             </div>
           </div>

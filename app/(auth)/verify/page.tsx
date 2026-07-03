@@ -150,12 +150,12 @@ const VerifyPage = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-y-auto overflow-x-hidden bg-white flex flex-col [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="min-h-screen bg-white flex flex-col justify-between">
       <Navbar variant="dark" />
 
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
-        <div className="w-full max-w-[620px] flex justify-center">
-          <div className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]">
+      <main className="flex flex-col items-center px-4 sm:px-6 pt-[180px] pb-[80px] w-full">
+        <div className="w-full flex justify-center">
+          <div className="relative text-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col p-[40px] w-[620px] min-h-[620px] max-w-full">
             <Image
               src="/footer.png"
               alt="Auth Background"
@@ -164,16 +164,15 @@ const VerifyPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-            <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10 pointer-events-none" />
 
-            <div className="relative z-20 flex flex-col h-full w-full">
-              <header className="text-center mb-6 sm:mb-10">
-                <div className="flex justify-center mb-4">
-                  <Logo variant="light" />
-                </div>
-
-                <div className="flex justify-center mb-6">
+            <div className="relative z-20 flex flex-col items-center justify-center gap-[40px] w-full flex-grow">
+              {/* Header */}
+              <header className="w-full text-center flex flex-col items-center gap-[30px]">
+                <Logo variant="light" />
+                <div className="flex justify-center">
                   <button
+                    type="button"
                     onClick={() => router.back()}
                     className="flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors duration-200 px-6 py-2.5 rounded-full text-sm font-medium text-white backdrop-blur-sm"
                   >
@@ -181,23 +180,51 @@ const VerifyPage = () => {
                     Back
                   </button>
                 </div>
-
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3 sm:mb-4">
-                  Verify Authentication
-                </h2>
-                <p className="text-sm md:text-base text-white/80 max-w-md mx-auto leading-relaxed">
-                  Enter the 6-digit code sent to your{" "}
-                  {otpPending?.method === "PHONE" ? "phone" : "email"}.
-                </p>
+                <div className="flex flex-col items-center gap-[12px] w-full text-center">
+                  <h2 style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "30px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "100%",
+                  }}>
+                    Verify Authentication
+                  </h2>
+                  <p style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "20px",
+                    fontStyle: "normal",
+                    fontWeight: 400,
+                    lineHeight: "150%",
+                  }}>
+                    Enter the 6 digit authentication code we've sent at your
+                    <br />
+                    {otpPending?.method === "PHONE" ? "phone" : "email"}
+                  </p>
+                </div>
               </header>
 
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
-                <div className="flex flex-col items-center justify-center space-y-6 py-4">
-                  <div className="w-full mt-6">
-                    <label className="block text-sm font-medium text-white mb-4">
+              <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[40px]">
+                <div className="w-full flex flex-col gap-6">
+                  <div className="w-full">
+                    <label style={{
+                      display: "block",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "100%",
+                      marginBottom: "8px",
+                      textAlign: "left"
+                    }}>
                       Enter OTP
                     </label>
-                    <div className="flex justify-between gap-1.5 sm:gap-2 md:gap-3">
+                    <div className="flex justify-between gap-2 sm:gap-3">
                       {otp.map((digit, index) => (
                         <input
                           key={index}
@@ -212,18 +239,34 @@ const VerifyPage = () => {
                           onKeyDown={(e) => handleKeyDown(e, index)}
                           onPaste={handlePaste}
                           placeholder="-"
-                          className="flex-1 min-w-0 aspect-square max-h-16 bg-white/10 border border-white/10 rounded-xl md:rounded-2xl text-center text-lg sm:text-xl md:text-2xl text-white font-semibold placeholder-white/30 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-200"
+                          className="flex-1 min-w-0 aspect-square max-h-16 bg-white/10 border border-white/10 rounded-[14px] text-center text-lg sm:text-xl text-white font-semibold placeholder-white/30 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-200"
                         />
                       ))}
                     </div>
                   </div>
                 </div>
 
-                <footer className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 text-center">
+                <div className="w-full flex flex-col gap-4">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 md:py-5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                    style={{
+                      display: "flex",
+                      height: "60px",
+                      padding: "10px 116px",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "9px",
+                      alignSelf: "stretch",
+                      borderRadius: "14px",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "22px",
+                      fontStyle: "normal",
+                      fontWeight: 600,
+                      lineHeight: "100%",
+                    }}
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1e40af] active:bg-[#1e3a8a] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     {isLoading ? (
                       <>
@@ -232,32 +275,26 @@ const VerifyPage = () => {
                       </>
                     ) : (
                       <>
-                        Verify Authentication <ArrowRight className="h-5 w-5" />
+                        Verify Authentication <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
                       </>
                     )}
                   </button>
 
-                  <div className="flex flex-col items-center gap-2 text-sm">
-                    <span className="text-white/80 font-light">
-                      Didn&apos;t receive the code?
+                  <div className="text-center pt-2 flex flex-col gap-2">
+                    <span className="text-[20px] font-light text-white" style={{ fontFamily: "Quicksand, sans-serif" }}>
+                      Didn't receive the code?
                     </span>
                     <button
                       type="button"
                       disabled={isResending}
                       onClick={handleResend}
-                      className="text-white font-medium hover:text-gray-200 transition-colors underline underline-offset-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      className="text-[20px] font-normal text-white hover:text-gray-200 transition-colors underline underline-offset-4 disabled:opacity-50"
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
                     >
-                      {isResending ? (
-                        <>
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          Sending…
-                        </>
-                      ) : (
-                        "Resend"
-                      )}
+                      {isResending ? "Sending..." : "Resend"}
                     </button>
                   </div>
-                </footer>
+                </div>
               </form>
             </div>
           </div>

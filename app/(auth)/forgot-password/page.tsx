@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Loader2, Mail } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Mail } from 'lucide-react';
 
 import Navbar from '@/components/shared/Navbar';
 import Footer from '@/components/shared/Footer';
@@ -54,9 +54,9 @@ const ForgotPasswordPage = () => {
     <div className="min-h-screen bg-white flex flex-col justify-between">
       <Navbar variant="dark" />
 
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-32 md:pt-40 pb-12 w-full">
-        <div className="w-full max-w-[620px] flex justify-center">
-          <div className="relative text-white rounded-[32px] sm:rounded-[40px] shadow-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-6 sm:p-8 md:p-12 w-full min-h-[600px] md:min-h-[700px]">
+      <main className="flex flex-col items-center px-4 sm:px-6 pt-[180px] pb-[80px] w-full">
+        <div className="w-full flex justify-center">
+          <div className="relative text-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col p-[40px] w-[620px] min-h-[620px] max-w-full">
             <Image
               src="/footer.png"
               alt="Auth Background"
@@ -65,16 +65,13 @@ const ForgotPasswordPage = () => {
               quality={100}
               className="object-cover z-0 pointer-events-none select-none"
             />
-            <div className="absolute inset-0 bg-black/10 z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10 pointer-events-none" />
 
-            <div className="relative z-20 flex flex-col justify-between h-full w-full">
+            <div className="relative z-20 flex flex-col items-center justify-center gap-[40px] w-full flex-grow">
               {/* Header */}
-              <header className="text-center mb-4">
-                <div className="flex justify-center mb-4">
-                  <Logo variant="light" />
-                </div>
-
-                <div className="flex justify-center mb-6">
+              <header className="w-full text-center flex flex-col items-center gap-[30px]">
+                <Logo variant="light" />
+                <div className="flex justify-center">
                   <button
                     type="button"
                     onClick={() => router.back()}
@@ -84,62 +81,96 @@ const ForgotPasswordPage = () => {
                     Back
                   </button>
                 </div>
-
-                <h2 className="text-2xl font-bold tracking-tight text-white mt-2">
-                  Forgot Password
-                </h2>
-                <p className="text-xs text-white/70 mt-2 font-light max-w-xs mx-auto leading-relaxed">
-                  Enter your registered email address and we'll send you a verification code.
-                </p>
+                <div className="flex flex-col items-center gap-[12px] w-full">
+                  <h2 style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "30px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "100%",
+                  }}>
+                    Forgot Password
+                  </h2>
+                  <p style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: "20px",
+                    fontStyle: "normal",
+                    fontWeight: 400,
+                    lineHeight: "150%",
+                  }}>
+                    Enter your registered email address
+                  </p>
+                </div>
               </header>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="flex-grow flex flex-col mt-4">
-                <div className="space-y-5 flex-grow flex flex-col justify-center mt-16">
+              <form
+                onSubmit={handleSubmit}
+                className="w-full flex flex-col gap-[40px]"
+              >
+                <div className="w-full flex flex-col gap-6">
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-gray-200">
+                    <label style={{
+                      display: "block",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "100%",
+                      marginBottom: "8px"
+                    }}>
                       Email Address
                     </label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 pointer-events-none" />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your registered email"
-                        className="w-full bg-white/10 border border-white/10 rounded-2xl pl-11 pr-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm"
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your registered email"
+                      className="w-full h-[56px] bg-white/10 border border-white/10 rounded-[14px] px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200 text-sm"
+                    />
                   </div>
                 </div>
 
-                <footer className="mb-18">
+                <div className="w-full flex flex-col gap-4">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
+                    style={{
+                      display: "flex",
+                      height: "60px",
+                      padding: "10px 116px",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "9px",
+                      alignSelf: "stretch",
+                      borderRadius: "14px",
+                      color: "#FFF",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "22px",
+                      fontStyle: "normal",
+                      fontWeight: 600,
+                      lineHeight: "100%",
+                    }}
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1e40af] active:bg-[#1e3a8a] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99]"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                         Checking account…
                       </>
                     ) : (
-                      <>Continue <span className="text-base">→</span></>
+                      <>
+                        Continue <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                      </>
                     )}
                   </button>
-
-                  {/* <div className="text-center pt-4">
-                    <button
-                      type="button"
-                      onClick={() => router.push('/login')}
-                      className="text-xs font-light text-white/80 hover:text-white transition-colors underline underline-offset-4"
-                    >
-                      Back to Login
-                    </button>
-                  </div> */}
-                </footer>
+                </div>
               </form>
             </div>
           </div>

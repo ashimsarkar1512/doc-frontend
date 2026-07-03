@@ -138,6 +138,15 @@ export function LoginForm({ loginEmail, setLoginEmail, loginPassword, setLoginPa
 }
 
 export function RegisterForm({ registerEmail, setRegisterEmail, registerPhone, setRegisterPhone, registerPassword, setRegisterPassword, registerConfirm, setRegisterConfirm, showRegisterPassword, setShowRegisterPassword, showRegisterConfirm, setShowRegisterConfirm }: any) {
+  const isPasswordFormatValid = (pw: string) => {
+    if (!pw) return true;
+    return (
+      pw.length >= 8 &&
+      /[A-Z]/.test(pw) &&
+      /[a-z]/.test(pw) &&
+      /[\W_]/.test(pw)
+    );
+  };
   return (
     <div
       className="rounded-2xl p-6 mb-7"
@@ -246,6 +255,11 @@ export function RegisterForm({ registerEmail, setRegisterEmail, registerPhone, s
               )}
             </button>
           </div>
+          {!isPasswordFormatValid(registerPassword) && (
+            <p className="text-red-500 text-[13px] mt-2 font-medium">
+              Password must be at least 8 characters, include an uppercase letter, a lowercase letter, and a special character.
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-gray-800 text-[15px] font-medium mb-2">
@@ -303,6 +317,11 @@ export function RegisterForm({ registerEmail, setRegisterEmail, registerPhone, s
               )}
             </button>
           </div>
+          {registerConfirm && registerPassword !== registerConfirm && (
+            <p className="text-red-500 text-[13px] mt-2 font-medium">
+              Passwords do not match.
+            </p>
+          )}
         </div>
       </div>
     </div>
