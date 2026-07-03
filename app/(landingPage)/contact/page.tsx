@@ -117,7 +117,7 @@ export default function ContactPage() {
       <Navbar variant="dark" />
 
       {/* ── HERO BANNER ── */}
-      <section className="pt-28 md:pt-36 px-4 sm:px-6 max-w-[1300px] mx-auto">
+      <section className="pt-28 md:pt-36 px-4 sm:px-6 max-w-[1520px] mx-auto">
         <div className="relative bg-[#f4f7fa] rounded-[32px] w-full py-20 md:py-28 flex flex-col items-center justify-center min-h-[240px]">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[32px] px-6 md:px-10">
             <svg
@@ -171,10 +171,10 @@ export default function ContactPage() {
             </svg>
           </div>
           <div className="relative z-10 text-center px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+            <h1 className="text-2xl md:text-5xl xl:lg:text-[76px] font-bold text-gray-900 mb-4 tracking-tight">
               Contact Us
             </h1>
-            <p className="text-sm md:text-base text-gray-500 max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm md:text-lg text-gray-500 max-w-3xl mx-auto leading-relaxed">
               Contact us to schedule a consultation with our medical team and
               explore personalized options to support your weight management
               goals.
@@ -184,7 +184,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── FORM + OFFICE HOURS ── */}
-      <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         {/* LEFT: FORM */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
@@ -232,7 +232,7 @@ export default function ContactPage() {
             <div>
               <label
                 htmlFor="fullName"
-                className="block text-[15px] font-semibold text-gray-900 mb-2.5"
+                className="block text-[22px] font-bold text-[#2B2922] mb-2.5"
               >
                 Full Name:
               </label>
@@ -257,7 +257,7 @@ export default function ContactPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-[15px] font-semibold text-gray-900 mb-2.5"
+                  className="block text-[22px] font-bold text-[#2B2922] mb-2.5"
                 >
                   Email:
                 </label>
@@ -279,7 +279,7 @@ export default function ContactPage() {
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-[15px] font-semibold text-gray-900 mb-2.5"
+                  className="block text-[22px] font-bold text-[#2B2922] mb-2.5"
                 >
                   Contact Number:
                 </label>
@@ -299,7 +299,7 @@ export default function ContactPage() {
             <div>
               <label
                 htmlFor="service"
-                className="block text-[15px] font-semibold text-gray-900 mb-2.5"
+                className="block text-[22px] font-bold text-[#2B2922] mb-2.5"
               >
                 What service you are interested in? (optional)
               </label>
@@ -309,7 +309,7 @@ export default function ContactPage() {
                   name="service"
                   value={form.service}
                   onChange={handleChange}
-                  className="w-full appearance-none bg-[#f2f4f7] text-gray-700 text-[15px] px-5 py-4 rounded-xl border-none focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer transition-all"
+                  className="w-full appearance-none bg-[#f2f4f7] text-gray-700 text-[15px] px-5 py-4 rounded-xl border-none focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer transition-all text-lg"
                 >
                   <option value="">Select a service</option>
                   {SERVICES.map((s) => (
@@ -340,7 +340,7 @@ export default function ContactPage() {
             <div>
               <label
                 htmlFor="message"
-                className="block text-[15px] font-semibold text-gray-900 mb-2.5"
+                className="block text-[22px] font-bold text-[#2B2922] mb-2.5"
               >
                 Message / Questions:
               </label>
@@ -424,13 +424,13 @@ export default function ContactPage() {
         </div>
 
         {/* RIGHT: OFFICE HOURS CARD */}
-        <div className="lg:col-span-1 h-[510px] mt-7 sticky top-24 self-start">
+        <div className="lg:col-span-1 h-[540px] mt-9 sticky top-24 self-start">
           <div
             className="rounded-[24px] overflow-hidden flex flex-col items-center pt-10 relative h-full border border-gray-200"
             style={{ background: "#eef2f6" }}
           >
             <div className="text-center px-6 relative z-10 w-full mb-6">
-              <h3 className="font-bold text-gray-900 text-[20px] mb-4 tracking-tight">
+              <h3 className="font-bold text-[#212121] text-[30px] mb-4 tracking-tight">
                 Office Hours
               </h3>
               {settingsLoading ? (
@@ -443,13 +443,13 @@ export default function ContactPage() {
               ) : (
                 <>
                   {/* TODO: Update openHours in admin settings (e.g. "Monday - Friday: 9 AM - 6 PM") */}
-                  <p className="text-[14px] text-gray-800 mb-2 font-semibold">
+                  <p className="text-lg text-[#272628] mb-2 font-semibold">
                     {contactInfo?.openHours || "Monday - Friday: 9 AM - 6 PM"}
                   </p>
 
                   {/* TODO: Update closedDays in admin settings with full descriptive text
                        e.g. "Our Office is closed from 2 PM to 3 PM for lunch during the week." */}
-                  <p className="text-[13px] text-gray-500 mb-5 leading-relaxed max-w-[220px] mx-auto">
+                  <p className="text-lg text-[#3B3B3B] mb-5 leading-relaxed max-w-[280px] mx-auto">
                     {contactInfo?.closedDays &&
                     contactInfo.closedDays.length > 20
                       ? contactInfo.closedDays
@@ -457,7 +457,7 @@ export default function ContactPage() {
                   </p>
 
                   {/* TODO: Ensure phone and email are set correctly in admin settings */}
-                  <div className="text-[13px] font-bold text-gray-900 flex flex-col items-center gap-1.5 z-20">
+                  <div className="text-lg font-bold text-[#272628] flex justify-center gap-4 items-center gap-1.5 z-20">
                     <span>{contactInfo?.phone || "(720) 279-1164"}</span>
                     <span>{contactInfo?.email || "Info@wlmd.net"}</span>
                   </div>
@@ -496,7 +496,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── MEET OUR EXPERT PROVIDERS ── */}
-      <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-28">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-28">
         <Expert />
       </section>
 
