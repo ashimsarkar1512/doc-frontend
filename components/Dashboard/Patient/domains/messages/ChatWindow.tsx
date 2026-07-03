@@ -441,6 +441,9 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
               background: 'var(--Blue, #1D4ED8)'
             }}
           >
+            <button onClick={onBack} className="lg:hidden p-1.5 -ml-2 hover:bg-white/10 rounded-full transition-colors mr-1">
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
             <div className="relative">
               <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-emerald-50">
                 {doctor?.avatar ? (
@@ -537,7 +540,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                             ? <img src={senderInfo.avatar} className="object-cover w-full h-full" alt="" />
                             : <User className="h-4 w-4 text-gray-400" />}
                         </div>
-                        <div className="w-[360px] bg-[#e8edf2] rounded-2xl overflow-hidden shadow-sm">
+                        <div className="w-full sm:w-[360px] bg-[#e8edf2] rounded-2xl overflow-hidden shadow-sm">
                           {/* Title */}
                           <div className="px-5 pt-5 pb-0">
                             <h5 className="font-bold text-gray-900 text-[15px] leading-snug">{proposal.title}</h5>
@@ -766,7 +769,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           )}
 
           {/* Message input */}
-          <div className="bg-white border-t border-gray-150 p-4 flex items-center gap-3">
+          <div className="bg-white border-t border-gray-150 p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
             <label className={`text-[#2563eb] hover:text-blue-700 transition-colors flex-shrink-0 p-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
               <Paperclip className="h-5 w-5" />
               <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
@@ -778,15 +781,20 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
               onChange={handleTypingInput}
               disabled={isUploading}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              className="flex-1 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all disabled:opacity-50"
+              className="flex-1 min-w-0 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-3 sm:px-4 py-2 sm:py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all disabled:opacity-50"
             />
             <button
               onClick={handleSend}
               disabled={(!typedMessage.trim() && !selectedFile) || isUploading}
-              className="bg-[#1D4ED8] hover:bg-[#1a40b3] disabled:bg-[#1D4ED8] disabled:opacity-100 transition-colors text-white text-[16px] font-semibold flex justify-center items-center px-[16px] py-[10px] gap-[11px] rounded-[12px] flex-shrink-0 shadow-sm disabled:cursor-not-allowed"
+              className="bg-[#1D4ED8] hover:bg-[#1a40b3] disabled:bg-[#1D4ED8] disabled:opacity-100 transition-colors text-white text-[16px] font-semibold flex justify-center items-center px-3 sm:px-[16px] py-2 sm:py-[10px] gap-2 sm:gap-[11px] rounded-[12px] flex-shrink-0 shadow-sm disabled:cursor-not-allowed"
             >
-              {isUploading ? 'Sending...' : (
-                <>Send <Send className="w-4 h-4" /></>
+              {isUploading ? (
+                <span className="text-sm">...</span>
+              ) : (
+                <>
+                  <span className="hidden sm:inline">Send</span>
+                  <Send className="w-4 h-4" />
+                </>
               )}
             </button>
           </div>

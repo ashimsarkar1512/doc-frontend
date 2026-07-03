@@ -161,9 +161,7 @@ export default function LabTestingPage() {
                     <p className="text-[13px] md:text-[14px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
                       {service.description}
                     </p>
-                    <button className="self-start bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[12px] sm:text-[13px] font-medium px-4 sm:px-5 py-2 rounded-full transition-colors">
-                    Coming soon
-                    </button>
+
                   </div>
                 </div>
 

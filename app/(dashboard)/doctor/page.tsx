@@ -86,15 +86,15 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         )}
 
         {isMessages ? (
-          <div className="w-full flex gap-8 min-h-[750px]">
-            <div className="flex-shrink-0 sticky top-10">
+          <div className="w-full flex lg:gap-8 min-h-[750px]">
+            <div className={`flex-shrink-0 sticky top-10 w-full lg:w-auto ${chatId ? 'hidden lg:block' : 'block'}`}>
               <MessagesPanel />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className={`flex-1 min-w-0 w-full ${!chatId ? 'hidden lg:block' : 'block'}`}>
               {chatId ? (
                 <ChatView chatId={chatId} />
               ) : (
-                <div className="w-full h-[700px] flex items-center justify-center bg-gray-50/50 rounded-[24px] border border-gray-150 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+                <div className="w-full h-[700px] flex items-center justify-center">
                   <div className="bg-gray-100 rounded-full px-6 py-2.5 text-gray-500 text-sm font-medium">
                     Select a patient to start messaging
                   </div>

@@ -11,7 +11,10 @@ import { useE2EE } from '@/Redux/hooks/useE2EE';
 import { useAppSelector } from '@/Redux/store/hooks';
 import { toast } from 'sonner';
 
+import { useRouter } from "next/navigation";
+
 export default function ChatView({ chatId }: { chatId: string }) {
+  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -298,7 +301,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
     <>
       {/* The side-by-side layout replaces the need for a back button */}
 
-      <div className="flex gap-6 mb-10">
+      <div className="flex flex-col lg:flex-row gap-6 mb-10">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm h-[700px]">
             <div
@@ -310,6 +313,9 @@ export default function ChatView({ chatId }: { chatId: string }) {
                 background: 'var(--Blue, #1D4ED8)'
               }}
             >
+              <button onClick={() => router.push('/doctor?view=messages')} className="lg:hidden p-1.5 -ml-2 hover:bg-white/10 rounded-full transition-colors mr-1">
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </button>
               <div className="relative">
                 <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
                   {patient?.avatar ? (
@@ -400,7 +406,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
                               ? <img src={senderInfo.avatar} alt={senderInfo.name || 'User'} className="w-full h-full object-cover" />
                               : <User className="h-3.5 w-3.5 text-gray-400" />}
                           </div>
-                          <div className="w-[360px] bg-[#e8edf2] rounded-2xl overflow-hidden shadow-sm">
+                          <div className="w-full sm:w-[360px] bg-[#e8edf2] rounded-2xl overflow-hidden shadow-sm">
                             {/* Title */}
                             <div className="px-5 pt-5 pb-0">
                               <h4 className="font-bold text-gray-900 text-[15px] leading-snug">{proposal.title}</h4>
@@ -614,7 +620,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
             )}
 
             {/* Message input */}
-            <div className="bg-white border-t border-gray-150 p-4 flex items-center gap-3">
+            <div className="bg-white border-t border-gray-150 p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
               <label className={`text-[#2563eb] hover:text-blue-700 transition-colors flex-shrink-0 p-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                 <Paperclip className="w-5 h-5" />
                 <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
@@ -627,22 +633,27 @@ export default function ChatView({ chatId }: { chatId: string }) {
                 onChange={handleTypingInput}
                 disabled={isUploading}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className="flex-1 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all disabled:opacity-50"
+                className="flex-1 min-w-0 text-sm text-gray-700 placeholder-gray-500 bg-[#e2e8f0] px-3 sm:px-4 py-2 sm:py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-100 transition-all disabled:opacity-50"
               />
               <button
                 onClick={handleSend}
                 disabled={(!inputValue.trim() && !selectedFile) || isUploading}
-                className="bg-[#1D4ED8] hover:bg-[#1a40b3] disabled:bg-[#1D4ED8] disabled:opacity-100 transition-colors text-white text-[16px] font-semibold flex justify-center items-center px-[16px] py-[8px] gap-[11px] rounded-[12px] flex-shrink-0 shadow-sm disabled:cursor-not-allowed"
+                className="bg-[#1D4ED8] hover:bg-[#1a40b3] disabled:bg-[#1D4ED8] disabled:opacity-100 transition-colors text-white text-[16px] font-semibold flex justify-center items-center px-3 sm:px-[16px] py-2 sm:py-[8px] gap-2 sm:gap-[11px] rounded-[12px] flex-shrink-0 shadow-sm disabled:cursor-not-allowed"
               >
-                {isUploading ? 'Sending...' : (
-                  <>Send <Send className="w-4 h-4" /></>
+                {isUploading ? (
+                  <span className="text-sm">...</span>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Send</span>
+                    <Send className="w-4 h-4" />
+                  </>
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        <div className="w-80 flex-shrink-0">
+        <div className="w-full lg:w-80 flex-shrink-0">
           <div className="bg-[#f0f4f8] rounded-xl p-5 mb-6">
             <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">Service Information</h3>
 

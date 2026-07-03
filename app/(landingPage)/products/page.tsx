@@ -3,6 +3,7 @@
 import { useState, Suspense, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
 import { Trash2, ShoppingCart, Tag, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -208,7 +209,7 @@ function ProductsInner() {
     <div className="min-h-screen" style={{ background: "#F4F7FF" }}>
       <Navbar variant="dark" />
 
-      <div className="pt-36 pb-16 max-w-[1320px] mx-auto px-4 sm:px-6">
+      <div className="pt-36 pb-16 max-w-[1520px] mx-auto px-4 sm:px-6">
 
         {/* ── Two-column layout ── */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -711,14 +712,16 @@ function ProductsInner() {
 
 export default function ProductsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#F4F7FF] flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <ProductsInner />
-    </Suspense>
+    <ProtectedRoute>
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#F4F7FF] flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }
+      >
+        <ProductsInner />
+      </Suspense>
+    </ProtectedRoute>
   );
 }

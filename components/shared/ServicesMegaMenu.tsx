@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  useGetCategoryNamesQuery,
-  useGetProductsByCategoryQuery,
-} from "@/Redux/features/navbarServices/navbarServicesApi";
+import { useGetCategoryNamesQuery } from "@/Redux/features/navbarServices/navbarServicesApi";
 import Link from "next/link";
+import Image from "next/image";
+
+interface AssessmentItem {
+  id: string;
+  title: string;
+  image: string;
+}
 
 interface CategoryItem {
   id: string;
   name: string;
-}
-
-interface ProductItem {
-  id: string;
-  name: string;
+  assessments: AssessmentItem[];
 }
 
 interface ServicesMegaMenuProps {
@@ -25,32 +25,28 @@ interface ServicesMegaMenuProps {
 const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
   const router = useRouter();
 
-  // ✅ category names list
+  // ✅ category names list with assessments
   const { data: categoriesRes } = useGetCategoryNamesQuery({});
   const categoryList: CategoryItem[] = categoriesRes?.data ?? [];
 
-  // only holds an EXPLICIT hover selection — used for the preview list on the right
-  const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(
-    null,
-  );
+  const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(null);
+  const [hoveredAssessmentId, setHoveredAssessmentId] = useState<string | null>(null);
 
   const currentCategoryId = hoveredCategoryId ?? categoryList[0]?.id ?? null;
-
-  // ✅ products for the currently hovered category (preview only)
-  const { data: productsRes, isLoading: productsLoading } =
-    useGetProductsByCategoryQuery(currentCategoryId, {
-      skip: !currentCategoryId,
-  });
-    
-
-  const productList: ProductItem[] = productsRes?.data ?? [];
-  console.log(productList)
+  const activeCategory = categoryList.find(c => c.id === currentCategoryId);
+  const assessments = activeCategory?.assessments || [];
 
   const handleCategoryHover = (id: string) => {
     setHoveredCategoryId(id);
+    setHoveredAssessmentId(null); // reset assessment hover on category change
   };
 
   const isDesktop = variant === "desktop";
+
+  // Determine which image to show
+  const activeAssessmentImage = hoveredAssessmentId 
+    ? assessments.find(a => a.id === hoveredAssessmentId)?.image 
+    : assessments[0]?.image;
 
   return (
     <div
@@ -61,9 +57,15 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
       }
     >
       <h3
-        className={`font-bold text-[#111827] tracking-tight ${
-          isDesktop ? "text-[26px] mb-7" : "text-[20px] mb-5"
-        }`}
+        style={{
+          color: '#272628',
+          fontFamily: 'Quicksand, sans-serif',
+          fontSize: isDesktop ? '30px' : '22px',
+          fontWeight: 700,
+          lineHeight: '110%',
+          textAlign: 'left',
+          marginBottom: isDesktop ? '28px' : '20px',
+        }}
       >
         Medical Weight Management Program
       </h3>
@@ -71,7 +73,7 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
       <div
         className={
           isDesktop
-            ? "grid grid-cols-[190px_minmax(0,1fr)_220px] gap-0 items-start"
+            ? "grid grid-cols-[210px_minmax(0,1fr)_250px] gap-0 items-start"
             : "flex flex-col gap-5"
         }
       >
@@ -105,44 +107,58 @@ const ServicesMegaMenu = ({ variant = "desktop" }: ServicesMegaMenuProps) => {
           })}
         </div>
 
-        {/* Service list — right side, preview based on hovered category */}
+        {/* Assessment list — middle column */}
         <div className={isDesktop ? "px-8 min-h-[300px]" : "order-3"}>
-          {productsLoading ? (
-            <p className="text-[#9CA3AF] text-[14px]">Loading...</p>
-          ) : productList.length === 0 ? (
-            <p className="text-[#9CA3AF] text-[14px]">No products found</p>
+          {assessments.length === 0 ? (
+            <p className="text-[#9CA3AF] text-[14px]">No assessments found</p>
           ) : (
-            <ul className="space-y-0.5">
-              {productList.map((product) => (
-                <li
-                  key={product.id}
-                  className={`text-[#374151]  ${
-                    isDesktop ? "text-base" : "text-[14px]"
-                  }`}
-                >
-                  {product.name}
-                </li>
-              ))}
+            <ul className="space-y-4">
+              {assessments.map((assessment) => {
+                const isActive = hoveredAssessmentId === assessment.id || (!hoveredAssessmentId && assessments[0]?.id === assessment.id);
+                return (
+                  <li
+                    key={assessment.id}
+                    onMouseEnter={() => setHoveredAssessmentId(assessment.id)}
+                    style={{
+                      color: isActive ? '#2b5ce7' : '#2B2922',
+                      fontFamily: 'Quicksand, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: isActive ? 600 : 400,
+                      lineHeight: '100%',
+                      cursor: 'pointer',
+                      transition: 'color 0.15s',
+                    }}
+                  >
+                    <Link href={`/common-services/${activeCategory?.id}?assessment=${assessment.id}`}>
+                      {assessment.title}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
 
-        {/* Image */}
-        {/* <div
+        {/* Image — right column */}
+        <div
           className={
             isDesktop
-              ? "relative w-full h-[280px] rounded-[18px] overflow-hidden flex items-center justify-center bg-gray-50"
-              : "relative w-full h-[180px] rounded-[16px] overflow-hidden order-2 flex items-center justify-center bg-gray-50"
+              ? "relative w-[228px] h-[155px] rounded-[16px] overflow-hidden flex-shrink-0 bg-gray-100"
+              : "relative w-full h-[155px] rounded-[16px] overflow-hidden order-2 bg-gray-100"
           }
         >
-          <Image
-            src="/doctor/doc-1.jpg"
-            alt={activeCategory?.name ?? "Service"}
-            fill
-            className="object-cover object-center"
-            sizes={isDesktop ? "220px" : "100vw"}
-          />
-        </div> */}
+          {activeAssessmentImage ? (
+            <Image
+              src={activeAssessmentImage}
+              alt={activeCategory?.name ?? "Assessment"}
+              fill
+              className="object-cover object-center"
+              sizes={isDesktop ? "228px" : "100vw"}
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-100" />
+          )}
+        </div>
       </div>
     </div>
   );
