@@ -45,7 +45,7 @@ const defaultFaqData: FAQItem[] = [
 
 const QNA: React.FC = () => {
   const { data: content, isLoading } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true });
-  
+
   // Track open state using unique ID string or null for clean closing control
   const [openId, setOpenId] = useState<string | null>('1');
 
@@ -72,8 +72,8 @@ const QNA: React.FC = () => {
 
   return (
     <section className="w-full bg-[#121314] py-20 px-4 md:px-8 font-sans text-white">
-      <div className="max-w-6xl mx-auto">
-        
+      <div className="max-w-[1520px] mx-auto">
+
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
           {content?.faqTitle || "Frequently asked questions"}
@@ -81,17 +81,17 @@ const QNA: React.FC = () => {
 
         {/* Two Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Left Column: Interactive Accordion Stack */}
           <div className="lg:col-span-7 flex flex-col gap-3 w-full">
             {isLoading ? (
-               [1, 2, 3, 4, 5].map((i) => (
-                 <div key={i} className="h-16 bg-[#222426]/60 animate-pulse rounded-xl" />
-               ))
+              [1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-16 bg-[#222426]/60 animate-pulse rounded-xl" />
+              ))
             ) : (
               faqDataToDisplay.map((item) => {
                 const isOpen = openId === item.id;
-                
+
                 return (
                   <div
                     key={item.id}
@@ -114,9 +114,8 @@ const QNA: React.FC = () => {
 
                     {/* Clean Hardware-Accelerated Dynamic Expanding Wrap */}
                     <div
-                      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
-                        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                      }`}
+                      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}
                     >
                       <div className="overflow-hidden">
                         <p className="px-5 pb-5 text-sm md:text-lg text-[#FFFFFF] leading-relaxed font-base whitespace-pre-wrap">
@@ -153,7 +152,7 @@ const QNA: React.FC = () => {
               <p className="text-lg md:text-xl text-gray-300 font-light max-w-sm leading-relaxed mb-6">
                 {content?.faqCardDescription || "Everything you need to know before getting started."}
               </p>
-              
+
               <button
                 onClick={() => {
                   const link = content?.faqButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
@@ -164,7 +163,7 @@ const QNA: React.FC = () => {
                 {content?.faqButtonText || "Book An Appointment"}
               </button>
             </div>
-          </div>  
+          </div>
 
         </div>
       </div>
