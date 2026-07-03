@@ -321,6 +321,15 @@ const Navbar = ({
           </Link>
 
           <Link
+            href="/supplements"
+            prefetch={true}
+            className={`text-xl lg:text-base ${getLinkClass("/supplements")}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Supplements
+          </Link>
+
+          <Link
             href="/blog"
             prefetch={true}
             className={`text-xl lg:text-base ${getLinkClass("/blog")}`}
