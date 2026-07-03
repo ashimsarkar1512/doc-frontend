@@ -104,17 +104,42 @@ export default function LabTestingPage() {
           />
 
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center px-5 sm:px-6 pb-8 sm:pb-10 pt-20 sm:pt-24 md:pt-28">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold text-white leading-[1.12] mb-4 sm:mb-6 drop-shadow-md tracking-tight">
+            <h1 style={{
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'Quicksand, sans-serif',
+              fontSize: 'clamp(36px, 6vw, 76px)',
+              fontWeight: 700,
+              lineHeight: '100%',
+            }} className="mb-6 sm:mb-8 drop-shadow-md">
               WLMD Lab Tests
             </h1>
             <button
-                onClick={() =>
+              onClick={() =>
                 window.open(
                   "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                   "_blank",
                 )
               }
-             className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-full transition-colors shadow-md text-[13px] sm:text-[14px]">
+              style={{
+                display: 'flex',
+                padding: '22px 32px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '15px',
+                borderRadius: '46px',
+                background: '#1D4ED8',
+                color: '#FFF',
+                fontFamily: 'Quicksand, sans-serif',
+                fontSize: '22px',
+                fontWeight: 600,
+                lineHeight: '100%',
+                textAlign: 'center',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#1a40b3')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#1D4ED8')}
+            >
               Book a consultation
             </button>
           </div>
@@ -161,9 +186,7 @@ export default function LabTestingPage() {
                     <p className="text-[13px] md:text-[14px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
                       {service.description}
                     </p>
-                    <button className="self-start bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[12px] sm:text-[13px] font-medium px-4 sm:px-5 py-2 rounded-full transition-colors">
-                    Coming soon
-                    </button>
+
                   </div>
                 </div>
 

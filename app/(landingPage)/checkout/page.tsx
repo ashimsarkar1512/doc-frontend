@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
 import {
   ShieldCheck,
   ChevronDown,
@@ -58,7 +59,7 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const inputBase =
-  "w-full bg-[#F3F4F6] text-gray-700 text-[14px] rounded-lg px-4 py-3 outline-none focus:bg-white border transition-colors";
+  "w-full h-[52px] bg-[#F0F0F0] text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-none rounded-lg px-3 outline-none focus:bg-white border transition-colors placeholder:text-[#3B3B3B] placeholder:font-normal placeholder:opacity-70 flex items-center";
 const inputOk = "border-transparent focus:border-blue-500";
 const inputErr = "border-red-400 focus:border-red-500 bg-red-50";
 
@@ -467,10 +468,11 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-white pb-20">
       <Navbar variant="dark" />
 
-      <div className="pt-32 pb-16 max-w-[1320px] mx-auto px-4 sm:px-6">
+      <div className="pt-32 pb-16 max-w-[1520px] mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row gap-10 items-start">
           {/* LEFT: Checkout Form */}
           <div className="flex-1 min-w-0 w-full">
@@ -481,18 +483,20 @@ export default function CheckoutPage() {
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               Back
             </button>
-            <h1 className="text-[26px] font-bold text-gray-900 mb-1">Checkout</h1>
-            <h2 className="text-[18px] sm:text-[20px] font-semibold text-gray-700 mb-8">
+            <h1 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2] mb-6">
+              Checkout
+            </h1>
+            <h2 className="text-[#272628] font-[Quicksand] text-[30px] font-bold leading-[1.1] mb-8">
               Pay to checkout and submit for approval
             </h2>
 
             {/* Shipping Info */}
             <div className="mb-10">
-              <h2 className="text-[18px] font-bold text-gray-900 mb-4">Shipping Info:</h2>
+              <h2 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-none mb-4">Shipping Info:</h2>
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Full Name:
                   </label>
                   <input
@@ -509,12 +513,12 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Contact Number
                   </label>
                   {/* International phone input with built-in country selector + format validation */}
                   <div
-                    className={`flex items-center w-full bg-[#F3F4F6] rounded-lg border transition-colors ${errors.contactNumber && touched.contactNumber
+                    className={`flex items-center h-[52px] w-full bg-[#F0F0F0] rounded-lg border transition-colors ${errors.contactNumber && touched.contactNumber
                       ? "border-red-400 bg-red-50"
                       : "border-transparent focus-within:border-blue-500 focus-within:bg-white"
                       }`}
@@ -526,17 +530,20 @@ export default function CheckoutPage() {
                       style={{ width: "100%" }}
                       inputStyle={{
                         width: "100%",
-                        height: "46px",
-                        fontSize: "14px",
+                        height: "52px",
+                        fontSize: "16px",
+                        fontFamily: "Quicksand",
+                        fontWeight: 400,
+                        lineHeight: 1,
                         backgroundColor: "transparent",
                         border: "none",
-                        color: "#374151",
+                        color: "#3B3B3B",
                         paddingLeft: "8px",
                         outline: "none"
                       }}
                       countrySelectorStyleProps={{
                         buttonStyle: {
-                          height: "46px",
+                          height: "52px",
                           backgroundColor: "transparent",
                           border: "none",
                           paddingLeft: "10px",
@@ -555,7 +562,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Address
                   </label>
                   <input
@@ -573,7 +580,7 @@ export default function CheckoutPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                       City
                     </label>
                     <input
@@ -589,7 +596,7 @@ export default function CheckoutPage() {
                     <FieldError message={touched.city ? errors.city : undefined} />
                   </div>
                   <div className="flex-1">
-                    <label className="flex items-center gap-1.5 text-gray-800 text-[14px] font-medium mb-1.5 relative group cursor-pointer w-fit">
+                    <label className="flex items-center gap-1.5 text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5 relative group cursor-pointer w-fit">
                       State
                       <svg className="w-4 h-4 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -618,7 +625,7 @@ export default function CheckoutPage() {
                     <FieldError message={touched.state ? errors.state : undefined} />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                       Zip
                     </label>
                     <input
@@ -640,21 +647,29 @@ export default function CheckoutPage() {
             {/* Payment Info */}
             <div className="mb-10">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-                <h2 className="text-[18px] font-bold text-gray-900">Payment Info:</h2>
-                <div className="flex items-center gap-1.5 text-gray-500 text-[14px]">
+                <h2 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-none">Payment Info:</h2>
+                <div className="flex items-center gap-1.5 text-[#3B3B3B] font-[Quicksand] text-[20px] font-normal leading-none">
                   Payment powered by:
-                  <div className="flex items-center text-[#2A8F3F] font-bold text-[18px] tracking-tight ml-1">
-                    <svg className="w-5 h-5 mr-0.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C9.5 2 7 4 7 6.5C7 7.5 7.5 8.5 8 9.5C6 9 4 9 2.5 10.5C1.5 11.5 1.5 13.5 3 15C4.5 16.5 6.5 16.5 7.5 15.5C8.5 14.5 9 13.5 9.5 12C9.5 14 9.5 16 9.5 18H14.5C14.5 16 14.5 14 14.5 12C15 13.5 15.5 14.5 16.5 15.5C17.5 16.5 19.5 16.5 21 15C22.5 13.5 22.5 11.5 21.5 10.5C20 9 18 9 16 9.5C16.5 8.5 17 7.5 17 6.5C17 4 14.5 2 12 2Z" />
+                  <div className="flex items-center ml-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="104" height="25" viewBox="0 0 104 25" fill="none">
+                      <path d="M42.3813 16.9356C40.41 19.2654 38.0802 20.1614 35.7505 20.1614C31.3598 20.1614 27.8652 17.0252 27.8652 12.9034C27.8652 8.78152 31.1806 5.64532 35.5713 5.64532C39.962 5.64532 40.2308 6.54138 42.2021 8.87113L39.2451 10.9321C38.1699 9.40876 37.005 8.87113 35.5713 8.87113C33.3311 8.87113 31.4494 10.6632 31.4494 12.9034C31.4494 15.1435 33.4208 16.9356 35.7505 16.9356C38.0802 16.9356 38.4387 16.3084 39.5139 14.9643L42.3813 16.9356Z" fill="#040"/>
+                      <path d="M43.9952 6.10352e-05H47.6691V19.8925H43.9952V6.10352e-05Z" fill="#040"/>
+                      <path d="M57.3481 5.64532C61.7388 5.64532 65.2334 8.78152 65.2334 12.9034C65.2334 17.0252 61.7388 20.1614 57.3481 20.1614C52.9574 20.1614 49.3732 17.0252 49.3732 12.9034C49.3732 8.78152 52.8678 5.64532 57.3481 5.64532ZM57.3481 17.1148C59.6779 17.1148 61.7388 15.2331 61.7388 12.9034C61.7388 10.5736 59.6779 8.69192 57.3481 8.69192C55.0184 8.69192 52.9574 10.5736 52.9574 12.9034C52.9574 15.2331 55.0184 17.1148 57.3481 17.1148Z" fill="#040"/>
+                      <path d="M64.6943 5.91394H68.9954L72.49 13.3512L76.2535 5.91394H80.1961L72.49 20.6989L64.6943 5.91394Z" fill="#040"/>
+                      <path d="M92.9216 18.2797C91.4879 19.4446 89.6062 20.1614 87.5453 20.1614C83.1546 20.1614 79.5704 17.0252 79.5704 12.9034C79.5704 8.78152 82.7962 5.64532 87.1868 5.64532C91.5775 5.64532 94.4449 8.78152 94.4449 12.9034V13.9786H83.2442C83.7818 15.8604 85.5739 17.1148 87.5453 17.1148C89.5166 17.1148 89.7854 16.7564 90.7711 15.7708L92.9216 18.3693V18.2797ZM90.6815 11.0217C90.1438 9.76718 88.8893 8.78152 87.2764 8.78152C85.6635 8.78152 84.3195 9.67758 83.6026 11.0217H90.6815Z" fill="#040"/>
+                      <path d="M96.3255 12.0967C96.3255 8.78125 98.8344 6.00348 103.046 6.00348V9.22928C101.254 9.22928 99.9993 10.3046 99.9993 12.5447V19.8924H96.3255V12.0967Z" fill="#040"/>
+                      <path d="M11.3799 6.54121C11.3799 3.40501 8.87096 0.896057 5.73476 0.896057C2.59856 0.896057 0 3.40501 0 6.54121C0 9.67741 2.50896 12.1864 5.64516 12.1864H11.2903V6.54121H11.3799Z" fill="#040"/>
+                      <path d="M12.9021 6.54121C12.9021 3.40501 15.4111 0.896057 18.5473 0.896057C21.6835 0.896057 24.1924 3.40501 24.1924 6.54121C24.1924 9.67741 21.6835 12.1864 18.5473 12.1864H12.9021V6.54121Z" fill="#040"/>
+                      <path d="M12.9021 19.3549C12.9021 22.4911 15.4111 25.0001 18.5473 25.0001C21.6835 25.0001 24.1924 22.4911 24.1924 19.3549C24.1924 16.2187 21.6835 13.7098 18.5473 13.7098H12.9021V19.3549Z" fill="#040"/>
+                      <path d="M11.3799 19.3549C11.3799 22.4911 8.87096 25.0001 5.73476 25.0001C2.59856 25.0001 0 22.4911 0 19.3549C0 16.2187 2.50896 13.7098 5.64516 13.7098H11.2903V19.3549H11.3799ZM5.64516 23.4768C7.8853 23.4768 9.76701 21.6847 9.76701 19.4445V15.4123H5.64516C3.40501 15.4123 1.5233 17.2044 1.5233 19.4445C1.5233 21.6847 3.31541 23.4768 5.64516 23.4768Z" fill="#040"/>
                     </svg>
-                    clover
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Payment Method
                   </label>
                   <div className="w-full bg-[#F3F4F6] text-gray-700 font-medium text-[14px] rounded-lg px-4 py-3 border border-transparent">
@@ -663,7 +678,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Card Holder Name
                   </label>
                   <input
@@ -682,7 +697,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                     Card Number
                   </label>
                   <input
@@ -702,12 +717,12 @@ export default function CheckoutPage() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Expiry Date */}
                   <div className="flex-1 relative" ref={expiryPickerRef}>
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                       Expired Date
                     </label>
 
                     <div
-                      className={`flex items-center h-[42px] ${inputBase} ${errors.expiredDate && touched.expiredDate ? inputErr : inputOk
+                      className={`flex items-center ${inputBase} ${errors.expiredDate && touched.expiredDate ? inputErr : inputOk
                         } px-0 py-0`}
                     >
                       <input
@@ -718,7 +733,7 @@ export default function CheckoutPage() {
                         onChange={(e) => handleExpiryChange(e.target.value)}
                         onBlur={() => handleBlurValidate("expiredDate")}
                         placeholder="MM/YY"
-                        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0"
+                        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0 placeholder:text-[#3B3B3B] placeholder:font-normal placeholder:opacity-70"
                       />
 
                       <button
@@ -803,7 +818,7 @@ export default function CheckoutPage() {
 
                   {/* CVV */}
                   <div className="flex-1">
-                    <label className="block text-gray-800 text-[14px] font-medium mb-1.5">
+                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
                       CVV
                     </label>
 
@@ -815,7 +830,7 @@ export default function CheckoutPage() {
                       onChange={(e) => handleCVVChange(e.target.value)}
                       onBlur={() => handleBlurValidate("cvv")}
                       placeholder="123"
-                      className={`h-[42px] ${inputBase} ${errors.cvv && touched.cvv ? inputErr : inputOk
+                      className={`${inputBase} ${errors.cvv && touched.cvv ? inputErr : inputOk
                         }`}
                     />
 
@@ -831,13 +846,13 @@ export default function CheckoutPage() {
                 <ShieldCheck className="w-[28px] h-[28px] text-blue-600" />
                 <h2 className="text-[#2B2922] font-[Quicksand] text-[24px] font-bold leading-none">Compliance Confirmation:</h2>
               </div>
-              <p className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] mb-6 max-w-[95%]">
+              <p className="text-[#3B3B3B] font-[Quicksand] text-[20px] font-normal leading-[1.5] mb-6 max-w-[95%]">
                 Before completing your submission, please confirm you understand the following
                 important information about our telemedicine service:
               </p>
 
-              <div className="flex flex-col gap-3 mb-6">
-                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
+              <div className="flex flex-col gap-[12px] mb-6">
+                <div className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
                   <input
                     id="compliance-terms"
                     type="checkbox"
@@ -848,16 +863,16 @@ export default function CheckoutPage() {
                         agreedToTermsAndPrivacy: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
+                    className="w-5 h-5 accent-[#2563EB] shrink-0 cursor-pointer mt-0.5 border-gray-300 rounded"
                   />
-                  <label htmlFor="compliance-terms" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
+                  <label htmlFor="compliance-terms" className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none cursor-pointer">
                     I have reviewed and agree to the{" "}
-                    <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-blue-600 transition-colors">Terms of Service</Link>
+                    <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-[#2563EB] transition-colors">Terms of Service</Link>
                     {" "}and{" "}
-                    <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-blue-600 transition-colors">Privacy Policy</Link>.
+                    <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-bold underline hover:text-[#2563EB] transition-colors">Privacy Policy</Link>.
                   </label>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
+                <div className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
                   <input
                     id="compliance-accurate"
                     type="checkbox"
@@ -868,13 +883,13 @@ export default function CheckoutPage() {
                         certifiedInfoAccurate: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
+                    className="w-5 h-5 accent-[#2563EB] shrink-0 cursor-pointer mt-0.5 border-gray-300 rounded"
                   />
-                  <label htmlFor="compliance-accurate" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
+                  <label htmlFor="compliance-accurate" className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none cursor-pointer">
                     I certify that all information provided is accurate and complete.
                   </label>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
+                <div className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
                   <input
                     id="compliance-false-info"
                     type="checkbox"
@@ -885,14 +900,14 @@ export default function CheckoutPage() {
                         understoodFalseInfoConsequences: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
+                    className="w-5 h-5 accent-[#2563EB] shrink-0 cursor-pointer mt-0.5 border-gray-300 rounded"
                   />
-                  <label htmlFor="compliance-false-info" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
+                  <label htmlFor="compliance-false-info" className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none cursor-pointer">
                     I understand that providing false or misleading information may result in
                     denial of treatment.
                   </label>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
+                <div className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
                   <input
                     id="compliance-recommendations"
                     type="checkbox"
@@ -903,14 +918,14 @@ export default function CheckoutPage() {
                         understoodRecommendationsBasis: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
+                    className="w-5 h-5 accent-[#2563EB] shrink-0 cursor-pointer mt-0.5 border-gray-300 rounded"
                   />
-                  <label htmlFor="compliance-recommendations" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
+                  <label htmlFor="compliance-recommendations" className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none cursor-pointer">
                     I understand that treatment recommendations are based on the information I
                     have provided.
                   </label>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 border border-gray-200 rounded-lg p-3.5 transition-colors">
+                <div className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
                   <input
                     id="compliance-additional-info"
                     type="checkbox"
@@ -921,9 +936,9 @@ export default function CheckoutPage() {
                         understoodAdditionalInfoMayBeRequested: e.target.checked,
                       })
                     }
-                    className="w-4 h-4 accent-blue-600 shrink-0 cursor-pointer mt-1 sm:mt-0.5"
+                    className="w-5 h-5 accent-[#2563EB] shrink-0 cursor-pointer mt-0.5 border-gray-300 rounded"
                   />
-                  <label htmlFor="compliance-additional-info" className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-[1.5] cursor-pointer">
+                  <label htmlFor="compliance-additional-info" className="text-[#272628] font-[Quicksand] text-[20px] font-normal leading-none cursor-pointer">
                     I understand that additional information may be requested before treatment is
                     approved.
                   </label>
@@ -1265,18 +1280,25 @@ export default function CheckoutPage() {
           background: transparent;
           border: none;
           outline: none;
-          font-size: 14px;
-          color: #374151;
+          font-family: 'Quicksand', sans-serif;
+          font-size: 16px;
+          color: #3B3B3B;
           padding: 0;
           flex: 1;
+        }
+        .checkout-phone-input .PhoneInputInput::placeholder {
+          color: #3B3B3B;
+          opacity: 0.7;
+          font-weight: 400;
         }
         .checkout-phone-input .PhoneInputCountry {
           margin-right: 10px;
         }
         .checkout-phone-input .PhoneInputCountrySelect {
-          font-size: 14px;
+          font-size: 16px;
         }
       `}</style>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

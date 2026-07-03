@@ -40,7 +40,7 @@ export default function PreviewDetailsPage() {
 
     const payloadStr = localStorage.getItem("checkoutPayload");
     let hasDiscountInPayload = false;
-    
+
     if (payloadStr) {
       try {
         const payload = JSON.parse(payloadStr);
@@ -67,7 +67,7 @@ export default function PreviewDetailsPage() {
   });
 
   const { data: cartData, isLoading: cartLoading } = useGetMyCartQuery();
-  
+
   const queryParams: any = {};
   if (submissionId) queryParams.submissionId = submissionId;
   if (discountCode) queryParams.discountCode = discountCode;
@@ -324,7 +324,7 @@ export default function PreviewDetailsPage() {
         <div className="flex flex-col">
 
           {/* Card 1: Patient info & image */}
-          <div 
+          <div
             className="border border-gray-200 rounded-xl bg-white mb-4 shadow-sm"
             style={{
               display: "flex",
@@ -434,7 +434,7 @@ export default function PreviewDetailsPage() {
                                   if (isFileInput(opt.inputType)) return null;
                                   const val = parts[idx] || "—";
                                   const labelLower = (opt.label || "").toLowerCase();
-                                  
+
                                   let suffix = "";
                                   if (labelLower.includes("age")) suffix = "years";
                                   else if (labelLower.includes("height")) {
@@ -445,7 +445,7 @@ export default function PreviewDetailsPage() {
                                     suffix = "lbs";
                                     weightLbs = parseFloat(val) || 0;
                                   }
-                                  
+
                                   return (
                                     <div key={opt.id} className="flex items-center mb-3 last:mb-0 ml-4">
                                       <span className="text-[#6B7280] text-[15px] font-[Quicksand] w-[80px] font-medium">{opt.label}:</span>
@@ -483,9 +483,63 @@ export default function PreviewDetailsPage() {
                               })()}
                             </div>
                           ) : (
-                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 w-full max-w-[500px]">
-                              <p className="text-[14px] text-gray-700 whitespace-pre-wrap">{question.patientAnswer?.textResponse || "No response provided"}</p>
-                            </div>
+                            (() => {
+                              const textResp = question.patientAnswer?.textResponse || "";
+                              const qText = (question.questionText || question.heading || "").toLowerCase();
+                              if (qText.includes("age") && qText.includes("weight") && qText.includes("height") && textResp.includes(",")) {
+                                const parts = textResp.split(", ");
+                                const age = parts[0] || "—";
+                                const heightStr = parts[1] || "—";
+                                const weightStr = parts[2] || "—";
+
+                                const heightFeet = parseFloat(heightStr) || 0;
+                                const weightLbs = parseFloat(weightStr) || 0;
+
+                                let bmiDisplay = null;
+                                if (weightLbs > 0 && heightFeet > 0) {
+                                  const heightInches = heightFeet * 12;
+                                  const bmi = (703 * weightLbs) / (heightInches * heightInches);
+                                  let bmiCategory = "";
+                                  if (bmi < 18.5) bmiCategory = "Underweight";
+                                  else if (bmi < 25) bmiCategory = "Normal weight";
+                                  else if (bmi < 30) bmiCategory = "Overweight";
+                                  else bmiCategory = "Obese";
+
+                                  bmiDisplay = (
+                                    <div className="mt-4 bg-[#EBE0D8] rounded-xl px-5 py-4 w-full">
+                                      <p className="text-[#2B2922] font-[Quicksand] font-bold text-[15px] mb-1">Health Snapshot:</p>
+                                      <p className="text-[#F43F5E] font-[Quicksand] font-medium text-[15px]">BMI: {bmi.toFixed(1)} ({bmiCategory})</p>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <div className="w-full">
+                                    <div className="flex flex-col mt-4">
+                                      <div className="flex items-center mb-3 ml-4">
+                                        <span className="text-[#6B7280] text-[15px] font-[Quicksand] w-[80px] font-medium">Age:</span>
+                                        <span className="text-[#2B2922] text-[15px] font-[Quicksand] font-medium">{age} years</span>
+                                      </div>
+                                      <div className="flex items-center mb-3 ml-4">
+                                        <span className="text-[#6B7280] text-[15px] font-[Quicksand] w-[80px] font-medium">Height:</span>
+                                        <span className="text-[#2B2922] text-[15px] font-[Quicksand] font-medium">{heightStr} feet</span>
+                                      </div>
+                                      <div className="flex items-center mb-3 ml-4">
+                                        <span className="text-[#6B7280] text-[15px] font-[Quicksand] w-[80px] font-medium">Weight:</span>
+                                        <span className="text-[#2B2922] text-[15px] font-[Quicksand] font-medium">{weightStr} lbs</span>
+                                      </div>
+                                    </div>
+                                    {bmiDisplay}
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 w-full max-w-[500px]">
+                                  <p className="text-[14px] text-gray-700 whitespace-pre-wrap">{textResp || "No response provided"}</p>
+                                </div>
+                              );
+                            })()
                           )}
                         </div>
                       ) : null}
@@ -603,14 +657,74 @@ export default function PreviewDetailsPage() {
                                 )}
                               </div>
                             </div>
+                          ) : question.options && question.options.length > 0 ? (
+                            <div className="flex flex-col gap-4 mt-2">
+                              {question.options.map((opt: any, idx: number) => {
+                                const currentAnswers = (draftAnswers[question.id] || "").split(", ");
+                                return (
+                                  <div key={opt.id} className="flex flex-col">
+                                    {opt.label?.trim() && (
+                                      <label className="text-[#2B2922] font-[Quicksand] text-[20px] font-medium leading-[110%] mb-2">
+                                        {opt.label}
+                                      </label>
+                                    )}
+                                    <input
+                                      type={opt.inputType === "NUMBER" ? "number" : "text"}
+                                      value={currentAnswers[idx] || ""}
+                                      onChange={(e) => {
+                                        const newAnswers = [...currentAnswers];
+                                        while (newAnswers.length < question.options.length) newAnswers.push("");
+                                        newAnswers[idx] = e.target.value;
+                                        setDraftAnswers({ ...draftAnswers, [question.id]: newAnswers.join(", ") });
+                                      }}
+                                      placeholder={opt.placeholder || (opt.inputType === "NUMBER" ? "Enter a number..." : "Write here...")}
+                                      className="w-full px-4 py-3.5 rounded-xl border-none bg-[#E5E7EB] text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
                           ) : (
-                            <textarea
-                              value={draftAnswers[question.id] || ""}
-                              onChange={(e) => setDraftAnswers({ ...draftAnswers, [question.id]: e.target.value })}
-                              placeholder="Type your response here..."
-                              className="w-full border border-gray-200 rounded-xl p-3.5 text-[14px] text-gray-700 focus:ring-2 focus:ring-blue-100 focus:border-[#2563EB] outline-none shadow-sm transition-all"
-                              rows={3}
-                            />
+                            (() => {
+                              const qText = (question.questionText || question.heading || "").toLowerCase();
+                              if (qText.includes("age") && qText.includes("weight") && qText.includes("height")) {
+                                const currentAnswers = (draftAnswers[question.id] || "").split(", ");
+                                const labels = ["Age", "Height", "Weight"];
+                                const placeholders = ["Age (years)", "Height (feet)", "Weight (lbs)"];
+                                return (
+                                  <div className="flex flex-col gap-4 mt-2">
+                                    {labels.map((label, idx) => (
+                                      <div key={idx} className="flex flex-col">
+                                        <label className="text-[#2B2922] font-[Quicksand] text-[20px] font-medium leading-[110%] mb-2">
+                                          {label}
+                                        </label>
+                                        <input
+                                          type={label === "Height" ? "text" : "number"}
+                                          value={currentAnswers[idx] || ""}
+                                          onChange={(e) => {
+                                            const newAnswers = [...currentAnswers];
+                                            while (newAnswers.length < 3) newAnswers.push("");
+                                            newAnswers[idx] = e.target.value;
+                                            setDraftAnswers({ ...draftAnswers, [question.id]: newAnswers.join(", ") });
+                                          }}
+                                          placeholder={placeholders[idx]}
+                                          className="w-full px-4 py-3.5 rounded-xl border-none bg-[#E5E7EB] text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              return (
+                                <textarea
+                                  value={draftAnswers[question.id] || ""}
+                                  onChange={(e) => setDraftAnswers({ ...draftAnswers, [question.id]: e.target.value })}
+                                  placeholder="Type your response here..."
+                                  className="w-full rounded-xl p-3.5 text-[15px] text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-[#E5E7EB] border-none mt-2"
+                                  rows={3}
+                                />
+                              );
+                            })()
                           )}
                         </div>
                       )}
@@ -637,7 +751,7 @@ export default function PreviewDetailsPage() {
               Before completing your submission, please confirm you understand the following important information about our telemedicine service:
             </p>
 
-            <div className="flex flex-col gap-3 mb-4">
+            <div className="flex flex-col gap-[12px] mb-4">
               {[
                 { text: "I have reviewed and agree to the <span class=\"font-bold underline\">Terms of Service and Privacy Policy.</span>" },
                 { text: "I certify that all information provided is accurate and complete." },
@@ -645,11 +759,11 @@ export default function PreviewDetailsPage() {
                 { text: "I understand that treatment recommendations are based on the information I have provided." },
                 { text: "I understand that additional information may be requested before treatment is approved." }
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 border border-gray-200 rounded-lg p-3.5">
-                  <div className="w-4 h-4 accent-blue-600 shrink-0 bg-blue-600 rounded flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-white" strokeWidth={3.5} />
+                <div key={i} className="flex items-start gap-[12px] border border-[#D1D5DC] rounded-[12px] p-4 transition-colors">
+                  <div className="w-5 h-5 mt-0.5 shrink-0 bg-[#2563EB] rounded flex items-center justify-center">
+                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.5} />
                   </div>
-                  <span className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal" dangerouslySetInnerHTML={{ __html: item.text }} />
+                  <span className="text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-tight" dangerouslySetInnerHTML={{ __html: item.text }} />
                 </div>
               ))}
             </div>
