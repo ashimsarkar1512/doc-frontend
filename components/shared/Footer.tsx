@@ -97,15 +97,18 @@ const Footer = () => {
             {/* Brand & Description */}
             <div className="md:col-span-5 pr-0 md:pr-12">
               <div className="flex items-center gap-1 cursor-pointer mb-4">
-                <Image
-                  src={logoImg?.fileUrl }
-                  alt="Logo"
-                  width={180}
-                  height={80}
-                   loading="lazy" 
-                  className=" h-9 sm:h-16 md:h-16 w-auto max-w-[332px]  md:max-w-[380px] object-left"
-                />
-                {/* <Logo variant="light" /> */}
+                {logoImg?.fileUrl ? (
+                  <Image
+                    src={logoImg.fileUrl}
+                    alt="Logo"
+                    width={180}
+                    height={80}
+                    loading="lazy" 
+                    className="h-9 sm:h-16 md:h-16 w-auto max-w-[332px] md:max-w-[380px] object-left"
+                  />
+                ) : (
+                  <div className="h-9 sm:h-16 md:h-16 w-[180px] bg-white/10 rounded animate-pulse" />
+                )}
               </div>
               <p className="text-xl text-gray-200 leading-[1.7] font-light">
                 Weight Loss MD is a medical weight loss clinic in Colorado
@@ -224,14 +227,14 @@ const Footer = () => {
                     HIPPA Notice of Privacy
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     href="/marketing-and-conditions"
                     className="hover:text-white transition-colors"
                   >
                     Marketing and Conditions
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     href="/billing-and-cancellation"

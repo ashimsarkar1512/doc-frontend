@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   useGetProductsByCategoryIdQuery,
+  useGetProductByIdQuery,
   useAddToCartMutation,
   useGetMyCartQuery,
   useGetCartSummaryQuery,
@@ -104,6 +105,12 @@ function ProductsInner() {
 
   // ── View Details State ──
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  const { data: productDetailsData, isLoading: detailsLoading } = 
+    useGetProductByIdQuery(selectedProduct?.id ?? "", { skip: !selectedProduct?.id });
+    
+  // Handle case where API response is either wrapped in 'data' or is the direct object
+  const displayProduct = productDetailsData?.data || productDetailsData || selectedProduct;
 
   // ── Checkbox state (controlled so checkmark works) ──
   const [recurring, setRecurring] = useState(true);
@@ -213,37 +220,67 @@ function ProductsInner() {
                 <div className="mb-8 flex items-center gap-2">
                   <button onClick={() => setSelectedProduct(null)} className="text-[#191B1C] font-[Quicksand] text-[24px] font-bold flex items-center gap-2 hover:text-blue-600 transition-colors cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    {selectedProduct.name} details
+                    {(displayProduct?.title || displayProduct?.name)} details
                   </button>
+                  {detailsLoading && <Loader2 className="w-5 h-5 animate-spin text-blue-600 ml-2" />}
                 </div>
                 
-                <div className="w-full max-w-[450px] aspect-[4/3] rounded-[16px] overflow-hidden flex items-center justify-center p-4 mb-6 shadow-sm" style={{ backgroundColor: "#292C2D" }}>
-                  <Image src={selectedProduct.image || "/medicine-1.png"} alt={selectedProduct.name} width={300} height={300} unoptimized className="object-contain p-6 drop-shadow-xl" />
+                <div className="w-[348px] h-[246px] rounded-[20px] overflow-hidden flex items-center justify-center p-4 mb-6 shadow-sm flex-shrink-0" style={{ backgroundColor: "#292C2D" }}>
+                  <Image src={displayProduct?.image?.fileUrl || displayProduct?.image || "/medicine-1.png"} alt={displayProduct?.title || displayProduct?.name || "Product"} width={300} height={300} unoptimized className="w-full h-full object-contain p-6 drop-shadow-xl" />
                 </div>
 
-                <div className="mb-8 text-[#272628] font-[Quicksand] text-[16px]">
-                  Available size: <span className="font-normal text-gray-500">20mg / 37.5mg / 45mg</span>
+                <div className="mb-8 text-[#3B3B3B] font-[Quicksand] text-[20px] font-semibold leading-none">
+                  Available size:{" "}
+                  <span className="font-normal">
+                    {displayProduct?.variants && displayProduct.variants.length > 0 
+                      ? displayProduct.variants.map((v: any) => v.size).filter(Boolean).join(" / ")
+                      : "Standard"}
+                  </span>
                 </div>
 
-                <div className="flex flex-col gap-8 text-[#545454] font-[Quicksand] text-[16px] leading-[1.6]">
-                  <div>
-                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">Indications</h2>
-                    <p className="mb-4">{selectedProduct.name} is a Schedule IV controlled substance that may be prescribed for short-term use in eligible patients following an evaluation by a licensed medical provider. Treatment is provided only when clinically appropriate and in accordance with applicable federal and state regulations.</p>
-                    <p className="mb-4">{selectedProduct.name} may be associated with side effects and potential risks, including the possibility of dependence, and may not be appropriate for all individuals. All prescribing decisions are made at the discretion of a licensed medical provider based on individual medical history, symptoms, and clinical judgment.</p>
-                    <p>Results vary by individual, and no specific outcomes are guaranteed. This information is for educational purposes only and does not constitute medical advice.</p>
-                  </div>
-
-                  <div>
-                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">What This Medication Does in Terms of Weight Loss</h2>
-                    <p className="mb-4">{selectedProduct.name} is a weight loss medication that works as an appetite suppressant to help individuals manage their food intake. It stimulates the central nervous system, increasing heart rate and energy levels while reducing hunger signals. By curbing cravings and decreasing appetite, {selectedProduct.name.toLowerCase()} makes it easier to follow a calorie-controlled diet, leading to effective weight loss.</p>
-                    <p>When combined with healthy eating habits and regular exercise, {selectedProduct.name.toLowerCase()} can enhance weight loss results for those struggling with obesity or excess weight. If you&apos;re considering {selectedProduct.name.toLowerCase()} for weight loss, consult with a medical provider at Weight Loss MD in Colorado to determine if it&apos;s the right solution for you.</p>
-                  </div>
-
-                  <div>
-                    <h2 className="text-[#272628] text-[22px] font-bold mb-4">Common Side Effects Our Colorado Clients Often Notice</h2>
-                    <p>{selectedProduct.name} is a popular prescription weight loss medication, but like any drug, it may cause side effects. At Weight Loss MD, we closely monitor our patients to ensure safe and effective use of this medication. Understanding potential side effects can help you make an informed decision and know what to expect during your weight loss journey.</p>
-                  </div>
-                </div>
+                <style>{`
+                  .quill-content h1, .quill-content h2, .quill-content h3, .quill-content h4, .quill-content h5, .quill-content h6 {
+                    color: #212121 !important;
+                    font-family: Quicksand, sans-serif !important;
+                    font-size: 26px !important;
+                    font-style: normal !important;
+                    font-weight: 600 !important;
+                    line-height: 30px !important;
+                    margin-bottom: 1rem;
+                    margin-top: 1.5rem;
+                  }
+                  .quill-content p, .quill-content li {
+                    color: #3B3B3B !important;
+                    font-family: Quicksand, sans-serif !important;
+                    font-size: 20px !important;
+                    font-style: normal !important;
+                    font-weight: 400 !important;
+                    line-height: 150% !important; /* 30px */
+                    margin-bottom: 1rem;
+                  }
+                  .quill-content ul { list-style-type: disc !important; margin-left: 1.5rem !important; margin-bottom: 1rem; }
+                  .quill-content ol { list-style-type: decimal !important; margin-left: 1.5rem !important; margin-bottom: 1rem; }
+                  .quill-content a { color: #2563EB !important; text-decoration: underline !important; }
+                  .quill-content strong, .quill-content b { font-weight: 700 !important; color: #272628; }
+                  .quill-content em, .quill-content i { font-style: italic !important; }
+                  .quill-content u { text-decoration: underline !important; }
+                  .quill-content s, .quill-content strike { text-decoration: line-through !important; }
+                  
+                  /* React Quill specific classes */
+                  .quill-content .ql-size-small { font-size: 0.75em !important; }
+                  .quill-content .ql-size-large { font-size: 1.5em !important; }
+                  .quill-content .ql-size-huge { font-size: 2.5em !important; }
+                  .quill-content .ql-align-center { text-align: center !important; }
+                  .quill-content .ql-align-right { text-align: right !important; }
+                  .quill-content .ql-align-justify { text-align: justify !important; }
+                  
+                  .quill-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
+                  .quill-content iframe { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+                `}</style>
+                <div 
+                  className="flex flex-col font-[Quicksand] quill-content overflow-hidden break-words" 
+                  dangerouslySetInnerHTML={{ __html: (displayProduct?.description || "").replace(/&nbsp;/g, " ") }} 
+                />
               </>
             ) : (
               <>
@@ -402,7 +439,9 @@ function ProductsInner() {
                                 {item.product?.name || "Unknown Product"}
                               </p>
                               {item.product?.description && (
-                                <p className="text-[#272628] font-[Quicksand] text-[16px] font-normal leading-none mt-1 line-clamp-1">{item.product.description}</p>
+                                <p className="text-[#272628] font-[Quicksand] text-[16px] font-normal leading-[1.2] mt-1 line-clamp-1">
+                                  {item.product.description.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().substring(0, 35)}...
+                                </p>
                               )}
                             </div>
                             <p className="text-[#2563EB] text-[14px] font-bold flex-shrink-0">

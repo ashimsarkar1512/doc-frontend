@@ -596,7 +596,7 @@ export default function AssessmentSteps() {
           <CompletionStep />
         )}
         {/* ── Footer buttons ── */}
-        <div className="flex items-center justify-between w-full px-1 mt-[41px]">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 w-full px-1 mt-[41px]">
           {/* ── COMPLETION STEP buttons ── */}
           {currentStep === COMPLETION_STEP && (
             <>

@@ -42,7 +42,7 @@ export function AuthChoiceForm({ authChoice, setAuthChoice }: any) {
                   <span className="w-2.5 h-2.5 rounded-full bg-white" />
                 )}
               </span>
-              <span className="text-gray-800 text-[15px] font-medium">
+              <span style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "20px", fontWeight: 500, lineHeight: "150%" }}>
                 {option}
               </span>
             </button>
