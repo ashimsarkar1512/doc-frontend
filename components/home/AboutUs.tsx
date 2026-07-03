@@ -65,7 +65,7 @@ const AboutUs = () => {
       )}
 
       {/* Services Grid */}
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-[29px] w-full px-0 lg:px-[80px] mb-[80px] self-stretch">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full mb-16">
         {services.map((service) => (
           <div
             key={service.id}

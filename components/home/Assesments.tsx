@@ -65,7 +65,11 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   <button
     onClick={onClick}
     className={`
+<<<<<<< HEAD
       flex justify-center items-center gap-[15px] px-[32px] py-[9px] rounded-full transition-all duration-200
+=======
+      shrink-0 whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200
+>>>>>>> 63d6dac1929175cefd97b0e3ee1bc96b524425fc
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
       ${isActive
         ? "bg-[#2563EB] shadow-md shadow-blue-500/20"
@@ -302,7 +306,7 @@ export default function Assessments() {
         </div>
 
         {/* Filters with scroll into view on filter change */}
-        <div className="flex flex-wrap justify-start gap-3 mb-[40px]">
+        <div className="flex overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible gap-3 mb-12 py-2">
           {filters.map((filter) => (
             <FilterButton
               key={filter}

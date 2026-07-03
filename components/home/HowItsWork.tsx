@@ -29,7 +29,7 @@ const defaultSteps = [
 
 const HowItsWork: React.FC = () => {
   const { content, isLoading } = useHomepageContent();
-  console.log(content)
+  // console.log(content)
 
   const title = content?.howItWorksTitle || "How It Works";
   const stepsToDisplay = content
