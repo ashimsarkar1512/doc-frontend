@@ -9,6 +9,7 @@ import {
   useGetCategoriesNamesQuery,
   useGetActiveProvidersQuery,
   useUploadAttachmentMutation,
+  useGetReportSideEffectContentQuery,
   Category,
   Doctor,
 } from '@/Redux/features/sideEffect/sideEffectAPi';
@@ -25,6 +26,7 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   description: string;
   serviceId: string;
   providerId: string;
@@ -127,6 +129,7 @@ const ReportForm = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     description: '',
     serviceId: '',
     providerId: '',
@@ -149,12 +152,33 @@ const ReportForm = () => {
   const rawProviders: Doctor[] = providersData?.data ?? [];
   const providers = rawProviders.map((doc) => ({ id: doc.id, name: doc.fullName }));
 
-  const severities: SeverityOption[] = [
+  const { data: contentData } = useGetReportSideEffectContentQuery();
+  const apiSymptoms = contentData?.data?.symptoms || [];
+
+  const defaultSeverities: SeverityOption[] = [
     { id: 'MILD', label: 'Mild', desc: 'Manageable, not affecting daily life' },
     { id: 'MODERATE', label: 'Moderate', desc: 'Affecting daily activities' },
     { id: 'SEVERE', label: 'Severe', desc: 'Significant impact, may need medical attention' },
     { id: 'LIFE_THREATENING', label: 'Life-threatening', desc: 'Requires immediate emergency care' },
   ];
+
+  const severities: SeverityOption[] = apiSymptoms.length > 0
+    ? [...apiSymptoms].sort((a, b) => a.order - b.order).map(s => {
+        const parts = s.text.split(' - ');
+        const label = parts[0]?.trim();
+        const desc = parts.slice(1).join(' - ')?.trim() || '';
+        
+        let severityEnum: Severity = 'MILD';
+        const lowerLabel = label.toLowerCase();
+        if (lowerLabel.includes('moderate')) severityEnum = 'MODERATE';
+        else if (lowerLabel.includes('severe')) severityEnum = 'SEVERE';
+        else if (lowerLabel.includes('life-threatening')) severityEnum = 'LIFE_THREATENING';
+        else if (lowerLabel.includes('mild')) severityEnum = 'MILD';
+        else severityEnum = label.toUpperCase().replace(/[^A-Z]/g, '_') as Severity; // Fallback
+
+        return { id: severityEnum, label, desc };
+      })
+    : defaultSeverities;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -213,6 +237,7 @@ const res = await uploadAttachment(formPayload).unwrap();
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
+      phone: formData.phone || undefined,
       description: formData.description,
       severity: selectedSeverity,
       status: 'PENDING',
@@ -224,7 +249,7 @@ const res = await uploadAttachment(formPayload).unwrap();
     try {
       await submitSideEffectReport(payload).unwrap();
       toast.success('Report submitted successfully!');
-      setFormData({ firstName: '', lastName: '', email: '', description: '', serviceId: '', providerId: '' });
+      setFormData({ firstName: '', lastName: '', email: '', phone: '', description: '', serviceId: '', providerId: '' });
       setSelectedSeverity(null);
       setUploadedFiles([]);
     } catch (error) {
@@ -265,18 +290,32 @@ const res = await uploadAttachment(formPayload).unwrap();
           </div>
         </div>
 
-        {/* Email */}
-        <div className="flex flex-col gap-1.5 mb-5">
-          <label className="text-sm xl:lg:text-lg  md:text-base font-semibold text-[#2B2922]">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            required
-            className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
-          />
+        {/* Email & Phone */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm xl:lg:text-lg md:text-base font-semibold text-[#2B2922]">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm xl:lg:text-lg md:text-base font-semibold text-[#2B2922]">Contact Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+123 456789"
+              required
+              className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black"
+            />
+          </div>
         </div>
 
         {/* Service */}

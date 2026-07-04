@@ -1,89 +1,134 @@
-import React from 'react';
-import { CheckCircle2, Shield } from 'lucide-react';
+"use client";
 
-const steps = [
-  { name: 'Rx Received', day: 'Day 0', color: 'bg-[#1A5C8A]' },
-  { name: 'Processing', day: 'Day 1-2', color: 'bg-[#22A87A]' },
-  { name: 'Shipped', day: 'Day 3-4', color: 'bg-[#2E86C1]' },
-  { name: 'In Transit', day: 'Day 5-7', color: 'bg-[#1A5C8A]' },
-  { name: 'Delivered', day: 'Day 5-7', color: 'bg-[#22A87A]' },
+import React from 'react';
+import { Shield } from 'lucide-react';
+import { useGetShippingInfoQuery } from '@/Redux/features/shipping/shippingApi';
+
+// Colors for the step bars cycling through
+const STEP_COLORS = [
+  'bg-[#1A5C8A]',
+  'bg-[#22A87A]',
+  'bg-[#2E86C1]',
+  'bg-[#1A5C8A]',
+  'bg-[#22A87A]',
 ];
 
 const ShippingTimeline = () => {
+  const { data, isLoading } = useGetShippingInfoQuery();
+  const timelineSection = data?.shippingTimelineSection;
+  const policySection = data?.shippingPolicySection;
+
+  const steps = timelineSection?.steps ?? [];
+  const policies = policySection?.policies ?? [];
+  const disclaimerTitle = policySection?.disclaimerTitle ?? 'Prescription & Pharmacy Disclosure:';
+  const disclaimerDescription = policySection?.disclaimerDescription ?? '';
+
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 mt-16 mb-10">
-      <h2 className="text-2xl md:text-3xl font-semibold text-center text-slate-900 mb-10">
-        Shipping Timeline
+    <section className="w-full max-w-[1520px] mx-auto px-4 mt-10 mb-6 flex flex-col items-center">
+      {/* ── Shipping Timeline ── */}
+      <h2
+        className="text-[54px] font-semibold text-center text-[#272628] mb-3"
+        style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
+      >
+        {timelineSection?.title ?? 'Shipping Timeline'}
       </h2>
+      <p
+        className="text-center text-[#272628] text-[20px] font-normal mb-10 max-w-3xl mx-auto"
+        style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '150%' }}
+      >
+        {timelineSection?.description ?? 'Timelines are estimates. Expedited options may be available. Cold-chain medications may require signature.'}
+      </p>
 
-      {/* Step Bars */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 mb-6 shadow-sm">
-        <div className="flex gap-2 md:gap-3 items-start mb-4">
-          {steps.map((step, index) => (
-            <div key={index} className="flex-1 flex flex-col items-center gap-2">
-              <div className={`w-full h-2 rounded-full ${step.color}`} />
-              <p className="text-[11px] md:text-xs font-semibold text-slate-700 text-center leading-tight">{step.name}</p>
-              <p className="text-[10px] md:text-xs text-slate-400 text-center">{step.day}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-center text-slate-400 text-xs mt-4 leading-relaxed">
-          Timelines are estimates. Expedited options may be available. Cold-chain medications may require signature.
-        </p>
+      {/* Step bars */}
+      <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] px-8 py-8 mb-6 w-full">
+        {isLoading ? (
+          <div className="flex gap-4 animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-4">
+                <div className="w-full h-[6px] rounded-full bg-slate-200" />
+                <div className="h-4 w-16 bg-slate-200 rounded" />
+                <div className="h-3 w-12 bg-slate-200 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex gap-4 items-start w-full">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex-1 flex flex-col items-center gap-4">
+                <div className={`w-full h-[6px] rounded-full ${STEP_COLORS[index % STEP_COLORS.length]}`} />
+                <div className="flex flex-col items-center gap-1 mt-1">
+                  <p
+                    className="text-[17px] font-semibold text-[#272628] text-center"
+                    style={{ fontFamily: 'Quicksand, sans-serif' }}
+                  >
+                    {step.title}
+                  </p>
+                  <p
+                    className="text-[16px] text-[#6B7280] text-center"
+                    style={{ fontFamily: 'Quicksand, sans-serif' }}
+                  >
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Tracking + Restrictions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-        {/* Tracking */}
-        <div className="bg-white border border-slate-200 rounded-xl px-6 py-5 shadow-sm">
-          <h3 className="font-semibold text-slate-800 text-[13px] mb-3">Tracking</h3>
-          <ul className="space-y-2.5">
-            {[
-              'Tracking number emailed when shipped',
-              'Track in your patient portal',
-              'SMS notifications available',
-              'Signature may be required for controlled medications',
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13px] text-slate-600">
-                <CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* ── Shipping Policy ── */}
+      <div className="mt-10 mb-4 w-full flex flex-col items-center">
+        <h2
+          className="text-[54px] font-semibold text-[#272628] mb-6 text-center"
+          style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
+        >
+          {policySection?.title ?? 'Shipping Policy'}
+        </h2>
 
-        {/* Restrictions */}
-        <div className="bg-white border border-slate-200 rounded-xl px-6 py-5 shadow-sm">
-          <h3 className="font-semibold text-slate-800 text-[13px] mb-3">Shipping Restrictions</h3>
-          <ul className="space-y-2.5">
-            {[
-              'Only ships within the US',
-              'Cannot ship to states without licensed providers',
-              'P.O. Boxes may not be eligible for cold-chain meds',
-              'No international shipments',
-            ].map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13px] text-slate-600">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0 mt-1.5" />
-                {item}
-              </li>
+        {isLoading ? (
+          <div className="flex flex-col gap-3 w-full animate-pulse">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="h-[72px] rounded-[16px] bg-slate-100 border border-[#E2E8F0]" />
             ))}
-          </ul>
-        </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 w-full">
+            {policies.map((policy) => (
+              <div
+                key={policy.id}
+                className="flex items-center gap-[12px] p-[24px] rounded-[16px] border border-[#E2E8F0] bg-[#F8FAFC]"
+              >
+                <div className="w-2 h-2 rounded-full bg-[#22A87A] shrink-0" />
+                <span
+                  className="text-[20px] text-[#3B3B3B] font-normal leading-[1.5]"
+                  style={{ fontFamily: 'Quicksand, sans-serif' }}
+                >
+                  {policy.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Disclaimer */}
-        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 py-8 flex items-start gap-3">
-          <Shield className="w-[18px] h-[18px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-          <p className="text-gray-700 text-xs leading-relaxed">
-            <strong className="text-[#ef4444]">Prescription & Pharmacy Disclaimer:</strong>
-            : All medications dispensed through our platform require a valid prescription from a licensed provider. We partner only with NABP-accredited or PCAB-accredited pharmacies. Compounded medications are not FDA-approved drug products and are prepared by state-licensed compounding pharmacies.
+      {/* ── Disclaimer ── */}
+      {(disclaimerTitle || disclaimerDescription) && (
+        <div className="bg-[#FFF5F5] rounded-[16px] px-[20px] py-[30px] mt-[40px] mb-[60px] flex items-start gap-[12px] w-full border border-[#FF778E]/20">
+          <Shield className="w-6 h-6 text-[#FF173E] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+          <p className="leading-[1.5] m-0" style={{ fontFamily: 'Quicksand, sans-serif' }}>
+            {disclaimerTitle && (
+              <strong className="text-[#FF173E] text-[20px] font-semibold mr-1">
+                {disclaimerTitle}
+              </strong>
+            )}
+            {disclaimerDescription && (
+              <span className="text-[#272628] text-[20px] font-normal">
+                {disclaimerDescription}
+              </span>
+            )}
           </p>
         </div>
-        {/* ============ */}
-      {/* <div className="bg-red-50 border border-red-100 rounded-xl px-6 py-4 text-[13px] text-slate-700 leading-relaxed">
-        <span className="font-bold text-slate-900">Prescription & Pharmacy Disclaimer: </span>
-        All medications dispensed through our platform require a valid prescription from a licensed provider. We partner only with NABP-accredited or PCAB-accredited pharmacies. Compounded medications are not FDA-approved drug products and are prepared by state-licensed compounding pharmacies.
-      </div> */}
+      )}
     </section>
   );
 };

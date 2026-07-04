@@ -26,6 +26,37 @@ export interface AttachmentData {
 
 // ─── Side Effect Types ───────────────────────────────────────────────────────
 
+export interface SymptomOption {
+  id: string;
+  text: string;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmergencyContact {
+  id: string;
+  title: string;
+  contact: string;
+  notes: string;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ReportSideEffectContentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symptoms: SymptomOption[];
+    emergencyWidget: {
+      id: string;
+      sectionTitle: string;
+      contacts: EmergencyContact[];
+    };
+  };
+}
+
 export interface SideEffectReportPayload {
   firstName: string;
   lastName: string;
@@ -92,6 +123,14 @@ export const sideEffectApi = baseApi.injectEndpoints({
       }),
     }),
 
+    // Website Content for Report Side Effect
+    getReportSideEffectContent: builder.query<ReportSideEffectContentResponse, void>({
+      query: () => ({
+        url: "/website-manage/report-side-effect",
+        method: "GET",
+      }),
+    }),
+
     // Active Providers / Doctors
     getActiveProviders: builder.query<
       DoctorsApiResponse,
@@ -132,4 +171,5 @@ export const {
   useGetActiveProvidersQuery,
   useUploadAttachmentMutation,
   useSubmitSideEffectReportMutation,
+  useGetReportSideEffectContentQuery,
 } = sideEffectApi;

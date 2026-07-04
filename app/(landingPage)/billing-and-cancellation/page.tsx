@@ -1,29 +1,32 @@
 import React from 'react';
+import Navbar from '@/components/shared/Navbar';
 import CommonHero from '@/components/shared/CommonHero';
 import BillingTimeline from '../../../components/BillingAndCancellation/BillingTimeline';
 import CancellationProcess from '../../../components/BillingAndCancellation/CancellationProcess';
 import BillingFAQ from '../../../components/BillingAndCancellation/BillingFAQ';
 import ContactCTA from '@/components/shared/ContactCTA';
-import Navbar from '@/components/shared/Navbar';
+
+export const metadata = {
+  title: "Membership, Billing & Cancellation - Weight Loss MD",
+  description: "Transparent pricing with no hidden fees. Cancel anytime.",
+};
 
 const BillingAndCancellationPage = () => {
   return (
-    <main className="min-h-screen bg-white pt-24 pb-12 overflow-hidden">
-      {/* 
-        The pt-24 provides space for the fixed navbar. 
-        Adjust if navbar height is different. 
-      */}
-      <Navbar 
-        variant="dark" 
-        initialPadding="pt-5 pb-4" // You can set your custom padding here!
-        scrolledPadding="py-2" 
+    <main className="min-h-screen bg-white">
+      <Navbar
+        variant="dark"
+        initialPadding="pt-5 pb-4"
+        scrolledPadding="py-2"
       />
-     {/* matches navbar height */}
-      <div className="flex flex-col w-full mx-auto">
-        <CommonHero 
-          title="Membership, Billing & Cancellation" 
-          description="Transparent pricing with no hidden fees. Cancel anytime." 
-        />
+
+      <CommonHero
+        title="Membership, Billing & Cancellation"
+        description="Transparent pricing with no hidden fees. Cancel anytime."
+        watermarkImage="/Shipping.png"
+      />
+
+      <div className="max-w-[1520px] mx-auto w-full flex flex-col items-center">
         <BillingTimeline />
         <CancellationProcess />
         <BillingFAQ />

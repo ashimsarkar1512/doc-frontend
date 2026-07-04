@@ -32,7 +32,10 @@ const CommonHero: React.FC<CommonHeroProps> = ({ title, description, watermarkIm
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto mt-4 md:mt-8">
           {badge && <div className="flex justify-center mb-6">{badge}</div>}
-          <h1 className="text-[42px] md:text-[62px] lg:text-[76px] font-bold text-[#2A2B2C] leading-[1.1] tracking-tight mb-5 ">
+          <h1
+            style={{ fontFamily: 'Quicksand, sans-serif' }}
+            className="text-[42px] md:text-[62px] lg:text-[76px] font-bold text-[#2A2B2C] leading-none tracking-normal mb-5 text-center"
+          >
             {title}
           </h1>
           {description && (
