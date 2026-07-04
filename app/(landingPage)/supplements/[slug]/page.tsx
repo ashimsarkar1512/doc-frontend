@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
 import AssessmentButton from "@/components/supplements/AssessmentButton";
+import BackButton from "@/components/supplements/BackButton";
 
 function getApiUrl(slug: string): string {
   let baseUrl =
@@ -88,13 +89,7 @@ export default async function ProductDetailsPage({ params }: { params: any }) {
       <section className="w-full max-w-[1520px] mx-auto px-4 md:px-6 2xl:px-0! pb-[120px]">
         {/* Back Button */}
         <div className="mb-8">
-          <Link
-            href="/supplements"
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors font-medium text-lg"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Supplements
-          </Link>
+          <BackButton />
         </div>
 
         {/* Title */}
