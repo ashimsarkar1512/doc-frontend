@@ -6,6 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 import { Search } from "lucide-react";
 import { useGetFaqByPageTypeQuery } from "@/Redux/features/common/faqApi";
 import type { HeroSectionPageType } from "@/Redux/features/common/heroSectionApi";
+import faqImage from "@/app/faq.png";
 
 const categories: HeroSectionPageType[] = [
   "ServiceCategory",
@@ -56,10 +57,15 @@ export default function FaqPage() {
           className="relative w-full overflow-hidden py-14 md:py-16 px-6 md:px-12 flex flex-col items-center justify-center text-center"
           style={{
             borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
           }}
         >
+          <Image
+            src={faqImage}
+            alt="FAQ background"
+            fill
+            className="object-cover"
+            priority
+          />
           <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-5">
             <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-[#1f1f1f] leading-[1.15] tracking-tight">
               {faqSection?.sectionTitle || "Frequently Asked Questions"}

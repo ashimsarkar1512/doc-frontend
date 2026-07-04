@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import CommonHero from "@/components/shared/CommonHero";
 import { CircleCheckBig, Info, XCircle, Shield } from "lucide-react";
 import { useGetEligibilityContentQuery } from "@/Redux/features/common/eligiblityApi";
 import {
   useGetCtaSectionsQuery,
   useGetHeroSectionsQuery,
 } from "@/Redux/features/common/heroSectionApi";
+import eligiblityImage from "@/app/eligiblity.png";
 
 export default function EligibilityPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -116,10 +116,16 @@ export default function EligibilityPage() {
           className="relative w-full overflow-hidden py-16 md:py-40 px-6 md:px-12 flex flex-col items-center justify-center text-center"
           style={{
             borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
           }}
         >
+          <Image
+            src={eligiblityImage}
+            alt="Eligibility background"
+            fill
+            className="z-0 rounded-[40px] object-cover object-center"
+            sizes="100vw"
+            priority
+          />
           <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
             <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-5 tracking-tight">
               {heroSection?.title || "Am I Eligible?"}

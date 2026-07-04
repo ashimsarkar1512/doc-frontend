@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import CommonHero from "@/components/shared/CommonHero";
-import { CircleCheckBig, Clock, Info, MapPin, ChevronDown } from "lucide-react";
+import { CircleCheckBig, Clock, Info, ChevronDown } from "lucide-react";
 import {
   useCheckStateCoverageAvailabilityQuery,
   useGetCoverageCategoriesQuery,
 } from "@/Redux/features/common/coverageApi";
 import { useGetHeroSectionsQuery } from "@/Redux/features/common/heroSectionApi";
+import coverageImage from "@/app/coverage.png";
 
 export default function CoveragePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -39,24 +39,24 @@ export default function CoveragePage() {
       {/* ── HERO SECTION ── */}
       <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
         <div
-          className="relative w-full overflow-hidden py-16 md:py-20 px-6 md:px-12 flex flex-col items-center justify-center text-center"
+          className="relative w-full overflow-hidden bg-[#EBEEF2] px-6 md:px-12 py-[132px] flex flex-col items-center justify-center text-center"
           style={{
             borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
           }}
         >
+          <Image
+            src={coverageImage}
+            alt="Coverage background"
+            fill
+            className="z-0 rounded-[40px] object-contain object-center"
+            sizes="100vw"
+            priority
+          />
           <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            {/* Badge */}
-            <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium mb-6 tracking-wide">
-              <MapPin className="w-3.5 h-3.5 stroke-[2.5]" />
-              Licensed in {availableCount} states
-            </span>
-
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-5 tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-3 tracking-tight">
               {heroSection?.title || "Where We Provide Care"}
             </h1>
-            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-3xl mx-auto">
+            <p className="text-[#595959] text-[12px] md:text-[13px] leading-relaxed font-normal max-w-[560px] mx-auto">
               {heroSection?.description ||
                 "WeightLossMD providers are licensed to practice in your state. Care is only available in states where our providers hold an active license."}
             </p>
