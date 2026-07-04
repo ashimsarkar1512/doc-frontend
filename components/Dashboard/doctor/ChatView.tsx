@@ -438,9 +438,8 @@ export default function ChatView({ chatId }: { chatId: string }) {
                                           ? { ...m, proposals: [{ ...proposal, status: 'REJECTED', rejectedBy: user?.id }] }
                                           : m
                                       ));
-                                      toast.success('Proposal withdrawn.');
                                     } catch {
-                                      toast.error('Failed to withdraw proposal.');
+                                      // Silently fail or rely on global error handler
                                     }
                                   }}
                                   className="text-[12px] font-semibold text-gray-700 border border-gray-400 rounded-full px-4 py-1.5 hover:bg-gray-200/60 transition-colors"
@@ -657,22 +656,22 @@ export default function ChatView({ chatId }: { chatId: string }) {
           <div className="bg-[#f0f4f8] rounded-xl p-5 mb-6">
             <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">Service Information</h3>
 
-            <div className="space-y-3 text-[13px] mt-4 mb-4">
+            <div className="space-y-4 mt-4 mb-4">
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Service Started</span>
-                <span className="text-gray-700">{serviceInfo?.serviceStart ? new Date(serviceInfo.serviceStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Started</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.serviceStart ? new Date(serviceInfo.serviceStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Service Duration</span>
-                <span className="text-gray-700">{serviceInfo?.serviceDuration === 'MONTHLY' ? '1 month' : serviceInfo?.serviceDuration?.toLowerCase() || '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Duration</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.serviceDuration === 'MONTHLY' ? '1 month' : serviceInfo?.serviceDuration?.toLowerCase() || '-'}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-[#2563eb]">
-                <span className="text-gray-500">Service Fees</span>
-                <span className="text-gray-700">${serviceInfo?.serviceFees ? parseFloat(serviceInfo.serviceFees).toFixed(2) : '0.00'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Fees</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>${serviceInfo?.serviceFees ? parseFloat(serviceInfo.serviceFees).toFixed(2) : '0.00'}</span>
               </div>
               <div className="flex justify-between items-center pt-1">
-                <span className="text-gray-500">Next billing date:</span>
-                <span className="text-gray-700">{serviceInfo?.nextBillingDate ? new Date(serviceInfo.nextBillingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Next billing date:</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.nextBillingDate ? new Date(serviceInfo.nextBillingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
               </div>
             </div>
 
@@ -699,7 +698,7 @@ export default function ChatView({ chatId }: { chatId: string }) {
               {messages.filter(m => m.messageType === 'ATTACHMENT').map((msg) => (
                 <div key={msg.id}>
                   <div className="flex justify-between items-center mb-1.5">
-                    <p className="text-[11px] font-medium text-gray-600">by {msg.senderId === user?.id ? 'you' : msg.sender?.name}:</p>
+                    <p className="text-[11px] font-medium text-gray-600">by {msg.senderId === user?.id ? 'you' : getSenderInfo(msg).name || 'Patient'}:</p>
                     <p className="text-[11px] text-gray-400 font-medium">{new Date(msg.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}</p>
                   </div>
                   <div className="space-y-1.5">

@@ -19,9 +19,9 @@ export default function ConsultationCard({ consultation, onOpen }: ConsultationC
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-150 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:shadow-md transition-all duration-300 flex flex-col group">
+    <div className="flex flex-col group w-full">
       {/* Image Container with pill status tag */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50">
+      <div className="relative w-full h-[340px] rounded-[24px] overflow-hidden bg-gray-50">
         <Image
           src={consultation.image}
           alt={consultation.title}
@@ -37,26 +37,26 @@ export default function ConsultationCard({ consultation, onOpen }: ConsultationC
       </div>
 
       {/* Card Detail Content */}
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="flex flex-col items-start mt-[16px]">
         {/* Category Badge */}
-        <span className="text-[11px] font-bold text-blue-600 bg-blue-50/60 border border-blue-100/30 px-2.5 py-1 rounded-full self-start mb-3 uppercase tracking-wider">
+        <span className="inline-flex items-center justify-center gap-[15px] px-[12px] py-[8px] text-[16px] font-[Quicksand] font-normal leading-[100%] text-[#272628] bg-[#EAF3FF] rounded-[46px] mb-[8px]">
           {consultation.category}
         </span>
         
         {/* Title */}
-        <h3 className="text-lg font-bold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors mb-1">
+        <h3 className="text-[24px] font-bold text-[#272628] font-[Quicksand] leading-[150%] group-hover:text-[#1D4ED8] transition-colors mb-[8px]">
           {consultation.title}
         </h3>
         
-        {/* Subtitle / ID */}
-        <p className="text-xs text-gray-400 font-light mb-6">
-          Consultation id: {consultation.code || consultation.id}
+        {/* Subtitle / Doctor */}
+        <p className="text-[20px] text-[#272628] font-[Quicksand] font-normal leading-[100%] mb-[16px]">
+          Approved: Dr. Runa Pradhan NP
         </p>
 
         {/* Action Button */}
         <button 
           onClick={() => onOpen?.(consultation.id)}
-          className="w-full py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-semibold rounded-xl text-xs shadow-sm hover:shadow transition-all duration-150 text-center mt-auto"
+          className="inline-flex items-center justify-center px-[18px] h-[42px] bg-[#2558E5] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-[Quicksand] font-medium text-[18px] leading-[100%] rounded-[50px] transition-all text-center"
         >
           Open Consultation
         </button>
