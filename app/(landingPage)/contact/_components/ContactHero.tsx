@@ -4,7 +4,8 @@ import React from "react";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 
 export default function ContactHero() {
-  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("ContactUs");
+  const { data: heroData, isLoading: isHeroLoading } =
+    useGetHeroSectionByPageQuery("ContactUs");
 
   return (
     <section className="pt-28 md:pt-36 px-4 sm:px-6 max-w-[1520px] mx-auto">

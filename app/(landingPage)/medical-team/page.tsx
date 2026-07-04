@@ -6,10 +6,14 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import CommonHero from "@/components/shared/CommonHero";
 import { Shield, CircleCheckBig, ChevronDown } from "lucide-react";
+import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
+import { useGetMedicalTeamSectionQuery } from "@/Redux/features/medicalTeam/medicalTeamApi";
 
 export default function MedicalTeamPage() {
   const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("MedicalTeam");
+  const { data: teamSectionData, isLoading: isTeamSectionLoading } = useGetMedicalTeamSectionQuery();
+  const { data: ctaData, isLoading: isCtaLoading } = useGetCtaSectionByPageQuery("MedicalTeam");
   const providerNetwork = [
     {
       name: "Jeffrey Richker MD",
@@ -105,8 +109,17 @@ export default function MedicalTeamPage() {
 
       {/* ── HERO SECTION ── */}
       <CommonHero
-        title="Meet Our Medical Team"
-        description="All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."
+        title={heroData?.title || "Meet Our Medical Team"}
+        description={
+          isHeroLoading ? (
+            <span className="flex space-x-2 justify-center">
+              <span className="h-4 w-64 bg-gray-200 animate-pulse rounded-md inline-block"></span>
+            </span>
+          ) : (
+            heroData?.description ||
+            "All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."
+          )
+        }
         badge={
           <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
             <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -226,13 +239,22 @@ export default function MedicalTeamPage() {
       {/* ── PROVIDER NETWORK ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-24 w-full">
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-3">
-            Our Licensed Provider Network 
-          </h2>
-          <p className="text-gray-600 text-sm max-w-2xl mx-auto">
-            Every provider in our network is credentialed, licensed in your
-            state, and trained in evidence-based obesity and metabolic medicine.
-          </p>
+          {isTeamSectionLoading ? (
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-64 h-8 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-96 h-4 bg-gray-200 animate-pulse rounded mt-2"></div>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-3">
+                {teamSectionData?.title || "Our Licensed Provider Network"}
+              </h2>
+              <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+                {teamSectionData?.description ||
+                  "Every provider in our network is credentialed, licensed in your state, and trained in evidence-based obesity and metabolic medicine."}
+              </p>
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -326,24 +348,38 @@ export default function MedicalTeamPage() {
                 className="object-contain"
               />
             </div>
-            <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              Contact Us at Weight Loss MD
-              <br className="hidden md:block" /> Today
-            </h2>
+            {isCtaLoading ? (
+              <div className="h-8 w-64 bg-white/20 animate-pulse rounded-md" />
+            ) : (
+              <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+                {ctaData?.sectionTitle ? (
+                  ctaData.sectionTitle
+                ) : (
+                  <>
+                    Contact Us at Weight Loss MD
+                    <br className="hidden md:block" /> Today
+                  </>
+                )}
+              </h2>
+            )}
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <button
-              onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
-              }
-              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
-            >
-              Book a consultation
-            </button>
+            {isCtaLoading ? (
+              <div className="w-32 h-10 bg-white/20 animate-pulse rounded-full" />
+            ) : (
+              <button
+                onClick={() =>
+                  window.open(
+                    ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    ctaData?.openInNewTab ? "_blank" : "_self",
+                  )
+                }
+                className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
+              >
+                {ctaData?.ctaButtonText || "Book a consultation"}
+              </button>
+            )}
           </div>
         </div>
       </section>

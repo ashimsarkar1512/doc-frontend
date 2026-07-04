@@ -20,7 +20,8 @@ import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroS
 
 export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("HowItWorks");
+  const { data: heroData, isLoading: isHeroLoading } =
+    useGetHeroSectionByPageQuery("HowItWorks");
 
   const journeySteps = [
     {
@@ -138,7 +139,7 @@ export default function HowItWorksPage() {
             Your Patient Journey
           </h2>
           <p className="text-gray-500 text-sm">
-            Six structured steps from assessment to ongoing care 
+            Six structured steps from assessment to ongoing care
           </p>
         </div>
 
@@ -156,7 +157,10 @@ export default function HowItWorksPage() {
               </div>
 
               {/* Card */}
-              <div className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5" style={{ background: "#F0F4FB" }}>
+              <div
+                className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5"
+                style={{ background: "#F0F4FB" }}
+              >
                 {/* Title + Duration */}
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h3 className="text-[15.5px] font-semibold text-gray-900 leading-snug">
@@ -194,11 +198,13 @@ export default function HowItWorksPage() {
         <div className="bg-[#fff5f5] border  rounded-2xl p-5 mt-5 flex items-start gap-3">
           <ShieldAlert className="w-[22px] h-[22px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
           <p className="text-gray-700 text-sm leading-relaxed">
-            <strong className="text-[#dc2626]">Provider Review Disclaimer</strong>
-            : All treatment decisions are made exclusively by licensed healthcare
-            providers. Payment of any membership fee does not guarantee a
-            prescription or approval for treatment. Providers may deny treatment
-            if it is not medically appropriate.
+            <strong className="text-[#dc2626]">
+              Provider Review Disclaimer
+            </strong>
+            : All treatment decisions are made exclusively by licensed
+            healthcare providers. Payment of any membership fee does not
+            guarantee a prescription or approval for treatment. Providers may
+            deny treatment if it is not medically appropriate.
           </p>
         </div>
       </section>
@@ -216,9 +222,7 @@ export default function HowItWorksPage() {
               className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
             >
               <button
-                onClick={() =>
-                  setOpenFaq(openFaq === index ? null : index)
-                }
+                onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
                 <span className="text-[13.5px] font-semibold text-gray-800 pr-4">
@@ -265,13 +269,14 @@ export default function HowItWorksPage() {
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             <button
-                onClick={() =>
+              onClick={() =>
                 window.open(
                   "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                   "_blank",
                 )
               }
-             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
+            >
               Book a consultation
             </button>
           </div>
