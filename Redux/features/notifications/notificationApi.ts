@@ -59,7 +59,7 @@ export const notificationApi = baseApi.injectEndpoints({
                 if (!exists) {
                   draft.data.notifications.unshift(newNotification);
                   draft.data.unreadCount += 1;
-                  
+
                   // Show toast
                   toast.success(newNotification.title, {
                     description: newNotification.message,

@@ -5,7 +5,7 @@ import "react-international-phone/style.css";
 export function AuthChoiceForm({ authChoice, setAuthChoice }: any) {
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <p style={{ color: "#2B2922", fontFamily: "Quicksand, sans-serif", fontSize: "24px", fontWeight: 700, lineHeight: "150%" }} className="mb-1">
@@ -56,7 +56,7 @@ export function AuthChoiceForm({ authChoice, setAuthChoice }: any) {
 export function LoginForm({ loginEmail, setLoginEmail, loginPassword, setLoginPassword, showLoginPassword, setShowLoginPassword }: any) {
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
@@ -149,7 +149,7 @@ export function RegisterForm({ registerEmail, setRegisterEmail, registerPhone, s
   };
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <h2 className="text-gray-900 text-[20px] font-bold mb-6 leading-snug">
@@ -331,7 +331,7 @@ export function RegisterForm({ registerEmail, setRegisterEmail, registerPhone, s
 export function OtpChannelPicker({ otpChannel, setOtpChannel, maskedEmail, maskedPhone, activePhone }: any) {
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">
@@ -391,7 +391,7 @@ export function OtpChannelPicker({ otpChannel, setOtpChannel, maskedEmail, maske
 export function OtpVerifyForm({ otpDigits, handleOtpChange, handleOtpKeyDown, handleOtpPaste, maskedEmail, handleResendOtp, isResending, otpRefs }: any) {
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <h2 className="text-gray-900 text-[20px] font-bold mb-3 leading-snug">
@@ -439,7 +439,7 @@ export function OtpVerifyForm({ otpDigits, handleOtpChange, handleOtpKeyDown, ha
 export function ShippingAddressForm({ shippingAddress, setShippingAddress }: any) {
   return (
     <div
-      className="rounded-2xl p-6 mb-7"
+      className="rounded-2xl p-6"
       style={{ backgroundColor: "#EFEFEF" }}
     >
       <h2 className="text-gray-900 text-[20px] font-bold mb-2 leading-snug">

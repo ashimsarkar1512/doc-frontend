@@ -69,24 +69,29 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
     const doctor = thread.provider || {};
     const isSelected = selectedChatId === thread.id;
 
-    // Format relative time (mock logic for "10m ago" etc)
+    // Format relative time
     const timeAgo = (() => {
-      if (!thread.updatedAt) return '';
-      const diff = (Date.now() - new Date(thread.updatedAt).getTime()) / 60000;
-      if (diff < 1) return 'just now';
-      if (diff < 60) return `${Math.floor(diff)}m ago`;
-      if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
-      return `${Math.floor(diff / 1440)}d ago`;
+      const dateString = thread.updatedAt || thread.createdAt;
+      if (!dateString) return '';
+      const diffInSeconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
+      if (diffInSeconds < 60) return 'just now';
+      const diffInMinutes = Math.floor(diffInSeconds / 60);
+      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      const diffInHours = Math.floor(diffInMinutes / 60);
+      if (diffInHours < 24) return `${diffInHours}h ago`;
+      const diffInDays = Math.floor(diffInHours / 24);
+      if (diffInDays < 30) return `${diffInDays}d ago`;
+      return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     })();
 
     return (
       <button
         key={thread.id}
         onClick={() => onSelectChat(thread.id)}
-        className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+        className={`w-full flex items-center gap-[12px] p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
       >
         <div className="relative flex-shrink-0">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-white">
+          <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border border-white/20 bg-white">
             {doctor?.avatar ? (
               <img
                 src={doctor.avatar}
@@ -104,16 +109,16 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
           )}
         </div>
 
-        <div className="min-w-0 flex-1 flex flex-col justify-center">
+        <div className="min-w-0 flex-1 flex flex-col justify-center gap-[4px]">
           <div className="flex justify-between items-center w-full">
-            <h4 className="text-sm font-bold text-white truncate pr-2">
+            <h4 className="font-[Quicksand] text-[20px] font-semibold leading-[100%] text-white truncate pr-2">
               {doctor?.name || 'Unknown Provider'}
             </h4>
-            <span className="text-[10px] text-white/60 whitespace-nowrap">
+            <span className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white text-center whitespace-nowrap">
               {timeAgo}
             </span>
           </div>
-          <p className="text-[11px] text-white/80 mt-0.5 truncate font-light">
+          <p className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white truncate">
             {thread.service?.name} - CID: #{thread.submission?.submissionCode || '001236'}
           </p>
         </div>
@@ -138,30 +143,39 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
         }}
       >
         {/* Search Input */}
-        <div className="relative w-full">
-          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-white/70" />
-          </span>
+        <div className="flex items-center gap-[10px] w-full h-[50px] px-[14px] py-[8px] rounded-[10px] bg-white/20 mb-[16px] flex-shrink-0">
+          <Search className="w-4 h-4 text-white flex-shrink-0" strokeWidth={1} />
           <input
             type="text"
             placeholder="Search.."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-[10px] text-sm text-white placeholder-white/70 focus:outline-none focus:bg-white/20 transition-all shadow-none"
+            className="w-full bg-transparent text-[16px] font-[Quicksand] text-white placeholder-white/70 focus:outline-none"
           />
         </div>
 
         {isLoading ? (
           <div className="p-4 text-center text-white/70 text-sm w-full">Loading...</div>
         ) : (
-          <div className="w-full flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+          <div className="w-full flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
             {/* ACTIVE SERVICE */}
             {activeConversations.length > 0 && (
-              <div className="w-full flex flex-col gap-2">
-                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2">
+              <div className="flex flex-col w-full">
+                <h4 
+                  className="mb-[16px]"
+                  style={{
+                    color: 'var(--White, #FFF)',
+                    fontFamily: 'Quicksand',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    lineHeight: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                >
                   ACTIVE SERVICE
                 </h4>
-                <div className="flex flex-col w-full gap-1">
+                <div className="flex flex-col w-full gap-[16px]">
                   {activeConversations.map(renderThread)}
                 </div>
               </div>
@@ -169,11 +183,22 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
 
             {/* PAUSED SERVICE */}
             {pausedConversations.length > 0 && (
-              <div className="w-full flex flex-col gap-2">
-                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2 mt-2 border-t border-white/10 pt-4">
+              <div className="w-full flex flex-col mt-[16px]">
+                <h4 
+                  className="mb-[16px]"
+                  style={{
+                    color: 'var(--White, #FFF)',
+                    fontFamily: 'Quicksand',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    lineHeight: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                >
                   PAUSED SERVICE
                 </h4>
-                <div className="flex flex-col w-full gap-1">
+                <div className="flex flex-col w-full gap-[16px]">
                   {pausedConversations.map(renderThread)}
                 </div>
               </div>

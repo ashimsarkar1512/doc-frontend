@@ -3,6 +3,7 @@
 import { AlertCircle, BadgeDollarSign, CheckCircle, HelpCircle, Shield, ShieldBan } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import ActionBar from "./ActionBar";
 import ConsultationCard from "./ConsultationCard";
 import ConsultationDetails from "./ConsultationDetails";
@@ -62,7 +63,7 @@ export default function PatientPortalHome() {
   // High scaleable Shell Orchestration Domain State
   const initialDomain = (searchParams.get("domain") as any) || "dashboard";
   const [activeDomain, setActiveDomain] = useState<
-    "dashboard" | "messages" |"notifications"| "settings"
+    "dashboard" | "messages" | "notifications" | "settings"
   >(initialDomain);
 
   useEffect(() => {
@@ -117,7 +118,7 @@ export default function PatientPortalHome() {
   };
 
   return (
-    <div className={`max-w-7xl mx-auto px-6 w-full flex-1 flex flex-col font-sans `}>
+    <div className={`max-w-[1520px] mx-auto px-6 w-full flex-1 flex flex-col font-sans `}>
       {/* Action Navigation Controls at the Top */}
       <ActionBar
         activeDomain={activeDomain}
@@ -137,16 +138,26 @@ export default function PatientPortalHome() {
       {activeDomain === "dashboard" && (
         <div className="flex flex-col w-full">
           {/* Welcome Banner & KPI Cards only on Dashboard home */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-2xl flex items-center justify-center shadow-sm select-none border-2 border-white">
-              {getInitials()}
-            </div>
-            <div className="flex flex-col">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight">
+          <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-[16px] md:gap-[24px] mb-[32px] md:mb-[44px]">
+            {user?.profile?.avatar ? (
+              <Image
+                src={user.profile.avatar}
+                alt={getDisplayName()}
+                width={80}
+                height={80}
+                className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] rounded-full object-cover shadow-sm select-none border-2 border-white mx-auto md:mx-0"
+              />
+            ) : (
+              <div className="relative w-[60px] h-[60px] md:w-[80px] md:h-[80px] rounded-full overflow-hidden bg-[#2e5e54] text-white font-bold text-[24px] md:text-[32px] flex items-center justify-center shadow-sm select-none border-2 border-white mx-auto md:mx-0">
+                {getInitials()}
+              </div>
+            )}
+            <div className="flex flex-col gap-[4px] md:gap-[8px]">
+              <h2 className="text-[28px] md:text-[40px] font-semibold tracking-tight text-[#272628] font-[Quicksand] leading-[110%]">
                 Welcome Back, {getDisplayName()}!
               </h2>
-              <p className="text-sm text-gray-400 font-light mt-0.5 leading-none">
-                Manage your daily activities.
+              <p className="text-[16px] md:text-[20px] text-[#272628] font-[Quicksand] font-normal leading-[100%]">
+                Manage your daily activities
               </p>
             </div>
           </div>

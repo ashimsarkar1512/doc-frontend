@@ -18,6 +18,7 @@ import { useE2EE } from '@/Redux/hooks/useE2EE';
 import { useAppSelector } from '@/Redux/store/hooks';
 import StripeCheckoutModal from "../billing/StripeCheckoutModal";
 import { toast } from 'sonner';
+import AcceptProposalPaymentModal from './AcceptProposalPaymentModal';
 
 // ─── Cancel Subscription Confirmation Modal ────────────────────────────────────
 
@@ -91,6 +92,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   const [otherUserTyping, setOtherUserTyping] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingProposalForPayment, setPendingProposalForPayment] = useState<any>(null);
+  const [isAcceptProposalModalOpen, setIsAcceptProposalModalOpen] = useState(false);
   const [proposalMsgId, setProposalMsgId] = useState<string | null>(null);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
@@ -444,13 +446,13 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
             <button onClick={onBack} className="lg:hidden p-1.5 -ml-2 hover:bg-white/10 rounded-full transition-colors mr-1">
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
-            <div className="relative">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-emerald-50">
+            <div className="relative flex-shrink-0">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 bg-emerald-50">
                 {doctor?.avatar ? (
                   <img src={doctor.avatar} alt={doctor.name || 'Provider'} className="object-cover w-full h-full" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600">
-                    <User className="h-5 w-5" />
+                    <User className="h-6 w-6" />
                   </div>
                 )}
               </div>
@@ -458,12 +460,12 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]" />
               )}
             </div>
-            <div>
-              <h4 className="text-sm font-bold leading-tight">
+            <div className="flex flex-col gap-[4px]">
+              <h2 className="font-[Quicksand] text-[20px] font-semibold leading-[100%] text-white">
                 {doctor?.name || 'Unknown Provider'}
-              </h4>
-              <p className="text-[11px] text-white/80 font-light mt-0.5 leading-none">
-                {isOnline ? 'Online' : 'Offline'}
+              </h2>
+              <p className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white">
+                Patient - {conversation?.submission?.submissionCode || `#${chatId.substring(0, 6)}`}
               </p>
             </div>
           </div>
@@ -568,6 +570,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                                   onClick={() => {
                                     setPendingProposalForPayment(proposal);
                                     setProposalMsgId(msg.id);
+                                    setIsAcceptProposalModalOpen(true);
                                   }}
                                   className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold rounded-full text-[12px] shadow-sm transition-all"
                                 >
@@ -582,7 +585,6 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                                           ? { ...m, proposals: [{ ...proposal, status: 'REJECTED', rejectedBy: user?.id }] }
                                           : m
                                       ));
-                                      toast.success('Proposal declined.');
                                     } catch {
                                       toast.error('Failed to decline proposal. Please try again.');
                                     }
@@ -805,22 +807,22 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           <div className="bg-[#f0f4f8] rounded-xl p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">Service Information</h3>
 
-            <div className="space-y-3 text-[13px] mt-4 mb-4">
+            <div className="space-y-4 mt-4 mb-4">
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Service Started</span>
-                <span className="text-gray-700">{serviceInfo?.serviceStart ? new Date(serviceInfo.serviceStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Started</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.serviceStart ? new Date(serviceInfo.serviceStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Service Duration</span>
-                <span className="text-gray-700">{serviceInfo?.serviceDuration === 'MONTHLY' ? '1 month' : serviceInfo?.serviceDuration?.toLowerCase() || '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Duration</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.serviceDuration === 'MONTHLY' ? '1 month' : serviceInfo?.serviceDuration?.toLowerCase() || '-'}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-[#2563eb]">
-                <span className="text-gray-500">Service Fees</span>
-                <span className="text-gray-700">${serviceInfo?.serviceFees ? parseFloat(serviceInfo.serviceFees).toFixed(2) : '0.00'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Service Fees</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>${serviceInfo?.serviceFees ? parseFloat(serviceInfo.serviceFees).toFixed(2) : '0.00'}</span>
               </div>
               <div className="flex justify-between items-center pt-1">
-                <span className="text-gray-500">Next billing date:</span>
-                <span className="text-gray-700">{serviceInfo?.nextBillingDate ? new Date(serviceInfo.nextBillingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>Next billing date:</span>
+                <span style={{ color: 'var(--Black-2, #3B3B3B)', textAlign: 'center', fontFamily: 'Quicksand', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: '100%' }}>{serviceInfo?.nextBillingDate ? new Date(serviceInfo.nextBillingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '-'}</span>
               </div>
             </div>
 
@@ -849,28 +851,35 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           </div>
 
           <div className="bg-[#f0f4f8] rounded-xl p-5 shadow-sm flex flex-col gap-4">
-            <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-[#2563eb]">File & attachments</h3>
+            <h3 className="font-bold text-gray-900 text-[16px] pb-2 border-b border-gray-200 mb-4">File & attachments</h3>
 
-            <div className="flex flex-col gap-3 max-h-[260px] overflow-y-auto pr-1">
-              {uniqueFiles.length > 0 ? uniqueFiles.map((file: any) => {
-                // Determine who sent the file to mimic the "by you:" or "by [Doctor]:" grouping
-                // For a simpler flat list that matches the new design
-                return (
-                  <div key={file.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/50 transition-colors group">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <FileText className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
-                      <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file.fileName}</span>
-                    </div>
-                    <a
-                      href={file.fileUrl}
-                      onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
-                      className="p-2 hover:bg-black/5 rounded-md transition-colors flex-shrink-0"
-                    >
-                      <Download className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                    </a>
+            <div className="space-y-4 max-h-[260px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+              {messages.filter(m => m.messageType === 'ATTACHMENT').map((msg) => (
+                <div key={msg.id}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <p className="text-[11px] font-medium text-gray-600">by {msg.senderId === user?.id ? 'you' : getSenderInfo(msg).name || 'Provider'}:</p>
+                    <p className="text-[11px] text-gray-400 font-medium">{new Date(msg.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}</p>
                   </div>
-                )
-              }) : (
+                  <div className="space-y-1.5">
+                    {msg.attachments?.map((file: any) => (
+                      <div key={file.id} className="flex items-center justify-between py-1 px-1 rounded hover:bg-[#e2e8f0] transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="w-4 h-4 text-[#2563eb] flex-shrink-0" />
+                          <span className="text-xs text-gray-600 group-hover:text-gray-900 truncate">{file.fileName}</span>
+                        </div>
+                        <a
+                          href={file.fileUrl}
+                          onClick={(e) => handleDownload(file.fileUrl, file.fileName, e)}
+                          className="text-[#2563eb] transition-colors flex-shrink-0 p-1"
+                        >
+                          <Download className="w-4 h-4" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {messages.filter(m => m.messageType === 'ATTACHMENT').length === 0 && (
                 <p className="text-xs text-gray-400 text-center py-4">No attachments yet</p>
               )}
             </div>
@@ -885,6 +894,37 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
         onConfirm={handleCancelSubscription}
         isLoading={isCancelling}
       />
+
+      {/* Accept Proposal Payment Modal */}
+      {isAcceptProposalModalOpen && pendingProposalForPayment && (
+        <AcceptProposalPaymentModal
+          isOpen={isAcceptProposalModalOpen}
+          onClose={() => {
+            setIsAcceptProposalModalOpen(false);
+            setPendingProposalForPayment(null);
+            setProposalMsgId(null);
+          }}
+          proposal={pendingProposalForPayment}
+          onSuccess={() => {
+            // Update the local message cache to show 'ACCEPTED'
+            if (proposalMsgId) {
+              setMessages(prev => prev.map(m => {
+                if (m.id === proposalMsgId && m.messageType === 'PROPOSAL') {
+                  return {
+                    ...m,
+                    proposals: m.proposals.map((p: any) => 
+                      p.id === pendingProposalForPayment.id 
+                        ? { ...p, status: 'ACCEPTED' } 
+                        : p
+                    )
+                  };
+                }
+                return m;
+              }));
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

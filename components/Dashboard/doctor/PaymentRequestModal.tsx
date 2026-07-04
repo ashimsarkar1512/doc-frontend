@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Calendar, Clock, DollarSign } from "lucide-react";
 
 interface PaymentRequestModalProps {
@@ -12,10 +12,21 @@ interface PaymentRequestModalProps {
 
 export default function PaymentRequestModal({ isOpen, onClose, patientName, onSubmit }: PaymentRequestModalProps) {
   const [formData, setFormData] = useState({
-    title: "Personalized Weight Loss Consultation",
+    title: "",
     message: "",
     fee: "",
   });
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        title: "",
+        message: "",
+        fee: "",
+      });
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
