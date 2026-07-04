@@ -87,12 +87,14 @@ interface ServiceData {
 }
 
 export default function LabTestingPage() {
-  const [expandedTests, setExpandedTests] = useState<Record<string, boolean>>({});
+  const [expandedTests, setExpandedTests] = useState<Record<string, boolean>>(
+    {},
+  );
 
   const toggleTest = (id: string) => {
     setExpandedTests((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -104,29 +106,45 @@ export default function LabTestingPage() {
 
   const heroTitle = hero.title || "WLMD Lab Tests";
   const heroButtonText = hero.buttonText || "Book a consultation";
-  const heroButtonUrl = hero.buttonUrl || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+  const heroButtonUrl =
+    hero.buttonUrl ||
+    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
   const heroIsBlank = hero.isBlank !== undefined ? hero.isBlank : true;
   const heroImage = hero.image?.fileUrl || "/lab-testing.png";
 
   const sectionTitle = section.sectionTitle || "See what's inside the panel";
-  const sectionDescription = section.sectionDescription || "Measure what matters—up to 130 biomarker tests, twice a year on the Advanced plan.\nEach test is selected by Hims experts and grouped into 10 vital areas for a holistic\npicture of your health. Dive in, then get ready for your first test.";
+  const sectionDescription =
+    section.sectionDescription ||
+    "Measure what matters—up to 130 biomarker tests, twice a year on the Advanced plan.\nEach test is selected by Hims experts and grouped into 10 vital areas for a holistic\npicture of your health. Dive in, then get ready for your first test.";
 
   const ctaTitle = cta.sectionTitle || "Contact Us at Weight Loss MD\nToday";
   const ctaButtonText = cta.ctaButtonText || "Book a consultation";
-  const ctaButtonUrl = cta.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+  const ctaButtonUrl =
+    cta.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
   const ctaIsBlank = cta.openInNewTab !== undefined ? cta.openInNewTab : true;
 
-  const services: ServiceData[] = section.services && section.services.length > 0
-    ? section.services.map((s: any) => ({
-        title: s.title,
-        description: s.description,
-        image: s.image?.fileUrl || "/wight-loss.png",
-        tests: s.tests ? s.tests.map((t: any) => ({ name: t.name, duration: t.duration || "Tested 2x/year", description: t.description })) : []
-      }))
-    : defaultPanelServices.map(s => ({
-        ...s,
-        tests: s.tests.map(t => ({ name: t, duration: "Tested 2x/year", description: "" }))
-      }));
+  const services: ServiceData[] =
+    section.services && section.services.length > 0
+      ? section.services.map((s: any) => ({
+          title: s.title,
+          description: s.description,
+          image: s.image?.fileUrl || "/wight-loss.png",
+          tests: s.tests
+            ? s.tests.map((t: any) => ({
+                name: t.name,
+                duration: t.duration || "Tested 2x/year",
+                description: t.description,
+              }))
+            : [],
+        }))
+      : defaultPanelServices.map((s) => ({
+          ...s,
+          tests: s.tests.map((t) => ({
+            name: t,
+            duration: "Tested 2x/year",
+            description: "",
+          })),
+        }));
 
   if (isLoading) {
     return (
@@ -167,41 +185,45 @@ export default function LabTestingPage() {
           />
 
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center px-5 sm:px-6 pb-8 sm:pb-10 pt-20 sm:pt-24 md:pt-28">
-            <h1 style={{
-              color: '#FFF',
-              textAlign: 'center',
-              fontFamily: 'Quicksand, sans-serif',
-              fontSize: 'clamp(36px, 6vw, 76px)',
-              fontWeight: 700,
-              lineHeight: '100%',
-            }} className="mb-6 sm:mb-8 drop-shadow-md">
+            <h1
+              style={{
+                color: "#FFF",
+                textAlign: "center",
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: "clamp(36px, 6vw, 76px)",
+                fontWeight: 700,
+                lineHeight: "100%",
+              }}
+              className="mb-6 sm:mb-8 drop-shadow-md"
+            >
               {heroTitle}
             </h1>
             <button
               onClick={() =>
-                window.open(
-                  heroButtonUrl,
-                  heroIsBlank ? "_blank" : "_self",
-                )
+                window.open(heroButtonUrl, heroIsBlank ? "_blank" : "_self")
               }
               style={{
-                display: 'flex',
-                padding: '22px 32px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '15px',
-                borderRadius: '46px',
-                background: '#1D4ED8',
-                color: '#FFF',
-                fontFamily: 'Quicksand, sans-serif',
-                fontSize: '22px',
+                display: "flex",
+                padding: "22px 32px",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "15px",
+                borderRadius: "46px",
+                background: "#1D4ED8",
+                color: "#FFF",
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: "22px",
                 fontWeight: 600,
-                lineHeight: '100%',
-                textAlign: 'center',
-                transition: 'background 0.2s',
+                lineHeight: "100%",
+                textAlign: "center",
+                transition: "background 0.2s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#1a40b3')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#1D4ED8')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#1a40b3")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "#1D4ED8")
+              }
             >
               {heroButtonText}
             </button>
@@ -212,10 +234,10 @@ export default function LabTestingPage() {
       {/* ── PANEL SECTION ── */}
       <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12 md:mt-16 mb-12 w-full">
         <div className="mb-10 sm:mb-14 md:mb-16">
-          <h2 className="text-[22px] sm:text-[26px] md:text-[32px] font-bold text-[#111827] mb-4 sm:mb-5 tracking-tight">
+          <h2 className="text-[28px] sm:text-[36px] lg:text-[54px] font-bold text-[#111827] mb-4 sm:mb-5 tracking-tight">
             {sectionTitle}
           </h2>
-          <p className="text-[13px] sm:text-[14px] md:text-[15px] text-[#4b5563] leading-[1.85] max-w-[780px] whitespace-pre-wrap">
+          <p className="text-[14px] sm:text-[16px] lg:text-lg text-[#272628] leading-[1.85] max-w-[780px] whitespace-pre-wrap">
             {sectionDescription}
           </p>
         </div>
@@ -241,13 +263,12 @@ export default function LabTestingPage() {
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0 pt-0 sm:pt-1">
-                    <h3 className="text-[17px] sm:text-[18px] md:text-[20px] font-bold text-[#111827] mb-2 sm:mb-2.5 tracking-tight">
+                    <h3 className="text-[20px] sm:text-[28px] lg:text-[40px] font-bold text-[#111827] mb-2 sm:mb-2.5 tracking-tight">
                       {service.title}
                     </h3>
-                    <p className="text-[13px] md:text-[14px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
+                    <p className="text-[14px] sm:text-[16px] lg:text-[20px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
                       {service.description}
                     </p>
-
                   </div>
                 </div>
 
@@ -269,11 +290,11 @@ export default function LabTestingPage() {
                           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 md:gap-6 cursor-pointer"
                           onClick={() => toggleTest(testId)}
                         >
-                          <span className="text-[13px] sm:text-[14px] md:text-[15px] text-[#374151] font-medium break-words">
+                          <span className="text-[15px] sm:text-[16px] lg:text-[20px] text-[#212121] font-medium break-words">
                             {test.name}
                           </span>
                           <div className="flex items-center gap-3 self-start sm:self-auto flex-shrink-0">
-                            <span className="flex items-center justify-center text-[11px] sm:text-[12px] text-[#6b7280] bg-[#f3f4f6] rounded-full px-3 sm:px-3.5 py-1.5 whitespace-nowrap">
+                            <span className="flex items-center justify-center text-[12px] sm:text-[14px] lg:text-[16px] text-[#272628] bg-[#f3f4f6] rounded-full px-3 sm:px-3.5 py-1.5 whitespace-nowrap">
                               {test.duration}
                             </span>
                             {isExpanded ? (
@@ -285,7 +306,7 @@ export default function LabTestingPage() {
                         </div>
                         {/* Expanded Description */}
                         {isExpanded && test.description && (
-                          <div className="mt-3 text-[13px] sm:text-[14px] text-[#6b7280] leading-relaxed pr-8">
+                          <div className="mt-3 text-[13px] sm:text-[15px] lg:text-[16px] text-[#6b7280] leading-relaxed pr-8">
                             {test.description}
                           </div>
                         )}
@@ -324,13 +345,11 @@ export default function LabTestingPage() {
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
             <button
-                onClick={() =>
-                window.open(
-                  ctaButtonUrl,
-                  ctaIsBlank ? "_blank" : "_self",
-                )
+              onClick={() =>
+                window.open(ctaButtonUrl, ctaIsBlank ? "_blank" : "_self")
               }
-             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap">
+              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
+            >
               {ctaButtonText}
             </button>
           </div>
