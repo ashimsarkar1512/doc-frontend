@@ -25,6 +25,62 @@ export interface ContactLeadResponse {
   updatedAt: string;
 }
 
+export interface ContactSideWidgetResponse {
+  id: string;
+  title: string;
+  opening: string;
+  offDay: string;
+  phone: string;
+  email: string;
+  imageId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  image: {
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+    context: string;
+  } | null;
+}
+
+export interface ContactSideWidgetApiResponse {
+  success: boolean;
+  message: string;
+  data: ContactSideWidgetResponse;
+}
+
+export interface ContactPartner {
+  id: string;
+  sectionId: string;
+  imageId: string;
+  createdAt: string;
+  updatedAt: string;
+  image: {
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+    context: string;
+  } | null;
+}
+
+export interface ContactPartnerSectionResponse {
+  id: string;
+  sectionTitle: string;
+  createdAt: string;
+  updatedAt: string;
+  partners: ContactPartner[];
+}
+
+export interface ContactPartnerSectionApiResponse {
+  success: boolean;
+  message: string;
+  data: ContactPartnerSectionResponse;
+}
+
 // ─── Contact API ──────────────────────────────────────────────────────────────
 
 export const contactApi = baseApi.injectEndpoints({
@@ -54,8 +110,16 @@ export const contactApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["ContactLead"],
     }),
+    getContactSideWidget: builder.query<ContactSideWidgetResponse, void>({
+      query: () => '/website-manage/contact-side-widget',
+      transformResponse: (response: ContactSideWidgetApiResponse) => response.data,
+    }),
+    getContactPartnerSection: builder.query<ContactPartnerSectionResponse, void>({
+      query: () => '/website-manage/contact-partner-section',
+      transformResponse: (response: ContactPartnerSectionApiResponse) => response.data,
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useSubmitContactLeadMutation } = contactApi;
+export const { useSubmitContactLeadMutation, useGetContactSideWidgetQuery, useGetContactPartnerSectionQuery } = contactApi;
