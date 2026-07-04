@@ -8,7 +8,7 @@ export default function PartnerPharmacies() {
   const { data: partnerData, isLoading } = useGetContactPartnerSectionQuery();
 
   return (
-    <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-32 mb-16">
+    <section className="max-w-[1300px] mx-auto px-4 sm:px-6 ">
       <div className="relative flex items-center justify-center mb-14">
         <div
           className="absolute inset-0 flex items-center"
