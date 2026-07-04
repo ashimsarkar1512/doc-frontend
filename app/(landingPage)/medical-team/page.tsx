@@ -5,8 +5,10 @@ import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Shield, CircleCheckBig, ChevronDown } from "lucide-react";
+import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 
 export default function MedicalTeamPage() {
+  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("MedicalTeam");
   const providerNetwork = [
     {
       name: "Jeffrey Richker MD",
@@ -120,17 +122,26 @@ export default function MedicalTeamPage() {
               Licensed Medical Professionals
             </span>
 
-            {/* Main Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
-              Meet Our Medical Team
-            </h1>
+            {isHeroLoading ? (
+              <div className="flex flex-col items-center justify-center space-y-4 w-full mb-8">
+                <div className="h-10 w-3/4 max-w-lg bg-gray-300 animate-pulse rounded-md mb-2"></div>
+                <div className="h-4 w-full max-w-2xl bg-gray-300 animate-pulse rounded-md"></div>
+                <div className="h-4 w-5/6 max-w-xl bg-gray-300 animate-pulse rounded-md"></div>
+              </div>
+            ) : (
+              <>
+                {/* Main Heading */}
+                <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
+                  {heroData?.title || "Meet Our Medical Team"}
+                </h1>
 
-            {/* Subtitle Paragraph */}
-            <p className="text-[#595959] text-[15px] leading-relaxed mb-10 font-normal max-w-3xl mx-auto px-2">
-              All treatment decisions at WeightLossMD are made exclusively by
-              board-certified, state-licensed healthcare professionals. Your
-              health is in expert hands.
-            </p>
+                {/* Subtitle Paragraph */}
+                <p className="text-[#595959] text-[15px] leading-relaxed mb-10 font-normal max-w-3xl mx-auto px-2">
+                  {heroData?.description ||
+                    "All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."}
+                </p>
+              </>
+            )}
 
             {/* Features Grid with Lucide CircleCheckBig Icon */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-left w-full max-w-3xl justify-center items-start text-[14px] text-[#444444]">

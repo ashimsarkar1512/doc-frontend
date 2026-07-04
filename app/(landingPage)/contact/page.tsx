@@ -6,6 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 import { useSubmitContactLeadMutation } from "@/Redux/features/contact/contactApi";
 import Expert from "@/components/home/Expert";
 import { useGetWebsiteSettingsQuery } from "@/Redux/features/footerData/footerDataApi";
+import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,8 @@ export default function ContactPage() {
   const { data: settingsData, isLoading: settingsLoading } =
     useGetWebsiteSettingsQuery();
   const contactInfo = settingsData?.contactInfo;
+
+  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("ContactUs");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -171,14 +174,23 @@ export default function ContactPage() {
             </svg>
           </div>
           <div className="relative z-10 text-center px-4">
-            <h1 className="text-2xl md:text-5xl xl:lg:text-[76px] font-bold text-gray-900 mb-4 tracking-tight">
-              Contact Us
-            </h1>
-            <p className="text-sm md:text-lg text-gray-500 max-w-3xl mx-auto leading-relaxed">
-              Contact us to schedule a consultation with our medical team and
-              explore personalized options to support your weight management
-              goals.
-            </p>
+            {isHeroLoading ? (
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <div className="h-12 w-64 bg-gray-200 animate-pulse rounded-md"></div>
+                <div className="h-4 w-96 bg-gray-200 animate-pulse rounded-md"></div>
+                <div className="h-4 w-72 bg-gray-200 animate-pulse rounded-md"></div>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-2xl md:text-5xl xl:lg:text-[76px] font-bold text-gray-900 mb-4 tracking-tight">
+                  {heroData?.title || "Contact Us"}
+                </h1>
+                <p className="text-sm md:text-lg text-gray-500 max-w-3xl mx-auto leading-relaxed">
+                  {heroData?.description ||
+                    "Contact us to schedule a consultation with our medical team and explore personalized options to support your weight management goals."}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </section>

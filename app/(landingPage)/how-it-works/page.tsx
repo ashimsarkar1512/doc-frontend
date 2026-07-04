@@ -15,9 +15,11 @@ import {
   CheckCircle,
   ShieldAlert,
 } from "lucide-react";
+import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 
 export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("HowItWorks");
 
   const journeySteps = [
     {
@@ -136,16 +138,26 @@ export default function HowItWorksPage() {
               Most patients approved within 72 hours
             </span>
 
-            {/* Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
-              How WeightLoss MD Works
-            </h1>
+            {isHeroLoading ? (
+              <div className="flex flex-col items-center justify-center space-y-4 w-full">
+                <div className="h-10 w-3/4 max-w-lg bg-gray-300 animate-pulse rounded-md mb-2"></div>
+                <div className="h-4 w-full max-w-2xl bg-gray-300 animate-pulse rounded-md"></div>
+                <div className="h-4 w-5/6 max-w-xl bg-gray-300 animate-pulse rounded-md"></div>
+              </div>
+            ) : (
+              <>
+                {/* Heading */}
+                <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
+                  {heroData?.title || "How WeightLoss MD Works"}
+                </h1>
 
-            {/* Subtitle */}
-            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-4xl mx-auto px-2">
-              A clear, transparent process from your first health question to
-              ongoing medical support — all from licensed providers.
-            </p>
+                {/* Subtitle */}
+                <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-4xl mx-auto px-2">
+                  {heroData?.description ||
+                    "A clear, transparent process from your first health question to ongoing medical support — all from licensed providers."}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </section>
