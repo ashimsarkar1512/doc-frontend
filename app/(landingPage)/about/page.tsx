@@ -7,7 +7,7 @@ import Expert from "@/components/home/Expert";
 import QNA from "@/components/home/QNA";
 import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
 import { ScrollRevealText } from "@/components/shared/ScrollRevealText";
-
+import CommonHero from "@/components/shared/CommonHero";
 export default function AboutPage() {
   const benefits = [
     "Personalized treatment plans tailored to individual goals",
@@ -44,54 +44,29 @@ export default function AboutPage() {
         scrolledPadding="py-2"
       />
 
-      {/* ABOUT Section */}
-      <div className="px-4 md:px-6 mt-28 pb-8">
-        <div className="max-w-7xl mx-auto relative rounded-[2.5rem] overflow-hidden bg-[#F0F4FA] py-16 md:py-20 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[500px]">
-          {/* ABOUT Watermark - PNG Image */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden p-5">
-            <div className="relative w-full h-full flex items-center justify-center">
-              <Image
-                src="/aboutWatermark.png" // Replace with your actual PNG path
-                alt="About watermark"
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 max-w-4xl mx-auto">
-            <h1 className="text-[32px] md:text-[42px] lg:text-[48px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-5">
-              A Personalized Approach
-              <br />
-              to Wellness
-            </h1>
-
-            <p className="text-gray-500 text-sm md:text-[15px] leading-relaxed mb-8">
-              At Weight Loss MD, we believe weight management should be
-              personal, medically guided, and built around long-term wellness —
-              not quick fixes. Our team provides medically supervised programs
-              designed to support individuals through personalized care,
-              professional guidance, and ongoing support tailored to their
-              health goals and lifestyle.
-            </p>
-
-            <button
-              onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
-              }
-              className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
-            >
-              Book a consultation
-            </button>
-          </div>
-        </div>
-      </div>
+      <CommonHero
+        title={
+          <>
+            A Personalized Approach
+            <br />
+            to Wellness
+          </>
+        }
+        description="At Weight Loss MD, we believe weight management should be personal, medically guided, and built around long-term wellness — not quick fixes. Our team provides medically supervised programs designed to support individuals through personalized care, professional guidance, and ongoing support tailored to their health goals and lifestyle."
+        watermarkImage="/aboutWatermark.png"
+      >
+        <button
+          onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank",
+            )
+          }
+          className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
+        >
+          Book a consultation
+        </button>
+      </CommonHero>
       {/* MISSION + VIDEO */}
       <section className="w-full max-w-7xl mx-auto px-4 py-10 flex flex-col items-center">
         <span className="bg-gray-100 text-gray-500 text-xs font-medium px-4 py-1.5 rounded-full mb-8 tracking-wide">

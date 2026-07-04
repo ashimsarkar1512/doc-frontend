@@ -5,43 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-
+import CommonHero from "@/components/shared/CommonHero";
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar variant="dark" />
 
       {/* ── HERO BANNER ── */}
-      <section className="pt-28 md:pt-36 px-4 sm:px-6 max-w-[1300px] mx-auto w-full">
-        <div className="relative bg-[#f4f7fa] rounded-[32px] w-full py-20 md:py-28 flex flex-col items-center justify-center min-h-[240px]">
-          {/* SVG "TERMS" background watermark */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[32px] p-6 md:p-10">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1197 364"
-              fill="none"
-              preserveAspectRatio="xMidYMid meet"
-              className="w-full h-auto max-h-[90%] opacity-[0.55]"
-            >
-              <path d="M68.54 65.56H0V5.95999H202.64V65.56H134.1V423.16H68.54V65.56Z" fill="url(#t1)"/>
-              <path d="M234.382 5.95999H413.182V65.56H299.942V175.82H389.938V235.42H299.942V363.56H413.182V423.16H234.382V5.95999Z" fill="url(#t1)"/>
-              <path d="M450.897 5.95999H548.045C581.819 5.95999 606.453 13.9067 621.949 29.8C637.445 45.296 645.193 69.3347 645.193 101.916V127.544C645.193 170.853 630.889 198.269 602.281 209.792V210.984C618.175 215.752 629.3 225.487 635.657 240.188C642.412 254.889 645.789 274.557 645.789 299.192V372.5C645.789 384.42 646.187 394.155 646.981 401.704C647.776 408.856 649.763 416.008 652.941 423.16H586.189C583.805 416.405 582.216 410.048 581.421 404.088C580.627 398.128 580.229 387.4 580.229 371.904V295.616C580.229 276.544 577.051 263.233 570.693 255.684C564.733 248.135 554.204 244.36 539.105 244.36H516.457V423.16H450.897V5.95999ZM540.297 184.76C553.409 184.76 563.144 181.383 569.501 174.628C576.256 167.873 579.633 156.549 579.633 140.656V108.472C579.633 93.3733 576.852 82.4467 571.289 75.692C566.124 68.9373 557.78 65.56 546.257 65.56H516.457V184.76H540.297Z" fill="url(#t1)"/>
-              <path d="M691.276 5.95999H784.848L826.568 304.556H827.76L869.48 5.95999H963.052V423.16H901.068V107.28H899.876L852.196 423.16H797.364L749.684 107.28H748.492V423.16H691.276V5.95999Z" fill="url(#t1)"/>
-              <path d="M1097.2 429.12C1065.42 429.12 1041.38 420.18 1025.09 402.3C1008.8 384.023 1000.65 357.997 1000.65 324.224V300.384H1062.64V328.992C1062.64 356.011 1073.96 369.52 1096.61 369.52C1107.73 369.52 1116.08 366.341 1121.64 359.984C1127.6 353.229 1130.58 342.501 1130.58 327.8C1130.58 310.317 1126.61 295.02 1118.66 281.908C1110.71 268.399 1096.01 252.307 1074.56 233.632C1047.54 209.792 1028.66 188.336 1017.94 169.264C1007.21 149.795 1001.84 127.941 1001.84 103.704C1001.84 70.7253 1010.19 45.296 1026.88 27.416C1043.56 9.13867 1067.8 0 1099.59 0C1130.98 0 1154.62 9.13867 1170.51 27.416C1186.8 45.296 1194.95 71.1227 1194.95 104.896V122.18H1132.96V100.724C1132.96 86.42 1130.18 76.0893 1124.62 69.732C1119.06 62.9773 1110.91 59.6 1100.18 59.6C1078.33 59.6 1067.4 72.9107 1067.4 99.532C1067.4 114.631 1071.38 128.736 1079.32 141.848C1087.67 154.96 1102.57 170.853 1124.02 189.528C1151.44 213.368 1170.31 235.023 1180.64 254.492C1190.97 273.961 1196.14 296.808 1196.14 323.032C1196.14 357.203 1187.6 383.427 1170.51 401.704C1153.82 419.981 1129.39 429.12 1097.2 429.12Z" fill="url(#t1)"/>
-              <defs>
-                <linearGradient id="t1" x1="591.931" y1="0.669149" x2="591.931" y2="378.919" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#C8CDD2"/>
-                  <stop offset="1" stopColor="#C8CDD2" stopOpacity="0"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-
-          <div className="relative z-10 text-center px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Terms of Service</h1>
-          </div>
-        </div>
-      </section>
+      <CommonHero title="Terms of Service" />
 
       {/* ── CONTENT ── */}
       <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-14 pb-24 w-full">

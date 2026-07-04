@@ -16,13 +16,15 @@ const ContactCTA = ({
   openInNewTab = true
 }: ContactCTAProps) => {
   return (
-    <section className="w-full max-w-[1520px] mx-auto px-4 lg:px-0 mb-24 mt-12">
-      <div className="bg-[linear-gradient(90deg,#2A2C2E_0%,#2D426E_40%,#5484E6_100%)] rounded-[20px] px-8 lg:px-[80px] py-[80px] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden w-full md:h-[268px]">
-        
+    <section className="w-full self-stretch max-w-[1520px] mx-auto px-4 lg:px-0 mt-[120px] mb-[120px] rounded-[40px] bg-[#8cb5f0]">
+      <div 
+        className="isolate rounded-[40px] px-8 md:px-[49px] py-[80px] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden w-full md:h-[268px]"
+        style={{ background: "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)" }}
+      >
         <div className="flex items-center gap-[49px] relative z-10 w-full">
-          <div className="relative w-[80px] h-[100px] shrink-0">
+          <div className="relative w-[126px] h-[133px] shrink-0">
             <Image 
-              src="/WLMD.png" 
+              src="/weight-loss.png" 
               alt="Weight Loss MD Logo"
               fill
               className="object-contain"

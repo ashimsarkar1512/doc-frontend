@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
+import CommonHero from "@/components/shared/CommonHero";
 import { CircleCheckBig, Info, XCircle, Shield } from "lucide-react";
 
 export default function EligibilityPage() {
@@ -75,26 +76,10 @@ export default function EligibilityPage() {
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1520px] mx-auto w-full mt-6">
-        <div
-          className="relative w-full overflow-hidden py-16 md:py-40 px-6 md:px-12 flex flex-col items-center justify-center text-center"
-          style={{
-            borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
-          }}
-        >
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-5 tracking-tight">
-              Am I Eligible?
-            </h1>
-            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-3xl mx-auto">
-              Learn the medical criteria our licensed providers use to evaluate
-              candidacy for GLP-1 weight loss treatment.
-            </p>
-          </div>
-        </div>
-      </section>
+      <CommonHero
+        title="Am I Eligible?"
+        description="Learn the medical criteria our licensed providers use to evaluate candidacy for GLP-1 weight loss treatment."
+      />
 
       {/* ── GENERAL ELIGIBILITY CRITERIA ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 mb-10 w-full">

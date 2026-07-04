@@ -266,6 +266,9 @@ const patientApi = baseApi.injectEndpoints({
         params: { categoryId },
       }),
     }),
+    getServicePageDetails: builder.query<{ success: boolean; data: any }, string>({
+      query: (categoryId) => `/public/service-page/${categoryId}`,
+    }),
     getProductById: builder.query<{ success: boolean; data: any }, string>({
       query: (id) => `/public/products/${id}`,
     }),
@@ -334,6 +337,7 @@ export const {
   useGetAssessmentByIdQuery,
   useSubmitAssessmentMutation,
   useGetProductsByCategoryIdQuery,
+  useGetServicePageDetailsQuery,
   useGetProductByIdQuery,
   useAddToCartMutation,
   useGetMyCartQuery,

@@ -1,5 +1,5 @@
 import React from 'react';
-import HeroSection from '../../../components/BillingAndCancellation/HeroSection';
+import CommonHero from '@/components/shared/CommonHero';
 import BillingTimeline from '../../../components/BillingAndCancellation/BillingTimeline';
 import CancellationProcess from '../../../components/BillingAndCancellation/CancellationProcess';
 import BillingFAQ from '../../../components/BillingAndCancellation/BillingFAQ';
@@ -19,8 +19,11 @@ const BillingAndCancellationPage = () => {
         scrolledPadding="py-2" 
       />
      {/* matches navbar height */}
-      <div className="flex flex-col w-full max-w-7xl mx-auto">
-        <HeroSection />
+      <div className="flex flex-col w-full mx-auto">
+        <CommonHero 
+          title="Membership, Billing & Cancellation" 
+          description="Transparent pricing with no hidden fees. Cancel anytime." 
+        />
         <BillingTimeline />
         <CancellationProcess />
         <BillingFAQ />

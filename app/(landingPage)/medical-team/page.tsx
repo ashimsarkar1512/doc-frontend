@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import CommonHero from "@/components/shared/CommonHero";
 import { Shield, CircleCheckBig, ChevronDown } from "lucide-react";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 
@@ -103,77 +104,38 @@ export default function MedicalTeamPage() {
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
-        <div
-          className="relative w-full overflow-hidden py-16 md:py-20 px-6 md:px-12 flex flex-col items-center justify-center text-center"
-          style={{
-            borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.70) 100%)",
-            backgroundPosition: "50% 50%",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            {/* Top Badge with Lucide Shield Icon */}
-            <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium mb-6 tracking-wide">
-              <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
-              Licensed Medical Professionals
-            </span>
+      <CommonHero
+        title="Meet Our Medical Team"
+        description="All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."
+        badge={
+          <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
+            <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
+            Licensed Medical Professionals
+          </span>
+        }
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-left w-full max-w-3xl justify-center items-start text-[14px] text-[#444444] mt-10">
+          <div className="flex items-start gap-2.5">
+            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
+            <span className="leading-tight">All providers board-certified</span>
+          </div>
 
-            {isHeroLoading ? (
-              <div className="flex flex-col items-center justify-center space-y-4 w-full mb-8">
-                <div className="h-10 w-3/4 max-w-lg bg-gray-300 animate-pulse rounded-md mb-2"></div>
-                <div className="h-4 w-full max-w-2xl bg-gray-300 animate-pulse rounded-md"></div>
-                <div className="h-4 w-5/6 max-w-xl bg-gray-300 animate-pulse rounded-md"></div>
-              </div>
-            ) : (
-              <>
-                {/* Main Heading */}
-                <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
-                  {heroData?.title || "Meet Our Medical Team"}
-                </h1>
+          <div className="flex items-start gap-2.5">
+            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
+            <span className="leading-tight">State-licensed in your state</span>
+          </div>
 
-                {/* Subtitle Paragraph */}
-                <p className="text-[#595959] text-[15px] leading-relaxed mb-10 font-normal max-w-3xl mx-auto px-2">
-                  {heroData?.description ||
-                    "All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."}
-                </p>
-              </>
-            )}
+          <div className="flex items-start gap-2.5">
+            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
+            <span className="leading-tight">Prescription-required medications only</span>
+          </div>
 
-            {/* Features Grid with Lucide CircleCheckBig Icon */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-left w-full max-w-3xl justify-center items-start text-[14px] text-[#444444]">
-              <div className="flex items-start gap-2.5">
-                <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-                <span className="leading-tight">
-                  All providers board-certified
-                </span>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-                <span className="leading-tight">
-                  State-licensed in your state
-                </span>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-                <span className="leading-tight">
-                  Prescription-required medications only
-                </span>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-                <span className="leading-tight">HIPAA compliant practice</span>
-              </div>
-            </div>
+          <div className="flex items-start gap-2.5">
+            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
+            <span className="leading-tight">HIPAA compliant practice</span>
           </div>
         </div>
-      </section>
+      </CommonHero>
       {/* ── HIGHLIGHTED PROVIDER ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-20 mb-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
