@@ -438,8 +438,9 @@ export default function ChatView({ chatId }: { chatId: string }) {
                                           ? { ...m, proposals: [{ ...proposal, status: 'REJECTED', rejectedBy: user?.id }] }
                                           : m
                                       ));
+                                      toast.success('Proposal withdrawn.');
                                     } catch {
-                                      // Silently fail or rely on global error handler
+                                      toast.error('Failed to withdraw proposal.');
                                     }
                                   }}
                                   className="text-[12px] font-semibold text-gray-700 border border-gray-400 rounded-full px-4 py-1.5 hover:bg-gray-200/60 transition-colors"

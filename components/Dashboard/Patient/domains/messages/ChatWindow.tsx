@@ -585,6 +585,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                                           ? { ...m, proposals: [{ ...proposal, status: 'REJECTED', rejectedBy: user?.id }] }
                                           : m
                                       ));
+                                      toast.success('Proposal declined.');
                                     } catch {
                                       toast.error('Failed to decline proposal. Please try again.');
                                     }

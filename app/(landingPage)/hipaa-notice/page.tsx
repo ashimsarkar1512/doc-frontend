@@ -25,10 +25,10 @@ export default function HipaaNoticePage() {
         }
 
         const [heroRes, contentRes, widgetRes, faqRes] = await Promise.all([
-          fetch(`${baseUrl}/hero-section?pageType=HipaaNotice`).catch(() => null),
-          fetch(`${baseUrl}/website-manage/hipaa-notice`).catch(() => null),
-          fetch(`${baseUrl}/side-widget?pageType=HipaaNotice`).catch(() => null),
-          fetch(`${baseUrl}/faq-section?pageType=HipaaNotice`).catch(() => null),
+          fetch(`${baseUrl}/hero-section?pageType=HippaNotice`).catch(() => null),
+          fetch(`${baseUrl}/website-manage/hippa-notice`).catch(() => null),
+          fetch(`${baseUrl}/side-widget?pageType=HippaNotice`).catch(() => null),
+          fetch(`${baseUrl}/faq-section?pageType=HippaNotice`).catch(() => null),
         ]);
 
         const heroData = heroRes?.ok ? await heroRes.json().catch(() => null) : null;
