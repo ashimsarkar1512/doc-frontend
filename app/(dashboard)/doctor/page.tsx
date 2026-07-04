@@ -86,7 +86,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         )}
 
         {isMessages ? (
-          <div className="w-full flex lg:gap-8 min-h-[750px] mt-12">
+          <div className="w-full flex lg:gap-8 min-h-[750px] ">
             <div className={`flex-shrink-0 sticky top-10 w-full lg:w-auto ${chatId ? 'hidden lg:block' : 'block'}`}>
               <MessagesPanel />
             </div>

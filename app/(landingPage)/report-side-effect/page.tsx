@@ -18,22 +18,19 @@ const ReportSideEffectPage = () => {
         scrolledPadding="py-2" 
       />
       
-      <div className="pt-24 md:pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto flex flex-col gap-12">
-        
-        <CommonHero 
-          title="Report a Side Effect" 
-          description="Your safety is our top priority. Report any adverse reactions to your medication using the form below. A member of our clinical team will follow up within 24 hours." 
-        />
+      <CommonHero 
+        title="Report a Side Effect" 
+        description="Your safety is our top priority. Report any adverse reactions to your medication using the form below. A member of our clinical team will follow up within 24 hours." 
+        watermarkImage="/Side Effect.png"
+      />
 
-        <div className="w-full flex flex-col md:flex-row gap-8 items-start">
-          <div className="flex-1 min-w-0">
-            <ReportForm />
-          </div>
-          <div className="w-full md:w-[480px] shrink-0 sticky top-24 self-start">
-            <ContactInfoCards />
-          </div>
+      <div className="max-w-[1520px] mx-auto w-full px-4 md:px-6 pb-16 flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex-1 min-w-0">
+          <ReportForm />
         </div>
-
+        <div className="w-full md:w-[480px] shrink-0 sticky top-24 self-start">
+          <ContactInfoCards />
+        </div>
       </div>
     </main>
   );

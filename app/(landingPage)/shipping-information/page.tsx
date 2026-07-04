@@ -20,17 +20,17 @@ const ShippingInformationPage = () => {
         scrolledPadding="py-2" 
       />
       
-      <div className="pt-24 md:pt-32 pb-16 w-full flex flex-col items-center ">
-        <CommonHero 
-          title="Pharmacy & Shipping Information" 
-          description="Complete transparency on how your prescription is filled and delivered." 
-        />
+      <CommonHero 
+        title="Pharmacy & Shipping Information" 
+        description="Complete transparency on how your prescription is filled and delivered."
+        watermarkImage="/Shipping.png"
+      />
+
+      <div className="max-w-[1520px] mx-auto w-full flex flex-col items-center">
         <PartnerPharmacyNetwork />
         <ShippingTimeline />
         <ShippingQuestions />
-        <div className="w-full max-w-7xl ">
-          <ContactCTA />
-        </div>
+        <ContactCTA/>
       </div>
     </main>
   );
