@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '@/components/shared/Navbar';
-import HeroSection from '@/components/ShippingInformation/HeroSection';
+import CommonHero from '@/components/shared/CommonHero';
 import PartnerPharmacyNetwork from '@/components/ShippingInformation/PartnerPharmacyNetwork';
 import ShippingTimeline from '@/components/ShippingInformation/ShippingTimeline';
 import ShippingQuestions from '@/components/ShippingInformation/ShippingQuestions';
@@ -21,7 +21,10 @@ const ShippingInformationPage = () => {
       />
       
       <div className="pt-24 md:pt-32 pb-16 w-full flex flex-col items-center ">
-        <HeroSection />
+        <CommonHero 
+          title="Pharmacy & Shipping Information" 
+          description="Complete transparency on how your prescription is filled and delivered." 
+        />
         <PartnerPharmacyNetwork />
         <ShippingTimeline />
         <ShippingQuestions />

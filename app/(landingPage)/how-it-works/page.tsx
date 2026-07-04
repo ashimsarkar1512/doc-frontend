@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
+import CommonHero from "@/components/shared/CommonHero";
 import {
   Shield,
   ClipboardList,
@@ -117,38 +118,16 @@ export default function HowItWorksPage() {
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
-        <div
-          className="relative w-full overflow-hidden py-16 md:py-20 px-6 md:px-12 flex flex-col items-center justify-center text-center"
-          style={{
-            borderRadius: "40px",
-            background:
-              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
-            backgroundPosition: "50% 50%",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            {/* Badge */}
-            <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium mb-6 tracking-wide">
-              <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
-              Most patients approved within 72 hours
-            </span>
-
-            {/* Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-6 tracking-tight">
-              How WeightLoss MD Works
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-4xl mx-auto px-2">
-              A clear, transparent process from your first health question to
-              ongoing medical support — all from licensed providers.
-            </p>
-          </div>
-        </div>
-      </section>
+      <CommonHero
+        title="How WeightLoss MD Works"
+        description="A clear, transparent process from your first health question to ongoing medical support — all from licensed providers."
+        badge={
+          <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
+            <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
+            Most patients approved within 72 hours
+          </span>
+        }
+      />
 
       {/* ── PATIENT JOURNEY ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-16 w-full">

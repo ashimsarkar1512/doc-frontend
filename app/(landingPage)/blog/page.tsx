@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '@/components/shared/Navbar';
-import BlogHero from '@/components/blog/BlogHero';
+import CommonHero from '@/components/shared/CommonHero';
 import BlogList from '@/components/blog/BlogList';
 import BlogCTA from '@/components/blog/BlogCTA';
 
@@ -18,7 +18,16 @@ const Blogpage = () => {
         scrolledPadding="py-2" 
       />
       <div className="xl:lg:pt-20 p-9" /> {/* matches navbar height */}
-        <BlogHero />
+      <CommonHero
+        title="Read our insights"
+        description={
+          <>
+            Our medical weight management program is designed to support individuals seeking
+            <br className="hidden md:block" /> a structured, provider-guided approach to weight loss. Each
+          </>
+        }
+        watermarkImage="/BLOGS.png"
+      />
         <BlogList />
       <BlogCTA />
     </main>

@@ -5,43 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-
+import CommonHero from "@/components/shared/CommonHero";
 export default function HipaaNoticePage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar variant="dark" />
 
       {/* ── HERO BANNER ── */}
-      <section className="pt-28 md:pt-36 px-4 sm:px-6 max-w-[1300px] mx-auto w-full">
-        <div className="relative bg-[#f4f7fa] rounded-[32px] w-full py-20 md:py-28 flex flex-col items-center justify-center min-h-[240px]">
-          {/* SVG "HIPPA" background watermark — provided paths */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[32px] p-6 md:p-10">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1012 369"
-              fill="none"
-              preserveAspectRatio="xMidYMid meet"
-              className="w-full h-auto max-h-[90%] opacity-[0.55]"
-            >
-              <path d="M0 0H65.56V169.86H135.888V0H201.448V417.2H135.888V229.46H65.56V417.2H0V0Z" fill="url(#h1)"/>
-              <path d="M250.273 0H315.833V417.2H250.273V0Z" fill="url(#h1)"/>
-              <path d="M364.934 0H461.486C494.067 0 518.503 8.74134 534.794 26.224C551.084 43.7067 559.23 69.3347 559.23 103.108V144.232C559.23 178.005 551.084 203.633 534.794 221.116C518.503 238.599 494.067 247.34 461.486 247.34H430.494V417.2H364.934V0ZM461.486 187.74C472.214 187.74 480.16 184.76 485.326 178.8C490.888 172.84 493.67 162.708 493.67 148.404V98.936C493.67 84.632 490.888 74.5 485.326 68.54C480.16 62.58 472.214 59.6 461.486 59.6H430.494V187.74H461.486Z" fill="url(#h1)"/>
-              <path d="M594.836 0H691.388C723.969 0 748.405 8.74134 764.696 26.224C780.987 43.7067 789.132 69.3347 789.132 103.108V144.232C789.132 178.005 780.987 203.633 764.696 221.116C748.405 238.599 723.969 247.34 691.388 247.34H660.396V417.2H594.836V0ZM691.388 187.74C702.116 187.74 710.063 184.76 715.228 178.8C720.791 172.84 723.572 162.708 723.572 148.404V98.936C723.572 84.632 720.791 74.5 715.228 68.54C710.063 62.58 702.116 59.6 691.388 59.6H660.396V187.74H691.388Z" fill="url(#h1)"/>
-              <path d="M854.445 0H943.249L1011.19 417.2H945.633L933.713 334.356V335.548H859.213L847.293 417.2H786.501L854.445 0ZM925.965 278.928L896.761 72.712H895.569L866.961 278.928H925.965Z" fill="url(#h1)"/>
-              <defs>
-                <linearGradient id="h1" x1="500.407" y1="0.650562" x2="500.407" y2="368.394" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#C8CDD2"/>
-                  <stop offset="1" stopColor="#C8CDD2" stopOpacity="0"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-
-          <div className="relative z-10 text-center px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">HIPAA Notice</h1>
-          </div>
-        </div>
-      </section>
+      <CommonHero title="HIPAA Notice" />
 
       {/* ── CONTENT ── */}
       <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-14 pb-24 w-full">
