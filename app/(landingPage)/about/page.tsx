@@ -1,14 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Expert from "@/components/home/Expert";
-import QNA from "@/components/home/QNA";
+import QNA, { FAQItem } from "@/components/home/QNA";
 import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
 import { ScrollRevealText } from "@/components/shared/ScrollRevealText";
 import CommonHero from "@/components/shared/CommonHero";
 export default function AboutPage() {
+  const { data } = useGetHomepageContentQuery(undefined);
+  
   const benefits = [
     "Personalized treatment plans tailored to individual goals",
     "Licensed healthcare providers and medically supervised programs",
@@ -18,8 +20,30 @@ export default function AboutPage() {
     "Focus on long-term wellness and sustainable lifestyle improvements",
   ];
 
-  const { data } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true });
-  console.log(data);
+  const [faqList, setFaqList] = useState<FAQItem[] | undefined>(undefined);
+
+  useEffect(() => {
+    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://prod.weightlossmdcherrycreek.com";
+    baseUrl = baseUrl.replace(/\/$/, "");
+    if (!baseUrl.includes("/api/v1")) {
+      baseUrl = `${baseUrl}/api/v1`;
+    }
+
+    fetch(`${baseUrl}/faq-section?pageType=AboutUs`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((dataRaw) => {
+        if (dataRaw?.data && Array.isArray(dataRaw.data)) {
+          setFaqList(
+            dataRaw.data.map((item: any) => ({
+              id: item.id || Math.random().toString(),
+              question: item.question,
+              answer: item.answer,
+            }))
+          );
+        }
+      })
+      .catch((err) => console.error("Failed to fetch FAQ:", err));
+  }, []);
 
   const blobDefs = (
     <svg width="0" height="0" style={{ position: "absolute" }}>
@@ -75,7 +99,7 @@ export default function AboutPage() {
 
         <ScrollRevealText
           text={`${data?.aboutTitle} ${data?.aboutDescription}`}
-          className="text-center max-w-4xl text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
+          className="text-center max-w-[1520px] text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
         />
 
         <div className="w-full relative overflow-hidden rounded-[2.5rem]  h-[00px] md:h-[500px] lg:h-[600px]">
@@ -205,7 +229,13 @@ export default function AboutPage() {
       </section>
 
       <Expert />
-      <QNA />
+      
+      {/* ── FAQ SECTION (Dynamic based on page data) ── */}
+      {faqList && faqList.length > 0 ? (
+        <QNA faqData={faqList} title="About Us FAQs" />
+      ) : (
+        <QNA />
+      )}
     </div>
   );
 }
