@@ -95,7 +95,7 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
 
   return (
     <section className="w-full bg-[#121314] py-20 px-4 md:px-8 font-sans text-white">
-      <div className="max-w-[1520px] mx-auto">
+      <div className="max-w-[1400px] mx-auto">
 
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
@@ -153,7 +153,7 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
           </div>
 
           {/* Right Column: Featured Callout Action Frame */}
-          <div className="lg:col-span-5 w-full h-full relative group rounded-[2rem] overflow-hidden min-h-[460px] flex flex-col justify-end p-8 md:p-10 border border-gray-800/20 shadow-2xl">
+          <div className="lg:col-span-5 w-full h-[460px] lg:h-[665px] relative group rounded-[2rem] overflow-hidden flex flex-col justify-end p-8 md:px-[40px] md:py-[50px] border border-gray-800/20 shadow-2xl">
             {/* Background Medical Art Vector Frame */}
             <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-103">
               <Image

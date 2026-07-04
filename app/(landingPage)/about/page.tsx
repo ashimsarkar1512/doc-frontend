@@ -117,18 +117,17 @@ export default function AboutPage() {
       </section>
 
       {/* INCORPORATE & OVERSEE */}
-      {/* INCORPORATE & OVERSEE */}
       <section className="w-full py-16 md:py-24 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-          <div className="flex flex-col items-start">
-            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide">
+        <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="flex flex-col items-start pr-0 lg:pr-12">
+            <span className="bg-[#E6E6E6] text-black text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide">
               {data?.bodySection2Tag || "Our Mission"}
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-medium text-gray-900 leading-[1.2] mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-[54px] font-semibold text-[#272628] leading-[1.15] mb-6">
               {data?.bodySection2Title || "Incorporate and oversee Various Athletics, Administrators, and Trainers."}
             </h2>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-4">
-              {data?.bodySection2Description || "Our mission is to help individuals take control of their health through medically supervised care, evidence-based treatments, and personalized wellness programs. We are committed to creating a supportive environment where patients feel heard, respected, and empowered at every stage of their transformation."}
+            <p className="text-[#3B3B3B] text-base leading-relaxed mb-8">
+              {data?.bodySection2Description || "Our mission is to help individuals take control of their health through medically supervised care, evidence-based treatments, and personalized wellness programs."}
             </p>
             <button
               onClick={() => {
@@ -142,30 +141,79 @@ export default function AboutPage() {
             </button>
           </div>
 
-          <div className="flex justify-center items-center">
-            <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <img
-                src={data?.bodySection2Image?.fileUrl ? getMediaUrl(data.bodySection2Image.fileUrl) : "/Union.png"}
-                alt="Medical professional"
-                className="w-full h-full object-contain object-center drop-shadow-sm"
-              />
-            </div>
+          {/* Right: Image */}
+          <div className="flex justify-end items-center overflow-visible">
+            {data?.bodySection2Image?.fileUrl ? (
+              <div className="relative w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
+                {/* doctorShape.png as background (blue blob) */}
+                <img
+                  src="/doctorShape.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+                {/* Dynamic image masked to the same shape — no rectangular edges */}
+                <img
+                  src={getMediaUrl(data.bodySection2Image.fileUrl)}
+                  alt="Medical professional"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
+                  style={{
+                    maskImage: "url('/doctorShape.png')",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskImage: "url('/doctorShape.png')",
+                    WebkitMaskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="relative w-full max-w-[420px] h-[420px]">
+                <img src="/Union.png" alt="Medical professional" className="w-full h-full object-contain" />
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* WHY PATIENTS CHOOSE */}
-      {/* WHY PATIENTS CHOOSE */}
       <section className="w-full py-16 md:py-24 px-4 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-          <div className="flex justify-center items-center order-last lg:order-first">
-            <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <img
-                src={data?.bodySection3Image?.fileUrl ? getMediaUrl(data.bodySection3Image.fileUrl) : "/Union2.png"}
-                alt="Weight loss progress"
-                className="w-full h-full object-contain object-center drop-shadow-sm"
-              />
-            </div>
+        <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left: Image */}
+          <div className="flex justify-start items-center overflow-visible">
+            {data?.bodySection3Image?.fileUrl ? (
+              <div className="relative w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
+                {/* doctorShape.png as background (blue blob) */}
+                <img
+                  src="/doctorShape.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+                {/* Dynamic image masked to the same shape — no rectangular edges */}
+                <img
+                  src={getMediaUrl(data.bodySection3Image.fileUrl)}
+                  alt="Weight loss progress"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
+                  style={{
+                    maskImage: "url('/doctorShape.png')",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskImage: "url('/doctorShape.png')",
+                    WebkitMaskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="relative w-full max-w-[420px] h-[420px]">
+                <img src="/Union2.png" alt="Weight loss progress" className="w-full h-full object-contain" />
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col items-start">
