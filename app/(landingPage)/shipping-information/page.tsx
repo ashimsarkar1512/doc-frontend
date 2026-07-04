@@ -4,7 +4,7 @@ import HeroSection from '@/components/ShippingInformation/HeroSection';
 import PartnerPharmacyNetwork from '@/components/ShippingInformation/PartnerPharmacyNetwork';
 import ShippingTimeline from '@/components/ShippingInformation/ShippingTimeline';
 import ShippingQuestions from '@/components/ShippingInformation/ShippingQuestions';
-import ContactCTA from '@/components/BillingAndCancellation/ContactCTA';
+import ContactCTA from '@/components/shared/ContactCTA';
 
 export const metadata = {
   title: "Shipping Information - Weight Loss MD",

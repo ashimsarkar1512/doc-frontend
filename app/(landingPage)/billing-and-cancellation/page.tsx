@@ -3,7 +3,7 @@ import HeroSection from '../../../components/BillingAndCancellation/HeroSection'
 import BillingTimeline from '../../../components/BillingAndCancellation/BillingTimeline';
 import CancellationProcess from '../../../components/BillingAndCancellation/CancellationProcess';
 import BillingFAQ from '../../../components/BillingAndCancellation/BillingFAQ';
-import ContactCTA from '../../../components/BillingAndCancellation/ContactCTA';
+import ContactCTA from '@/components/shared/ContactCTA';
 import Navbar from '@/components/shared/Navbar';
 
 const BillingAndCancellationPage = () => {
