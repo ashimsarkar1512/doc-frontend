@@ -22,8 +22,8 @@ const Footer = () => {
     <footer className="w-full bg-[#0a0a0a] font-sans overflow-x-hidden">
       {/* ── Office Locations ── outer bg is black, inner box is 1688px centered ── */}
       <div className="w-full bg-[#0a0a0a] pt-[100px]">
-        <div className="max-w-[1688px] mx-auto bg-[#242728] py-[60px] px-[79px] flex flex-col items-center gap-[60px] rounded-t-[40px] rounded-b-none">
-          <h2 className="text-[54px] font-semibold text-center text-white font-[Quicksand] leading-[110%]">
+        <div className="max-w-[1688px] mx-auto bg-[#242728] py-[40px] md:py-[60px] px-6 md:px-[79px] flex flex-col items-center gap-[40px] md:gap-[60px] rounded-t-[40px] rounded-b-none">
+          <h2 className="text-[32px] md:text-[54px] font-semibold text-center text-white font-[Quicksand] leading-[110%]">
             Our office locations
           </h2>
 
@@ -85,7 +85,7 @@ const Footer = () => {
         </div>
 
         {/* Content — flex column, gap 40px, Figma: padding 60/60/40/60 */}
-        <div className="relative z-10 flex flex-col items-start gap-[40px] self-stretch px-[60px] pt-[60px] pb-[40px]">
+        <div className="relative z-10 flex flex-col items-start gap-[40px] self-stretch px-6 md:px-[60px] pt-10 md:pt-[60px] pb-[40px]">
           {/* ── Row 1: Nav grid ── */}
           <div className="grid grid-cols-1 md:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] gap-y-10 w-full">
 
@@ -142,7 +142,7 @@ const Footer = () => {
 
             {/* Col 3: Others – right list (no heading, aligned with col 2 links) */}
             <div>
-              <div className="mb-5 h-[36px]" />{/* exact heading height: 24px × 150% = 36px */}
+              <div className="hidden md:block mb-5 h-[36px]" />{/* exact heading height: 24px × 150% = 36px */}
               <ul className="space-y-[10px] text-[20px] text-white font-normal font-[Quicksand] leading-[150%]">
                 <li>
                   <Link href="/coverage" className="hover:text-white transition-colors">
@@ -219,12 +219,12 @@ const Footer = () => {
           </div>
 
           {/* ── Row 2: Badges + Payment (same 5-col grid) ── */}
-          <div className="grid grid-cols-1 md:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] w-full">
+          <div className="grid grid-cols-1 md:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] w-full mt-8 md:mt-0">
             {/* Col 1: empty spacer — aligns with logo column */}
             <div className="hidden md:block" />
 
             {/* Cols 2-4: Badges */}
-            <div className="md:col-span-3 flex items-center gap-6">
+            <div className="md:col-span-3 flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-6">
               <Image
                 src="/footer1.png"
                 alt="LegitScript Certified"
@@ -249,7 +249,7 @@ const Footer = () => {
             </div>
 
             {/* Col 5: We Support + payment icons */}
-            <div className="flex items-center gap-4 justify-end">
+            <div className="flex flex-wrap xl:flex-nowrap justify-center md:justify-end items-center gap-4 mt-6 md:mt-0">
               <span className="text-white text-[24px] font-semibold font-[Quicksand] leading-[150%] whitespace-nowrap">
                 We Support
               </span>
@@ -273,15 +273,15 @@ const Footer = () => {
           </div>
 
           {/* ── Row 3: Divider + Copyright + Socials ── */}
-          <div className="w-full">
+          <div className="w-full mt-6 md:mt-0">
             <div className="w-full h-[1px] bg-white/20 mb-5" />
 
           {/* ── Copyright + Socials ── */}
-          <div className="flex flex-col md:flex-row justify-between items-center text-[20px] text-white font-normal font-[Quicksand] leading-[150%]">
-            <p>&copy; {new Date().getFullYear()} Weight Loss MD. All Rights Reserved.</p>
+          <div className="flex flex-col md:flex-row justify-between items-center text-[20px] text-white font-normal font-[Quicksand] leading-[150%] gap-4 md:gap-0 pb-6 md:pb-0">
+            <p className="text-center md:text-left">&copy; {new Date().getFullYear()} Weight Loss MD. All Rights Reserved.</p>
 
-            <div className="flex items-center gap-3 mt-3 md:mt-0">
-              <span className="text-[20px] text-white font-normal font-[Quicksand] leading-[150%] mr-1">Follow us at:</span>
+            <div className="flex flex-col md:flex-row items-center gap-3 mt-3 md:mt-0">
+              <span className="text-[20px] text-white font-normal font-[Quicksand] leading-[150%] md:mr-1">Follow us at:</span>
               <div className="flex gap-3 text-white items-center">
                 <Link
                   href="https://www.facebook.com/wlmdusa"
