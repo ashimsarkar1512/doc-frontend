@@ -42,6 +42,7 @@ export interface EligibilityResponse {
   data: EligibilityContent
 }
 
+
 const eligiblityApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getEligibilityContent: builder.query<EligibilityContent, void>({
