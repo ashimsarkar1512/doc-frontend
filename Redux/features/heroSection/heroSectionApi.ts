@@ -1,5 +1,5 @@
 import { baseApi } from '../../api/baseApi';
-import type { HeroSectionResponse } from './types'; // Wait, I should just define types here or in a separate file.
+
 
 export interface HeroSection {
   id: string;
