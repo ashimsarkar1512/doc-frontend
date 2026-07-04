@@ -111,37 +111,36 @@ export default function DoctorTabs() {
   const getTabClass = (tab: string) => {
     const isActive = activeTab === tab;
     const base =
-      "flex flex-shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2.5 text-xs font-semibold transition-colors md:rounded-none md:border-x-0 md:border-t-0 md:bg-transparent md:px-0 md:pb-4 md:pt-0 md:text-sm";
+      "pb-[8px] text-[16px] md:text-[20px] font-[Quicksand] leading-[150%] font-medium flex items-center gap-2 whitespace-nowrap transition-all duration-150 border-b-2";
 
     if (isActive) {
-      return `${base} border-[#2563eb] bg-[#2563eb] text-white shadow-sm shadow-blue-100 md:border-b-2 md:text-[#2563eb] md:shadow-none`;
+      return `${base} text-[#2558E5] border-[#2558E5]`;
     }
 
-    return `${base} border-transparent bg-white text-gray-600 hover:bg-blue-50 hover:text-gray-900 md:border-b-2 md:hover:bg-transparent`;
+    return `${base} text-[#272628] border-transparent hover:text-black`;
   };
 
   return (
     <>
       {/* ================= TABS ================= */}
-      <div className="mb-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible">
-        <div className="flex w-max min-w-full gap-2 rounded-2xl bg-gray-50 p-1 md:w-full md:gap-8 md:rounded-none md:border-b md:border-gray-200 md:bg-transparent md:p-0">
-          {TABS.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => handleTabChange(tab.value)}
-              className={getTabClass(tab.value)}
-            >
-              {tab.label}
-
+      <div className="flex items-center gap-[20px] border-b border-[#E5E7EB] mb-8 overflow-x-auto select-none scrollbar-none">
+        {TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => handleTabChange(tab.value)}
+            className={getTabClass(tab.value)}
+          >
+            <span>{tab.label}</span>
+            {tab.count > 0 && (
               <span
-                className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs text-white"
+                className="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
                 style={{ backgroundColor: tab.color }}
               >
                 {tab.count}
               </span>
-            </button>
-          ))}
-        </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* ================= LOADING ================= */}
@@ -152,11 +151,11 @@ export default function DoctorTabs() {
       ) : (
         <>
           {/* ================= CARDS ================= */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {cards.map((card: any) => (
-              <div key={card.id} className="flex flex-col">
-                {/* Image */}
-                <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-gray-50 shadow-sm border border-gray-100/50">
+              <div key={card.id} className="flex flex-col group w-full">
+                {/* Image Container with pill status tag */}
+                <div className="relative w-full h-[340px] rounded-[24px] overflow-hidden bg-gray-50">
                   <Image
                     src={card.image}
                     alt={card.title}
@@ -164,44 +163,45 @@ export default function DoctorTabs() {
                       e.currentTarget.src = fallBackImg.src;
                     }}
                     fill
-                    className="object-cover hover:scale-105 transition-transform duration-500"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    unoptimized
                   />
 
-                  <div
-                    className={`absolute top-3 left-3 px-3 py-1 rounded-full text-white text-xs font-semibold shadow-sm ${
+                  <span
+                    className={`absolute top-4 left-4 px-3.5 py-1 text-xs font-semibold rounded-full shadow-sm select-none text-white backdrop-blur-[1px] ${
                       card.status === "Pending"
                         ? "bg-[#eab308]/90"
                         : card.status === "Declined"
-                          ? "bg-red-500"
-                          : "bg-green-500"
+                          ? "bg-red-500/90"
+                          : "bg-[#10b981]/90"
                     }`}
                   >
                     {card.status}
-                  </div>
+                  </span>
                 </div>
 
-                {/* Body */}
-                <div className="flex flex-col flex-grow">
-                  <span className="bg-[#EAF3FF] text-[#272628] text-base font-medium px-4 py-2 rounded-full w-fit mb-2">
+                {/* Card Detail Content */}
+                <div className="flex flex-col items-start mt-[16px] flex-grow">
+                  {/* Category Badge */}
+                  <span className="inline-flex items-center justify-center gap-[15px] px-[12px] py-[8px] text-[16px] font-[Quicksand] font-normal leading-[100%] text-[#272628] bg-[#EAF3FF] rounded-[46px] mb-[8px]">
                     {card.category}
                   </span>
 
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  {/* Title */}
+                  <h3 className="text-[24px] font-bold text-[#272628] font-[Quicksand] leading-[150%] group-hover:text-[#1D4ED8] transition-colors mb-[8px]">
                     {card.title}
                   </h3>
 
-                  <p className="text-gray-500 text-base mb-4">
-                    Patient:{" "}
-                    <span className="text-gray-700 font-medium">
-                      {card.patientName}
-                    </span>
+                  {/* Subtitle / Patient */}
+                  <p className="text-[20px] text-[#272628] font-[Quicksand] font-normal leading-[100%] mb-[16px]">
+                    Patient: {card.patientName}
                   </p>
 
                   <div className="mt-auto">
                     <Link
                       href={`/doctor?consultationId=${card.consultationId.replace("#", "")}`}
                     >
-                      <button className="bg-[#2563eb] hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-6 rounded-full w-fit">
+                      <button className="inline-flex items-center justify-center px-[18px] h-[42px] bg-[#2558E5] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-[Quicksand] font-medium text-[18px] leading-[100%] rounded-[50px] transition-all text-center">
                         {card.buttonText}
                       </button>
                     </Link>

@@ -54,22 +54,22 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
   return (
     <div className="h-full flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
-      <main className={`flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}>
+      <main className={`flex-1 max-w-[1520px] w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}>
         {/* Action Buttons at the Top */}
-        <div className="flex gap-4 mb-8 ">
+        <div className="flex flex-wrap items-center gap-[16px] justify-center sm:justify-start mb-[24px]">
           <Link href="/doctor">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <Home className="w-5 h-5" />
+            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+              <Home className="w-[24px] h-[24px]" />
             </span>
           </Link>
           <Link href="/doctor?view=messages">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <MessageSquare className="w-5 h-5" />
+            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+              <MessageSquare className="w-[24px] h-[24px]" />
             </span>
           </Link>
           <Link href="/doctor?view=settings">
-            <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm ${isSettings ? "bg-[#2563eb] text-white shadow-blue-200" : "bg-white border border-gray-200 text-[#2563eb] hover:bg-gray-50"}`}>
-              <Settings className="w-5 h-5" />
+            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isSettings ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+              <Settings className="w-[24px] h-[24px]" />
             </span>
           </Link>
         </div>
@@ -86,7 +86,7 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
         )}
 
         {isMessages ? (
-          <div className="w-full flex lg:gap-8 min-h-[750px]">
+          <div className="w-full flex lg:gap-8 min-h-[750px] mt-12">
             <div className={`flex-shrink-0 sticky top-10 w-full lg:w-auto ${chatId ? 'hidden lg:block' : 'block'}`}>
               <MessagesPanel />
             </div>

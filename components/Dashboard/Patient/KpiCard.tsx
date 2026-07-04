@@ -16,16 +16,16 @@ export default function KpiCard({
          transition-all duration-300 hover:shadow-md
       `}
     >
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-[13px]">
         <span
-          className={`text-4xl font-bold tracking-tight ${textColor} leading-none`}
+          className={`text-[40px] font-bold tracking-tight ${textColor} leading-[110%] font-[Quicksand]`}
         >
           {value}
         </span>
 
           <Icon className={`h-10 w-10 ${textColor}`} />
       </div>
-      <span className="text-xl font-medium text-[#272628] leading-none ">
+      <span className="text-[20px] font-medium text-[#272628] leading-[100%] font-[Quicksand]">
         {label}
       </span>
      

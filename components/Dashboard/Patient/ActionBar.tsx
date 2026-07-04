@@ -30,14 +30,14 @@ export default function ActionBar({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4">
       {/* Left side: Rounded Square Action Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-[16px] justify-center sm:justify-start">
         {/* Active Home Control */}
         <button
           onClick={() => onChangeDomain("dashboard")}
           aria-label="Home"
           className={getButtonClass("dashboard")}
         >
-          <Home className="h-5 w-5" />
+          <Home className="h-[24px] w-[24px]" />
         </button>
 
         {/* Messages Control */}
@@ -46,17 +46,8 @@ export default function ActionBar({
           aria-label="Messages"
           className={getButtonClass("messages")}
         >
-          <MessageSquare className="h-5 w-5" />
+          <MessageSquare className="h-[24px] w-[24px]" />
         </button>
-
-        {/* Notifications Control */}
-        {/* <button
-          onClick={() => onChangeDomain("notifications")}
-          aria-label="Notifications"
-          className={`${getButtonClass("notifications")} md:hidden`}
-        >
-          <Bell className="h-5 w-5" />
-        </button> */}
 
         {/* Settings Control */}
         <button
@@ -64,17 +55,21 @@ export default function ActionBar({
           aria-label="Settings"
           className={getButtonClass("settings")}
         >
-          <Settings className="h-5 w-5" />
+          <Settings className="h-[24px] w-[24px]" />
         </button>
       </div>
 
       {/* Right side: Request New Consultation Action */}
       <Link
         href="/#assessments"
-        className="flex items-center justify-center gap-2 px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-semibold rounded-2xl shadow-sm text-[14px] transition-all duration-150 active:scale-[0.98] tracking-wide"
+        className="flex items-center justify-center gap-[10px] px-[20px] h-[50px] w-full sm:w-auto bg-[#1D4ED8] hover:bg-[#1e40af] active:bg-[#172554] text-white font-[Quicksand] font-semibold text-[20px] leading-[100%] rounded-[12px] transition-all duration-150 active:scale-[0.98]"
       >
-        <span>Request New Consultation</span>
-        <Plus className="h-4.5 w-4.5 bg-white/20 rounded-full p-0.5" />
+        <span>Book an Appointment</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="w-[24px] h-[24px]">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M8 12H16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M12 8V16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </Link>
     </div>
   );

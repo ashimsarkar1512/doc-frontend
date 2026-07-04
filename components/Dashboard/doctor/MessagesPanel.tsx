@@ -60,6 +60,19 @@ export default function MessagesPanel() {
     };
   }, [socket]);
 
+  const formatTimeAgo = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    const diffInSeconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
+    if (diffInSeconds < 60) return 'just now';
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) return `${diffInDays}d ago`;
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
   return (
     <div className="w-full flex flex-col gap-4 animate-in fade-in duration-200 h-full">
       {/* Title */}
@@ -80,29 +93,39 @@ export default function MessagesPanel() {
         }}
       >
         {/* Search Input */}
-        <div className="relative w-full">
-          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-white/70" />
-          </span>
+        <div className="flex items-center gap-[10px] w-full h-[50px] px-[14px] py-[8px] rounded-[10px] bg-white/20 mb-[16px] flex-shrink-0">
+          <Search className="w-5 h-5 text-white flex-shrink-0" strokeWidth={2} />
           <input
             type="text"
-            placeholder="Search patients..."
+            placeholder="Search.."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-[10px] text-sm text-white placeholder-white/70 focus:outline-none focus:bg-white/20 transition-all shadow-none"
+            className="w-full bg-transparent text-[16px] font-[Quicksand] text-white placeholder-white/70 focus:outline-none"
           />
         </div>
 
         {isLoading ? (
           <div className="p-4 text-center text-white/70 text-sm w-full">Loading...</div>
         ) : (
-          <div className="w-full flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+          <div className="w-full flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
             {conversations.length > 0 && (
-              <div className="w-full flex flex-col gap-2">
-                <h4 className="text-[11px] font-semibold text-white/70 tracking-widest uppercase px-2">
-                  ACTIVE PATIENTS
+              <div className="flex flex-col w-full">
+                <h4 
+                  className="mb-[16px]"
+                  style={{
+                    color: 'var(--White, #FFF)',
+                    fontFamily: 'Quicksand',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    lineHeight: '100%',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  ACTIVE PATIENT
                 </h4>
-                {conversations.map((thread) => {
+                <div className="flex flex-col w-full gap-[16px]">
+                  {conversations.map((thread) => {
                   const patient = thread.patient || {};
                   const isOnline = thread.isPatientOnline;
                   const isSelected = activeChatId === thread.id;
@@ -111,10 +134,10 @@ export default function MessagesPanel() {
                     <Link
                       key={thread.id}
                       href={`/doctor?view=messages&chatId=${thread.id}`}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                      className={`w-full flex items-center gap-[12px] p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
                     >
                       <div className="relative flex-shrink-0">
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-white">
+                        <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border border-white/20 bg-white">
                           {patient?.avatar ? (
                             <img
                               src={patient.avatar}
@@ -132,20 +155,24 @@ export default function MessagesPanel() {
                         )}
                       </div>
 
-                      <div className="min-w-0 flex-1 flex flex-col justify-center">
+                      <div className="min-w-0 flex-1 flex flex-col justify-center gap-[4px]">
                         <div className="flex justify-between items-center w-full">
-                          <h4 className="text-sm font-bold text-white truncate pr-2">
+                          <h4 className="font-[Quicksand] text-[20px] font-semibold leading-[100%] text-white truncate pr-2">
                             {patient?.name || 'Unknown Patient'}
                           </h4>
+                          <span className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white text-center whitespace-nowrap">
+                            {formatTimeAgo(thread.updatedAt || thread.createdAt)}
+                          </span>
                         </div>
-                        <p className="text-[11px] text-white/80 mt-0.5 truncate font-light">
-                          {thread.service?.name || 'Service'}
+                        <p className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white truncate">
+                          {thread.service?.name || 'Weight Loss'} - CID: #{thread.id.substring(0, 6)}
                         </p>
                       </div>
                     </Link>
                   );
                 })}
               </div>
+            </div>
             )}
             {conversations.length === 0 && (
               <p className="text-sm text-white/70 text-center py-8 w-full">No patients found.</p>
