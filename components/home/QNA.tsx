@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
 
-interface FAQItem {
+export interface FAQItem {
   id: string;
   question: string;
   answer: string;
@@ -43,8 +43,20 @@ const defaultFaqData: FAQItem[] = [
   },
 ];
 
-const QNA: React.FC = () => {
-  const { data: content, isLoading } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true });
+export interface QNAProps {
+  faqData?: FAQItem[];
+  title?: string;
+  isLoading?: boolean;
+}
+
+const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading }) => {
+  const { data: content, isLoading: isQueryLoading } = useGetHomepageContentQuery(undefined, { 
+    skip: !!faqData, // skip fetching if data is provided via props
+    refetchOnFocus: true, 
+    refetchOnMountOrArgChange: true 
+  });
+
+  const isLoading = propIsLoading ?? isQueryLoading;
 
   // Track open state using unique ID string or null for clean closing control
   const [openId, setOpenId] = useState<string | null>('1');
@@ -53,15 +65,20 @@ const QNA: React.FC = () => {
     setOpenId(openId === id ? null : id);
   };
 
-  const dynamicFaqs: FAQItem[] = [];
-  if (content?.faqQuestion1 && content?.faqAnswer1) dynamicFaqs.push({ id: '1', question: content.faqQuestion1, answer: content.faqAnswer1 });
-  if (content?.faqQuestion2 && content?.faqAnswer2) dynamicFaqs.push({ id: '2', question: content.faqQuestion2, answer: content.faqAnswer2 });
-  if (content?.faqQuestion3 && content?.faqAnswer3) dynamicFaqs.push({ id: '3', question: content.faqQuestion3, answer: content.faqAnswer3 });
-  if (content?.faqQuestion4 && content?.faqAnswer4) dynamicFaqs.push({ id: '4', question: content.faqQuestion4, answer: content.faqAnswer4 });
-  if (content?.faqQuestion5 && content?.faqAnswer5) dynamicFaqs.push({ id: '5', question: content.faqQuestion5, answer: content.faqAnswer5 });
-  if (content?.faqQuestion6 && content?.faqAnswer6) dynamicFaqs.push({ id: '6', question: content.faqQuestion6, answer: content.faqAnswer6 });
+  let faqDataToDisplay: FAQItem[] = [];
 
-  const faqDataToDisplay = dynamicFaqs.length > 0 ? dynamicFaqs : defaultFaqData;
+  if (faqData && faqData.length > 0) {
+    faqDataToDisplay = faqData;
+  } else {
+    const dynamicFaqs: FAQItem[] = [];
+    if (content?.faqQuestion1 && content?.faqAnswer1) dynamicFaqs.push({ id: '1', question: content.faqQuestion1, answer: content.faqAnswer1 });
+    if (content?.faqQuestion2 && content?.faqAnswer2) dynamicFaqs.push({ id: '2', question: content.faqQuestion2, answer: content.faqAnswer2 });
+    if (content?.faqQuestion3 && content?.faqAnswer3) dynamicFaqs.push({ id: '3', question: content.faqQuestion3, answer: content.faqAnswer3 });
+    if (content?.faqQuestion4 && content?.faqAnswer4) dynamicFaqs.push({ id: '4', question: content.faqQuestion4, answer: content.faqAnswer4 });
+    if (content?.faqQuestion5 && content?.faqAnswer5) dynamicFaqs.push({ id: '5', question: content.faqQuestion5, answer: content.faqAnswer5 });
+    if (content?.faqQuestion6 && content?.faqAnswer6) dynamicFaqs.push({ id: '6', question: content.faqQuestion6, answer: content.faqAnswer6 });
+    faqDataToDisplay = dynamicFaqs.length > 0 ? dynamicFaqs : defaultFaqData;
+  }
 
   // Set the first item as open by default when data loads
   React.useEffect(() => {
@@ -76,7 +93,7 @@ const QNA: React.FC = () => {
 
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
-          {content?.faqTitle || "Frequently asked questions"}
+          {title || content?.faqTitle || "Frequently asked questions"}
         </h2>
 
         {/* Two Column Grid */}
