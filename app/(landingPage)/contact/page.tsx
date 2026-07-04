@@ -496,7 +496,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── MEET OUR EXPERT PROVIDERS ── */}
-      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-28">
+      <section >
         <Expert />
       </section>
 
