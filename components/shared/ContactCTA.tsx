@@ -16,7 +16,7 @@ const ContactCTA = ({
   openInNewTab = true
 }: ContactCTAProps) => {
   return (
-    <section className="w-full self-stretch max-w-[1520px] mx-auto px-4 lg:px-0 mb-24 mt-12 rounded-[40px] bg-[#8cb5f0]">
+    <section className="w-full self-stretch max-w-[1520px] mx-auto px-4 lg:px-0 mt-[120px] mb-[120px] rounded-[40px] bg-[#8cb5f0]">
       <div 
         className="isolate rounded-[40px] px-8 md:px-[49px] py-[80px] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden w-full md:h-[268px]"
         style={{ background: "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)" }}
