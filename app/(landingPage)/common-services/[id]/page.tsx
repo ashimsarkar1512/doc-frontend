@@ -82,11 +82,11 @@ export default function CommonServicesPage() {
           <div className="absolute inset-0 bg-black/10 z-10" />
 
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-[35px] px-[20px] md:px-[108px]">
-            <p className="text-white text-[15px] font-light tracking-wide mb-[44px] flex items-center gap-1.5 drop-shadow-md">
+            <p className="text-white text-center font-[Quicksand] text-[20px] font-normal leading-[150%] mb-[44px] flex items-center justify-center gap-[10px] drop-shadow-md">
               <Link href="/" className="hover:underline cursor-pointer">
                 Services
-              </Link>{" "}
-              <ChevronRight className="w-4 h-4" />{" "}
+              </Link>
+              <ChevronRight className="w-5 h-5" />
               {detailesData?.[0]?.categoryName}
             </p>
             <h1 className="text-center text-white font-[Quicksand] text-[40px] md:text-[84px] font-bold leading-[100%] max-w-[1200px] mb-[44px] drop-shadow-lg">

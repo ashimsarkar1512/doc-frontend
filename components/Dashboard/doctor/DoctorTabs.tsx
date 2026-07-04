@@ -10,7 +10,7 @@ import  fallBackImg from "@/public/p-image-fallback.jpg"
 import { ClipLoader } from "react-spinners";
 
 export default function DoctorTabs() {
-  const [activeTab, setActiveTab] = useState("ACTIVE_CONSULTATION");
+  const [activeTab, setActiveTab] = useState("NEW_REQUEST");
   const [page, setPage] = useState(1);
   const limit = 8;
 
