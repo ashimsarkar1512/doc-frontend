@@ -4,157 +4,89 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import { Search } from "lucide-react";
-import CommonHero from "@/components/shared/CommonHero";
-const categories = [
-  "All",
-  "Weight Loss",
-  "Hormone Therapy",
-  "Anxiety & Depression",
-  "Sexual Health",
-  "Hair care",
-  "Skin Care",
-  "Sleep",
-  "Supplements",
-  "Membership",
-  "Billing",
-  "Shipping",
-  "Medical Review",
-  "Provider Visits",
-];
+import { useGetFaqByPageTypeQuery } from "@/Redux/features/common/faqApi";
+import type { HeroSectionPageType } from "@/Redux/features/common/heroSectionApi";
 
-const faqs = [
-  {
-    category: "Weight Loss",
-    q: "How much weight can I expect to lose?",
-    a: "Results vary by individual. Clinical studies show patients on GLP-1 medications lose an average of 10–15% of body weight over 12–18 months when combined with lifestyle changes.",
-  },
-  {
-    category: "Weight Loss",
-    q: "How long will I be on treatment?",
-    a: "Treatment duration depends on your health goals and provider recommendations. Many patients continue treatment for 12–24 months or longer as part of a long-term weight management plan.",
-  },
-  {
-    category: "Weight Loss",
-    q: "What is compounded semaglutide?",
-    a: "Compounded semaglutide is a version of the GLP-1 medication prepared by a licensed compounding pharmacy. It contains the same active ingredient as brand-name products but may differ in formulation.",
-  },
-  {
-    category: "Weight Loss",
-    q: "What are common side effects of semaglutide?",
-    a: "Common side effects include nausea, vomiting, diarrhea, constipation, and decreased appetite. These often improve after the first few weeks as your body adjusts to the medication.",
-  },
-  {
-    category: "Weight Loss",
-    q: "How is tirzepatide different from semaglutide?",
-    a: "Tirzepatide is a dual GIP/GLP-1 receptor agonist, while semaglutide is a GLP-1 receptor agonist only. Studies suggest tirzepatide may produce greater weight loss in some patients.",
-  },
-  {
-    category: "Weight Loss",
-    q: "Is tirzepatide FDA-approved for weight loss?",
-    a: "Yes. Tirzepatide (brand name Zepbound) received FDA approval for chronic weight management in adults with obesity or overweight with at least one weight-related condition.",
-  },
-  {
-    category: "Medical Review",
-    q: "Do I need labs before starting?",
-    a: "Labs are often required before starting treatment. Your provider will specify which labs are needed. Labs completed within the past 90 days may be accepted.",
-  },
-  {
-    category: "Medical Review",
-    q: "Can I use labs from my regular doctor?",
-    a: "Yes, recent labs from your primary care provider are typically accepted if they are within 90 days and include the required panels specified by your WeightLossMD provider.",
-  },
-  {
-    category: "Membership",
-    q: "What is included in my membership?",
-    a: "Your membership includes provider consultations, ongoing monitoring, prescription management, and access to our care team throughout your treatment journey.",
-  },
-  {
-    category: "Membership",
-    q: "Can I pause or cancel my membership?",
-    a: "Yes. You can pause or cancel your membership at any time. Please review our billing and cancellation policy for details on refunds and processing times.",
-  },
-  {
-    category: "Billing",
-    q: "When am I charged?",
-    a: "You are charged at the time of enrollment. Recurring charges occur monthly or per billing cycle depending on your selected plan.",
-  },
-  {
-    category: "Billing",
-    q: "Do you accept insurance?",
-    a: "WeightLossMD does not currently accept insurance for membership fees. However, some patients may be able to use HSA or FSA funds. Check with your plan administrator.",
-  },
-  {
-    category: "Shipping",
-    q: "How long does shipping take?",
-    a: "Shipping typically takes 3–7 business days after your prescription is processed and approved by the pharmacy. You will receive a tracking number once shipped.",
-  },
-  {
-    category: "Shipping",
-    q: "Is shipping discreet?",
-    a: "Yes. All medications are shipped in discreet, plain packaging with no indication of the contents on the outside of the package.",
-  },
-  {
-    category: "Provider Visits",
-    q: "Who reviews my health information?",
-    a: "A licensed healthcare provider — either a physician or nurse practitioner — licensed in your state reviews your health intake and makes all treatment decisions.",
-  },
-  {
-    category: "Provider Visits",
-    q: "What if I'm not approved?",
-    a: "If your provider determines you are not a candidate for treatment, you will be notified and a refund will be issued. All decisions are based on clinical criteria.",
-  },
-  {
-    category: "Provider Visits",
-    q: "Do I need to see a provider in person?",
-    a: "No. WeightLossMD operates as a telehealth platform. All consultations and follow-ups are conducted remotely through our secure online system.",
-  },
-  {
-    category: "Provider Visits",
-    q: "How do I contact my provider?",
-    a: "You can message your provider directly through your patient portal. For urgent matters, our care team is also available via the support contact options in your dashboard.",
-  },
+const categories: HeroSectionPageType[] = [
+  "ServiceCategory",
+  "Blog",
+  "BlogDetail",
+  "LabTest",
+  "MedicalTeam",
+  "HowItWorks",
+  "Eligiblity",
+  "Coverage",
+  "Faq",
+  "BillingCancellation",
+  "ShippingInfo",
+  "AboutUs",
+  "ContactUs",
+  "PrivacyPolicy",
+  "TermsOfService",
+  "HippaNotice",
+  "ReportSideEffect",
+  "RequestRecord",
 ];
 
 export default function FaqPage() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState<HeroSectionPageType>("Faq");
   const [search, setSearch] = useState("");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { data: faqSection } = useGetFaqByPageTypeQuery(activeCategory);
+
+  const faqs = faqSection?.faqs ?? [];
 
   const filtered = useMemo(() => {
     return faqs.filter((f) => {
-      const matchCat =
-        activeCategory === "All" || f.category === activeCategory;
       const matchSearch =
         search.trim() === "" ||
-        f.q.toLowerCase().includes(search.toLowerCase());
-      return matchCat && matchSearch;
+        f.question.toLowerCase().includes(search.toLowerCase()) ||
+        f.answer.toLowerCase().includes(search.toLowerCase());
+      return matchSearch;
     });
-  }, [activeCategory, search]);
+  }, [faqs, search]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <CommonHero
-        title="Frequently Asked Questions"
-        description="Find answers to common questions about our programs, medications, and process."
-      >
-        {/* Search input inside hero */}
-        <div className="relative w-full max-w-md mx-auto mt-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 stroke-[2]" />
-          <input
-            type="text"
-            placeholder="Search questions..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setOpenIndex(null);
-            }}
-            className="w-full bg-white border-0 rounded-[10px] pl-9 pr-4 py-2.5 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm"
-          />
+      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
+        <div
+          className="relative w-full overflow-hidden py-14 md:py-16 px-6 md:px-12 flex flex-col items-center justify-center text-center"
+          style={{
+            borderRadius: "40px",
+            background:
+              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
+          }}
+        >
+          <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-5">
+            <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-[#1f1f1f] leading-[1.15] tracking-tight">
+              {faqSection?.sectionTitle || "Frequently Asked Questions"}
+            </h1>
+            <p className="text-[#595959] text-[14px] leading-relaxed font-normal max-w-xl mx-auto">
+              {faqSection?.pageType
+                ? `Find answers to common questions for ${faqSection.pageType}.`
+                : "Find answers to common questions about our programs, medications, and process."}
+            </p>
+
+            {/* Search input inside hero */}
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 stroke-[2]" />
+              <input
+                type="text"
+                placeholder="Search questions..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setOpenIndex(null);
+                }}
+                className="w-full bg-white border-0 rounded-[10px] pl-9 pr-4 py-2.5 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm"
+              />
+            </div>
+          </div>
         </div>
-      </CommonHero>
+      </section>
 
       {/* ── CATEGORY PILLS ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-10 mb-6 w-full">
@@ -165,6 +97,7 @@ export default function FaqPage() {
               onClick={() => {
                 setActiveCategory(cat);
                 setOpenIndex(null);
+                setSearch("");
               }}
               className={`px-3.5 py-1.5 rounded-full text-[12.5px] font-medium transition-colors ${
                 activeCategory === cat
@@ -188,7 +121,7 @@ export default function FaqPage() {
           )}
           {filtered.map((faq, index) => (
             <div
-              key={index}
+              key={faq.id}
               className="rounded-[12px] overflow-hidden"
               style={{ background: "#f5f6f8" }}
             >
@@ -199,7 +132,7 @@ export default function FaqPage() {
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
                 <span className="text-[15px] font-medium text-gray-800 pr-4">
-                  {faq.q}
+                  {faq.question}
                 </span>
                 <span className="flex-shrink-0 text-gray-400 text-xl font-light leading-none select-none">
                   {openIndex === index ? "−" : "+"}
@@ -208,7 +141,7 @@ export default function FaqPage() {
 
               {openIndex === index && (
                 <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
-                  {faq.a}
+                  {faq.answer}
                 </div>
               )}
             </div>

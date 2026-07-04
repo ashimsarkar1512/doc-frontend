@@ -5,9 +5,17 @@ import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import CommonHero from "@/components/shared/CommonHero";
 import { CircleCheckBig, Info, XCircle, Shield } from "lucide-react";
+import { useGetEligibilityContentQuery } from "@/Redux/features/common/eligiblityApi";
+import {
+  useGetCtaSectionsQuery,
+  useGetHeroSectionsQuery,
+} from "@/Redux/features/common/heroSectionApi";
 
 export default function EligibilityPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const { data: heroSections } = useGetHeroSectionsQuery("Eligiblity");
+  const { data: ctaSections } = useGetCtaSectionsQuery({ pageType: "Eligiblity" });
+  const { data: eligibilityContent } = useGetEligibilityContentQuery();
 
   const eligibilityCriteria = [
     "No history of MTC or MEN2 syndrome (for GLP-1 medications)",
@@ -71,32 +79,79 @@ export default function EligibilityPage() {
     },
   ];
 
+  const heroSection = heroSections?.[0];
+  const ctaSection = ctaSections?.[0];
+  const generalPoints =
+    eligibilityContent?.generalPoints && eligibilityContent.generalPoints.length > 0
+      ? eligibilityContent.generalPoints
+      : eligibilityCriteria.map((point) => ({ point, status: true }));
+  const weightConditions =
+    eligibilityContent?.weightConditions?.length
+      ? eligibilityContent.weightConditions
+      : weightRelatedConditions;
+  const contraindicationItems =
+    eligibilityContent?.contraindicationsSectionWrite?.length
+      ? eligibilityContent.contraindicationsSectionWrite
+      : contraindications;
+  const requiredLabItems =
+    eligibilityContent?.requiredlabWorkSectionContraindications?.length
+      ? eligibilityContent.requiredlabWorkSectionContraindications
+      : requiredLabWork;
+  const ongoingMonitoringItems =
+    eligibilityContent?.ongoingMonitoringSectionContraindication?.length
+      ? eligibilityContent.ongoingMonitoringSectionContraindication
+      : ongoingMonitoring;
+  const eligibilityFaqs =
+    eligibilityContent?.faqs?.length
+      ? eligibilityContent.faqs
+      : faqs.map((faq) => ({ question: faq.q, answer: faq.a }));
+
   return (
     <div className="min-h-screen bg-white flex flex-col ">
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <CommonHero
-        title="Am I Eligible?"
-        description="Learn the medical criteria our licensed providers use to evaluate candidacy for GLP-1 weight loss treatment."
-      />
+      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1520px] mx-auto w-full mt-6">
+        <div
+          className="relative w-full overflow-hidden py-16 md:py-40 px-6 md:px-12 flex flex-col items-center justify-center text-center"
+          style={{
+            borderRadius: "40px",
+            background:
+              "linear-gradient(0deg, #EBEEF2 0%, #EBEEF2 100%), linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.70) 100%)",
+          }}
+        >
+          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-5 tracking-tight">
+              {heroSection?.title || "Am I Eligible?"}
+            </h1>
+            <p className="text-[#595959] text-[15px] leading-relaxed font-normal max-w-3xl mx-auto">
+              {heroSection?.description ||
+                "Learn the medical criteria our licensed providers use to evaluate candidacy for GLP-1 weight loss treatment."}
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ── GENERAL ELIGIBILITY CRITERIA ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 mb-10 w-full">
         <h2 className="text-2xl md:text-[54px] font-bold text-[#272628] tracking-tight mb-8 text-center">
-          General Eligibility Criteria
+          {eligibilityContent?.generalTitle || "General Eligibility Criteria"}
         </h2>
 
         {/* 2-col grid of light blue-gray cards with lucide CircleCheckBig */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          {eligibilityCriteria.map((item, index) => (
+          {generalPoints.map((item, index) => (
             <div
               key={index}
               className="flex items-start gap-3 rounded-[14px] px-4 py-6"
               style={{ background: "#E8F4FD" }}
             >
-              <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
-              <span className="text-[#3B3B3B] text-lg leading-snug">{item}</span>
+              {item.status ? (
+                <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
+              ) : (
+                <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+              )}
+              <span className="text-[#3B3B3B] text-lg leading-snug">{item.point}</span>
             </div>
           ))}
         </div>
@@ -108,9 +163,8 @@ export default function EligibilityPage() {
         >
           <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#1A5C8A] stroke-[2]" />
           <p className="text-gray-600 text-[14px] leading-relaxed">
-            Final eligibility is determined solely by your licensed provider
-            after reviewing your complete health history. Meeting these general
-            criteria does not guarantee approval.
+            {eligibilityContent?.generalBottomDesc ||
+              "Final eligibility is determined solely by your licensed provider after reviewing your complete health history. Meeting these general criteria does not guarantee approval."}
           </p>
         </div>
       </section>
@@ -118,7 +172,7 @@ export default function EligibilityPage() {
       {/* ── BMI QUALIFICATION ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
         <h2 className="text-2xl md:text-[54px] font-bold text-[#0D2137] tracking-tight mb-8 text-center">
-          BMI Qualification
+          {eligibilityContent?.qualificationTitle || "BMI Qualification"}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -128,12 +182,13 @@ export default function EligibilityPage() {
               <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
                 ≥27
               </span>
-              <span className="text-[22px] font-bold text-[#0D2137]">BMI 27–29.9</span>
+              <span className="text-[22px] font-bold text-[#0D2137]">
+                {eligibilityContent?.qualificationbmi27Text || "BMI 27–29.9"}
+              </span>
             </div>
             <p className="text-[#3B3B3B] text-lg leading-relaxed">
-              Eligible if accompanied by at least one weight-related health
-              condition such as hypertension, type 2 diabetes, dyslipidemia,
-              or sleep apnea.
+              {eligibilityContent?.qualification27Description ||
+                "Eligible if accompanied by at least one weight-related health condition such as hypertension, type 2 diabetes, dyslipidemia, or sleep apnea."}
             </p>
           </div>
 
@@ -143,12 +198,13 @@ export default function EligibilityPage() {
               <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
                 ≥30
               </span>
-              <span className="text-[22px] font-bold text-gray-900">BMI 30+</span>
+              <span className="text-[22px] font-bold text-gray-900">
+                {eligibilityContent?.qualificationbmi30Text || "BMI 30+"}
+              </span>
             </div>
             <p className="text-[#3B3B3B] text-lg leading-relaxed">
-              Eligible for treatment regardless of presence of comorbid
-              conditions. GLP-1 medications are FDA-approved for this BMI
-              category.
+              {eligibilityContent?.qualification30Description ||
+                "Eligible for treatment regardless of presence of comorbid conditions. GLP-1 medications are FDA-approved for this BMI category."}
             </p>
           </div>
         </div>
@@ -157,11 +213,11 @@ export default function EligibilityPage() {
       {/* ── WEIGHT-RELATED CONDITIONS ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
         <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          Weight-Related Conditions Considered
+          {eligibilityContent?.weightConditionSecTitle || "Weight-Related Conditions Considered"}
         </h2>
 
         <div className="flex flex-wrap justify-center gap-2.5">
-          {weightRelatedConditions.map((condition, index) => (
+          {weightConditions.map((condition, index) => (
             <span
               key={index}
               className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-lg text-[#272628]"
@@ -176,11 +232,11 @@ export default function EligibilityPage() {
       {/* ── CONTRAINDICATIONS ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
         <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          Contraindications
+          {eligibilityContent?.contraindicationsSectionTitle || "Contraindications"}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {contraindications.map((item, index) => (
+          {contraindicationItems.map((item, index) => (
             <div
               key={index}
               className="flex items-start gap-3 rounded-[14px] px-4 py-6 bg-white border border-gray-200"
@@ -203,10 +259,10 @@ export default function EligibilityPage() {
           {/* Required Lab Work */}
           <div>
             <h2 className="text-xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-5">
-              Required Lab Work
+              {eligibilityContent?.requiredlabWorkSectionTitle || "Required Lab Work"}
             </h2>
             <div className="flex flex-col gap-2.5">
-              {requiredLabWork.map((item, index) => (
+              {requiredLabItems.map((item, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
@@ -221,10 +277,10 @@ export default function EligibilityPage() {
           {/* Ongoing Monitoring */}
           <div>
             <h2 className="text-xl md:text-[54px] font-semibold text-gray-900 tracking-tight mb-5">
-              Ongoing Monitoring
+              {eligibilityContent?.ongoingMonitoringSectionTitle || "Ongoing Monitoring"}
             </h2>
             <div className="flex flex-col gap-2.5">
-              {ongoingMonitoring.map((item, index) => (
+              {ongoingMonitoringItems.map((item, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
@@ -238,19 +294,20 @@ export default function EligibilityPage() {
         </div>
 
         <p className="text-[#3B3B3B] text-lg mt-5">
-          Labs from within 90 days may be accepted. Your provider will specify
-          requirements.
+          {eligibilityContent?.disclaimerSectionDes ||
+            "Labs from within 90 days may be accepted. Your provider will specify requirements."}
         </p>
 
         {/* Provider Review Disclaimer — pink bg, red shield icon */}
         <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 text-lg flex items-start gap-3">
           <Shield className="w-[30px] h-[30px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
           <p className="text-gray-700 text-lg leading-relaxed">
-            <strong className="text-red-500 ">Provider Review Disclaimer</strong>
-            : Eligibility criteria presented here are general guidelines. All
-            final treatment decisions are made exclusively by licensed
-            healthcare providers. Meeting criteria on this page does not
-            guarantee prescription approval.
+            <strong className="text-red-500 ">
+              {eligibilityContent?.disclaimerSectionTitle || "Provider Review Disclaimer"}
+            </strong>
+            :{" "}
+            {eligibilityContent?.disclaimerSectionDes ||
+              "Eligibility criteria presented here are general guidelines. All final treatment decisions are made exclusively by licensed healthcare providers. Meeting criteria on this page does not guarantee prescription approval."}
           </p>
         </div>
       </section>
@@ -258,11 +315,11 @@ export default function EligibilityPage() {
       {/* ── ELIGIBILITY QUESTIONS / FAQ ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-20 w-full">
         <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          Eligibility Questions
+          {eligibilityContent?.faqTitle || "Eligibility Questions"}
         </h2>
 
         <div className="flex flex-col gap-3">
-          {faqs.map((faq, index) => (
+          {eligibilityFaqs.map((faq, index) => (
             <div
               key={index}
               className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
@@ -272,7 +329,7 @@ export default function EligibilityPage() {
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
                 <span className="text-lg font-semibold text-[#272628] pr-4">
-                  {faq.q}
+                  {faq.question}
                 </span>
                 <span className="flex-shrink-0 text-gray-400 text-xl font-light leading-none select-none">
                   {openFaq === index ? "−" : "+"}
@@ -281,7 +338,7 @@ export default function EligibilityPage() {
 
               {openFaq === index && (
                 <div className="px-5 pb-4 text-lg text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
-                  {faq.a}
+                  {faq.answer}
                 </div>
               )}
             </div>
@@ -308,21 +365,26 @@ export default function EligibilityPage() {
               />
             </div>
             <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              Contact Us at Weight Loss MD
-              <br className="hidden md:block" /> Today
+              {ctaSection?.sectionTitle || (
+                <>
+                  Contact Us at Weight Loss MD
+                  <br className="hidden md:block" /> Today
+                </>
+              )}
             </h2>
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             <button
-                onClick={() =>
+              onClick={() =>
                 window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
+                  ctaSection?.url ||
+                    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  ctaSection?.openInNewTab ? "_blank" : "_self",
                 )
               }
              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
-              Book a consultation
+              {ctaSection?.ctaButtonText || "Book a consultation"}
             </button>
           </div>
         </div>
