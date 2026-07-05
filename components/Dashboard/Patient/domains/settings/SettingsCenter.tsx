@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import PaymentCardManagement from "./PaymentCardManagement";
 
 export default function SettingsCenter() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
@@ -498,7 +499,10 @@ export default function SettingsCenter() {
           </button>
         </div>
 
-        {/* 3. Security & Device */}
+        {/* 3. Payment Method */}
+        <PaymentCardManagement />
+
+        {/* 4. Security & Device */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
           <div className="mb-5 flex items-start gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
@@ -527,14 +531,12 @@ export default function SettingsCenter() {
             <button
               onClick={handleToggleMfa}
               disabled={isTogglingMfa}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${
-                twoFactorAuth ? "bg-[#2563eb]" : "bg-gray-200"
-              }`}
+              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${twoFactorAuth ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
             >
               <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
-                  twoFactorAuth ? "translate-x-7" : "translate-x-1"
-                }`}
+                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${twoFactorAuth ? "translate-x-7" : "translate-x-1"
+                  }`}
               />
             </button>
           </div>
@@ -548,52 +550,54 @@ export default function SettingsCenter() {
               {sessionsData.data.map((device, idx) => {
                 const isDesktop = device.deviceName.toLowerCase().includes("windows") || device.deviceName.toLowerCase().includes("mac") || device.deviceName.toLowerCase().includes("desktop");
                 return (
-                <details
-                  key={idx}
-                  className="group mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
-                  open={idx === 0}
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
-                    <div className="flex items-center gap-3">
-                      {isDesktop ? (
-                        <Laptop className="h-5 w-5 text-[#C46A0A]" />
-                      ) : (
-                        <Smartphone className="h-5 w-5 text-[#C46A0A]" />
-                      )}
-                      <span className="font-medium text-[#A95600]">
-                        {device.deviceName}
-                        {device.isActiveNow ? " - Active now" : ""}
-                      </span>
+                  <details
+                    key={idx}
+                    className="group mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+                    open={idx === 0}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
+                      <div className="flex items-center gap-3">
+                        {isDesktop ? (
+                          <Laptop className="h-5 w-5 text-[#C46A0A]" />
+                        ) : (
+                          <Smartphone className="h-5 w-5 text-[#C46A0A]" />
+                        )}
+                        <span className="font-medium text-[#A95600]">
+                          {device.deviceName}
+                          {device.isActiveNow ? " - Active now" : ""}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
+                        {device.sessionCount} sessions on {device.deviceName}
+                        <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
+                      </div>
+                    </summary>
+                    <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
+                      {device.sessions.map((session, sIdx) => {
+                        const d = new Date(session.lastLogin);
+                        const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
+
+                        return (
+                          <React.Fragment key={`${idx}-${sIdx}`}>
+                            <div className="flex items-center gap-2">
+                              <p>Last login:</p>
+                              <p>{formattedDate}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <p>IP Address:</p>
+                              <p>{session.ipAddress}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <p>Session Due:</p>
+                              <p>{session.sessionDue}</p>
+                            </div>
+                          </React.Fragment>
+                        )
+                      })}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
-                      {device.sessionCount} sessions on {device.deviceName}
-                      <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
-                    </div>
-                  </summary>
-                  <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
-                    {device.sessions.map((session, sIdx) => {
-                      const d = new Date(session.lastLogin);
-                      const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
-                      
-                      return (
-                      <React.Fragment key={`${idx}-${sIdx}`}>
-                        <div className="flex items-center gap-2">
-                          <p>Last login:</p>
-                          <p>{formattedDate}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <p>IP Address:</p>
-                          <p>{session.ipAddress}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <p>Session Due:</p>
-                          <p>{session.sessionDue}</p>
-                        </div>
-                      </React.Fragment>
-                    )})}
-                  </div>
-                </details>
-              )})}
+                  </details>
+                )
+              })}
             </div>
           )}
         </div>
@@ -626,14 +630,12 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setEmailNotifications(!emailNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
-                  emailNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${emailNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                  }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
-                    emailNotifications ? "translate-x-7" : "translate-x-1"
-                  }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${emailNotifications ? "translate-x-7" : "translate-x-1"
+                    }`}
                 />
               </button>
             </div>
@@ -647,14 +649,12 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setSmsNotifications(!smsNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
-                  smsNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${smsNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                  }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
-                    smsNotifications ? "translate-x-7" : "translate-x-1"
-                  }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${smsNotifications ? "translate-x-7" : "translate-x-1"
+                    }`}
                 />
               </button>
             </div>
@@ -670,14 +670,12 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setPushNotifications(!pushNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
-                  pushNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${pushNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                  }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
-                    pushNotifications ? "translate-x-7" : "translate-x-1"
-                  }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${pushNotifications ? "translate-x-7" : "translate-x-1"
+                    }`}
                 />
               </button>
             </div>
