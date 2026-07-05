@@ -33,6 +33,7 @@ export default function MedicalTeamPage() {
 
       {/* ── HERO SECTION ── */}
       <CommonHero
+        watermarkImage="/providerWatermark.png"
         title={heroData?.title || "Meet Our Medical Team"}
         description={
           isHeroLoading ? (
