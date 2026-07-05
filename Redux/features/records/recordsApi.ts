@@ -24,6 +24,17 @@ export interface RequestRecordsResponse {
   data: RequestRecordWidget[];
 }
 
+export interface RequestRecordPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dob: string;
+  requestType: string;
+  additionalNotes: string;
+  consent: boolean;
+  status?: string;
+}
+
 export const recordsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRequestRecordsContent: builder.query<RequestRecordsResponse, void>({
@@ -32,8 +43,15 @@ export const recordsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    submitRecordRequest: builder.mutation<any, RequestRecordPayload>({
+      query: (data) => ({
+        url: "/public/request-records",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetRequestRecordsContentQuery } = recordsApi;
+export const { useGetRequestRecordsContentQuery, useSubmitRecordRequestMutation } = recordsApi;

@@ -2,41 +2,80 @@
 
 import React, { useState } from 'react';
 import { FileText, Link as LinkIcon, CreditCard, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useSubmitRecordRequestMutation } from '@/Redux/features/records/recordsApi';
 
 const RecordsRequestForm = () => {
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [dob, setDob] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
+  const [submitRecordRequest, { isLoading }] = useSubmitRecordRequestMutation();
+
   const requestTypes = [
     {
-      id: 'medical-records',
+      id: 'MEDICAL_RECORDS',
       icon: <FileText className="w-5 h-5" />,
       title: 'Medical Records',
       desc: 'Visit notes, assessments, provider communications',
     },
     {
-      id: 'prescription-history',
+      id: 'PRESCRIPTION_HISTORY',
       icon: <LinkIcon className="w-5 h-5" />,
       title: 'Prescription History',
       desc: 'All prescriptions issued through WeightLossMD',
     },
     {
-      id: 'billing-records',
+      id: 'BILLING_RECORDS',
       icon: <CreditCard className="w-5 h-5" />,
       title: 'Billing Records',
       desc: 'Payment history, invoices, receipts',
     },
     {
-      id: 'account-deletion',
+      id: 'ACCOUNT_DELETION',
       icon: <Trash2 className="w-5 h-5" />,
       title: 'Account Deletion',
       desc: 'Request deletion of your account and personal data',
     },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // handle form submission
+    if (!selectedRequest) {
+      toast.error("Please select a request type.");
+      return;
+    }
+    if (!isConfirmed) {
+      toast.error("Please confirm the request.");
+      return;
+    }
+    try {
+      const payload = {
+        firstName,
+        lastName,
+        email,
+        dob: new Date(dob).toISOString(),
+        requestType: selectedRequest,
+        additionalNotes,
+        consent: isConfirmed,
+        status: "PENDING"
+      };
+      await submitRecordRequest(payload).unwrap();
+      toast.success("Request submitted successfully!");
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setDob("");
+      setAdditionalNotes("");
+      setSelectedRequest(null);
+      setIsConfirmed(false);
+    } catch (error) {
+      toast.error("Failed to submit request.");
+    }
   };
 
   return (
@@ -53,6 +92,9 @@ const RecordsRequestForm = () => {
           <label className="text-sm lg:text-lg md:text-base font-semibold text-[#2B2922]">First Name</label>
           <input 
             type="text" 
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
             placeholder="First Name"
             className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black" 
           />
@@ -61,6 +103,9 @@ const RecordsRequestForm = () => {
           <label className="text-sm lg:text-lg md:text-base font-semibold text-[#2B2922]">Last Name</label>
           <input 
             type="text" 
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
             placeholder="Last Name"
             className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black" 
           />
@@ -71,6 +116,9 @@ const RecordsRequestForm = () => {
         <label className="text-sm lg:text-lg md:text-base font-semibold text-[#2B2922]">Email Address</label>
         <input 
           type="email" 
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
           placeholder="you@example.com"
           className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-black" 
         />
@@ -80,6 +128,9 @@ const RecordsRequestForm = () => {
         <label className="text-sm lg:text-lg md:text-base font-semibold text-[#2B2922]">Date of Birth</label>
         <input 
           type="date" 
+          value={dob}
+          onChange={(e) => setDob(e.target.value)}
+          required
           className="px-4 py-2.5 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg text-slate-600 appearance-none w-full" 
         />
       </div>
@@ -122,13 +173,15 @@ const RecordsRequestForm = () => {
         <label className="text-sm lg:text-lg md:text-base font-semibold text-[#2B2922]">Additional Notes</label>
         <textarea 
           rows={4}
+          value={additionalNotes}
+          onChange={(e) => setAdditionalNotes(e.target.value)}
           placeholder="Any specific information about your request..."
           className="px-4 py-3 bg-gray-100 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg resize-none text-black"
         />
       </div>
 
       <label className="flex items-start gap-3 mt-4 cursor-pointer group">
-        <div className="relative flex items-center justify-center mt-0.5">
+        <div className="relative flex items-center justify-center mt-[7px]">
           <input 
             type="checkbox" 
             className="peer w-4 h-4 appearance-none border border-slate-300 rounded cursor-pointer checked:bg-blue-600 checked:border-blue-600 transition-colors"
@@ -149,9 +202,11 @@ const RecordsRequestForm = () => {
 
       <button 
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-full transition-colors text-[22px] w-fit mt-4"
+        disabled={isLoading}
+        className="bg-[#1D4ED8] hover:bg-blue-700 disabled:opacity-60 text-white font-semibold leading-none py-[22px] px-[32px] rounded-[46px] transition-colors text-[22px] w-fit mt-4"
+        style={{ fontFamily: 'Quicksand, sans-serif' }}
       >
-        Submit Records Request
+        {isLoading ? 'Submitting...' : 'Submit Records Request'}
       </button>
     </form>
   );
