@@ -152,6 +152,18 @@ export default function ConsultationDetails({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Update Assessment Button for REFIL_REQUESTED */}
+            {(consultation.status === "REFIL_REQUESTED" || consultation.status as any === "REFIL_REQUEST") && (
+              <button
+                onClick={() => {
+                  localStorage.setItem("submissionId", consultation.id);
+                  window.location.href = "/previewdetails";
+                }}
+                className="text-[11px] font-bold text-white bg-[#2563eb] hover:bg-blue-700 px-3 py-1 rounded-full uppercase tracking-wide transition-colors"
+              >
+                Update Assessment
+              </button>
+            )}
             <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wide">
               {data.assessment?.category || "General"}
             </span>

@@ -50,6 +50,7 @@ const Navbar = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDetached, setIsDetached] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const servicesRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -58,6 +59,10 @@ const Navbar = ({
   const user = useAppSelector((state) => state.auth.user);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { logout, isLoading: isLoggingOut } = useLogout();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -234,7 +239,7 @@ const Navbar = ({
 
         {/* Mobile controls */}
         <div className="xl:hidden relative z-[60] flex items-center gap-2 ml-3 flex-shrink-0">
-          {isAuthenticated && user && (
+          {isMounted && isAuthenticated && user && (
             <div className="flex items-center">
               <NotificationDropdown 
                 iconColor={textColor} 
@@ -366,7 +371,7 @@ const Navbar = ({
           <div
             className={`xl:hidden flex flex-col gap-4 w-full pt-8 border-t ${borderColor}`}
           >
-            {isAuthenticated && user ? (
+            {isMounted && isAuthenticated && user ? (
               <>
                 {/* Mobile user info */}
                 <div className="flex items-center gap-3">
@@ -449,7 +454,7 @@ const Navbar = ({
         <div
           className={`hidden xl:flex items-center gap-2 xl:gap-4 pl-4 border-l ${borderColor}`}
         >
-          {isAuthenticated && user ? (
+          {isMounted && isAuthenticated && user ? (
             <>
               {/* Notification Bell */}
               <div className="flex items-center">

@@ -889,23 +889,25 @@ export default function PreviewDetailsPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <button
-                onClick={handleConfirmAndPay}
-                disabled={isCheckingOut || isSaving}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white font-[Quicksand] text-[16px] font-semibold h-[40px] min-w-[231px] rounded-lg transition-colors"
-              >
-                {(isCheckingOut || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Submit for medical review
-              </button>
-              <Link href="/checkout" className="flex-1 sm:flex-none flex items-center justify-center text-[#E55B46] border border-[#E55B46] hover:bg-red-50 font-[Quicksand] text-[16px] font-semibold h-[40px] px-8 rounded-lg transition-colors">
-                Cancel
-              </Link>
-            </div>
+            {submissionData.status === 'DRAFT' && (
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                <button
+                  onClick={handleConfirmAndPay}
+                  disabled={isCheckingOut || isSaving}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-70 text-white font-[Quicksand] text-[16px] font-semibold h-[40px] min-w-[231px] rounded-lg transition-colors"
+                >
+                  {(isCheckingOut || isSaving) ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Submit for medical review
+                </button>
+                <Link href="/checkout" className="flex-1 sm:flex-none flex items-center justify-center text-[#E55B46] border border-[#E55B46] hover:bg-red-50 font-[Quicksand] text-[16px] font-semibold h-[40px] px-8 rounded-lg transition-colors">
+                  Cancel
+                </Link>
+              </div>
+            )}
 
-            {submissionData.status === 'DRAFT' && !isEditing && (
+            {(submissionData.status === 'DRAFT' || submissionData.status === 'REFIL_REQUESTED' || submissionData.status === 'REFIL_REQUEST') && !isEditing && (
               <button onClick={() => setIsEditing(true)} className="w-full sm:w-auto flex items-center justify-center text-[#3B3B3B] border border-[#6B7280] hover:bg-gray-50 font-[Quicksand] text-[14px] font-medium h-[40px] px-6 rounded-lg transition-colors">
-                Edit before submitting
+                {submissionData.status === 'DRAFT' ? 'Edit before submitting' : 'Update Assessment'}
               </button>
             )}
           </div>

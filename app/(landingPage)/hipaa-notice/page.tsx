@@ -96,10 +96,10 @@ export default function HipaaNoticePage() {
       <CommonHero title={hero.title} description={hero.description} />
 
       {/* ── CONTENT ── */}
-      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-14 pb-24 w-full">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 md:mt-8 pb-24 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
           {/* LEFT: Main Content */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 min-w-0">
             <RichTextRenderer content={content} />
           </div>
 
