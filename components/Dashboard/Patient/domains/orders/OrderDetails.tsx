@@ -358,7 +358,7 @@ export default function OrderDetails({ orderId, onBack, onViewSubmission }: Orde
             <div className="flex justify-between items-start">
               <span className="text-sm text-gray-500">Carrier Name:</span>
               <span className="text-sm font-medium text-gray-900 text-right">
-                {order.shippingInfo?.trackingCarrier || "Pending"}
+                {order.shippingInfo?.trackingCarrier || "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-start">
@@ -366,7 +366,7 @@ export default function OrderDetails({ orderId, onBack, onViewSubmission }: Orde
                 Tracking Number:
               </span>
               <span className="text-sm font-medium text-gray-900 text-right">
-                {order.shippingInfo?.trackingNumber || "Pending"}
+                {order.shippingInfo?.trackingNumber || "N/A"}
               </span>
             </div>
           </div>
