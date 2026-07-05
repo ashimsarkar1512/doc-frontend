@@ -70,14 +70,14 @@ export default function RootLayout({
             LiveChat
           </a>
         </noscript>
-        {/* Clover Payment SDK */}
+        {/* Clover Payment SDK — v1/api.js exposes window.Clover */}
         <Script
           src={
             process.env.NEXT_PUBLIC_CLOVER_ENV === "production"
-              ? "https://checkout.clover.com/sdk.js"
-              : "https://checkout.sandbox.dev.clover.com/sdk.js"
+              ? "https://checkout.clover.com/v1/api.js"
+              : "https://checkout.sandbox.dev.clover.com/v1/api.js"
           }
-          strategy="lazyOnload"
+          strategy="afterInteractive"
           id="clover-sdk"
         />
         {/* Live chat widget end */}
