@@ -12,6 +12,7 @@ interface ApproveConsultationModalProps {
   patientName: string;
   consultationId: string;
   submittedDate: string;
+   statusUpdatedId:string
 }
 
 export default function ApproveConsultationModal({
@@ -20,6 +21,7 @@ export default function ApproveConsultationModal({
   patientName,
   consultationId,
   submittedDate,
+  statusUpdatedId
 }: ApproveConsultationModalProps) {
   const [consultationNote, setConsultationNote] = useState("");
   const [updateConsultationStatus, { isLoading }] =
@@ -38,7 +40,7 @@ export default function ApproveConsultationModal({
   const handleSubmit = async () => {
     try {
       const res = await updateConsultationStatus({
-        id: consultationId,
+        id: statusUpdatedId,
         body: {
           status: "ACCEPTED",
           doctorNotes: consultationNote,

@@ -260,6 +260,16 @@ import { useGetMyConsultationsQuery } from "@/Redux/features/doctorDashboard/doc
 import fallBackImg from "@/public/p-image-fallback.jpg";
 import { ClipLoader } from "react-spinners";
 
+// Define SubmissionStatus enum based on your schema
+enum SubmissionStatus {
+  DRAFT = "DRAFT",
+  PENDING = "PENDING",
+  REVIEWED = "REVIEWED",
+  ACCEPTED = "ACCEPTED",
+  REFIL_REQUESTED = "REFIL_REQUESTED",
+  REJECTED = "REJECTED",
+}
+
 export default function DoctorTabs() {
   const [activeTab, setActiveTab] = useState("NEW_REQUEST");
   const [page, setPage] = useState(1);
@@ -284,28 +294,43 @@ export default function DoctorTabs() {
   // ===============================
   // STATUS FORMATTER (FIXED)
   // ===============================
-const formatStatus = (status: string) => {
+const formatStatus = (status: string): string => {
   switch (status) {
-    case "DRAFT":
+    case SubmissionStatus.DRAFT:
       return "Draft";
 
-    case "PENDING":
+    case SubmissionStatus.PENDING:
       return "Pending";
 
-    case "REVIEWED":
+    case SubmissionStatus.REVIEWED:
       return "Reviewed";
 
-    case "ACCEPTED":
+    case SubmissionStatus.ACCEPTED:
       return "Accepted";
 
-    case "REFIL_REQUESTED":
+    case SubmissionStatus.REFIL_REQUESTED:
       return "Refill Requested";
 
-    case "REJECTED":
+    case SubmissionStatus.REJECTED:
       return "Declined";
 
     default:
       return status ? status.replaceAll("_", " ") : "Unknown";
+  }
+};
+
+const getStatusClass = (status: string) => {
+  switch (status) {
+    case "Pending":
+    case "Refill Requested":
+      return "bg-[#eab308]/90"; // Yellow
+    case "Declined":
+      return "bg-red-500/90"; // Red
+    case "Accepted":
+    case "Reviewed":
+      return "bg-[#10b981]/90"; // Green
+    default:
+      return "bg-gray-500/90"; // Gray for others like Draft
   }
 };
 
@@ -322,7 +347,7 @@ const formatStatus = (status: string) => {
       consultationId: item.id, // ✅ clean
 
       buttonText:
-        item.status === "PENDING" ? "View Details" : "Open Consultation",
+        item.status === SubmissionStatus.PENDING ? "View Details" : "Open Consultation",
 
       status: formatStatus(item.status), // ✅ fixed
     }));
@@ -416,8 +441,24 @@ const formatStatus = (status: string) => {
 
       {/* ================= LOADING ================= */}
       {isLoading ? (
-        <div className="w-full min-h-[300px] flex items-center justify-center">
-          <ClipLoader size={50} color="#2563eb" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex flex-col w-full animate-pulse">
+              {/* Image Skeleton */}
+              <div className="w-full h-[340px] rounded-[24px] bg-gray-200"></div>
+              {/* Content Skeleton */}
+              <div className="flex flex-col items-start mt-[16px]">
+                {/* Category Badge Skeleton */}
+                <div className="h-[32px] w-24 bg-gray-200 rounded-full mb-[8px]"></div>
+                {/* Title Skeleton */}
+                <div className="h-7 w-3/4 bg-gray-200 rounded mb-[8px]"></div>
+                {/* Patient Name Skeleton */}
+                <div className="h-5 w-1/2 bg-gray-200 rounded mb-[16px]"></div>
+                {/* Button Skeleton */}
+                <div className="h-[42px] w-32 bg-gray-200 rounded-full"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <>
@@ -431,20 +472,14 @@ const formatStatus = (status: string) => {
                     alt={card.title}
                     fill
                     className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    unoptimized
+                    // unoptimized
                   />
 
-                  {/* <span
-                    className={`absolute top-4 left-4 px-3.5 py-1 text-xs font-semibold rounded-full shadow-sm select-none text-white backdrop-blur-[1px] ${
-                      card.status === "Pending"
-                        ? "bg-[#eab308]/90"
-                        : card.status === "Declined"
-                        ? "bg-red-500/90"
-                        : "bg-[#10b981]/90"
-                    }`}
+                  <span
+                    className={`absolute top-4 left-4 px-3.5 py-1 text-xs font-semibold rounded-full shadow-sm select-none text-white backdrop-blur-[1px] ${getStatusClass(card.status)}`}
                   >
                     {card.status}
-                  </span> */}
+                  </span>
                 </div>
 
                 <div className="flex flex-col items-start mt-[16px] flex-grow">
@@ -480,7 +515,7 @@ const formatStatus = (status: string) => {
             )}
           </div>
 
-          {cards.length > 0 && (
+          {meta?.total > limit && (
             <div className="flex justify-center gap-4 mt-10">
               <button
                 onClick={prevPage}

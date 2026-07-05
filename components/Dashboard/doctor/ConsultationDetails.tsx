@@ -97,14 +97,38 @@ function computeBmiSnapshot(options: any[], values: string[]) {
 
   if (heightIdx === -1 || weightIdx === -1) return null;
 
-  const heightFeet = parseFloat(values[heightIdx]);
+  const rawHeight = values[heightIdx];
   const weightLbs = parseFloat(values[weightIdx]);
 
-  if (!heightFeet || !weightLbs || heightFeet <= 0 || weightLbs <= 0) {
-    return null;
+  if (!rawHeight || !weightLbs || weightLbs <= 0) return null;
+
+  let heightInches: number;
+
+  // Format: 5'10" or 5' 10"
+  const feetInchesMatch = rawHeight.match(/(\d+)\s*'\s*(\d+)?/);
+  if (feetInchesMatch) {
+    const ft = parseInt(feetInchesMatch[1], 10);
+    const inches = parseInt(feetInchesMatch[2] || "0", 10);
+    heightInches = ft * 12 + inches;
+  } else {
+    const num = parseFloat(rawHeight);
+    if (!num || num <= 0) return null;
+
+    if (num <= 9) {
+      // Decimal feet, e.g. "5.9" -> 5 ft 9 in style is ambiguous,
+      // treat as pure feet decimal (5.9 ft)
+      heightInches = num * 12;
+    } else if (num > 9 && num < 96) {
+      // Already in inches (e.g. 67)
+      heightInches = num;
+    } else {
+      // Likely centimeters (e.g. 178)
+      heightInches = num / 2.54;
+    }
   }
 
-  const heightInches = heightFeet * 12;
+  if (!heightInches || heightInches <= 0) return null;
+
   const bmi = (703 * weightLbs) / (heightInches * heightInches);
 
   let category = "Normal";
@@ -408,7 +432,7 @@ function ComplianceConfirmationSection({
         <span className="break-words">Compliance Confirmation:</span>
       </h3>
 
-      <div className="space-y-2 sm:space-y-3 overflow-x-scroll">
+      <div className="space-y-2 sm:space-y-3 overflow-x-auto sm:overflow-x-visible">
         {items.map((item) => (
           <div key={item.key} className="flex items-start gap-2 sm:gap-3">
             <div className="mt-1 shrink-0">
@@ -434,13 +458,15 @@ export default function ConsultationDetails() {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("consultationId");
+  console.log(id)
 
   const { data, isLoading, isError } = useGetConsultationByIdQuery(id);
 
   
   const detailesData = data?.data;
   console.log("iam the detaiddd",detailesData);
-  console.log(detailesData?.assesment)
+  const statusUpdatedId= detailesData?.submissionId
+  console.log(statusUpdatedId)
   const user = useAppSelector((state) => state.auth.user);
   console.log(user);
   if (isLoading)
@@ -731,6 +757,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
+        statusUpdatedId={statusUpdatedId} 
         
       />
       <RequestRefillModal
@@ -739,6 +766,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
+          statusUpdatedId={statusUpdatedId} 
       />
       <AssessmentDeclineModal
         isOpen={isDeclineModalOpen}
@@ -746,6 +774,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
+         statusUpdatedId={statusUpdatedId} 
       />
     </div>
   );

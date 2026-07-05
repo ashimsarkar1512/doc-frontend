@@ -12,6 +12,7 @@ interface RequestRefillModalProps {
   patientName: string;
   consultationId: string;
   submittedDate: string;
+  statusUpdatedId:string
 }
 
 export default function RequestRefillModal({
@@ -20,8 +21,10 @@ export default function RequestRefillModal({
   patientName,
   consultationId,
   submittedDate,
+  statusUpdatedId
 }: RequestRefillModalProps) {
   const [reason, setReason] = useState("");
+  console.log(consultationId)
 
   const [updateConsultationStatus, { isLoading }] =
     useUpdateConsultationStatusMutation();
@@ -39,7 +42,7 @@ export default function RequestRefillModal({
   const handleSubmit = async () => {
     try {
       const res = await updateConsultationStatus({
-        id: consultationId,
+        id: statusUpdatedId,
         body: {
           status: "REFIL_REQUESTED",
           doctorNotes: reason,
