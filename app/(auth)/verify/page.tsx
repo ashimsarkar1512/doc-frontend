@@ -181,26 +181,30 @@ const VerifyPage = () => {
                   </button>
                 </div>
                 <div className="flex flex-col items-center gap-[12px] w-full text-center">
-                  <h2 style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "30px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "100%",
-                  }}>
+                  <h2
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "30px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "100%",
+                    }}
+                  >
                     Verify Authentication
                   </h2>
-                  <p style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    lineHeight: "150%",
-                  }}>
+                  <p
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      lineHeight: "150%",
+                    }}
+                  >
                     Enter the 6 digit authentication code we've sent at your
                     <br />
                     {otpPending?.method === "PHONE" ? "phone" : "email"}
@@ -208,20 +212,25 @@ const VerifyPage = () => {
                 </div>
               </header>
 
-              <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[40px]">
+              <form
+                onSubmit={handleSubmit}
+                className="w-full flex flex-col gap-[40px]"
+              >
                 <div className="w-full flex flex-col gap-6">
                   <div className="w-full">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px",
-                      textAlign: "left"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                        textAlign: "left",
+                      }}
+                    >
                       Enter OTP
                     </label>
                     <div className="flex justify-between gap-2 sm:gap-3">
@@ -275,13 +284,20 @@ const VerifyPage = () => {
                       </>
                     ) : (
                       <>
-                        Verify Authentication <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                        Verify Authentication{" "}
+                        <ArrowRight
+                          className="w-6 h-6 ml-1"
+                          strokeWidth={2.5}
+                        />
                       </>
                     )}
                   </button>
 
                   <div className="text-center pt-2 flex flex-col gap-2">
-                    <span className="text-[20px] font-light text-white" style={{ fontFamily: "Quicksand, sans-serif" }}>
+                    <span
+                      className="text-[20px] font-light text-white"
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
+                    >
                       Didn't receive the code?
                     </span>
                     <button

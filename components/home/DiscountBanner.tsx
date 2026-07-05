@@ -1,111 +1,120 @@
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { useGetDiscountsQuery } from '@/Redux/features/discounts/discountsApi'
-import type { Discount } from '@/types/discountTypes'
+import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useGetDiscountsQuery } from "@/Redux/features/discounts/discountsApi";
+import type { Discount } from "@/types/discountTypes";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getTimeLeft(expiresAt: string) {
-  const diff = new Date(expiresAt).getTime() - Date.now()
-  if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 }
-  const s = Math.floor(diff / 1000)
-  return { hours: Math.floor(s / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 }
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 };
+  const s = Math.floor(diff / 1000);
+  return {
+    hours: Math.floor(s / 3600),
+    minutes: Math.floor((s % 3600) / 60),
+    seconds: s % 60,
+  };
 }
 
 function pad(n: number) {
-  return String(n).padStart(2, '0')
+  return String(n).padStart(2, "0");
 }
 
 // ─── DUMMY (module-level — created ONCE, never on re-render) ─────────────────
 // Remove this block and set DUMMY_MODE = false to use real API data.
-const DUMMY_MODE = true
+const DUMMY_MODE = true;
 
 const DUMMY_DISCOUNT: Discount = {
-  id: 'test-1',
-  code: 'SUMMER2026',
+  id: "test-1",
+  code: "SUMMER2026",
   value: 10,
-  type: 'PERCENTAGE',
+  type: "PERCENTAGE",
   isActive: true,
-  createdAt: '2026-01-01T00:00:00.000Z',
+  createdAt: "2026-01-01T00:00:00.000Z",
   expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 5).toISOString(),
-  updatedAt: '2026-01-01T00:00:00.000Z',
-}
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const DiscountBanner = () => {
-  const { data, isLoading } = useGetDiscountsQuery()
-  const bannerRef = useRef<HTMLDivElement>(null)
+  const { data, isLoading } = useGetDiscountsQuery();
+  const bannerRef = useRef<HTMLDivElement>(null);
 
-  const [dismissed, setDismissed] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 })
+  const [dismissed, setDismissed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   // Pick the latest active PERCENTAGE coupon from the real API
   const apiDiscount: Discount | null = (() => {
     const list = (data?.data ?? []).filter(
-      (d) => d.type === 'PERCENTAGE' && d.isActive
-    )
-    if (!list.length) return null
+      (d) => d.type === "PERCENTAGE" && d.isActive,
+    );
+    if (!list.length) return null;
     return list.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )[0]
-  })()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )[0];
+  })();
 
   // Use dummy or real — but the reference is STABLE (not re-created each render)
-  const discount: Discount | null = DUMMY_MODE ? DUMMY_DISCOUNT : apiDiscount
+  const discount: Discount | null = DUMMY_MODE ? DUMMY_DISCOUNT : apiDiscount;
 
   // ─ Countdown timer ──────────────────────────────────────────────────────────
   // Dependency is discount.expiresAt (a string) — stable, no infinite loop.
-  const expiresAt = discount?.expiresAt ?? null
+  const expiresAt = discount?.expiresAt ?? null;
 
   useEffect(() => {
-    if (!expiresAt) return
-    setTimeLeft(getTimeLeft(expiresAt))
+    if (!expiresAt) return;
+    setTimeLeft(getTimeLeft(expiresAt));
     const id = setInterval(() => {
-      const tl = getTimeLeft(expiresAt)
-      setTimeLeft(tl)
+      const tl = getTimeLeft(expiresAt);
+      setTimeLeft(tl);
       if (tl.hours === 0 && tl.minutes === 0 && tl.seconds === 0) {
-        clearInterval(id)
-        setDismissed(true)
+        clearInterval(id);
+        setDismissed(true);
       }
-    }, 1000)
-    return () => clearInterval(id)
-  }, [expiresAt]) // ← string primitive, stable across renders ✓
+    }, 1000);
+    return () => clearInterval(id);
+  }, [expiresAt]); // ← string primitive, stable across renders ✓
 
   // ─ Banner height CSS variable for Navbar offset ──────────────────────────
   useEffect(() => {
-    const el = bannerRef.current
-    const root = document.documentElement
+    const el = bannerRef.current;
+    const root = document.documentElement;
 
     if (!el || isLoading || !discount || dismissed) {
-      root.style.setProperty('--banner-height', '0px')
-      return
+      root.style.setProperty("--banner-height", "0px");
+      return;
     }
 
     const update = () => {
-      root.style.setProperty('--banner-height', `${el.offsetHeight}px`)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
+      root.style.setProperty("--banner-height", `${el.offsetHeight}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
     return () => {
-      ro.disconnect()
-      root.style.setProperty('--banner-height', '0px')
-    }
-  }, [discount, dismissed, isLoading])
+      ro.disconnect();
+      root.style.setProperty("--banner-height", "0px");
+    };
+  }, [discount, dismissed, isLoading]);
 
   // Don't render when loading, no discount, or dismissed
-  if (isLoading || !discount || dismissed) return null
+  if (isLoading || !discount || dismissed) return null;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(discount.code).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <div
@@ -122,19 +131,20 @@ const DiscountBanner = () => {
 
       {/* Message */}
       <span className="whitespace-nowrap font-normal">
-        Get UP-TO{' '}
-        <strong className="text-[#0E4E45]">{discount.value}% Discount</strong>. Use coupon code{' '}
+        Get UP-TO{" "}
+        <strong className="text-[#0E4E45]">{discount.value}% Discount</strong>.
+        Use coupon code{" "}
       </span>
 
       {/* Coupon code — click to copy */}
       <button
         onClick={handleCopy}
-        title={copied ? 'Copied!' : 'Click to copy'}
+        title={copied ? "Copied!" : "Click to copy"}
         aria-label={`Copy coupon code ${discount.code}`}
         className="inline-flex cursor-pointer border-none bg-transparent p-0"
       >
         <span className="text-sm font-bold tracking-[0.04em] text-[#1D4ED8] underline underline-offset-[3px]">
-          {copied ? 'Copied!' : discount.code}
+          {copied ? "Copied!" : discount.code}
         </span>
       </button>
 
@@ -161,7 +171,7 @@ const DiscountBanner = () => {
         <X size={16} />
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default DiscountBanner
+export default DiscountBanner;

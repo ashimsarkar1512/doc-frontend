@@ -3,9 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
 import CommonHero from "@/components/shared/CommonHero";
-import { Shield, CircleCheckBig, ChevronDown, MapPin, X } from "lucide-react";
+import { ChevronDown, MapPin, X } from "lucide-react";
 import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 import { useGetMedicalTeamSectionQuery } from "@/Redux/features/medicalTeam/medicalTeamApi";
@@ -33,6 +32,7 @@ export default function MedicalTeamPage() {
 
       {/* ── HERO SECTION ── */}
       <CommonHero
+        watermarkImage="/providerWatermark.png"
         title={heroData?.title || "Meet Our Medical Team"}
         description={
           isHeroLoading ? (
@@ -66,7 +66,6 @@ export default function MedicalTeamPage() {
             </>
           )}
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {isDoctorsLoading ? (
             Array.from({ length: 6 }).map((_, i) => (
@@ -151,7 +150,6 @@ export default function MedicalTeamPage() {
               </h2>
             )}
           </div>
-
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             {isCtaLoading ? (
               <div className="w-32 h-10 bg-white/20 animate-pulse rounded-full" />

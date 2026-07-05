@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight, Loader2, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ArrowLeft, ArrowRight, Loader2, Mail } from "lucide-react";
 
-import Navbar from '@/components/shared/Navbar';
-import Footer from '@/components/shared/Footer';
-import Logo from '@/components/ui/Logo';
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import Logo from "@/components/ui/Logo";
 
-import { useForgotPasswordMutation } from '@/Redux/api/authApi';
-import { setOtpPending } from '@/Redux/features/auth/authSlice';
-import { useAppDispatch } from '@/Redux/store/hooks';
+import { useForgotPasswordMutation } from "@/Redux/api/authApi";
+import { setOtpPending } from "@/Redux/features/auth/authSlice";
+import { useAppDispatch } from "@/Redux/store/hooks";
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
@@ -32,20 +32,20 @@ const ForgotPasswordPage = () => {
         setOtpPending({
           userId: res.data.userId,
           challengeId: null,
-          method: 'EMAIL',
-          purpose: 'FORGOT_PASSWORD',
+          method: "EMAIL",
+          purpose: "FORGOT_PASSWORD",
           email: res.data.email || email,
           phone: res.data.phone || "",
-        } as any)
+        } as any),
       );
 
       // Show the exact API message
       toast.success(res.message);
-      router.push('/receive-otp');
+      router.push("/receive-otp");
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ??
-        'Something went wrong. Please try again.';
+        "Something went wrong. Please try again.";
       toast.error(message);
     }
   };
@@ -82,26 +82,30 @@ const ForgotPasswordPage = () => {
                   </button>
                 </div>
                 <div className="flex flex-col items-center gap-[12px] w-full">
-                  <h2 style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "30px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "100%",
-                  }}>
+                  <h2
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "30px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "100%",
+                    }}
+                  >
                     Forgot Password
                   </h2>
-                  <p style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    lineHeight: "150%",
-                  }}>
+                  <p
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      lineHeight: "150%",
+                    }}
+                  >
                     Enter your registered email address
                   </p>
                 </div>
@@ -114,16 +118,18 @@ const ForgotPasswordPage = () => {
               >
                 <div className="w-full flex flex-col gap-6">
                   <div className="space-y-2">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Email Address
                     </label>
                     <input
@@ -166,7 +172,11 @@ const ForgotPasswordPage = () => {
                       </>
                     ) : (
                       <>
-                        Continue <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                        Continue{" "}
+                        <ArrowRight
+                          className="w-6 h-6 ml-1"
+                          strokeWidth={2.5}
+                        />
                       </>
                     )}
                   </button>

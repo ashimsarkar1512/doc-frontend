@@ -52,7 +52,7 @@ const LoginPage = () => {
           setCredentials({
             user: res.data.user,
             accessToken: res.data.accessToken,
-          })
+          }),
         );
         toast.success("Login successful");
 
@@ -93,32 +93,34 @@ const LoginPage = () => {
               <header className="w-full text-center flex flex-col items-center gap-[30px]">
                 <Logo variant="light" />
                 <div className="flex flex-col items-center gap-[12px] w-full">
-                  <h2 style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "30px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "100%",
-                  }}>
+                  <h2
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "30px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "100%",
+                    }}
+                  >
                     Welcome Back
                   </h2>
-                  <p style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    lineHeight: "150%",
-                  }}>
+                  <p
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      lineHeight: "150%",
+                    }}
+                  >
                     Sign in to your account to continue
                   </p>
                 </div>
               </header>
-
-
 
               {/* Form */}
               <form
@@ -127,16 +129,18 @@ const LoginPage = () => {
               >
                 <div className="w-full flex flex-col gap-6">
                   <div className="space-y-2">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Email Address
                     </label>
                     <input
@@ -150,16 +154,18 @@ const LoginPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Password
                     </label>
                     <div className="relative">
@@ -218,7 +224,11 @@ const LoginPage = () => {
                       </>
                     ) : (
                       <>
-                        Login <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                        Login{" "}
+                        <ArrowRight
+                          className="w-6 h-6 ml-1"
+                          strokeWidth={2.5}
+                        />
                       </>
                     )}
                   </button>
@@ -237,7 +247,7 @@ const LoginPage = () => {
                         textDecoration: "underline",
                         textUnderlineOffset: "auto",
                         textDecorationSkipInk: "auto",
-                        textDecorationThickness: "auto"
+                        textDecorationThickness: "auto",
                       }}
                     >
                       Forgot Password?
