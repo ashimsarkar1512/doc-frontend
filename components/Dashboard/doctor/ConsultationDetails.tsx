@@ -440,6 +440,7 @@ export default function ConsultationDetails() {
   
   const detailesData = data?.data;
   console.log("iam the detaiddd",detailesData);
+  console.log(detailesData?.assesment)
   const user = useAppSelector((state) => state.auth.user);
   console.log(user);
   if (isLoading)
