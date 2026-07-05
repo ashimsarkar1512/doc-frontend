@@ -40,6 +40,9 @@ export default function SettingsCenter() {
     useUpdateCommunicationPreferencesMutation();
   const { data: sessionsData } = useGetSessionsQuery();
 
+
+
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Profile form state
@@ -477,11 +480,11 @@ export default function SettingsCenter() {
           </div>
 
           <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
-            <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-700">
+            <p className="mb-3 flex items-center gap-2 text-[20px] font-semibold text-[#C46A0A]">
               <span>⚠️</span>
               Password Requirements:
             </p>
-            <ul className="space-y-2 text-xs text-yellow-700">
+            <ul className="space-y-2 text-[18px] text-yellow-700">
               <li>• At least 8 characters long</li>
               <li>• Include uppercase and lowercase letters</li>
               <li>• Include at least one number</li>
@@ -566,7 +569,7 @@ export default function SettingsCenter() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
-                      {device.sessionCount} sessions on {device.deviceName}
+                      {device.sessionCount} sessions on 
                       <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
                     </div>
                   </summary>

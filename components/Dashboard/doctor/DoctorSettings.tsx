@@ -66,9 +66,7 @@ const ToggleSwitch = ({
 export default function DoctorSettings() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
 
-console.log(currentUserData)
-
-
+  console.log(currentUserData);
 
   const user = currentUserData?.data;
 
@@ -203,7 +201,7 @@ console.log(currentUserData)
         error?.status === 409
       ) {
         toast.error(
-          "this phone number already use please use another phone number"
+          "this phone number already use please use another phone number",
         );
       } else {
         toast.error(error?.data?.message || "Failed to update profile");
@@ -527,11 +525,11 @@ console.log(currentUserData)
         </div>
 
         <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
-          <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-700">
+          <p className="mb-3 flex items-center gap-2 text-[20px] font-semibold text-[#C46A0A]">
             <span>⚠️</span>
             Password Requirements:
           </p>
-          <ul className="space-y-2 text-xs text-yellow-700">
+          <ul className="space-y-2 text-[18px] text-yellow-700">
             <li>• At least 8 characters long</li>
             <li>• Include uppercase and lowercase letters</li>
             <li>• Include at least one number</li>
@@ -586,54 +584,59 @@ console.log(currentUserData)
           </h3>
 
           {sessionsData?.data?.map((device, idx) => {
-            const isDesktop = device.deviceName.toLowerCase().includes("windows") || device.deviceName.toLowerCase().includes("mac") || device.deviceName.toLowerCase().includes("desktop");
+            const isDesktop =
+              device.deviceName.toLowerCase().includes("windows") ||
+              device.deviceName.toLowerCase().includes("mac") ||
+              device.deviceName.toLowerCase().includes("desktop");
             return (
-            <details
-              key={idx}
-              className="group mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
-              open={idx === 0}
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
-                <div className="flex items-center gap-3">
-                  {isDesktop ? (
-                    <Laptop className="h-5 w-5 text-[#C46A0A]" />
-                  ) : (
-                    <Smartphone className="h-5 w-5 text-[#C46A0A]" />
-                  )}
-                  <span className="font-medium text-[#A95600]">
-                    {device.deviceName}
-                    {device.isActiveNow ? " - Active now" : ""}
-                  </span>
+              <details
+                key={idx}
+                className="group mb-3 rounded-lg border border-[#F1D38A] bg-[#FFFBEF] p-4"
+                open={idx === 0}
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
+                  <div className="flex items-center gap-3">
+                    {isDesktop ? (
+                      <Laptop className="h-5 w-5 text-[#C46A0A]" />
+                    ) : (
+                      <Smartphone className="h-5 w-5 text-[#C46A0A]" />
+                    )}
+                    <span className="font-medium text-[#A95600]">
+                      {device.deviceName}
+                      {device.isActiveNow ? " - Active now" : ""}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
+                    {device.sessionCount} sessions on
+                    <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
+                  </div>
+                </summary>
+                <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
+                  {device.sessions.map((session, sIdx) => {
+                    const d = new Date(session.lastLogin);
+                    const formattedDate = `${d.toLocaleString("en-US", { month: "short" })} ${d.getDate()} - ${d.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).toLowerCase()}`;
+
+                    return (
+                      <React.Fragment key={`${idx}-${sIdx}`}>
+                        <div className="flex items-center gap-2 ">
+                          <p className="text-[18px] font-medium ">Last login:</p>
+                          <p className="text-[20px] font-semibold">{formattedDate}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[18px] font-medium ">IP Address:</p>
+                          <p className="text-[20px] font-semibold">{session.ipAddress}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[18px] font-medium ">Session Due:</p>
+                          <p className="text-[20px] font-semibold">{session.sessionDue}</p>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
-                  {device.sessionCount} sessions on {device.deviceName}
-                  <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
-                </div>
-              </summary>
-              <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
-                {device.sessions.map((session, sIdx) => {
-                  const d = new Date(session.lastLogin);
-                  const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
-                  
-                  return (
-                  <React.Fragment key={`${idx}-${sIdx}`}>
-                    <div className="flex items-center gap-2">
-                      <p>Last login:</p>
-                      <p>{formattedDate}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p>IP Address:</p>
-                      <p>{session.ipAddress}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p>Session Due:</p>
-                      <p>{session.sessionDue}</p>
-                    </div>
-                  </React.Fragment>
-                )})}
-              </div>
-            </details>
-          )})}
+              </details>
+            );
+          })}
         </div>
       </div>
 
