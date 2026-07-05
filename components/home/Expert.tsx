@@ -42,15 +42,7 @@ const Expert: React.FC = () => {
       <div className="max-w-[1520px] mx-auto flex flex-col items-center">
         {/* Title */}
         <h2
-          className="mb-[80px] text-center"
-          style={{
-            color: "#272628",
-            fontFamily: "Quicksand, sans-serif",
-            fontSize: "54px",
-            fontStyle: "normal",
-            fontWeight: 600,
-            lineHeight: "110%"
-          }}
+          className="mb-[40px] lg:mb-[80px] text-center text-[36px] lg:text-[54px] font-semibold text-[#272628] font-[Quicksand] leading-[110%]"
         >
           {providersTitle}
         </h2>
@@ -90,24 +82,10 @@ const Expert: React.FC = () => {
                     </div>
                     {/* Meta Text */}
                     <div className="flex flex-col">
-                      <h3 style={{
-                        color: "#2B2922",
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: "26px",
-                        fontStyle: "normal",
-                        fontWeight: 700,
-                        lineHeight: "150%"
-                      }}>
+                      <h3 className="text-[20px] lg:text-[26px] font-bold text-[#2B2922] font-[Quicksand] leading-[150%]">
                         {provider?.fullName}
                       </h3>
-                      <p style={{
-                        color: "#2B2922",
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: "20px",
-                        fontStyle: "normal",
-                        fontWeight: 400,
-                        lineHeight: "150%"
-                      }}>
+                      <p className="text-[16px] lg:text-[20px] font-normal text-[#2B2922] font-[Quicksand] leading-[150%]">
                         {provider?.title}
                       </p>
                     </div>
@@ -135,16 +113,7 @@ const Expert: React.FC = () => {
               buttonNewTab ? "_blank" : "_self"
             )
           }
-          className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[32px] py-[22px] rounded-[46px] transition-all duration-200 shadow-md active:scale-98"
-          style={{
-            color: "#FFF",
-            textAlign: "center",
-            fontFamily: "Quicksand, sans-serif",
-            fontSize: "22px",
-            fontStyle: "normal",
-            fontWeight: 600,
-            lineHeight: "100%"
-          }}
+          className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[24px] py-[16px] lg:px-[32px] lg:py-[22px] rounded-[46px] transition-all duration-200 shadow-md active:scale-98 text-center text-[18px] lg:text-[22px] text-white font-semibold font-[Quicksand] leading-[100%]"
         >
           {buttonText}
         </button>

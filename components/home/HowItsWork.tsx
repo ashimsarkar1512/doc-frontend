@@ -82,16 +82,7 @@ const HowItsWork: React.FC = () => {
             <div className="h-10 w-2/3 bg-gray-200 animate-pulse rounded-xl mb-8" />
           ) : (
             <h2
-              className="uppercase mb-[80px]"
-              style={{
-                color: "#272628",
-                textAlign: "left",
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: "54px",
-                fontStyle: "normal",
-                fontWeight: 600,
-                lineHeight: "110%"
-              }}
+              className="uppercase mb-[40px] lg:mb-[80px] text-[36px] lg:text-[54px] font-semibold text-left font-[Quicksand] leading-[110%] text-[#272628]"
             >
               {title}
             </h2>
@@ -116,24 +107,10 @@ const HowItsWork: React.FC = () => {
 
                   {/* Text Block */}
                   <div className="flex flex-col gap-0.5">
-                    <h3 style={{
-                      color: "#191B1C",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "26px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "150%"
-                    }}>
+                    <h3 className="text-[20px] lg:text-[26px] font-bold font-[Quicksand] leading-[150%] text-[#191B1C]">
                       {step.title}
                     </h3>
-                    <p style={{
-                      color: "#2B2922",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 400,
-                      lineHeight: "150%"
-                    }}>
+                    <p className="text-[16px] lg:text-[20px] font-normal font-[Quicksand] leading-[150%] text-[#2B2922]">
                       {step.description}
                     </p>
                   </div>

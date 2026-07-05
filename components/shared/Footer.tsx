@@ -30,9 +30,9 @@ const Footer = () => {
           <Background />
 
           {/* Content — flex column, gap 40px, Figma: padding 60/60/40/60 */}
-          <div className="relative z-10 flex flex-col items-start gap-[40px] self-stretch px-[60px] pt-[60px] pb-[40px]">
+          <div className="relative z-10 flex flex-col items-start gap-[40px] self-stretch px-5 md:px-[60px] pt-10 md:pt-[60px] pb-[40px]">
             {/* ── Row 1: Nav grid ── */}
-            <div className="grid grid-cols-1 md:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] gap-y-10 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] gap-y-10 w-full">
               {/* Col 1: Logo + Description */}
               <div>
                 <div className="mb-4">
@@ -55,7 +55,9 @@ const Footer = () => {
                   CoolSculpting®, Laser Hair Removal, hormone replacement
                   therapy, men&apos;s services, IV Therapy, and more!
                 </p>
-                <NewsLetter />
+                <div className="lg:hidden w-full mt-6">
+                  <NewsLetter />
+                </div>
               </div>
 
               {/* Col 2: Others – left list */}
@@ -100,8 +102,8 @@ const Footer = () => {
               </div>
 
               {/* Col 3: Others – right list (no heading, aligned with col 2 links) */}
-              <div>
-                <div className="mb-5 h-[36px]" />
+              <div className="mt-[-20px] lg:mt-0">
+                <div className="mb-5 h-[36px] hidden lg:block" />
                 {/* exact heading height: 24px × 150% = 36px */}
                 <ul className="space-y-[10px] text-[20px] text-white font-normal font-[Quicksand] leading-[150%]">
                   <li>
@@ -213,42 +215,45 @@ const Footer = () => {
             </div>
 
             {/* ── Row 2: Badges + Payment (same 5-col grid) ── */}
-            <div className="grid grid-cols-1 md:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] w-full">
-              {/* Col 1: empty spacer — aligns with logo column */}
-              <div className="hidden md:block" />
+            <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_0.85fr_0.85fr_1fr_1.2fr] gap-x-[40px] gap-y-10 lg:gap-y-0 w-full">
+              {/* Col 1: Newsletter — aligns with logo column */}
+              <div className="hidden lg:flex w-full items-center justify-start h-full">
+                <NewsLetter />
+              </div>
 
               {/* Cols 2-4: Badges */}
-              <div className="md:col-span-3 flex items-center gap-6">
+              <div className="lg:col-span-3 flex flex-wrap lg:flex-nowrap justify-center lg:justify-start items-center gap-3 lg:gap-6 w-full">
                 <Image
                   src="/footer1.png"
                   alt="LegitScript Certified"
                   width={53}
                   height={57}
-                  className="w-[53px] h-[57px] object-contain"
+                  className="w-[40px] md:w-[53px] h-auto object-contain"
                 />
                 <Image
                   src="/footer2.png"
                   alt="LegitScript"
                   width={170}
                   height={52}
-                  className="w-[170px] h-[52px] object-contain"
+                  className="w-[130px] md:w-[170px] h-auto object-contain"
                 />
                 <Image
                   src="/footer3.png"
                   alt="HIPAA Compliant"
                   width={97}
                   height={39}
-                  className="w-[97px] h-[39px] object-contain"
+                  className="w-[75px] md:w-[97px] h-auto object-contain"
                 />
               </div>
 
               {/* Col 5: We Support + payment icons */}
-              <div className="flex items-center gap-4 justify-end">
-                <span className="text-white text-[24px] font-semibold font-[Quicksand] leading-[150%] whitespace-nowrap">
+              <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 lg:gap-4 justify-center lg:justify-end w-full">
+                <span className="text-white text-[18px] md:text-[24px] font-semibold font-[Quicksand] leading-[150%] whitespace-nowrap">
                   We Support
                 </span>
 
-                {/* American Express SVG — 89×35px */}
+                <div className="flex items-center gap-3 lg:gap-4 scale-[0.85] lg:scale-100 origin-center lg:origin-right">
+                  {/* American Express SVG — 89×35px */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="89"
@@ -284,6 +289,7 @@ const Footer = () => {
                     fill="white"
                   />
                 </svg>
+                </div>
               </div>
             </div>
 
@@ -292,14 +298,14 @@ const Footer = () => {
               <div className="w-full h-[1px] bg-white/20 mb-5" />
 
               {/* ── Copyright + Socials ── */}
-              <div className="flex flex-col md:flex-row justify-between items-center text-[20px] text-white font-normal font-[Quicksand] leading-[150%]">
+              <div className="flex flex-col lg:flex-row justify-between items-center text-[16px] lg:text-[20px] text-white font-normal font-[Quicksand] leading-[150%] gap-4 lg:gap-0 text-center lg:text-left">
                 <p>
                   &copy; {new Date().getFullYear()} Weight Loss MD. All Rights
                   Reserved.
                 </p>
 
-                <div className="flex items-center gap-3 mt-3 md:mt-0">
-                  <span className="text-[20px] text-white font-normal font-[Quicksand] leading-[150%] mr-1">
+                <div className="flex items-center gap-3 mt-3 lg:mt-0">
+                  <span className="text-[16px] lg:text-[20px] text-white font-normal font-[Quicksand] leading-[150%] mr-1 whitespace-nowrap">
                     Follow us at:
                   </span>
                   <div className="flex gap-3 text-white items-center">
