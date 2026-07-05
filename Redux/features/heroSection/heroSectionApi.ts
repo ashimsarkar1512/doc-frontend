@@ -20,7 +20,7 @@ export const heroSectionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getHeroSectionByPage: builder.query<HeroSection | null, string>({
       query: (pageType) => `/hero-section?pageType=${pageType}`,
-      providesTags: ['HeroSection'],
+      providesTags: ['HeroSections'],
       transformResponse: (response: HeroSectionApiResponse) => {
         if (response.data && response.data.length > 0) {
           return response.data[0];

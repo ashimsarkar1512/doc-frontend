@@ -1,16 +1,29 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Expert from "@/components/home/Expert";
-import QNA, { FAQItem } from "@/components/home/QNA";
-import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
+import QNA from "@/components/home/QNA";
+import { useGetAboutUsDataQuery } from "@/Redux/api/aboutUsApi";
 import { ScrollRevealText } from "@/components/shared/ScrollRevealText";
 import CommonHero from "@/components/shared/CommonHero";
+
 export default function AboutPage() {
-  const { data } = useGetHomepageContentQuery(undefined);
-  
+  const { data: response, isLoading } = useGetAboutUsDataQuery();
+  const data = response?.data;
+
+  const getMediaUrl = (url: string | undefined) => {
+    if (!url) return "";
+    if (url.startsWith("http") || url.startsWith("/")) return url;
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    if (baseUrl.includes("prod.weightlossmdcherrycreek.com")) {
+      return `https://storage.weightlossmdcherrycreek.com/${url}`;
+    }
+    return `https://pre-storage.weightlossmdcherrycreek.com/${url}`;
+  };
+
   const benefits = [
     "Personalized treatment plans tailored to individual goals",
     "Licensed healthcare providers and medically supervised programs",
@@ -19,31 +32,6 @@ export default function AboutPage() {
     "Multiple clinic locations across Colorado",
     "Focus on long-term wellness and sustainable lifestyle improvements",
   ];
-
-  const [faqList, setFaqList] = useState<FAQItem[] | undefined>(undefined);
-
-  useEffect(() => {
-    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://prod.weightlossmdcherrycreek.com";
-    baseUrl = baseUrl.replace(/\/$/, "");
-    if (!baseUrl.includes("/api/v1")) {
-      baseUrl = `${baseUrl}/api/v1`;
-    }
-
-    fetch(`${baseUrl}/faq-section?pageType=AboutUs`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((dataRaw) => {
-        if (dataRaw?.data && Array.isArray(dataRaw.data)) {
-          setFaqList(
-            dataRaw.data.map((item: any) => ({
-              id: item.id || Math.random().toString(),
-              question: item.question,
-              answer: item.answer,
-            }))
-          );
-        }
-      })
-      .catch((err) => console.error("Failed to fetch FAQ:", err));
-  }, []);
 
   const blobDefs = (
     <svg width="0" height="0" style={{ position: "absolute" }}>
@@ -69,130 +57,212 @@ export default function AboutPage() {
       />
 
       <CommonHero
-        title={
-          <>
-            A Personalized Approach
-            <br />
-            to Wellness
-          </>
+        title={data?.heroTitle || "A Personalized Approach to Wellness"}
+        description={
+          data?.heroDescription ||
+          "At Weight Loss MD, we believe weight management should be personal, medically guided, and built around long-term wellness — not quick fixes. Our team provides medically supervised programs designed to support individuals through personalized care, professional guidance, and ongoing support tailored to their health goals and lifestyle."
         }
-        description="At Weight Loss MD, we believe weight management should be personal, medically guided, and built around long-term wellness — not quick fixes. Our team provides medically supervised programs designed to support individuals through personalized care, professional guidance, and ongoing support tailored to their health goals and lifestyle."
         watermarkImage="/aboutWatermark.png"
       >
         <button
           onClick={() =>
             window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
+              data?.heroButtonUrl ||
+                "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              data?.heroTargetBlank !== false ? "_blank" : "_self",
             )
           }
           className="bg-[#2563EB] hover:bg-[#1e40af] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
         >
-          Book a consultation
+          {data?.heroButtonText || "Book a consultation"}
         </button>
       </CommonHero>
       {/* MISSION + VIDEO */}
       <section className="w-full max-w-7xl mx-auto px-4 py-10 flex flex-col items-center">
-        <span className="bg-gray-100 text-gray-500 text-xs font-medium px-4 py-1.5 rounded-full mb-8 tracking-wide">
+        <span className="bg-[#E6E6E6] text-[#272628] text-[16px] font-semibold px-4 py-1.5 rounded-full mb-8 tracking-wide">
           About us
         </span>
 
         <ScrollRevealText
-          text={`${data?.aboutTitle} ${data?.aboutDescription}`}
+          text={
+            data?.bodySection1Title && data?.bodySection1Description
+              ? `${data.bodySection1Title} ${data.bodySection1Description}`
+              : "A Personalized Approach to Wellness"
+          }
           className="text-center max-w-[1520px] text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
         />
 
-        <div className="w-full relative overflow-hidden rounded-[2.5rem]  h-[00px] md:h-[500px] lg:h-[600px]">
-          <Image
-            src="/about_US.png"
-            alt="video thumbnail"
-            fill
-            className="object-cover"
+        <div className="w-full relative group overflow-hidden rounded-[2.5rem] h-[300px] md:h-[500px] lg:h-[600px]">
+          {data?.bodySection1Image?.fileType?.startsWith("video/") ? (
+            <video
+              src={getMediaUrl(data.bodySection1Image.fileUrl)}
+              controls
+              autoPlay
+              muted
+              loop
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
+              style={{
+                clipPath:
+                  "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
+              }}
+            />
+          ) : (
+            <img
+              src={
+                data?.bodySection1Image?.fileUrl
+                  ? getMediaUrl(data.bodySection1Image.fileUrl)
+                  : "/about_US.png"
+              }
+              alt="Section thumbnail"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
+              style={{
+                clipPath:
+                  "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
+              }}
+            />
+          )}
+          <div
+            className="absolute inset-0 bg-black/5 pointer-events-none"
+            style={{
+              clipPath:
+                "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
+            }}
           />
         </div>
       </section>
 
       {/* INCORPORATE & OVERSEE */}
-      {/* INCORPORATE & OVERSEE */}
-      <section className="w-full py-16 md:py-24 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-          <div className="flex flex-col items-start">
-            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide">
-              Our Mission
+      <section className="w-full pt-16 md:pt-24 pb-8 md:pb-12 px-4 md:px-8">
+        <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2  items-center">
+          <div className="flex flex-col items-start pr-0 lg:pr-12 ">
+            <span className="text-[54px] font-bold  w-full">
+              {data?.bodySection2Tag || "Our Mission"}
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-medium text-gray-900 leading-[1.2] mb-6">
-              Incorporate and oversee Various Athletics, Administrators, and
-              Trainers.
+            <h2 className=" text-[#272628] text-lg md:text-xl leading-[1.15] mb-6">
+              {data?.bodySection2Title ||
+                "Incorporate and oversee Various Athletics, Administrators, and Trainers."}
             </h2>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-4">
-              Our mission is to help individuals take control of their health
-              through medically supervised care, evidence-based treatments, and
-              personalized wellness programs.
+            <p className="text-[#3B3B3B] text-lg md:text-xl leading-relaxed mb-8">
+              {data?.bodySection2Description ||
+                "Our mission is to help individuals take control of their health through medically supervised care, evidence-based treatments, and personalized wellness programs."}
             </p>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              We are committed to creating a supportive environment where
-              patients feel heard, respected, and empowered at every stage of
-              their transformation.
-            </p>
-            <button className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md">
-              Contact us
+            <button
+              onClick={() => {
+                const link = data?.bodySection2ButtonUrl || "/";
+                const target = data?.bodySection2TargetBlank
+                  ? "_blank"
+                  : "_self";
+                window.open(link, target);
+              }}
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md"
+            >
+              {data?.bodySection2ButtonText || "Contact us"}
             </button>
           </div>
 
-          <div className="flex justify-center items-center">
-            <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <Image
-                src="/Union.png"
-                alt="Medical professional"
-                fill
-                className="object-contain object-center drop-shadow-sm"
-                sizes="(max-width: 768px) 320px, 400px"
-              />
-            </div>
+          {/* Right: Image */}
+          <div className="flex justify-end items-center overflow-visible">
+            {data?.bodySection2Image?.fileUrl ? (
+              <div className="relative  w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
+                {/* doctorShape.png as background (blue blob) */}
+                <img
+                  src="/doctorShape.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+                {/* Dynamic image masked to the same shape — no rectangular edges */}
+                <img
+                  src={getMediaUrl(data.bodySection2Image.fileUrl)}
+                  alt="Medical professional"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
+                  style={{
+                    maskImage: "url('/doctorShape.png')",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskImage: "url('/doctorShape.png')",
+                    WebkitMaskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="relative w-full max-w-[420px] h-[420px]">
+                <img
+                  src="/Union.png"
+                  alt="Medical professional"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* WHY PATIENTS CHOOSE */}
-      {/* WHY PATIENTS CHOOSE */}
-      <section className="w-full py-16 md:py-24 px-4 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-          <div className="flex justify-center items-center order-last lg:order-first">
-            <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-              <Image
-                src="/Union2.png"
-                alt="Weight loss progress"
-                fill
-                className="object-contain object-center drop-shadow-sm"
-                sizes="(max-width: 768px) 320px, 400px"
-              />
-            </div>
+      <section className="w-full pt-8 md:pt-12 pb-16 md:pb-24 px-4 md:px-8 bg-white">
+        <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left: Image */}
+          <div className="flex justify-start items-center overflow-visible">
+            {data?.bodySection3Image?.fileUrl ? (
+              <div className="relative w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
+                {/* doctorShape.png as background (blue blob) */}
+                <img
+                  src="/doctorShape.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+                {/* Dynamic image masked to the same shape — no rectangular edges */}
+                <img
+                  src={getMediaUrl(data.bodySection3Image.fileUrl)}
+                  alt="Weight loss progress"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
+                  style={{
+                    maskImage: "url('/doctorShape.png')",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskImage: "url('/doctorShape.png')",
+                    WebkitMaskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="relative w-full max-w-[420px] h-[420px]">
+                <img
+                  src="/Union2.png"
+                  alt="Weight loss progress"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col items-start">
-            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide">
-              Why WLMD
+            <span className="text-[54px] font-bold">
+              {data?.bodySection3Tag || "Why WLMD"}
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-medium text-gray-900 leading-[1.2] mb-6">
-              Why Patients Choose
-              <br className="hidden md:block" />
-              Weight Loss MD?
+            <h2 className=" text-gray-900 text-lg md:text-xl leading-[1.2] mb-6 whitespace-pre-line">
+              {data?.bodySection3Title ||
+                "Why Patients Choose\nWeight Loss MD?"}
             </h2>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-4">
-              Our mission is to help individuals take control of their health
-              through medically supervised care, evidence-based treatments, and
-              personalized wellness programs.
-            </p>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              We are committed to creating a supportive environment where
-              patients feel heard, respected, and empowered at every stage of
-              their transformation.
+            <p className="text-gray-500 text-lg md:text-xl leading-relaxed mb-8">
+              {data?.bodySection3Description ||
+                "Our mission is to help individuals take control of their health through medically supervised care, evidence-based treatments, and personalized wellness programs. We are committed to creating a supportive environment where patients feel heard, respected, and empowered at every stage of their transformation."}
             </p>
 
-            <ul className="space-y-3 mb-8 w-full">
-              {benefits.map((benefit, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <span className="flex-shrink-0 flex items-center justify-center mt-1">
+            <ul className="space-y-3 mb-8 w-full ">
+              {(data?.bodySection3Points?.length > 0
+                ? data.bodySection3Points
+                : benefits
+              ).map((benefit: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 ">
+                  <span className="flex-shrink-0 flex items-center justify-center mt-1 ">
                     <svg
                       className="w-4 h-4 text-[#2563EB]"
                       viewBox="0 0 24 24"
@@ -206,7 +276,7 @@ export default function AboutPage() {
                       <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                   </span>
-                  <span className="text-gray-600 text-sm md:text-[15px]">
+                  <span className="text-gray-600 text-lg md:text-xl">
                     {benefit}
                   </span>
                 </li>
@@ -214,28 +284,44 @@ export default function AboutPage() {
             </ul>
 
             <button
-              onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
-              }
+              onClick={() => {
+                const link =
+                  data?.bodySection3ButtonUrl ||
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+                const target =
+                  data?.bodySection3TargetBlank !== false ? "_blank" : "_self";
+                window.open(link, target);
+              }}
               className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium px-8 py-3.5 rounded-full transition-all duration-200 shadow-md"
             >
-              Book a consultation
+              {data?.bodySection3ButtonText || "Book a consultation"}
             </button>
           </div>
         </div>
       </section>
 
       <Expert />
-      
+
       {/* ── FAQ SECTION (Dynamic based on page data) ── */}
-      {faqList && faqList.length > 0 ? (
-        <QNA faqData={faqList} title="About Us FAQs" />
-      ) : (
-        <QNA />
-      )}
+      {/* ── FAQ SECTION (Dynamic based on page data) ── */}
+      <QNA
+        faqData={data?.faqs?.map((item: any) => ({
+          id: item.id || Math.random().toString(),
+          question: item.question,
+          answer: item.answer,
+        }))}
+        title={data?.faqSectionTitle || "About Us FAQs"}
+        cardTitle={data?.faqCardTitle}
+        cardDescription={data?.faqCardDescription}
+        buttonText={data?.faqButtonText}
+        buttonLink={data?.faqButtonUrl}
+        buttonNewTab={data?.faqTargetBlank}
+        cardMediaUrl={
+          data?.faqCardImage?.fileUrl
+            ? getMediaUrl(data.faqCardImage.fileUrl)
+            : undefined
+        }
+      />
     </div>
   );
 }

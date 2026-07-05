@@ -264,7 +264,7 @@ const Navbar = ({
             fixed xl:static top-0 left-0 w-full xl:w-auto h-screen xl:h-auto
             ${mobileBg}  xl:bg-transparent
             px-8 pt-40 xl:pt-0 xl:px-0
-            flex-col xl:flex-row items-start xl:items-center gap-4 xl:gap-8
+            flex-col xl:flex-row items-start xl:items-center gap-4 xl:gap-3 2xl:gap-6
             transition-transform duration-300 ease-in-out z-[50]
             overflow-y-auto xl:overflow-visible
             ${isMobileMenuOpen ? "flex translate-x-0" : "hidden xl:flex translate-x-full xl:translate-x-0"}
@@ -272,7 +272,7 @@ const Navbar = ({
         >
           <Link
             href="/"
-            className={`text-xl xl:text-base ${getLinkClass("/")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
@@ -286,7 +286,7 @@ const Navbar = ({
             onMouseLeave={handleServicesMouseLeave}
           >
             <div
-              className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors font-medium`}
+              className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors font-medium text-xl xl:text-[14px] 2xl:text-base`}
               onClick={toggleServices}
             >
               <span>Our Services</span>
@@ -314,7 +314,7 @@ const Navbar = ({
           <Link
             href="/lab-testing"
             prefetch={true}
-            className={`text-xl xl:text-base ${getLinkClass("/lab-testing")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/lab-testing")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Lab Testing
@@ -323,7 +323,7 @@ const Navbar = ({
           <Link
             href="/supplements"
             prefetch={true}
-            className={`text-xl xl:text-base ${getLinkClass("/supplements")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/supplements")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Supplements
@@ -332,7 +332,7 @@ const Navbar = ({
           <Link
             href="/blog"
             prefetch={true}
-            className={`text-xl xl:text-base ${getLinkClass("/blog")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/blog")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
@@ -340,7 +340,7 @@ const Navbar = ({
 
           <Link
             href="/eligibility"
-            className={`text-xl xl:text-base ${getLinkClass("/eligibility")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/eligibility")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Eligibility
@@ -348,7 +348,7 @@ const Navbar = ({
 
           <Link
             href="/about"
-            className={`text-xl xl:text-base ${getLinkClass("/about")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/about")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             About
@@ -356,7 +356,7 @@ const Navbar = ({
 
           <Link
             href="/contact"
-            className={`text-xl xl:text-base ${getLinkClass("/contact")}`}
+            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/contact")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Contact

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import { ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
+import { useGetLabTestingDataQuery } from "@/Redux/api/labTestingApi";
 
-const panelServices = [
+const defaultPanelServices = [
   {
     title: "Weight Loss lab test",
     description:
@@ -72,15 +73,95 @@ const panelServices = [
   },
 ];
 
+interface ServiceTest {
+  name: string;
+  duration: string;
+  description: string;
+}
+
+interface ServiceData {
+  title: string;
+  description: string;
+  image: string;
+  tests: ServiceTest[];
+}
+
 export default function LabTestingPage() {
+  const [expandedTests, setExpandedTests] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const toggleTest = (id: string) => {
+    setExpandedTests((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const { data, isLoading } = useGetLabTestingDataQuery();
+
+  const hero = data?.hero || {};
+  const section = data?.section || {};
+  const cta = data?.cta || {};
+
+  const heroTitle = hero.title || "WLMD Lab Tests";
+  const heroButtonText = hero.buttonText || "Book a consultation";
+  const heroButtonUrl =
+    hero.buttonUrl ||
+    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+  const heroIsBlank = hero.isBlank !== undefined ? hero.isBlank : true;
+  const heroImage = hero.image?.fileUrl || "/lab-testing.png";
+
+  const sectionTitle = section.sectionTitle || "See what's inside the panel";
+  const sectionDescription =
+    section.sectionDescription ||
+    "Measure what matters—up to 130 biomarker tests, twice a year on the Advanced plan.\nEach test is selected by Hims experts and grouped into 10 vital areas for a holistic\npicture of your health. Dive in, then get ready for your first test.";
+
+  const ctaTitle = cta.sectionTitle || "Contact Us at Weight Loss MD\nToday";
+  const ctaButtonText = cta.ctaButtonText || "Book a consultation";
+  const ctaButtonUrl =
+    cta.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+  const ctaIsBlank = cta.openInNewTab !== undefined ? cta.openInNewTab : true;
+
+  const services: ServiceData[] =
+    section.services && section.services.length > 0
+      ? section.services.map((s: any) => ({
+          title: s.title,
+          description: s.description,
+          image: s.image?.fileUrl || "/wight-loss.png",
+          tests: s.tests
+            ? s.tests.map((t: any) => ({
+                name: t.name,
+                duration: t.duration || "Tested 2x/year",
+                description: t.description,
+              }))
+            : [],
+        }))
+      : defaultPanelServices.map((s) => ({
+          ...s,
+          tests: s.tests.map((t) => ({
+            name: t,
+            duration: "Tested 2x/year",
+            description: "",
+          })),
+        }));
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* ── HERO BANNER ── */}
       <section className="px-4 md:px-6 pt-4 sm:pt-6 md:pt-8">
         <div className="relative w-full rounded-[28px] sm:rounded-4xl overflow-hidden min-h-[420px] sm:min-h-[540px] md:min-h-[600px] flex flex-col">
           <Image
-            src="/lab-testing.png"
-            alt="WLMD Lab Tests"
+            src={heroImage}
+            alt={heroTitle || "WLMD Lab Tests"}
             fill
             className="object-cover object-center"
             priority
@@ -104,43 +185,47 @@ export default function LabTestingPage() {
           />
 
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center px-5 sm:px-6 pb-8 sm:pb-10 pt-20 sm:pt-24 md:pt-28">
-            <h1 style={{
-              color: '#FFF',
-              textAlign: 'center',
-              fontFamily: 'Quicksand, sans-serif',
-              fontSize: 'clamp(36px, 6vw, 76px)',
-              fontWeight: 700,
-              lineHeight: '100%',
-            }} className="mb-6 sm:mb-8 drop-shadow-md">
-              WLMD Lab Tests
+            <h1
+              style={{
+                color: "#FFF",
+                textAlign: "center",
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: "clamp(36px, 6vw, 76px)",
+                fontWeight: 700,
+                lineHeight: "100%",
+              }}
+              className="mb-6 sm:mb-8 drop-shadow-md"
+            >
+              {heroTitle}
             </h1>
             <button
               onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
+                window.open(heroButtonUrl, heroIsBlank ? "_blank" : "_self")
               }
               style={{
-                display: 'flex',
-                padding: '22px 32px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '15px',
-                borderRadius: '46px',
-                background: '#1D4ED8',
-                color: '#FFF',
-                fontFamily: 'Quicksand, sans-serif',
-                fontSize: '22px',
+                display: "flex",
+                padding: "22px 32px",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "15px",
+                borderRadius: "46px",
+                background: "#1D4ED8",
+                color: "#FFF",
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: "22px",
                 fontWeight: 600,
-                lineHeight: '100%',
-                textAlign: 'center',
-                transition: 'background 0.2s',
+                lineHeight: "100%",
+                textAlign: "center",
+                transition: "background 0.2s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#1a40b3')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#1D4ED8')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#1a40b3")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "#1D4ED8")
+              }
             >
-              Book a consultation
+              {heroButtonText}
             </button>
           </div>
         </div>
@@ -149,22 +234,20 @@ export default function LabTestingPage() {
       {/* ── PANEL SECTION ── */}
       <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12 md:mt-16 mb-12 w-full">
         <div className="mb-10 sm:mb-14 md:mb-16">
-          <h2 className="text-[22px] sm:text-[26px] md:text-[32px] font-bold text-[#111827] mb-4 sm:mb-5 tracking-tight">
-            See what&apos;s inside the panel
+          <h2 className="text-[28px] sm:text-[36px] lg:text-[54px] font-bold text-[#111827] mb-4 sm:mb-5 tracking-tight">
+            {sectionTitle}
           </h2>
-          <p className="text-[13px] sm:text-[14px] md:text-[15px] text-[#4b5563] leading-[1.85] max-w-[780px]">
-            Measure what matters—up to 130 biomarker tests, twice a year on the Advanced plan.
-            Each test is selected by Hims experts and grouped into 10 vital areas for a holistic
-            picture of your health. Dive in, then get ready for your first test.
+          <p className="text-[14px] sm:text-[16px] lg:text-lg text-[#272628] leading-[1.85] max-w-[780px] whitespace-pre-wrap">
+            {sectionDescription}
           </p>
         </div>
 
         <div>
-          {panelServices.map((service, index) => (
+          {services.map((service, index) => (
             <div
               key={index}
               className={`py-8 sm:py-10 md:py-14 ${
-                index !== panelServices.length - 1 ? "border-b border-gray-200" : ""
+                index !== services.length - 1 ? "border-b border-gray-200" : ""
               }`}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 lg:gap-16 xl:gap-24 items-start">
@@ -180,36 +263,56 @@ export default function LabTestingPage() {
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0 pt-0 sm:pt-1">
-                    <h3 className="text-[17px] sm:text-[18px] md:text-[20px] font-bold text-[#111827] mb-2 sm:mb-2.5 tracking-tight">
+                    <h3 className="text-[20px] sm:text-[28px] lg:text-[40px] font-bold text-[#111827] mb-2 sm:mb-2.5 tracking-tight">
                       {service.title}
                     </h3>
-                    <p className="text-[13px] md:text-[14px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
+                    <p className="text-[14px] sm:text-[16px] lg:text-[20px] text-[#6b7280] leading-[1.75] mb-4 sm:mb-5">
                       {service.description}
                     </p>
-
                   </div>
                 </div>
 
                 {/* Right: Test List */}
                 <div className="w-full lg:pt-0">
-                  {service.tests.map((test, testIndex) => (
-                    <div
-                      key={testIndex}
-                      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 md:gap-6 py-3.5 sm:py-4 ${
-                        testIndex !== service.tests.length - 1
-                          ? "border-b border-gray-200"
-                          : ""
-                      }`}
-                    >
-                      <span className="text-[13px] sm:text-[14px] md:text-[15px] text-[#374151] font-medium break-words">
-                        {test}
-                      </span>
-                      <button className="flex items-center gap-1.5 text-[11px] sm:text-[12px] text-[#6b7280] bg-[#f3f4f6] hover:bg-[#e5e7eb] rounded-full px-3 sm:px-3.5 py-1.5 transition-colors whitespace-nowrap self-start sm:self-auto flex-shrink-0">
-                        Tested 2x/year
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                  {service.tests.map((test, testIndex) => {
+                    const testId = `${index}-${testIndex}`;
+                    const isExpanded = expandedTests[testId];
+                    return (
+                      <div
+                        key={testIndex}
+                        className={`flex flex-col py-3.5 sm:py-4 ${
+                          testIndex !== service.tests.length - 1
+                            ? "border-b border-gray-200"
+                            : ""
+                        }`}
+                      >
+                        <div
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 md:gap-6 cursor-pointer"
+                          onClick={() => toggleTest(testId)}
+                        >
+                          <span className="text-[15px] sm:text-[16px] lg:text-[20px] text-[#212121] font-medium break-words">
+                            {test.name}
+                          </span>
+                          <div className="flex items-center gap-3 self-start sm:self-auto flex-shrink-0">
+                            <span className="flex items-center justify-center text-[12px] sm:text-[14px] lg:text-[16px] text-[#272628] bg-[#f3f4f6] rounded-full px-3 sm:px-3.5 py-1.5 whitespace-nowrap">
+                              {test.duration}
+                            </span>
+                            {isExpanded ? (
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-gray-300" />
+                            )}
+                          </div>
+                        </div>
+                        {/* Expanded Description */}
+                        {isExpanded && test.description && (
+                          <div className="mt-3 text-[13px] sm:text-[15px] lg:text-[16px] text-[#6b7280] leading-relaxed pr-8">
+                            {test.description}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -235,22 +338,19 @@ export default function LabTestingPage() {
                 className="object-contain"
               />
             </div>
-            <h2 className="text-[20px] sm:text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              Contact Us at Weight Loss MD
-              <br className="hidden sm:block" /> Today
+            <h2 className="text-[20px] sm:text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25] whitespace-pre-wrap">
+              {ctaTitle}
             </h2>
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
             <button
-                onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
+              onClick={() =>
+                window.open(ctaButtonUrl, ctaIsBlank ? "_blank" : "_self")
               }
-             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap">
-              Book a consultation
+              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
+            >
+              {ctaButtonText}
             </button>
           </div>
         </div>

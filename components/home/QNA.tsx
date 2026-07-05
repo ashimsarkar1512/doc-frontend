@@ -47,9 +47,15 @@ export interface QNAProps {
   faqData?: FAQItem[];
   title?: string;
   isLoading?: boolean;
+  cardTitle?: string;
+  cardDescription?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  buttonNewTab?: boolean;
+  cardMediaUrl?: string;
 }
 
-const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading }) => {
+const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, cardTitle, cardDescription, buttonText, buttonLink, buttonNewTab, cardMediaUrl }) => {
   const { data: content, isLoading: isQueryLoading } = useGetHomepageContentQuery(undefined, { 
     skip: !!faqData, // skip fetching if data is provided via props
     refetchOnFocus: true, 
@@ -89,7 +95,7 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading }) =
 
   return (
     <section className="w-full bg-[#121314] py-20 px-4 md:px-8 font-sans text-white">
-      <div className="max-w-[1520px] mx-auto">
+      <div className="max-w-[1400px] mx-auto">
 
         {/* Title */}
         <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
@@ -147,11 +153,11 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading }) =
           </div>
 
           {/* Right Column: Featured Callout Action Frame */}
-          <div className="lg:col-span-5 w-full h-full relative group rounded-[2rem] overflow-hidden min-h-[460px] flex flex-col justify-end p-8 md:p-10 border border-gray-800/20 shadow-2xl">
+          <div className="lg:col-span-5 w-full h-[460px] lg:h-[665px] relative group rounded-[2rem] overflow-hidden flex flex-col justify-end p-8 md:px-[40px] md:py-[50px] border border-gray-800/20 shadow-2xl">
             {/* Background Medical Art Vector Frame */}
             <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-103">
               <Image
-                src={content?.faqCardMedia?.fileUrl || "/QNA.png"}
+                src={cardMediaUrl || content?.faqCardMedia?.fileUrl || "/QNA.png"}
                 alt="Medical Background"
                 fill
                 className="object-cover"
@@ -164,20 +170,20 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading }) =
             {/* Callout Typography Stack */}
             <div className="relative z-10 flex flex-col gap-3">
               <h3 className="text-3xl md:text-4xl font-semibold tracking-tight">
-                {content?.faqCardTitle || "Still have a Question?"}
+                {cardTitle || content?.faqCardTitle || "Still have a Question?"}
               </h3>
               <p className="text-lg md:text-xl text-gray-300 font-light max-w-sm leading-relaxed mb-6">
-                {content?.faqCardDescription || "Everything you need to know before getting started."}
+                {cardDescription || content?.faqCardDescription || "Everything you need to know before getting started."}
               </p>
 
               <button
                 onClick={() => {
-                  const link = content?.faqButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
-                  const target = content?.faqButtonNewTab ?? true ? "_blank" : "_self";
+                  const link = buttonLink || content?.faqButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
+                  const target = buttonNewTab ?? (content?.faqButtonNewTab ?? true) ? "_blank" : "_self";
                   window.open(link, target);
                 }}
                 className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
-                {content?.faqButtonText || "Book An Appointment"}
+                {buttonText || content?.faqButtonText || "Book An Appointment"}
               </button>
             </div>
           </div>

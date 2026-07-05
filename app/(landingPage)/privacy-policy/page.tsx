@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
         <QNA faqData={faqList} title="Privacy Policy FAQs" />
       )}
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

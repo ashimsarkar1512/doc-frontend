@@ -3,75 +3,33 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
-import CommonHero from "@/components/shared/CommonHero";
-import { CircleCheckBig, Clock, Info, MapPin, ChevronDown } from "lucide-react";
-
-const states = [
-  { name: "Alabama", soon: false },
-  { name: "Alaska", soon: true },
-  { name: "Arizona", soon: false },
-  { name: "Arkansas", soon: false },
-  { name: "California", soon: false },
-  { name: "Colorado", soon: false },
-  { name: "Connecticut", soon: false },
-  { name: "Delaware", soon: false },
-  { name: "Florida", soon: false },
-  { name: "Georgia", soon: false },
-  { name: "Hawaii", soon: true },
-  { name: "Idaho", soon: false },
-  { name: "Illinois", soon: false },
-  { name: "Indiana", soon: false },
-  { name: "Iowa", soon: false },
-  { name: "Kansas", soon: false },
-  { name: "Kentucky", soon: false },
-  { name: "Louisiana", soon: false },
-  { name: "Maine", soon: false },
-  { name: "Maryland", soon: false },
-  { name: "Massachusetts", soon: false },
-  { name: "Michigan", soon: false },
-  { name: "Minnesota", soon: false },
-  { name: "Mississippi", soon: false },
-  { name: "Missouri", soon: false },
-  { name: "Montana", soon: false },
-  { name: "Nebraska", soon: false },
-  { name: "Nevada", soon: false },
-  { name: "New Hampshire", soon: false },
-  { name: "New Jersey", soon: false },
-  { name: "New Mexico", soon: false },
-  { name: "New York", soon: false },
-  { name: "North Carolina", soon: false },
-  { name: "North Dakota", soon: true },
-  { name: "Ohio", soon: false },
-  { name: "Oklahoma", soon: false },
-  { name: "Oregon", soon: false },
-  { name: "Pennsylvania", soon: false },
-  { name: "Rhode Island", soon: false },
-  { name: "South Carolina", soon: false },
-  { name: "South Dakota", soon: true },
-  { name: "Tennessee", soon: false },
-  { name: "Texas", soon: false },
-  { name: "Utah", soon: false },
-  { name: "Vermont", soon: false },
-  { name: "Virginia", soon: false },
-  { name: "Washington", soon: false },
-  { name: "West Virginia", soon: false },
-  { name: "Wisconsin", soon: false },
-  { name: "Wyoming", soon: false },
-];
-
-const availableCount = states.filter((s) => !s.soon).length;
-const soonCount = states.filter((s) => s.soon).length;
+import { CircleCheckBig, Clock, Info, ChevronDown } from "lucide-react";
+import {
+  useCheckStateCoverageAvailabilityQuery,
+  useGetCoverageCategoriesQuery,
+} from "@/Redux/features/common/coverageApi";
+import { useGetHeroSectionsQuery } from "@/Redux/features/common/heroSectionApi";
+import coverageImage from "@/app/coverage.png";
 
 export default function CoveragePage() {
-  const [selectedState, setSelectedState] = useState("");
-  const [checkedState, setCheckedState] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [checkedStateId, setCheckedStateId] = useState<string | null>(null);
+  const { data: heroSections } = useGetHeroSectionsQuery("Coverage");
+  const { data: categories = [] } = useGetCoverageCategoriesQuery();
+  const { data: stateCoverages = [] } = useCheckStateCoverageAvailabilityQuery(
+    selectedCategoryId ? { categoryId: selectedCategoryId } : undefined
+  );
 
   const handleCheck = () => {
-    if (selectedState) setCheckedState(selectedState);
+    if (selectedStateId) setCheckedStateId(selectedStateId);
   };
 
-  const found = checkedState
-    ? states.find((s) => s.name === checkedState)
+  const heroSection = heroSections?.[0];
+  const availableCount = stateCoverages.filter((state) => !state.isComingSoon).length;
+  const soonCount = stateCoverages.filter((state) => state.isComingSoon).length;
+  const checkedState = checkedStateId
+    ? stateCoverages.find((state) => state.id === checkedStateId)
     : null;
 
   return (
@@ -79,16 +37,32 @@ export default function CoveragePage() {
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <CommonHero
-        title="Where We Provide Care"
-        description="WeightLossMD providers are licensed to practice in your state. Care is only available in states where our providers hold an active license."
-        badge={
-          <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
-            <MapPin className="w-3.5 h-3.5 stroke-[2.5]" />
-            Licensed in 46 states
-          </span>
-        }
-      />
+      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
+        <div
+          className="relative w-full overflow-hidden bg-[#EBEEF2] px-6 md:px-12 py-[132px] flex flex-col items-center justify-center text-center"
+          style={{
+            borderRadius: "40px",
+          }}
+        >
+          <Image
+            src={coverageImage}
+            alt="Coverage background"
+            fill
+            className="z-0 rounded-[40px] object-contain object-center"
+            sizes="100vw"
+            priority
+          />
+          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-3 tracking-tight">
+              {heroSection?.title || "Where We Provide Care"}
+            </h1>
+            <p className="text-[#595959] text-[12px] md:text-[13px] leading-relaxed font-normal max-w-[560px] mx-auto">
+              {heroSection?.description ||
+                "WeightLossMD providers are licensed to practice in your state. Care is only available in states where our providers hold an active license."}
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ── CHECK AVAILABILITY ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-12 mb-8 w-full">
@@ -101,17 +75,38 @@ export default function CoveragePage() {
             {/* State dropdown */}
             <div className="w-full relative">
               <select
-                value={selectedState}
+                value={selectedCategoryId}
                 onChange={(e) => {
-                  setSelectedState(e.target.value);
-                  setCheckedState(null);
+                  setSelectedCategoryId(e.target.value);
+                  setSelectedStateId("");
+                  setCheckedStateId(null);
+                }}
+                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
+              >
+                <option value="">Select Service</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <ChevronDown className="w-4 h-4 stroke-[2]" />
+              </span>
+            </div>
+            <div className="w-full relative">
+              <select
+                value={selectedStateId}
+                onChange={(e) => {
+                  setSelectedStateId(e.target.value);
+                  setCheckedStateId(null);
                 }}
                 className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
               >
                 <option value="">Select your state</option>
-                {states.map((s) => (
-                  <option key={s.name} value={s.name}>
-                    {s.name}
+                {stateCoverages.map((state) => (
+                  <option key={state.id} value={state.id}>
+                    {state.stateName}
                   </option>
                 ))}
               </select>
@@ -121,29 +116,29 @@ export default function CoveragePage() {
             </div>
 
             {/* Result message */}
-            {checkedState && found !== undefined && (
+            {checkedState && (
               <div
                 className={`w-full rounded-[10px] px-4 py-3 text-[13px] flex items-center gap-2 ${
-                  found?.soon
+                  checkedState.isComingSoon
                     ? "bg-[#fffbeb] border border-[#fde68a] text-[#92400e]"
                     : "bg-[#f0fdf4] border border-[#bbf7d0] text-[#166534]"
                 }`}
               >
-                {found?.soon ? (
+                {checkedState.isComingSoon ? (
                   <Clock className="w-4 h-4 flex-shrink-0 text-[#f59e0b]" />
                 ) : (
                   <CircleCheckBig className="w-4 h-4 flex-shrink-0 text-[#22c55e]" />
                 )}
-                {found?.soon
-                  ? `${checkedState} is coming soon — not yet available.`
-                  : `Great news! WeightLossMD is available in ${checkedState}.`}
+                {checkedState.isComingSoon
+                  ? `${checkedState.stateName} is coming soon — not yet available.`
+                  : `Great news! WeightLossMD is available in ${checkedState.stateName}.`}
               </div>
             )}
 
             {/* Button — 46px border-radius, blue gradient */}
             <button
               onClick={handleCheck}
-              disabled={!selectedState}
+              disabled={!selectedStateId}
               className="  text-white font-semibold px-10 py-3 text-[14px] transition-opacity"
               style={{
                 borderRadius: "46px",
@@ -172,16 +167,16 @@ export default function CoveragePage() {
 
         {/* Grid */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
-          {states.map((state) => (
+          {stateCoverages.map((state) => (
             <div
-              key={state.name}
+              key={state.id}
               className={`flex flex-col items-center justify-center gap-1 rounded-[12px] py-3 px-2 border text-center ${
-                state.soon
+                state.isComingSoon
                   ? "bg-[#fffbeb] border-[#fde68a]"
                   : "bg-white border-gray-200"
               }`}
             >
-              {state.soon ? (
+              {state.isComingSoon ? (
                 <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-[#f59e0b]">
                   <Clock className="w-3 h-3 stroke-[2.5]" />
                   Soon
@@ -191,10 +186,10 @@ export default function CoveragePage() {
               )}
               <span
                 className={`text-[12.5px] font-medium leading-tight ${
-                  state.soon ? "text-[#92400e]" : "text-gray-700"
+                  state.isComingSoon ? "text-[#92400e]" : "text-gray-700"
                 }`}
               >
-                {state.name}
+                {state.stateName}
               </span>
             </div>
           ))}
