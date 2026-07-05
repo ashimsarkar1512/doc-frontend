@@ -4,7 +4,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+} from "lucide-react";
 
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
@@ -101,26 +108,30 @@ const ResetPasswordPage = () => {
                   </button>
                 </div>
                 <div className="flex flex-col items-center gap-[12px] w-full">
-                  <h2 style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "30px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "100%",
-                  }}>
+                  <h2
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "30px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "100%",
+                    }}
+                  >
                     Reset Password
                   </h2>
-                  <p style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    lineHeight: "150%",
-                  }}>
+                  <p
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      lineHeight: "150%",
+                    }}
+                  >
                     Enter your new password below
                   </p>
                 </div>
@@ -134,16 +145,18 @@ const ResetPasswordPage = () => {
                 <div className="w-full flex flex-col gap-6">
                   {/* New Password */}
                   <div className="space-y-2">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       New Password
                     </label>
                     <div className="relative">
@@ -181,16 +194,18 @@ const ResetPasswordPage = () => {
 
                   {/* Confirm Password */}
                   <div className="space-y-2">
-                    <label style={{
-                      display: "block",
-                      color: "#FFF",
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      marginBottom: "8px"
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        color: "#FFF",
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: "20px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Confirm Password
                     </label>
                     <div className="relative">
@@ -263,7 +278,11 @@ const ResetPasswordPage = () => {
                       </>
                     ) : (
                       <>
-                        Reset Password <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                        Reset Password{" "}
+                        <ArrowRight
+                          className="w-6 h-6 ml-1"
+                          strokeWidth={2.5}
+                        />
                       </>
                     )}
                   </button>
@@ -282,7 +301,7 @@ const ResetPasswordPage = () => {
                         textDecoration: "underline",
                         textUnderlineOffset: "auto",
                         textDecorationSkipInk: "auto",
-                        textDecorationThickness: "auto"
+                        textDecorationThickness: "auto",
                       }}
                     >
                       Back to Login

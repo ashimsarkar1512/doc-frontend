@@ -11,7 +11,8 @@ import QNA, { FAQItem } from "@/components/home/QNA";
 import { useGetDynamicPageDataQuery } from "@/Redux/api/dynamicPageApi";
 
 export default function PrivacyPolicyPage() {
-  const { data: pageData, isLoading } = useGetDynamicPageDataQuery("PrivacyPolicy");
+  const { data: pageData, isLoading } =
+    useGetDynamicPageDataQuery("PrivacyPolicy");
 
   const hero = pageData?.hero || { title: "Privacy Policy" };
   const content = pageData?.content || "";

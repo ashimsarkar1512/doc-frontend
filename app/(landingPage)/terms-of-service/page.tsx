@@ -25,17 +25,31 @@ export default function TermsOfServicePage() {
         }
 
         const [heroRes, contentRes, widgetRes, faqRes] = await Promise.all([
-          fetch(`${baseUrl}/hero-section?pageType=TermsOfService`).catch(() => null),
+          fetch(`${baseUrl}/hero-section?pageType=TermsOfService`).catch(
+            () => null,
+          ),
           fetch(`${baseUrl}/website-manage/terms-of-service`).catch(() => null),
-          fetch(`${baseUrl}/side-widget?pageType=TermsOfService`).catch(() => null),
-          fetch(`${baseUrl}/faq-section?pageType=TermsOfService`).catch(() => null),
+          fetch(`${baseUrl}/side-widget?pageType=TermsOfService`).catch(
+            () => null,
+          ),
+          fetch(`${baseUrl}/faq-section?pageType=TermsOfService`).catch(
+            () => null,
+          ),
         ]);
 
-        const heroData = heroRes?.ok ? await heroRes.json().catch(() => null) : null;
-        const contentData = contentRes?.ok ? await contentRes.json().catch(() => null) : null;
-        const widgetData = widgetRes?.ok ? await widgetRes.json().catch(() => null) : null;
-        const faqDataRaw = faqRes?.ok ? await faqRes.json().catch(() => null) : null;
-        
+        const heroData = heroRes?.ok
+          ? await heroRes.json().catch(() => null)
+          : null;
+        const contentData = contentRes?.ok
+          ? await contentRes.json().catch(() => null)
+          : null;
+        const widgetData = widgetRes?.ok
+          ? await widgetRes.json().catch(() => null)
+          : null;
+        const faqDataRaw = faqRes?.ok
+          ? await faqRes.json().catch(() => null)
+          : null;
+
         let faqList: FAQItem[] | undefined = undefined;
         if (faqDataRaw?.data && Array.isArray(faqDataRaw.data)) {
           faqList = faqDataRaw.data.map((item: any) => ({
@@ -84,7 +98,6 @@ export default function TermsOfServicePage() {
       {/* ── CONTENT ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-14 pb-24 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-
           {/* LEFT: Main Content */}
           <div className="lg:col-span-2">
             <RichTextRenderer content={content} />
@@ -103,7 +116,8 @@ export default function TermsOfServicePage() {
                     className="font-black tracking-[0.14em] uppercase"
                     style={{
                       fontSize: "clamp(72px, 10vw, 104px)",
-                      background: "linear-gradient(180deg, #a8c0e8 60%, rgba(168,192,232,0) 100%)",
+                      background:
+                        "linear-gradient(180deg, #a8c0e8 60%, rgba(168,192,232,0) 100%)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",

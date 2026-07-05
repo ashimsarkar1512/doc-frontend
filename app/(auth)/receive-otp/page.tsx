@@ -37,7 +37,6 @@ const ReceiveOtpPage = () => {
 
   // console.log(otpPending)
 
-
   const [selectedMethod, setSelectedMethod] = useState<"EMAIL" | "PHONE">(
     "EMAIL",
   );
@@ -114,26 +113,30 @@ const ReceiveOtpPage = () => {
                   </button>
                 </div>
                 <div className="flex flex-col items-center gap-[12px] w-full">
-                  <h2 style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "30px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "100%",
-                  }}>
+                  <h2
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "30px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "100%",
+                    }}
+                  >
                     Receive OTP Code
                   </h2>
-                  <p style={{
-                    color: "#FFF",
-                    textAlign: "center",
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    lineHeight: "150%",
-                  }}>
+                  <p
+                    style={{
+                      color: "#FFF",
+                      textAlign: "center",
+                      fontFamily: "Quicksand, sans-serif",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      lineHeight: "150%",
+                    }}
+                  >
                     Choose how you want to receive the verification code
                   </p>
                 </div>
@@ -146,16 +149,18 @@ const ReceiveOtpPage = () => {
                 <div className="w-full flex flex-col gap-6">
                   {/* Email Option */}
                   <label
-                    className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${selectedMethod === "EMAIL"
+                    className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${
+                      selectedMethod === "EMAIL"
                         ? "bg-white/20 border-white/40 shadow-lg"
                         : "bg-white/10 border-white/10 hover:bg-white/15"
-                      }`}
+                    }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${selectedMethod === "EMAIL"
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                        selectedMethod === "EMAIL"
                           ? "border-[#2563eb] bg-white"
                           : "border-white/50 bg-white/20"
-                        }`}
+                      }`}
                     >
                       {selectedMethod === "EMAIL" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
@@ -183,16 +188,18 @@ const ReceiveOtpPage = () => {
                   {/* Phone Option */}
                   {otpPending?.phone && (
                     <label
-                      className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${selectedMethod === "PHONE"
+                      className={`flex items-center gap-3 p-4 sm:p-5 rounded-[14px] border transition-all duration-200 cursor-pointer ${
+                        selectedMethod === "PHONE"
                           ? "bg-white/20 border-white/40 shadow-lg"
                           : "bg-white/10 border-white/10 hover:bg-white/15"
-                        }`}
+                      }`}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${selectedMethod === "PHONE"
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                          selectedMethod === "PHONE"
                             ? "border-[#2563eb] bg-white"
                             : "border-white/50 bg-white/20"
-                          }`}
+                        }`}
                       >
                         {selectedMethod === "PHONE" && (
                           <div className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
@@ -208,7 +215,9 @@ const ReceiveOtpPage = () => {
                       />
 
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[15px] text-white/90">Phone:</span>
+                        <span className="text-[15px] text-white/90">
+                          Phone:
+                        </span>
                         <span className="text-[15px] text-white/90">
                           {maskPhone(otpPending.phone)}
                         </span>
@@ -246,7 +255,11 @@ const ReceiveOtpPage = () => {
                       </>
                     ) : (
                       <>
-                        Send Code <ArrowRight className="w-6 h-6 ml-1" strokeWidth={2.5} />
+                        Send Code{" "}
+                        <ArrowRight
+                          className="w-6 h-6 ml-1"
+                          strokeWidth={2.5}
+                        />
                       </>
                     )}
                   </button>

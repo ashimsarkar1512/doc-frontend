@@ -24,12 +24,18 @@ import DashboardStatsCards from "@/components/Dashboard/doctor/DashboardStatsCar
 import DoctorNotificationWrapper from "@/components/Dashboard/doctor/DoctorNotificationWrapper";
 import DoctorWelcomeData from "@/components/Dashboard/doctor/DashboardStatsCards/DoctorWelcomeData";
 
+type SearchParams = Promise<{
+  consultationId?: string;
+  view?: string;
+  chatId?: string;
+  domain?: string;
+}>;
 
-
-type SearchParams = Promise<{ consultationId?: string; view?: string; chatId?: string; domain?: string }>;
-
-export default async function DoctorDashboard({ searchParams }: { searchParams: SearchParams }) {
-
+export default async function DoctorDashboard({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const params = await searchParams;
   const consultationId = params.consultationId;
   const view = params.view || params.domain;
@@ -37,8 +43,6 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
   const isMessages = view === "messages";
   const isNotifications = view === "notifications";
   const isSettings = view === "settings";
-
-
 
   const getContent = () => {
     // if (consultationId) return <ConsultationDetails id={consultationId} />;
@@ -54,21 +58,29 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
   return (
     <div className="h-full flex flex-col [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
-      <main className={`flex-1 max-w-[1520px] w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}>
+      <main
+        className={`flex-1 max-w-[1520px] w-full mx-auto px-4 md:px-8 font-sans py-8 pt-8`}
+      >
         {/* Action Buttons at the Top */}
         <div className="flex flex-wrap items-center gap-[16px] justify-center sm:justify-start mb-[24px]">
           <Link href="/doctor">
-            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+            <span
+              className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${!view && !consultationId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}
+            >
               <Home className="w-[24px] h-[24px]" />
             </span>
           </Link>
           <Link href="/doctor?view=messages">
-            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+            <span
+              className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isMessages || chatId ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}
+            >
               <MessageSquare className="w-[24px] h-[24px]" />
             </span>
           </Link>
           <Link href="/doctor?view=settings">
-            <span className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isSettings ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}>
+            <span
+              className={`w-11 h-11 rounded-[14px] flex items-center justify-center active:scale-95 transition-all duration-150 ${isSettings ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/10 hover:bg-[#1d4ed8]" : "bg-[#eff6ff] text-[#2563eb] hover:bg-[#dbeafe]"}`}
+            >
               <Settings className="w-[24px] h-[24px]" />
             </span>
           </Link>
@@ -87,10 +99,14 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
 
         {isMessages ? (
           <div className="w-full flex lg:gap-8 min-h-[750px] ">
-            <div className={`flex-shrink-0 sticky top-10 w-full lg:w-auto ${chatId ? 'hidden lg:block' : 'block'}`}>
+            <div
+              className={`flex-shrink-0 sticky top-10 w-full lg:w-auto ${chatId ? "hidden lg:block" : "block"}`}
+            >
               <MessagesPanel />
             </div>
-            <div className={`flex-1 min-w-0 w-full ${!chatId ? 'hidden lg:block' : 'block'}`}>
+            <div
+              className={`flex-1 min-w-0 w-full ${!chatId ? "hidden lg:block" : "block"}`}
+            >
               {chatId ? (
                 <ChatView chatId={chatId} />
               ) : (
@@ -106,7 +122,6 @@ export default async function DoctorDashboard({ searchParams }: { searchParams: 
           getContent()
         )}
       </main>
-
     </div>
   );
 }

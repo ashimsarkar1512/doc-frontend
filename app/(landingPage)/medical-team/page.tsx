@@ -11,9 +11,12 @@ import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroS
 import { useGetMedicalTeamSectionQuery } from "@/Redux/features/medicalTeam/medicalTeamApi";
 
 export default function MedicalTeamPage() {
-  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("MedicalTeam");
-  const { data: teamSectionData, isLoading: isTeamSectionLoading } = useGetMedicalTeamSectionQuery();
-  const { data: ctaData, isLoading: isCtaLoading } = useGetCtaSectionByPageQuery("MedicalTeam");
+  const { data: heroData, isLoading: isHeroLoading } =
+    useGetHeroSectionByPageQuery("MedicalTeam");
+  const { data: teamSectionData, isLoading: isTeamSectionLoading } =
+    useGetMedicalTeamSectionQuery();
+  const { data: ctaData, isLoading: isCtaLoading } =
+    useGetCtaSectionByPageQuery("MedicalTeam");
   const providerNetwork = [
     {
       name: "Jeffrey Richker MD",
@@ -140,7 +143,9 @@ export default function MedicalTeamPage() {
 
           <div className="flex items-start gap-2.5">
             <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-            <span className="leading-tight">Prescription-required medications only</span>
+            <span className="leading-tight">
+              Prescription-required medications only
+            </span>
           </div>
 
           <div className="flex items-start gap-2.5">
@@ -371,7 +376,8 @@ export default function MedicalTeamPage() {
               <button
                 onClick={() =>
                   window.open(
-                    ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    ctaData?.url ||
+                      "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                     ctaData?.openInNewTab ? "_blank" : "_self",
                   )
                 }
