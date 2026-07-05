@@ -1,15 +1,15 @@
 "use client";
 
 import React from 'react';
-import { CreditCard, Stethoscope, Package, RefreshCw, Shield } from 'lucide-react';
+import Image from 'next/image';
 import { useGetBillingCancellationQuery } from '@/Redux/features/billing/billingApi';
 
 // Icon mapping by index (cycles if more than 4 steps)
 const STEP_ICONS = [
-  <CreditCard key="card" className="w-7 h-7 text-[#C9A84C]" />,
-  <Stethoscope key="steth" className="w-7 h-7 text-[#C9A84C]" />,
-  <Package key="pkg" className="w-7 h-7 text-[#8B9BAD]" />,
-  <RefreshCw key="refresh" className="w-7 h-7 text-[#6B8CAE]" />,
+  <Image key="card" src="/card.png" alt="Card" width={32} height={32} className="object-contain" />,
+  <Image key="docp" src="/docp.png" alt="Provider" width={32} height={32} className="object-contain" />,
+  <Image key="calendar" src="/calendar.png" alt="Calendar" width={32} height={32} className="object-contain" />,
+  <Image key="refresh" src="/refresh.png" alt="Refresh" width={32} height={32} className="object-contain" />,
 ];
 
 const BillingTimeline = () => {
@@ -42,15 +42,15 @@ const BillingTimeline = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center gap-3 px-6 py-8 bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] text-center"
+              className="flex flex-col items-center justify-center gap-[20px] p-[24px] bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] text-center min-h-[179px]"
             >
               {/* Icon */}
-              <div className="mb-1">
+              <div>
                 {STEP_ICONS[index % STEP_ICONS.length]}
               </div>
               {/* Day label */}
               <p
-                className="text-[#272628] font-bold text-[22px]"
+                className="text-[#0D2137] font-bold text-[22px]"
                 style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '27px' }}
               >
                 {step.step}
@@ -69,7 +69,7 @@ const BillingTimeline = () => {
 
       {/* Disclaimer box */}
       {(disclaimerTitle || disclaimerDescription) && (
-        <div className="bg-[#F1F5F9] rounded-[16px] px-[24px] py-[20px] mt-2 mb-10 w-full border border-[#E2E8F0]">
+        <div className="bg-[#F1F5F9] rounded-[16px] p-[20px] mt-[40px] mb-10 w-full border border-[#E2E8F0]">
           {disclaimerTitle && (
             <p
               className="text-[#272628] font-bold text-[20px] mb-2"

@@ -100,6 +100,7 @@ export default function AssessmentSteps() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const otpPending = useAppSelector((state) => state.auth.otpPending);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
@@ -124,19 +125,19 @@ export default function AssessmentSteps() {
     otpPending?.email || (registerMode ? registerEmail : loginEmail);
   const maskedEmail = activeEmail
     ? activeEmail.replace(
-        /^(.{2})(.+?)(@.+)$/,
-        (_: string, a: string, b: string, c: string) =>
-          a + "*".repeat(Math.min(b.length, 6)) + c,
-      )
+      /^(.{2})(.+?)(@.+)$/,
+      (_: string, a: string, b: string, c: string) =>
+        a + "*".repeat(Math.min(b.length, 6)) + c,
+    )
     : "ex******@email.com";
 
   // mask phone: show first 3 and last 2 digits, rest as *
   const activePhone = otpPending?.phone || registerPhone;
   const maskedPhone = activePhone
     ? activePhone.replace(
-        /(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/,
-        (_, start, mid, end) => start + "*".repeat(mid.length) + end,
-      )
+      /(\+?\d{1,4}[\s-]?\d{1,3})(\d+)(\d{2})$/,
+      (_, start, mid, end) => start + "*".repeat(mid.length) + end,
+    )
     : "+***********";
 
   // ── Auth API handlers ─────────────────────────────────────────────────────
@@ -171,12 +172,17 @@ export default function AssessmentSteps() {
         );
         toast.success("Login successful");
         setLoginMode(false);
-        setShippingMode(true);
+        try {
+          await submitAssessmentAnswers();
+          setCurrentStep(COMPLETION_STEP);
+        } catch (err) {
+          // Error handled in submitAssessmentAnswers
+        }
       }
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Login failed.",
+        "Login failed.",
       );
     }
   };
@@ -209,7 +215,7 @@ export default function AssessmentSteps() {
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Registration failed.",
+        "Registration failed.",
       );
     }
   };
@@ -236,7 +242,7 @@ export default function AssessmentSteps() {
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Failed to send OTP.",
+        "Failed to send OTP.",
       );
     }
   };
@@ -266,7 +272,7 @@ export default function AssessmentSteps() {
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Invalid OTP.",
+        "Invalid OTP.",
       );
     }
   };
@@ -312,7 +318,7 @@ export default function AssessmentSteps() {
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Failed to resend OTP.",
+        "Failed to resend OTP.",
       );
     }
   };
@@ -419,7 +425,7 @@ export default function AssessmentSteps() {
     } catch (err: unknown) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          "Assessment submission failed.",
+        "Assessment submission failed.",
       );
       throw err;
     }
@@ -459,7 +465,16 @@ export default function AssessmentSteps() {
   };
 
   // ── Navigation ────────────────────────────────────────────────────────────
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (currentStep === AUTH_STEP - 1 && isAuthenticated) {
+      try {
+        await submitAssessmentAnswers();
+        setCurrentStep(COMPLETION_STEP);
+      } catch (err) {
+        // Error handled in submitAssessmentAnswers
+      }
+      return;
+    }
     if (currentStep < TOTAL_STEPS) setCurrentStep((prev) => prev + 1);
   };
 
@@ -548,40 +563,40 @@ export default function AssessmentSteps() {
               !otpVerifyMode &&
               !shippingMode && (
                 <AuthChoiceForm authChoice={authChoice} setAuthChoice={setAuthChoice} />
-            )}
-            
+              )}
+
             {loginMode && !otpMode && !otpVerifyMode && (
-              <LoginForm 
-                loginEmail={loginEmail} setLoginEmail={setLoginEmail} 
-                loginPassword={loginPassword} setLoginPassword={setLoginPassword} 
-                showLoginPassword={showLoginPassword} setShowLoginPassword={setShowLoginPassword} 
+              <LoginForm
+                loginEmail={loginEmail} setLoginEmail={setLoginEmail}
+                loginPassword={loginPassword} setLoginPassword={setLoginPassword}
+                showLoginPassword={showLoginPassword} setShowLoginPassword={setShowLoginPassword}
               />
             )}
 
             {registerMode && !otpMode && !otpVerifyMode && !shippingMode && (
-              <RegisterForm 
-                registerEmail={registerEmail} setRegisterEmail={setRegisterEmail} 
-                registerPhone={registerPhone} setRegisterPhone={setRegisterPhone} 
-                registerPassword={registerPassword} setRegisterPassword={setRegisterPassword} 
-                registerConfirm={registerConfirm} setRegisterConfirm={setRegisterConfirm} 
-                showRegisterPassword={showRegisterPassword} setShowRegisterPassword={setShowRegisterPassword} 
-                showRegisterConfirm={showRegisterConfirm} setShowRegisterConfirm={setShowRegisterConfirm} 
+              <RegisterForm
+                registerEmail={registerEmail} setRegisterEmail={setRegisterEmail}
+                registerPhone={registerPhone} setRegisterPhone={setRegisterPhone}
+                registerPassword={registerPassword} setRegisterPassword={setRegisterPassword}
+                registerConfirm={registerConfirm} setRegisterConfirm={setRegisterConfirm}
+                showRegisterPassword={showRegisterPassword} setShowRegisterPassword={setShowRegisterPassword}
+                showRegisterConfirm={showRegisterConfirm} setShowRegisterConfirm={setShowRegisterConfirm}
               />
             )}
 
             {otpMode && !otpVerifyMode && (
-              <OtpChannelPicker 
-                otpChannel={otpChannel} setOtpChannel={setOtpChannel} 
-                maskedEmail={maskedEmail} maskedPhone={maskedPhone} activePhone={activePhone} 
+              <OtpChannelPicker
+                otpChannel={otpChannel} setOtpChannel={setOtpChannel}
+                maskedEmail={maskedEmail} maskedPhone={maskedPhone} activePhone={activePhone}
               />
             )}
 
             {otpVerifyMode && !shippingMode && (
-              <OtpVerifyForm 
-                otpDigits={otpDigits} handleOtpChange={handleOtpChange} 
-                handleOtpKeyDown={handleOtpKeyDown} handleOtpPaste={handleOtpPaste} 
-                maskedEmail={maskedEmail} handleResendOtp={handleResendOtp} 
-                isResending={isResending} otpRefs={otpRefs} 
+              <OtpVerifyForm
+                otpDigits={otpDigits} handleOtpChange={handleOtpChange}
+                handleOtpKeyDown={handleOtpKeyDown} handleOtpPaste={handleOtpPaste}
+                maskedEmail={maskedEmail} handleResendOtp={handleResendOtp}
+                isResending={isResending} otpRefs={otpRefs}
               />
             )}
 
@@ -623,8 +638,8 @@ export default function AssessmentSteps() {
                   )
                 }
                 className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
-                        style={{ fontFamily: "Quicksand, sans-serif" }}
-                      >
+                style={{ fontFamily: "Quicksand, sans-serif" }}
+              >
                 Browse products
               </button>
             </>
@@ -642,8 +657,14 @@ export default function AssessmentSteps() {
                     setOtpDigits(["", "", "", "", "", ""]);
                   } else if (shippingMode) {
                     setShippingMode(false);
-                    setOtpVerifyMode(true);
-                    setOtpDigits(["", "", "", "", "", ""]);
+                    if (isAuthenticated && !authChoice) {
+                      setCurrentStep(currentStep - 1);
+                    } else if (authChoice === "Yes, I already have an account") {
+                      setLoginMode(true);
+                    } else {
+                      setOtpVerifyMode(true);
+                      setOtpDigits(["", "", "", "", "", ""]);
+                    }
                   } else if (otpMode) {
                     setOtpMode(false);
                     setOtpChannel("");
@@ -696,16 +717,15 @@ export default function AssessmentSteps() {
                       toast.error(
                         (err as { data?: { message?: string } })?.data
                           ?.message ??
-                          "Failed to save address or submit assessment.",
+                        "Failed to save address or submit assessment.",
                       );
                     }
                   }}
                   disabled={isSavingAddress || isSubmitting}
-                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                    isSavingAddress || isSubmitting
-                      ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                  }`}
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${isSavingAddress || isSubmitting
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                    }`}
                   style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isSavingAddress || isSubmitting
@@ -722,13 +742,12 @@ export default function AssessmentSteps() {
                     isVerifyingOtp ||
                     isSubmitting
                   }
-                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                    otpDigits.some((d) => d === "") ||
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${otpDigits.some((d) => d === "") ||
                     isVerifyingOtp ||
                     isSubmitting
-                      ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                  }`}
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                    }`}
                   style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isVerifyingOtp || isSubmitting
@@ -741,11 +760,10 @@ export default function AssessmentSteps() {
                 <button
                   onClick={handleSendOtp}
                   disabled={!otpChannel || isSendingOtp}
-                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                    !otpChannel || isSendingOtp
-                      ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                  }`}
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${!otpChannel || isSendingOtp
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                    }`}
                   style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isSendingOtp ? "Sending…" : "Send code"}
@@ -760,13 +778,12 @@ export default function AssessmentSteps() {
                     !loginPassword.trim() ||
                     isLoginLoading
                   }
-                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                    !loginEmail.trim() ||
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${!loginEmail.trim() ||
                     !loginPassword.trim() ||
                     isLoginLoading
-                      ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                  }`}
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                    }`}
                   style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isLoginLoading ? "Signing in…" : "Login account"}
@@ -788,8 +805,7 @@ export default function AssessmentSteps() {
                     !/[\W_]/.test(registerPassword) ||
                     isRegisterLoading
                   }
-                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                    !registerEmail.trim() ||
+                  className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${!registerEmail.trim() ||
                     !registerPhone.trim() ||
                     !registerPassword.trim() ||
                     !registerConfirm.trim() ||
@@ -799,9 +815,9 @@ export default function AssessmentSteps() {
                     !/[a-z]/.test(registerPassword) ||
                     !/[\W_]/.test(registerPassword) ||
                     isRegisterLoading
-                      ? "bg-blue-300 text-white cursor-not-allowed"
-                      : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                  }`}
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                    }`}
                   style={{ fontFamily: "Quicksand, sans-serif" }}
                 >
                   {isRegisterLoading ? "Creating account…" : "Create account"}
@@ -825,14 +841,14 @@ export default function AssessmentSteps() {
                     )}
                     {authChoice ===
                       "No, I don't have an account. Create one." && (
-                      <button
-                        onClick={() => setRegisterMode(true)}
-                        className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
-                        style={{ fontFamily: "Quicksand, sans-serif" }}
-                      >
-                        Create account
-                      </button>
-                    )}
+                        <button
+                          onClick={() => setRegisterMode(true)}
+                          className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#1D4ED8] hover:bg-blue-700 text-white text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm"
+                          style={{ fontFamily: "Quicksand, sans-serif" }}
+                        >
+                          Create account
+                        </button>
+                      )}
                     {!authChoice && (
                       <button
                         disabled
@@ -859,15 +875,14 @@ export default function AssessmentSteps() {
               </button>
               <button
                 onClick={handleNext}
-                disabled={isNextDisabled()}
-                className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${
-                  isNextDisabled()
-                    ? "bg-blue-300 text-white cursor-not-allowed"
-                    : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
-                }`}
-                  style={{ fontFamily: "Quicksand, sans-serif" }}
-                >
-                Next
+                disabled={isNextDisabled() || isSubmitting}
+                className={`flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] text-[20px] font-semibold leading-[150%] transition-all duration-200 shadow-sm ${isNextDisabled() || isSubmitting
+                  ? "bg-blue-300 text-white cursor-not-allowed"
+                  : "bg-[#1D4ED8] hover:bg-blue-700 text-white"
+                  }`}
+                style={{ fontFamily: "Quicksand, sans-serif" }}
+              >
+                {isSubmitting && currentStep === AUTH_STEP - 1 && isAuthenticated ? "Submitting..." : "Next"}
               </button>
             </>
           )}

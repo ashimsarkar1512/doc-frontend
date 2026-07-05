@@ -345,14 +345,35 @@ export function RenderQuestion({
           <div className={title || question.description ? "mt-3" : ""}>
             <input
               type="text"
+              inputMode={
+                title?.toLowerCase().includes("age") ||
+                title?.toLowerCase().includes("weight") ||
+                title?.toLowerCase().includes("height")
+                  ? "numeric"
+                  : "text"
+              }
               placeholder="Write here..."
               value={answers.text[question.id] ?? ""}
-              onChange={(e) =>
+              onChange={(e) => {
+                let val = e.target.value;
+                const titleLower = title?.toLowerCase() || "";
+                const isNum =
+                  titleLower.includes("age") ||
+                  titleLower.includes("weight") ||
+                  titleLower.includes("height");
+                const isHeight = titleLower.includes("height");
+                if (isNum) {
+                  if (isHeight) {
+                    val = val.replace(/[^0-9.'"\s]/g, "");
+                  } else {
+                    val = val.replace(/[^0-9.]/g, "");
+                  }
+                }
                 setAnswers((prev) => ({
                   ...prev,
-                  text: { ...prev.text, [question.id]: e.target.value },
-                }))
-              }
+                  text: { ...prev.text, [question.id]: val },
+                }));
+              }}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-150"
             />
           </div>
@@ -375,7 +396,19 @@ export function RenderQuestion({
                 );
               }
 
-              const isNumber = option.inputType === "number";
+              const labelLower = option.label?.toLowerCase() || "";
+              const isHeight =
+                labelLower.includes("height") ||
+                labelLower.includes("feet") ||
+                labelLower.includes("inch");
+              const isNumber =
+                option.inputType?.toLowerCase() === "number" ||
+                labelLower.includes("age") ||
+                labelLower.includes("weight") ||
+                labelLower.includes("lbs") ||
+                labelLower.includes("years") ||
+                isHeight;
+
               return (
                 <div key={option.id}>
                   {option.label?.trim() && (
@@ -384,18 +417,27 @@ export function RenderQuestion({
                     </label>
                   )}
                   <input
-                    type={isNumber ? "number" : "text"}
+                    type="text"
+                    inputMode={isNumber ? (isHeight ? "text" : "numeric") : "text"}
                     placeholder={
                       option.placeholder?.trim() ||
                       (isNumber ? "Enter a number..." : "Write here...")
                     }
                     value={answers.text[option.id] ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      if (isNumber) {
+                        if (isHeight) {
+                          val = val.replace(/[^0-9.'"\s]/g, "");
+                        } else {
+                          val = val.replace(/[^0-9.]/g, "");
+                        }
+                      }
                       setAnswers((prev) => ({
                         ...prev,
-                        text: { ...prev.text, [option.id]: e.target.value },
-                      }))
-                    }
+                        text: { ...prev.text, [option.id]: val },
+                      }));
+                    }}
                     className="w-full px-4 py-3.5 rounded-xl border-none bg-[#E5E7EB] text-gray-800 placeholder-gray-400 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150"
                   />
                 </div>
