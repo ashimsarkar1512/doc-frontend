@@ -23,7 +23,7 @@ const BillingAndCancellationPage = () => {
       <CommonHero
         title="Membership, Billing & Cancellation"
         description="Transparent pricing with no hidden fees. Cancel anytime."
-        watermarkImage="/Shipping.png"
+        watermarkImage="/billing.png"
       />
 
       <div className="max-w-[1520px] mx-auto w-full flex flex-col items-center">
