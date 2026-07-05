@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import CommonHero from "@/components/shared/CommonHero";
 import Navbar from "@/components/shared/Navbar";
 import { CircleCheckBig, Clock, Info, ChevronDown } from "lucide-react";
 import {
@@ -14,55 +15,71 @@ import coverageImage from "@/app/coverage.png";
 export default function CoveragePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedStateId, setSelectedStateId] = useState("");
-  const [checkedStateId, setCheckedStateId] = useState<string | null>(null);
+  const [appliedCategoryId, setAppliedCategoryId] = useState("");
+  const [appliedStateId, setAppliedStateId] = useState("");
   const { data: heroSections } = useGetHeroSectionsQuery("Coverage");
   const { data: categories = [] } = useGetCoverageCategoriesQuery();
-  const { data: stateCoverages = [] } = useCheckStateCoverageAvailabilityQuery(
-    selectedCategoryId ? { categoryId: selectedCategoryId } : undefined
-  );
+  const { data: allStateCoverages = [] } = useCheckStateCoverageAvailabilityQuery();
+  const hasAppliedFilters = Boolean(appliedCategoryId || appliedStateId);
+  const { data: filteredStateCoverages = [], isFetching: isCheckingAvailability } =
+    useCheckStateCoverageAvailabilityQuery(
+      {
+        ...(appliedCategoryId ? { categoryId: appliedCategoryId } : {}),
+        ...(appliedStateId ? { stateId: appliedStateId } : {}),
+      },
+      { skip: !hasAppliedFilters }
+    );
+
+  const stateCoverages = hasAppliedFilters ? filteredStateCoverages : allStateCoverages;
+  const stateOptions = selectedCategoryId
+    ? allStateCoverages.filter((state) => {
+        const restrictedCategoryIds = state.restrictedCategories.map((category) => category.id);
+        return !restrictedCategoryIds.includes(selectedCategoryId);
+      })
+    : allStateCoverages;
 
   const handleCheck = () => {
-    if (selectedStateId) setCheckedStateId(selectedStateId);
+    setAppliedCategoryId(selectedCategoryId);
+    setAppliedStateId(selectedStateId);
   };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategoryId(value);
+    setSelectedStateId((currentStateId) => {
+      if (!currentStateId) return currentStateId;
+
+      const matchingState = allStateCoverages.find((state) => state.id === currentStateId);
+      if (!matchingState) return "";
+
+      const restrictedCategoryIds = matchingState.restrictedCategories.map(
+        (category) => category.id
+      );
+
+      return value && restrictedCategoryIds.includes(value) ? "" : currentStateId;
+    });
+  };
+
+  const checkedState = appliedStateId
+    ? stateCoverages.find((state) => state.id === appliedStateId) ?? null
+    : null;
 
   const heroSection = heroSections?.[0];
   const availableCount = stateCoverages.filter((state) => !state.isComingSoon).length;
   const soonCount = stateCoverages.filter((state) => state.isComingSoon).length;
-  const checkedState = checkedStateId
-    ? stateCoverages.find((state) => state.id === checkedStateId)
-    : null;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
-        <div
-          className="relative w-full overflow-hidden bg-[#EBEEF2] px-6 md:px-12 py-[132px] flex flex-col items-center justify-center text-center"
-          style={{
-            borderRadius: "40px",
-          }}
-        >
-          <Image
-            src={coverageImage}
-            alt="Coverage background"
-            fill
-            className="z-0 rounded-[40px] object-contain object-center"
-            sizes="100vw"
-            priority
-          />
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-[#1f1f1f] leading-[1.15] mb-3 tracking-tight">
-              {heroSection?.title || "Where We Provide Care"}
-            </h1>
-            <p className="text-[#595959] text-[12px] md:text-[13px] leading-relaxed font-normal max-w-[560px] mx-auto">
-              {heroSection?.description ||
-                "WeightLossMD providers are licensed to practice in your state. Care is only available in states where our providers hold an active license."}
-            </p>
-          </div>
-        </div>
-      </section>
+      <CommonHero
+        title={heroSection?.title || "Where We Provide Care"}
+        description={
+          heroSection?.description ||
+          "WeightLossMD providers are licensed to practice in your state. Care is only available in states where our providers hold an active license."
+        }
+        watermarkImage={coverageImage}
+      />
 
       {/* ── CHECK AVAILABILITY ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-12 mb-8 w-full">
@@ -77,9 +94,7 @@ export default function CoveragePage() {
               <select
                 value={selectedCategoryId}
                 onChange={(e) => {
-                  setSelectedCategoryId(e.target.value);
-                  setSelectedStateId("");
-                  setCheckedStateId(null);
+                  handleCategoryChange(e.target.value);
                 }}
                 className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
               >
@@ -99,12 +114,11 @@ export default function CoveragePage() {
                 value={selectedStateId}
                 onChange={(e) => {
                   setSelectedStateId(e.target.value);
-                  setCheckedStateId(null);
                 }}
                 className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
               >
                 <option value="">Select your state</option>
-                {stateCoverages.map((state) => (
+                {stateOptions.map((state) => (
                   <option key={state.id} value={state.id}>
                     {state.stateName}
                   </option>
@@ -135,17 +149,24 @@ export default function CoveragePage() {
               </div>
             )}
 
+            {hasAppliedFilters && !checkedState && !isCheckingAvailability && stateCoverages.length > 0 && (
+              <div className="w-full rounded-[10px] border border-[#dbeafe] bg-[#eff6ff] px-4 py-3 text-[13px] text-[#1d4ed8]">
+                Showing {stateCoverages.length} matching state
+                {stateCoverages.length > 1 ? "s" : ""} for your selected filters.
+              </div>
+            )}
+
             {/* Button — 46px border-radius, blue gradient */}
             <button
               onClick={handleCheck}
-              disabled={!selectedStateId}
-              className="  text-white font-semibold px-10 py-3 text-[14px] transition-opacity"
+              disabled={!selectedCategoryId && !selectedStateId}
+              className="text-white font-semibold px-10 py-3 text-[14px] transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 borderRadius: "46px",
                 background: "#1D4ED8",
               }}
             >
-              Check Availability
+              {isCheckingAvailability ? "Checking..." : "Check Availability"}
             </button>
           </div>
         </div>

@@ -1,17 +1,23 @@
 import React from 'react';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 
 interface CommonHeroProps {
   title: string | React.ReactNode;
   description?: string | React.ReactNode;
-  watermarkImage?: string;
+  watermarkImage?: string | StaticImageData;
   children?: React.ReactNode;
   badge?: React.ReactNode;
 }
 
-const CommonHero: React.FC<CommonHeroProps> = ({ title, description, watermarkImage = "/aboutWatermark.png", children, badge }) => {
+const CommonHero: React.FC<CommonHeroProps> = ({
+  title,
+  description,
+  watermarkImage = "/aboutWatermark.png",
+  children,
+  badge,
+}) => {
   return (
-    <div className="w-full px-4 md:px-6  pb-20 flex justify-center">
+    <div className="w-full px-4 md:px-6  pb-6 md:pb-12 lg:pb-20 flex justify-center">
       <div className="max-w-[1520px] mx-auto mt-35 w-full relative rounded-[2.5rem] overflow-hidden bg-[#F2F4F7] py-16 md:py-28 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[300px] md:min-h-[400px]">
         {/* Watermark - PNG Image */}
         {watermarkImage && (
@@ -19,7 +25,7 @@ const CommonHero: React.FC<CommonHeroProps> = ({ title, description, watermarkIm
             <div className="relative w-full h-full flex items-center justify-center">
               <Image
                 src={watermarkImage}
-                alt={`Hero watermark`}
+                alt="Hero watermark"
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
@@ -30,7 +36,7 @@ const CommonHero: React.FC<CommonHeroProps> = ({ title, description, watermarkIm
         )}
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto mt-4 md:mt-8">
+        <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col items-center justify-center">
           {badge && <div className="flex justify-center mb-6">{badge}</div>}
           <h1 className="text-[42px] md:text-[62px] lg:text-[76px] font-bold text-[#2A2B2C] leading-[1.1] tracking-tight mb-5 ">
             {title}

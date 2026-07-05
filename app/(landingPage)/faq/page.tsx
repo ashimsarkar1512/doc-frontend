@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import CommonHero from "@/components/shared/CommonHero";
 import Navbar from "@/components/shared/Navbar";
 import { Search } from "lucide-react";
 import { useGetFaqByPageTypeQuery } from "@/Redux/features/common/faqApi";
@@ -52,47 +53,29 @@ export default function FaqPage() {
       <Navbar variant="dark" />
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 md:pt-28 px-4 sm:px-6 max-w-[1200px] mx-auto w-full">
-        <div
-          className="relative w-full overflow-hidden py-14 md:py-16 px-6 md:px-12 flex flex-col items-center justify-center text-center"
-          style={{
-            borderRadius: "40px",
-          }}
-        >
-          <Image
-            src={faqImage}
-            alt="FAQ background"
-            fill
-            className="object-cover"
-            priority
+      <CommonHero
+        title={faqSection?.sectionTitle || "Frequently Asked Questions"}
+        description={
+          faqSection?.pageType
+            ? `Find answers to common questions for ${faqSection.pageType}.`
+            : "Find answers to common questions about our programs, medications, and process."
+        }
+        watermarkImage={faqImage}
+      >
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 stroke-[2]" />
+          <input
+            type="text"
+            placeholder="Search questions..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setOpenIndex(null);
+            }}
+            className="w-full bg-white border-0 rounded-[10px] pl-9 pr-4 py-2.5 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm"
           />
-          <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-5">
-            <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-[#1f1f1f] leading-[1.15] tracking-tight">
-              {faqSection?.sectionTitle || "Frequently Asked Questions"}
-            </h1>
-            <p className="text-[#595959] text-[14px] leading-relaxed font-normal max-w-xl mx-auto">
-              {faqSection?.pageType
-                ? `Find answers to common questions for ${faqSection.pageType}.`
-                : "Find answers to common questions about our programs, medications, and process."}
-            </p>
-
-            {/* Search input inside hero */}
-            <div className="relative w-full max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 stroke-[2]" />
-              <input
-                type="text"
-                placeholder="Search questions..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setOpenIndex(null);
-                }}
-                className="w-full bg-white border-0 rounded-[10px] pl-9 pr-4 py-2.5 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm"
-              />
-            </div>
-          </div>
         </div>
-      </section>
+      </CommonHero>
 
       {/* ── CATEGORY PILLS ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-10 mb-6 w-full">
@@ -132,9 +115,7 @@ export default function FaqPage() {
               style={{ background: "#f5f6f8" }}
             >
               <button
-                onClick={() =>
-                  setOpenIndex(openIndex === index ? null : index)
-                }
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
                 <span className="text-[15px] font-medium text-gray-800 pr-4">
