@@ -16,7 +16,7 @@ const CancellationProcess = () => {
   const refundNotEligibleConditions = data?.refundNotEligibleConditions ?? [];
 
   return (
-    <section className="w-full max-w-[1520px] mx-auto px-4 mt-16 flex flex-col items-center">
+    <section className="w-full max-w-[1520px] mx-auto  mt-16 flex flex-col items-center">
 
       {/* ── Heading ── */}
       <h2
@@ -42,22 +42,22 @@ const CancellationProcess = () => {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 w-full mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-[20px] w-full mb-12">
           {cancelSteps.map((step, index) => (
             <div
               key={index}
-              className="flex flex-col items-center text-center gap-3 px-4 py-6 bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px]"
+              className="flex flex-col items-center justify-center text-center gap-[20px] p-[24px] bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px]"
             >
               {/* Step number circle */}
               <div
-                className="w-8 h-8 rounded-full bg-[#3B82F6] text-white flex items-center justify-center font-semibold text-[14px] shrink-0"
+                className="w-[30px] h-[30px] rounded-full bg-[#3B82F6] text-white flex items-center justify-center font-semibold text-[14px] shrink-0"
                 style={{ fontFamily: 'Quicksand, sans-serif' }}
               >
                 {index + 1}
               </div>
               {/* Step text */}
               <p
-                className="text-[#3B3B3B] text-[17px] font-normal"
+                className="text-[#272628] text-[20px] font-medium"
                 style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '150%' }}
               >
                 {step}
@@ -68,7 +68,7 @@ const CancellationProcess = () => {
       )}
 
       {/* ── Refund policy grid ── */}
-      <div className="w-full lg:px-[200px] py-10 lg:py-[100px]">
+      <div className="w-full py-10 lg:py-[100px]">
         {isLoading ? (
           <div className="h-[200px] rounded-[16px] bg-slate-100 animate-pulse" />
         ) : (
@@ -77,17 +77,17 @@ const CancellationProcess = () => {
             {/* Eligible */}
             <div className="flex flex-col">
               <h4
-                className="text-[#0D2137] font-semibold text-[32px] lg:text-[40px] mb-8 text-center"
+                className="text-[#272628] font-semibold text-[54px] mb-[40px] text-center"
                 style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
               >
                 {refundEligibleTitle}
               </h4>
-              <ul className="flex flex-col gap-[24px]">
+              <ul className="flex flex-col gap-[30px]">
                 {refundEligibleConditions.map((condition, i) => (
-                  <li key={i} className="flex items-center gap-3 bg-[#F1F5F9] p-[24px] rounded-[16px]">
-                    <div className="w-2 h-2 rounded-full bg-[#22A87A] shrink-0" />
+                  <li key={i} className="flex items-start gap-3 bg-[#F1F5F9] p-[24px] rounded-[16px]">
+                    <div className="w-[10px] h-[10px] rounded-full bg-[#22A87A] shrink-0 mt-[10px]" />
                     <span
-                      className="text-[#3B3B3B] text-[20px] font-normal"
+                      className="flex-1 text-[#3B3B3B] text-[18px] font-normal"
                       style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '150%' }}
                     >
                       {condition}
@@ -100,17 +100,17 @@ const CancellationProcess = () => {
             {/* Not Eligible */}
             <div className="flex flex-col">
               <h4
-                className="text-[#0D2137] font-semibold text-[32px] lg:text-[40px] mb-8 text-center"
+                className="text-[#272628] font-semibold text-[54px] mb-[40px] text-center"
                 style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
               >
                 {refundNotEligibleTitle}
               </h4>
-              <ul className="flex flex-col gap-[24px]">
+              <ul className="flex flex-col gap-[30px]">
                 {refundNotEligibleConditions.map((condition, i) => (
-                  <li key={i} className="flex items-center gap-3 bg-[#F1F5F9] p-[24px] rounded-[16px]">
-                    <div className="w-2 h-2 rounded-full bg-[#FF173E] shrink-0" />
+                  <li key={i} className="flex items-start gap-3 bg-[#F1F5F9] p-[24px] rounded-[16px]">
+                    <div className="w-[10px] h-[10px] rounded-full bg-[#FF173E] shrink-0 mt-[10px]" />
                     <span
-                      className="text-[#3B3B3B] text-[20px] font-normal"
+                      className="flex-1 text-[#3B3B3B] text-[18px] font-normal"
                       style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '150%' }}
                     >
                       {condition}
