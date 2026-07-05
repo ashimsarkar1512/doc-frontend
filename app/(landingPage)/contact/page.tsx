@@ -56,6 +56,7 @@ export default function ContactPage() {
 
       {/* ── HERO BANNER ── */}
       <CommonHero
+        watermarkImage="/contactueWatermark.png"
         title={heroData?.title || "Contact Us"}
         description={
           isHeroLoading ? (

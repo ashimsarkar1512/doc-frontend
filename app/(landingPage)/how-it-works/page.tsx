@@ -6,11 +6,6 @@ import Navbar from "@/components/shared/Navbar";
 import CommonHero from "@/components/shared/CommonHero";
 import {
   Shield,
-  ClipboardList,
-  Stethoscope,
-  BadgeCheck,
-  Package,
-  HeartPulse,
   AlertCircle,
   Clock,
   CheckCircle,
@@ -26,14 +21,6 @@ export default function HowItWorksPage() {
   const { data: pageData, isLoading: isPageLoading } = useGetHowItWorksContentQuery();
   const { data: ctaData, isLoading: isCtaLoading } = useGetCtaSectionByPageQuery("HowItWorks");
 
-  // Define icons mapping for steps
-  const stepIcons = [
-    <ClipboardList key="icon-1" className="w-5 h-5 text-white stroke-[2]" />,
-    <Stethoscope key="icon-2" className="w-5 h-5 text-white stroke-[2]" />,
-    <BadgeCheck key="icon-3" className="w-5 h-5 text-white stroke-[2]" />,
-    <Package key="icon-4" className="w-5 h-5 text-white stroke-[2]" />,
-    <HeartPulse key="icon-5" className="w-5 h-5 text-white stroke-[2]" />,
-  ];
 
   const journeySteps = pageData?.steps || [];
   const faqs = pageData?.faqs || [];
@@ -44,13 +31,17 @@ export default function HowItWorksPage() {
 
       {/* ── HERO SECTION ── */}
       <CommonHero
-        title="How WeightLoss MD Works"
-        description="A clear, transparent process from your first health question to ongoing medical support — all from licensed providers."
-        badge={
-          <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
-            <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
-            Most patients approved within 72 hours
-          </span>
+        watermarkImage="/howItWorksWatermark.png"
+        title={heroData?.title || "How WeightLoss MD Works"}
+        description={
+          isHeroLoading ? (
+            <span className="flex space-x-2 justify-center">
+              <span className="h-4 w-64 bg-gray-200 animate-pulse rounded-md inline-block"></span>
+            </span>
+          ) : (
+            heroData?.description ||
+            "A clear, transparent process from your first health question to ongoing medical support — all from licensed providers."
+          )
         }
       />
 
@@ -75,14 +66,12 @@ export default function HowItWorksPage() {
         <div className="flex flex-col gap-4">
           {journeySteps.map((step, index) => (
             <div key={index} className="flex items-start gap-4">
-              {/* Icon + Step number — floats outside the card */}
+              {/* Step number block — floats outside the card */}
               <div className="flex flex-col items-center flex-shrink-0 pt-1">
-                <div className="w-12 h-12 bg-[#2563eb] rounded-[14px] flex items-center justify-center shadow-md">
-                  {stepIcons[index % stepIcons.length]}
+                <div className="w-14 h-14 bg-[#2563eb] rounded-[14px] flex flex-col items-center justify-center shadow-md text-white leading-tight">
+                  <span className="text-[13px] font-normal tracking-wide">Step</span>
+                  <span className="text-[18px] font-medium">{index + 1}</span>
                 </div>
-                <span className="text-[11px] text-gray-400 font-semibold mt-1.5 tracking-wide">
-                  {`0${index + 1}`.slice(-2)}
-                </span>
               </div>
 
               {/* Card */}
