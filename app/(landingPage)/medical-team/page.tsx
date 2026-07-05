@@ -5,103 +5,27 @@ import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import CommonHero from "@/components/shared/CommonHero";
-import { Shield, CircleCheckBig, ChevronDown } from "lucide-react";
+import { Shield, CircleCheckBig, ChevronDown, MapPin, X } from "lucide-react";
 import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 import { useGetMedicalTeamSectionQuery } from "@/Redux/features/medicalTeam/medicalTeamApi";
+import {
+  useGetAllFeaturesDoctorQuery,
+  Doctor,
+} from "@/Redux/features/homePageDoctor/homePageDoctorApi";
 
 export default function MedicalTeamPage() {
-  const { data: heroData, isLoading: isHeroLoading } = useGetHeroSectionByPageQuery("MedicalTeam");
-  const { data: teamSectionData, isLoading: isTeamSectionLoading } = useGetMedicalTeamSectionQuery();
-  const { data: ctaData, isLoading: isCtaLoading } = useGetCtaSectionByPageQuery("MedicalTeam");
-  const providerNetwork = [
-    {
-      name: "Jeffrey Richker MD",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "18 Years Clinical Practice",
-      specialties: [
-        "Obesity Medicine",
-        "Endocrinology",
-        "Internal Medicine",
-        "Metabolic Disorders",
-      ],
-      image: "/expartProviders/expart1.png",
-    },
-    {
-      name: "Jeffrey Richker MD",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "18 Years Clinical Practice",
-      specialties: [
-        "Obesity Medicine",
-        "Endocrinology",
-        "Internal Medicine",
-        "Metabolic Disorders",
-      ],
-      image: "/expartProviders/expart1.png",
-    },
-    {
-      name: "Natalie Nicholas NP",
-      role: "Licensed Colorado Nurse Practitioner",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "8 Years Experience",
-      specialties: ["Family Medicine", "Women's Health", "Preventive Care"],
-      image: "/expartProviders/expart2.png",
-    },
-    {
-      name: "David Kim, NP-C",
-      role: "Licensed Colorado Nurse Practitioner",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "9 Years Experience",
-      specialties: [
-        "Family Medicine",
-        "Chronic Disease Management",
-        "Primary Care",
-      ],
-      image: "/expartProviders/expart3.png",
-    },
-    {
-      name: "Brooklynn Simmons",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "10 Years Experience",
-      specialties: ["Obesity Medicine", "Preventive Medicine"],
-      image: "/expartProviders/expart1.png",
-    },
-    {
-      name: "Kristin Watson",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "8 Years Experience",
-      specialties: ["Internal Medicine", "Metabolic Health"],
-      image: "/expartProviders/expart2.png",
-    },
-    {
-      name: "Devon Lane",
-      role: "Licensed Colorado Nurse Practitioner",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "11 Years Experience",
-      specialties: ["Family Nurse Practitioner", "Weight Management"],
-      image: "/expartProviders/expart3.png",
-    },
-    {
-      name: "Arlene McCoy",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "15 Years Experience",
-      specialties: ["Internal Medicine", "Obesity Medicine"],
-      image: "/expartProviders/expart1.png",
-    },
-    {
-      name: "Albert Flores",
-      role: "Licensed Colorado Physician",
-      licenses: "TX #G12345 | CA #G67890 | NY #G11223",
-      experience: "12 Years Experience",
-      specialties: ["Endocrinology", "Metabolic Disorders"],
-      image: "/expartProviders/expart2.png",
-    },
-  ];
+  const { data: heroData, isLoading: isHeroLoading } =
+    useGetHeroSectionByPageQuery("MedicalTeam");
+  const { data: teamSectionData, isLoading: isTeamSectionLoading } =
+    useGetMedicalTeamSectionQuery();
+  const { data: ctaData, isLoading: isCtaLoading } =
+    useGetCtaSectionByPageQuery("MedicalTeam");
+  const { data: doctorsData, isLoading: isDoctorsLoading } =
+    useGetAllFeaturesDoctorQuery();
+  const [selectedDoctor, setSelectedDoctor] = React.useState<Doctor | null>(
+    null,
+  );
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -120,121 +44,7 @@ export default function MedicalTeamPage() {
             "All treatment decisions at WeightLossMD are made exclusively by board-certified, state-licensed healthcare professionals. Your health is in expert hands."
           )
         }
-        badge={
-          <span className="inline-flex items-center gap-2 bg-[#d7e3f4]/50 border border-[#b9cee2] text-[#427ee1] px-4 py-1.5 rounded-full text-xs font-medium tracking-wide">
-            <Shield className="w-3.5 h-3.5 stroke-[2.5]" />
-            Licensed Medical Professionals
-          </span>
-        }
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-left w-full max-w-3xl justify-center items-start text-[14px] text-[#444444] mt-10">
-          <div className="flex items-start gap-2.5">
-            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-            <span className="leading-tight">All providers board-certified</span>
-          </div>
-
-          <div className="flex items-start gap-2.5">
-            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-            <span className="leading-tight">State-licensed in your state</span>
-          </div>
-
-          <div className="flex items-start gap-2.5">
-            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-            <span className="leading-tight">Prescription-required medications only</span>
-          </div>
-
-          <div className="flex items-start gap-2.5">
-            <CircleCheckBig className="w-[17px] h-[17px] text-[#427ee1] shrink-0 mt-0.5 stroke-[2.5]" />
-            <span className="leading-tight">HIPAA compliant practice</span>
-          </div>
-        </div>
-      </CommonHero>
-      {/* ── HIGHLIGHTED PROVIDER ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-20 mb-12 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* ── LEFT SIDE: IMAGE CONTAINER ── */}
-          <div className="relative lg:col-span-5 w-full">
-            {/* ইমেজটির হাইট ছবির মতো একটু ছোট করার জন্য aspect-[4/3] বা নির্দিষ্ট হাইট ব্যবহার করা হয়েছে */}
-            <div className="w-full aspect-[4/3] sm:aspect-[1.4/1] lg:h-[380px] rounded-[24px] bg-[#d7e3f5] overflow-hidden flex items-end justify-center">
-              <img
-                src="/expartProviders/expart1.png"
-                alt="Jeffrey Richker MD"
-                className="w-full h-full object-cover object-center"
-              />
-            </div>
-            {/* Medical Director Badge */}
-            <div className="absolute top-5 left-5">
-              <span className="bg-[#1d58d9] text-white px-4 py-1.5 rounded-full text-xs font-medium tracking-wide shadow-sm">
-                Medical Director
-              </span>
-            </div>
-          </div>
-
-          {/* ── RIGHT SIDE: CONTENT DETAILS ── */}
-          <div className="flex flex-col gap-3.5 lg:col-span-7">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1f1f1f] tracking-tight mb-1">
-                Jeffrey Richker MD
-              </h2>
-              <p className="text-gray-500 text-sm font-normal">
-                Licensed Colorado-Physician
-              </p>
-            </div>
-
-            {/* Licenses & Experience Info Blocks */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 mt-1.5">
-              <div className="bg-[#edf2f7] rounded-[14px] p-3.5 sm:col-span-7">
-                <p className="text-[#3b7ddd] text-[13px] font-semibold mb-0.5">
-                  State Licenses
-                </p>
-                <p className="text-[#4a5463] text-[13px] font-medium">
-                  TX #G12345 | CA #G67890 | NY #G11223
-                </p>
-              </div>
-              <div className="bg-[#edf2f7] rounded-[14px] p-3.5 sm:col-span-5">
-                <p className="text-[#3b7ddd] text-[13px] font-semibold mb-0.5">
-                  Experience
-                </p>
-                <p className="text-[#4a5463] text-[13px] font-medium">
-                  18 Years Clinical Practice
-                </p>
-              </div>
-            </div>
-
-            {/* Specialty Pills */}
-            <div className="flex flex-wrap gap-2 mt-1">
-              <span className="bg-[#dbe5f5]/70 text-[#3b7ddd] px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                Obesity Medicine
-              </span>
-              <span className="bg-[#dbe5f5]/70 text-[#3b7ddd] px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                Endocrinology
-              </span>
-              <span className="bg-[#dbe5f5]/70 text-[#3b7ddd] px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                Internal Medicine
-              </span>
-              <span className="bg-[#dbe5f5]/70 text-[#3b7ddd] px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                Metabolic Disorders
-              </span>
-            </div>
-
-            {/* Description Text */}
-            <p className="text-[#595959] text-[13.5px] leading-relaxed mt-2 max-w-2xl">
-              Every provider in our network is credentialed, licensed in your
-              state, and trained in evidence-based obesity and metabolic
-              medicine.
-            </p>
-
-            {/* Profile Action Link */}
-            <button className="text-[#2463eb] text-xs font-bold hover:text-[#1d4ed8] transition-colors flex items-center gap-1 mt-1 w-fit focus:outline-none">
-              Read Full Profile
-              <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PATTERN DIVIDER ── */}
-      <div className="w-full h-2 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA0MCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMTBIMTBDMTAgMTUgMTUgMjAgMjAgMjBDMjUgMjAgMzAgMTUgMzAgMTBIMzAiIHN0cm9rZT0iIzI1NjNlYiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPg==')] bg-repeat-x"></div>
+      ></CommonHero>
 
       {/* ── PROVIDER NETWORK ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-24 w-full">
@@ -258,75 +68,53 @@ export default function MedicalTeamPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {providerNetwork.map((provider, index) => (
-            <div key={index} className="flex flex-col gap-3">
-              <div className="w-full aspect-[4/5] bg-[#d7e4f8] rounded-[24px] overflow-hidden">
-                <img
-                  src={provider.image}
-                  alt={provider.name}
-                  className="w-full h-full object-cover object-center"
-                />
+          {isDoctorsLoading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex flex-col gap-3">
+                <div className="w-full aspect-[4/5] bg-gray-200 animate-pulse rounded-[24px]"></div>
+                <div className="h-5 bg-gray-200 animate-pulse rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3"></div>
               </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-lg font-semibold text-gray-900 tracking-tight">
-                  {provider.name}
-                </h3>
-                <p className="text-gray-600 text-xs">{provider.role}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <svg
-                    className="w-3 h-3 text-[#2563eb]"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="text-xs text-gray-500">
-                    {provider.licenses}
-                  </span>
+            ))
+          ) : doctorsData?.data && doctorsData.data.length > 0 ? (
+            doctorsData.data.map((doctor) => (
+              <div key={doctor.id} className="flex flex-col gap-3">
+                <div className="w-full aspect-[4/5] bg-[#d7e4f8] rounded-[24px] overflow-hidden">
+                  <img
+                    src={doctor.thumbnail}
+                    alt={doctor.fullName}
+                    className="w-full h-full object-cover object-center"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-3 h-3 text-[#2563eb]"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-lg font-semibold text-gray-900 tracking-tight">
+                    {doctor.fullName}
+                  </h3>
+                  <p className="text-gray-600 text-xs">{doctor.title}</p>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <MapPin className="w-3 h-3 text-[#2563eb]" />
+                    <span className="text-xs text-gray-500">
+                      {doctor.officeLocation}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedDoctor(doctor)}
+                    className="text-[#2563eb] text-xs font-semibold hover:text-[#1d4ed8] transition-colors flex items-center gap-1 mt-1 w-fit focus:outline-none"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="text-xs text-gray-500">
-                    {provider.experience}
-                  </span>
+                    View Full Bio
+                    <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </button>
                 </div>
-                <button className="text-[#2563eb] text-xs font-semibold hover:text-[#1d4ed8] transition-colors flex items-center gap-1 mt-1 w-fit">
-                  View Full Bio
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
               </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500 py-8">
+              No providers found.
             </div>
-          ))}
+          )}
         </div>
       </section>
 
@@ -371,7 +159,8 @@ export default function MedicalTeamPage() {
               <button
                 onClick={() =>
                   window.open(
-                    ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    ctaData?.url ||
+                      "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
                     ctaData?.openInNewTab ? "_blank" : "_self",
                   )
                 }
@@ -383,6 +172,54 @@ export default function MedicalTeamPage() {
           </div>
         </div>
       </section>
+
+      {/* ── PROVIDER DETAILS MODAL ── */}
+      {selectedDoctor && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-[24px] w-full max-w-md overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
+              <h3 className="text-xl font-bold text-gray-900">
+                Provider Details
+              </h3>
+              <button
+                onClick={() => setSelectedDoctor(null)}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 flex flex-col items-center text-center overflow-y-auto">
+              <div className="w-48 h-48 sm:w-56 sm:h-56 bg-[#d7e4f8] rounded-[24px] overflow-hidden mb-5 flex-shrink-0">
+                <img
+                  src={selectedDoctor.thumbnail}
+                  alt={selectedDoctor.fullName}
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-1">
+                {selectedDoctor.fullName}
+              </h4>
+              <p className="text-gray-600 text-base mb-3">
+                {selectedDoctor.title}
+              </p>
+
+              <div className="flex items-center justify-center gap-1.5 text-gray-700 mb-5">
+                <MapPin className="w-4 h-4 text-gray-500" />
+                <span className="text-[15px]">
+                  Office: {selectedDoctor.officeLocation}
+                </span>
+              </div>
+
+              <p className="text-gray-600 text-[15px] leading-relaxed px-2 text-center">
+                {selectedDoctor.shortBio}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
