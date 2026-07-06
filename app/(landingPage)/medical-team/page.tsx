@@ -22,6 +22,7 @@ export default function MedicalTeamPage() {
     useGetCtaSectionByPageQuery("MedicalTeam");
   const { data: doctorsData, isLoading: isDoctorsLoading } =
     useGetAllFeaturesDoctorQuery();
+  console.log(doctorsData);
   const [selectedDoctor, setSelectedDoctor] = React.useState<Doctor | null>(
     null,
   );
@@ -56,10 +57,10 @@ export default function MedicalTeamPage() {
             </div>
           ) : (
             <>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-3">
+              <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-3">
                 {teamSectionData?.title || "Our Licensed Provider Network"}
               </h2>
-              <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+              <p className="text-gray-600 text-xl max-w-2xl mx-auto">
                 {teamSectionData?.description ||
                   "Every provider in our network is credentialed, licensed in your state, and trained in evidence-based obesity and metabolic medicine."}
               </p>
@@ -87,21 +88,23 @@ export default function MedicalTeamPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-lg font-semibold text-gray-900 tracking-tight">
+                  <h3 className="text-2xl font-semibold text-[#272628] tracking-tight">
                     {doctor.fullName}
                   </h3>
-                  <p className="text-gray-600 text-xs">{doctor.title}</p>
+                  <p className="text-[#272628] text-xl">{doctor.title}</p>
 
                   <div className="flex items-center gap-2 mt-1">
-                    <MapPin className="w-3 h-3 text-[#2563eb]" />
-                    <span className="text-xs text-gray-500">
+                    <MapPin className="w-6 h-6  text-[#272628]" />
+                    <span className="text-xl text-[#272628]">
                       {doctor.officeLocation}
                     </span>
                   </div>
-
+                  <div>
+                    <p className="text-[#272628] text-xl line-clamp-2 min-h-[2rem]">{doctor?.shortBio}</p>
+                  </div>
                   <button
                     onClick={() => setSelectedDoctor(doctor)}
-                    className="text-[#2563eb] text-xs font-semibold hover:text-[#1d4ed8] transition-colors flex items-center gap-1 mt-1 w-fit focus:outline-none"
+                    className="text-[#2563eb] text-xl  hover:text-[#1d4ed8] transition-colors flex items-center gap-1 mt-1 w-fit focus:outline-none"
                   >
                     View Full Bio
                     <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -205,13 +208,13 @@ export default function MedicalTeamPage() {
               </p>
 
               <div className="flex items-center justify-center gap-1.5 text-gray-700 mb-5">
-                <MapPin className="w-4 h-4 text-gray-500" />
-                <span className="text-[15px]">
+                <MapPin className="w-6 h-6 text-gray-500" />
+                <span className="text-xl">
                   Office: {selectedDoctor.officeLocation}
                 </span>
               </div>
 
-              <p className="text-gray-600 text-[15px] leading-relaxed px-2 text-center">
+              <p className="text-gray-600 text-lg leading-relaxed px-2 text-center">
                 {selectedDoctor.shortBio}
               </p>
             </div>
