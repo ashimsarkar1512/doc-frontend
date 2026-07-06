@@ -12,16 +12,6 @@ export function CloverScriptLoader() {
     <Script
       src={SDK_URL}
       strategy="afterInteractive"
-      id="clover-sdk"
-      onLoad={() => {
-        console.log(
-          "[Clover] ✅ SDK script loaded. window.Clover =",
-          typeof (window as any).Clover
-        );
-      }}
-      onError={(e) => {
-        console.error("[Clover] ❌ SDK script failed to load:", e);
-      }}
     />
   );
 }
