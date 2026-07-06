@@ -1,0 +1,4 @@
+- Add state: `editingCardId`, `editData` (cardHolderName, expMonth, expYear), `cardToDelete`
+- Add UI for Delete Modal
+- Add UI for Edit mode (replace standard divs with inputs for name and expiry)
+- Handle update mutation
