@@ -118,7 +118,7 @@ export default function PatientPortalHome() {
   };
 
   return (
-    <div className={`max-w-[1520px] mx-auto px-6 w-full flex-1 flex flex-col font-sans `}>
+    <div className={`max-w-[1520px] mx-auto px-4 md:px-6 w-full flex-1 flex flex-col font-sans `}>
       {/* Action Navigation Controls at the Top */}
       <ActionBar
         activeDomain={activeDomain}
