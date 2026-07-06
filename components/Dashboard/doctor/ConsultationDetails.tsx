@@ -32,7 +32,7 @@ function QuestionCheckbox({
       className={`flex items-start gap-3 text-base md:text-xl  transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-white text-gray-900" : "opacity-60 text-gray-700"}`}
     >
       <span
-        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border-2 ${
+        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5  ${
           checked ? "bg-blue-600 border-2-blue-600" : "bg-white border-2-gray-300"
         }`}
       >
@@ -72,7 +72,7 @@ function QuestionRadio({
       className={`flex items-start gap-3 text-base md:text-xl transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-white text-gray-900" : "opacity-60 text-gray-700"}`}
     >
       <span
-        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 bg-white ${
+        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-blue-600 bg-white ${
           checked ? "border-2-blue-600" : "border-2-gray-300"
         }`}
       >
