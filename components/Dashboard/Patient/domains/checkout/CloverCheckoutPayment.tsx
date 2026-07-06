@@ -18,7 +18,7 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on click outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -31,7 +31,7 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
     };
   }, []);
 
-  // Clover State
+  
   const [cloverReady, setCloverReady] = useState(false);
   const [cloverError, setCloverError] = useState("");
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,14 +44,14 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
     }
   }, [cards, defaultCard]);
 
-  // Effect to sync new card state
+  
   useEffect(() => {
      if (selectedMethod === "new") {
         onPaymentReady({ isReady: true, cardHolderName: cardName });
      }
   }, [selectedMethod, cardName]);
 
-  // Clover SDK Initialization Logic
+  
   const initCloverElements = useCallback(() => {
     if (typeof window === "undefined" || !(window as any).Clover) return;
 
@@ -130,10 +130,10 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
     }
   }, [cloverInstanceRef]);
 
-  // Poll for window.Clover
+  
   const waitForCloverAndInit = useCallback(() => {
     let attempts = 0;
-    const maxAttempts = 40; // 10s
+    const maxAttempts = 40; 
 
     pollTimerRef.current = setInterval(() => {
       if (typeof window !== "undefined" && (window as any).Clover) {
