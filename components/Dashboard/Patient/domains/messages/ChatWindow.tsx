@@ -12,6 +12,8 @@ import {
   useGetServiceInfoQuery,
   useAcceptProposalMutation,
   useRejectProposalMutation,
+  useGetPatientSubscriptionsQuery,
+  useToggleSubscriptionRecurringMutation,
 } from '@/Redux/api/messageApi';
 import { useSocket } from '@/providers/SocketProvider';
 import { useE2EE } from '@/Redux/hooks/useE2EE';
@@ -108,6 +110,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
   const [uploadAttachment] = useUploadMessageAttachmentMutation();
   const [acceptProposal] = useAcceptProposalMutation();
   const [rejectProposal] = useRejectProposalMutation();
+  const { data: subscriptionsRes } = useGetPatientSubscriptionsQuery();
+  const [toggleSubscriptionRecurring] = useToggleSubscriptionRecurringMutation();
 
   const { socket, isConnected, joinConversation, leaveConversation, sendMessage, emitTyping, emitStopTyping } = useSocket();
   const { decrypt, encrypt, isInitializing } = useE2EE();
@@ -347,6 +351,39 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
       setShowCancelModal(false);
     }
   };
+
+  const handlePauseTreatment = async () => {
+    if (!conversation?.serviceID) {
+      toast.error('Service information missing.');
+      return;
+    }
+    
+    // Find matching active subscription
+    const activeSub = subscriptionsRes?.data?.find(
+      (sub: any) => sub.category?.id === conversation.serviceID && sub.status === 'ACTIVE'
+    );
+
+    if (!activeSub) {
+      toast.error('No active subscription found for this treatment.');
+      return;
+    }
+
+    const isCurrentlyRecurring = activeSub.isRecurring;
+    const newRecurringState = !isCurrentlyRecurring;
+    
+    const actionName = newRecurringState ? 'Activating' : 'Pausing';
+    const successName = newRecurringState ? 'Treatment activated' : 'Treatment paused';
+
+    const toastId = toast.loading(`${actionName} treatment...`);
+    try {
+      await toggleSubscriptionRecurring({ id: activeSub.id, isRecurring: newRecurringState }).unwrap();
+      toast.success(`${successName} successfully.`, { id: toastId });
+    } catch (error) {
+      toast.error(`Failed to ${actionName.toLowerCase()} treatment. Please try again.`, { id: toastId });
+    }
+  };
+
+
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
@@ -838,13 +875,21 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                     toast.error("Submission details not found");
                   }
                 }}
-                className="w-full bg-[#3f3f46] hover:bg-[#27272a] transition-colors text-white text-[14px] font-medium py-2.5 rounded-lg shadow-sm"
+                className="w-full h-[48px] bg-[#3B3B3B] hover:bg-[#272628] transition-colors text-[#F8F9FA] font-[Quicksand] text-[20px] font-semibold leading-[22px] rounded-[10px] shadow-sm flex items-center justify-center"
               >
                 View details
               </button>
               <button
+                onClick={handlePauseTreatment}
+                className="w-full h-[48px] bg-[#F2994A] hover:bg-[#e08940] transition-colors text-[#F8F9FA] font-[Quicksand] text-[20px] font-semibold leading-[22px] rounded-[10px] shadow-sm flex items-center justify-center"
+              >
+                {subscriptionsRes?.data?.find((sub: any) => sub.category?.id === conversation?.serviceID && sub.status === 'ACTIVE')?.isRecurring === false 
+                  ? 'Active treatment' 
+                  : 'Pause treatment'}
+              </button>
+              <button
                 onClick={() => setShowCancelModal(true)}
-                className="w-full bg-[#e11d48] hover:bg-rose-700 transition-colors text-white text-[14px] font-medium py-2.5 rounded-lg shadow-sm"
+                className="w-full h-[48px] bg-[#E7000B] hover:bg-[#CC0009] transition-colors text-[#F8F9FA] font-[Quicksand] text-[20px] font-semibold leading-[22px] rounded-[10px] shadow-sm flex items-center justify-center"
               >
                 Close treatment
               </button>
