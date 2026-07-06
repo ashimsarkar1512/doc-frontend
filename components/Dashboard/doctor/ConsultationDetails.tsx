@@ -32,8 +32,8 @@ function QuestionCheckbox({
       className={`flex items-start gap-3 text-base md:text-xl  transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-white text-gray-900" : "opacity-60 text-gray-700"}`}
     >
       <span
-        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border ${
-          checked ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300"
+        className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5  ${
+          checked ? "bg-blue-600 border-2-blue-600" : "bg-white border-2-gray-300"
         }`}
       >
         {checked && (
@@ -72,8 +72,8 @@ function QuestionRadio({
       className={`flex items-start gap-3 text-base md:text-xl transition-colors rounded-lg p-2 -ml-2 ${checked ? "bg-white text-gray-900" : "opacity-60 text-gray-700"}`}
     >
       <span
-        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border bg-white ${
-          checked ? "border-blue-600" : "border-gray-300"
+        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-blue-600 bg-white ${
+          checked ? "border-2-blue-600" : "border-2-gray-300"
         }`}
       >
         {checked && <span className="w-2 h-2 rounded-full bg-blue-600" />}
@@ -187,7 +187,7 @@ function QuestionRenderer({ question }: { question: any }) {
             />
             {/* If the selected option has sub-questions, render them recursively */}
             {selectedOption.subQuestions?.length > 0 && (
-              <div className="mt-4 pl-8 space-y-4 border-l border-gray-200">
+              <div className="mt-4 pl-8 space-y-4 border-2-l border-2-gray-200">
                 {selectedOption.subQuestions.map((subQuestion: any) => (
                   <QuestionRenderer
                     key={subQuestion.id}
@@ -220,7 +220,7 @@ function QuestionRenderer({ question }: { question: any }) {
                 <QuestionCheckbox label={option.label} checked={true} />
                 {/* If this option has sub-questions, render them recursively */}
                 {option.subQuestions?.length > 0 && (
-                  <div className="mt-4 pl-8 space-y-4 border-l border-gray-200">
+                  <div className="mt-4 pl-8 space-y-4 border-2-l border-2-gray-200">
                     {option.subQuestions.map((subQuestion: any) => (
                       <QuestionRenderer
                         key={subQuestion.id}
@@ -256,7 +256,7 @@ function QuestionRenderer({ question }: { question: any }) {
                     alt={patientAnswer.file.fileName}
                     width={200}
                     height={200}
-                    className="mt-2 rounded-md border border-gray-200"
+                    className="mt-2 rounded-md border-2 border-2-gray-200"
                   />
                 )}
               </div>
@@ -321,7 +321,7 @@ function QuestionRenderer({ question }: { question: any }) {
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl p-5 hover:border-gray-200 transition-colors bg-white">
+    <div className="border-2 border-2-gray-200 rounded-2xl p-5 hover:border-2-gray-200 transition-colors bg-white">
       {heading && (
         <h3 className="text-[#2B2922] font-[Quicksand] text-base  md:text-[24px] font-bold leading-[1.5] mb-2">
           {heading}
@@ -355,10 +355,10 @@ function ComplianceCheckItem({
   checked: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 text-xl border border-gray-200 rounded-full px-4 py-3 bg-white">
+    <div className="flex items-center gap-3 text-xl border-2 border-2-gray-200 rounded-full px-4 py-3 bg-white">
       <span
-        className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 border ${
-          checked ? "bg-gray-200 border-gray-300" : "bg-white border-gray-300"
+        className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 border-2 ${
+          checked ? "bg-gray-200 border-2-gray-300" : "bg-white border-2-gray-300"
         }`}
       >
         {checked && (
@@ -427,7 +427,7 @@ function ComplianceConfirmationSection({
   ];
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4 md:p-6 mb-6 md:mb-8">
+    <div className="rounded-2xl border-2 border-2-gray-200 bg-white p-3 sm:p-4 md:p-6 mb-6 md:mb-8">
       <h3 className="flex items-start sm:items-center gap-2 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4 leading-snug">
         <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0 mt-0.5 sm:mt-0" />
         <span className="break-words">Compliance Confirmation:</span>
@@ -547,20 +547,20 @@ export default function ConsultationDetails() {
       {/* Back Link — text now comes from assessment.title instead of being hardcoded */}
       <Link
         href="/doctor"
-        className="inline-flex items-center gap-2 text-xl font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
+        className="inline-flex items-center gap-2 text-2xl font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-6 h-6" />
         {assessment?.title || "Back to Dashboard"}
       </Link>
 
       {/* Header Section */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-8">
+      <div className="rounded-2xl border-2 border-2-gray-200 bg-white p-4 md:p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
             <div
               className="relative w-12 h-12 sm:w-12 sm:h-12 
                 min-w-[48px] min-h-[48px] 
-                shrink-0 rounded-full overflow-hidden border border-gray-100"
+                shrink-0 rounded-full overflow-hidden border-2 border-2-gray-100"
             >
               {/* Using a placeholder as patient image is not in the data */}
               <Image
@@ -575,7 +575,7 @@ export default function ConsultationDetails() {
               <h2 className="text-base md:text-2xl font-bold text-gray-900">
                 Patient: {patientName || " "}
               </h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base md:text-xl text-gray-500 mt-0.5">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base md:text-xl text-[#272628] mt-0.5">
                 <span>
                   Consultation ID: #{detailesData?.submissionCode || "N/A"}
                 </span>
@@ -604,7 +604,7 @@ export default function ConsultationDetails() {
         </div>
 
         {assessment?.thumbnail && (
-          <div className="relative w-full h-[240px] md:h-[450px]  p-2 rounded-xl overflow-hidden mb-5">
+          <div className="relative w-full h-[240px] md:h-[450px]  p-2 rounded-2xl overflow-hidden mb-5">
             <Image
               src={assessment.thumbnail}
               alt={assessment.title || "Assessment"}
@@ -636,7 +636,7 @@ export default function ConsultationDetails() {
       {/* here is the complaine confram */}
 
       {/* Summary Section */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-4">
+      <div className="rounded-2xl border-2 border-2-gray-200 bg-white p-4 md:p-6 mb-4">
         <h3 className="text-base md:text-2xl font-bold text-gray-900 mb-1">
           Product & Payment Summary
         </h3>
@@ -651,7 +651,7 @@ export default function ConsultationDetails() {
             {paymentSummary?.products?.map((product: any, idx: number) => (
               <div
                 key={idx}
-                className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100"
+                className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-2xl border-2 border-2-gray-100"
               >
                 <div className="w-14 h-14 bg-[#1e293b] rounded-lg relative overflow-hidden flex-shrink-0">
                   {product?.image && (
@@ -706,7 +706,7 @@ export default function ConsultationDetails() {
                   -${paymentSummary.discount?.toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between font-bold text-gray-900 pt-3 border-t border-gray-200 mt-3">
+              <div className="flex justify-between font-bold text-gray-900 pt-3 border-2-t border-2-gray-200 mt-3">
                 <span>Total</span>
                 <span className="text-blue-600">
                   ${paymentSummary.total?.toFixed(2)}
@@ -752,7 +752,7 @@ export default function ConsultationDetails() {
               <button
                 disabled={detailesData?.status === "REFIL_REQUESTED"}
                 onClick={() => setIsRefillModalOpen(true)}
-                className={`bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm md:text-base font-semibold py-2.5 px-6 rounded-2xl shadow-sm ${
+                className={`bg-white border-2 border-2-gray-300 text-gray-700 hover:bg-gray-50 hover:border-2-gray-400 transition-colors text-sm md:text-base font-semibold py-2.5 px-6 rounded-2xl shadow-sm ${
                   detailesData?.status === "REFIL_REQUESTED"
                     ? "opacity-50 cursor-not-allowed"
                     : ""
@@ -767,7 +767,7 @@ export default function ConsultationDetails() {
               <button
                 disabled={detailesData?.status === "REJECTED"}
                 onClick={() => setIsDeclineModalOpen(true)}
-                className={`bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors text-sm md:text-base font-semibold py-2.5 px-8 rounded-2xl shadow-sm ${
+                className={`bg-white border-2 border-2-red-200 text-red-500 hover:bg-red-50 hover:border-2-red-300 transition-colors text-sm md:text-base font-semibold py-2.5 px-8 rounded-2xl shadow-sm ${
                   detailesData?.status === "REJECTED"
                     ? "opacity-50 cursor-not-allowed"
                     : ""

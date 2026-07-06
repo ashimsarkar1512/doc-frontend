@@ -1,4 +1,7 @@
+
+
 "use client";
+
 
 import {
   useChangePasswordMutation,
@@ -25,9 +28,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import PaymentCardManagement from "./PaymentCardManagement";
 
+
 export default function SettingsCenter() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
   const user = currentUserData?.data;
+
 
   const [updateProfile, { isLoading: isUpdatingProfile }] =
     useUpdateProfileMutation();
@@ -42,9 +47,8 @@ export default function SettingsCenter() {
   const { data: sessionsData } = useGetSessionsQuery();
 
 
-
-
   const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   // Profile form state
   const [fullName, setFullName] = useState("");
@@ -56,6 +60,7 @@ export default function SettingsCenter() {
   const [phone, setPhone] = useState("");
   const [avatarId, setAvatarId] = useState<string | undefined>();
 
+
   // Password form state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -64,13 +69,16 @@ export default function SettingsCenter() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+
   // Preferences state
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
 
+
   // MFA state
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+
 
   useEffect(() => {
     if (user) {
@@ -95,6 +103,7 @@ export default function SettingsCenter() {
     }
   }, [user]);
 
+
   useEffect(() => {
     if (preferencesData?.data) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -106,11 +115,13 @@ export default function SettingsCenter() {
     }
   }, [preferencesData]);
 
+
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
     if (user?.email) return user.email.split("@")[0];
     return "User";
   };
+
 
   const getInitials = () => {
     const name = getDisplayName();
@@ -122,13 +133,16 @@ export default function SettingsCenter() {
       .slice(0, 2);
   };
 
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+
     const formData = new FormData();
     formData.append("context", "PROFILE_PICTURE");
     formData.append("files", file);
+
 
     try {
       const result = await uploadAttachment(formData).unwrap();
@@ -142,6 +156,7 @@ export default function SettingsCenter() {
       toast.error("Failed to upload image");
     }
   };
+
 
   const handleSaveProfile = async () => {
     try {
@@ -171,11 +186,13 @@ export default function SettingsCenter() {
     }
   };
 
+
   const handleUpdatePassword = async () => {
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
+
 
     try {
       await changePassword({
@@ -192,6 +209,7 @@ export default function SettingsCenter() {
     }
   };
 
+
   const handleToggleMfa = async () => {
     try {
       await toggleMfa().unwrap();
@@ -202,6 +220,7 @@ export default function SettingsCenter() {
       toast.error("Failed to update two-factor authentication");
     }
   };
+
 
   const handleSavePreferences = async () => {
     try {
@@ -216,6 +235,7 @@ export default function SettingsCenter() {
     }
   };
 
+
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200 mb-12">
       {/* Title */}
@@ -224,6 +244,7 @@ export default function SettingsCenter() {
           Settings
         </h3>
       </div>
+
 
       {/* Main Stack */}
       <div className="flex flex-col gap-6">
@@ -234,6 +255,7 @@ export default function SettingsCenter() {
               Account Information
             </h4>
           </div>
+
 
           <div className="mb-6">
             <p className="mb-4 text-sm font-semibold text-gray-700">
@@ -276,6 +298,7 @@ export default function SettingsCenter() {
             </div>
           </div>
 
+
           {/* Core Inputs Form */}
           <div className="space-y-4">
             <div>
@@ -289,6 +312,7 @@ export default function SettingsCenter() {
                 className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -315,6 +339,7 @@ export default function SettingsCenter() {
               </div>
             </div>
 
+
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-900">
                 Address
@@ -326,6 +351,7 @@ export default function SettingsCenter() {
                 className="h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
@@ -363,6 +389,7 @@ export default function SettingsCenter() {
               </div>
             </div>
 
+
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-900">
                 About
@@ -376,6 +403,7 @@ export default function SettingsCenter() {
             </div>
           </div>
 
+
           <button
             onClick={handleSaveProfile}
             disabled={isUpdatingProfile || isUploadingImage}
@@ -384,6 +412,7 @@ export default function SettingsCenter() {
             {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
           </button>
         </div>
+
 
         {/* 2. Password Management */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
@@ -398,6 +427,7 @@ export default function SettingsCenter() {
               <p className="text-sm text-gray-500">Update your password</p>
             </div>
           </div>
+
 
           <div className="space-y-4">
             <div>
@@ -425,6 +455,7 @@ export default function SettingsCenter() {
                 </button>
               </div>
             </div>
+
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -480,18 +511,20 @@ export default function SettingsCenter() {
             </div>
           </div>
 
+
           <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
-            <p className="mb-3 flex items-center gap-2 text-[20px] font-semibold text-[#C46A0A]">
+            <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-700">
               <span>⚠️</span>
               Password Requirements:
             </p>
-            <ul className="space-y-2 text-[18px] text-yellow-700">
+            <ul className="space-y-2 text-xs text-yellow-700">
               <li>• At least 8 characters long</li>
               <li>• Include uppercase and lowercase letters</li>
               <li>• Include at least one number</li>
               <li>• Include at least one special character</li>
             </ul>
           </div>
+
 
           <button
             onClick={handleUpdatePassword}
@@ -502,10 +535,12 @@ export default function SettingsCenter() {
           </button>
         </div>
 
-        {/* Payment Method */}
+
+        {/* 3. Payment Method */}
         <PaymentCardManagement />
 
-        {/* 3. Security & Device */}
+
+        {/* 4. Security & Device */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
           <div className="mb-5 flex items-start gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
@@ -520,6 +555,7 @@ export default function SettingsCenter() {
               </p>
             </div>
           </div>
+
 
           {/* 2 Step Verification */}
           <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
@@ -543,6 +579,7 @@ export default function SettingsCenter() {
               />
             </button>
           </div>
+
 
           {/* Device Sessions */}
           {sessionsData?.data && sessionsData.data.length > 0 && (
@@ -571,7 +608,7 @@ export default function SettingsCenter() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#C46A0A]">
-                        {device.sessionCount} sessions on
+                        {device.sessionCount} sessions on {device.deviceName}
                         <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
                       </div>
                     </summary>
@@ -579,6 +616,7 @@ export default function SettingsCenter() {
                       {device.sessions.map((session, sIdx) => {
                         const d = new Date(session.lastLogin);
                         const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
+
 
                         return (
                           <React.Fragment key={`${idx}-${sIdx}`}>
@@ -605,6 +643,7 @@ export default function SettingsCenter() {
           )}
         </div>
 
+
         {/* 4. Communication Preferences */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
           <div className="mb-6 flex items-start gap-3">
@@ -620,6 +659,7 @@ export default function SettingsCenter() {
               </p>
             </div>
           </div>
+
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -643,6 +683,7 @@ export default function SettingsCenter() {
               </button>
             </div>
 
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-gray-900">SMS Notifications</p>
@@ -661,6 +702,7 @@ export default function SettingsCenter() {
                 />
               </button>
             </div>
+
 
             <div className="flex items-center justify-between">
               <div>
@@ -684,6 +726,7 @@ export default function SettingsCenter() {
             </div>
           </div>
 
+
           <button
             onClick={handleSavePreferences}
             disabled={isUpdatingPreferences}
@@ -696,3 +739,6 @@ export default function SettingsCenter() {
     </div>
   );
 }
+
+
+

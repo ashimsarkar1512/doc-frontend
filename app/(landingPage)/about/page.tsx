@@ -47,7 +47,7 @@ export default function AboutPage() {
   );
 
   return (
-    <div className="w-full bg-white text-gray-900 font-sans overflow-x-hidden">
+    <div className="w-full bg-white text-gray-900 font-sans overflow-x-clip">
       {blobDefs}
 
       <Navbar

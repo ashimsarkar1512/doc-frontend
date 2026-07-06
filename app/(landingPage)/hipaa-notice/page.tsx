@@ -163,7 +163,7 @@ export default function HipaaNoticePage() {
         <QNA faqData={faqList} title="HIPAA Notice FAQs" />
       )}
 
-      <Footer />
+
     </div>
   );
 }

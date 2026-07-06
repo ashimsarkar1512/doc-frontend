@@ -7,7 +7,7 @@ import ProductsList from "@/components/supplements/ProductsList";
 
 export default function SupplementsPage() {
   return (
-    <div className="w-full bg-white text-gray-900 font-sans overflow-x-hidden min-h-screen flex flex-col">
+    <div className="w-full bg-white text-gray-900 font-sans overflow-x-clip min-h-screen flex flex-col">
       <Navbar
         variant="dark"
         initialPadding="pt-5 pb-4"
