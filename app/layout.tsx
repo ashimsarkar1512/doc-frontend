@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Quicksand } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { ReduxProvider } from "@/providers/redux.provider";
 import { SocketProvider } from "@/providers/SocketProvider";
 import { E2EEProvider } from "@/providers/E2EEProvider";
+import { CloverScriptLoader } from "@/components/CloverScriptLoader";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,16 +71,8 @@ export default function RootLayout({
             LiveChat
           </a>
         </noscript>
-        {/* Clover Payment SDK */}
-        <Script
-          src={
-            process.env.NEXT_PUBLIC_CLOVER_ENV === "production"
-              ? "https://checkout.clover.com/sdk.js"
-              : "https://checkout.sandbox.dev.clover.com/sdk.js"
-          }
-          strategy="lazyOnload"
-          id="clover-sdk"
-        />
+        {/* Clover Payment SDK — loaded via Client Component to support onLoad/onError */}
+        <CloverScriptLoader />
         {/* Live chat widget end */}
         <Toaster richColors position="top-right" />
       </body>
