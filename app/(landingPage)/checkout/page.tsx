@@ -58,6 +58,9 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
+import CloverCheckoutPayment from "@/components/Dashboard/Patient/domains/checkout/CloverCheckoutPayment";
+import { useCreatePaymentCardMutation } from "@/Redux/api/paymentCardApi";
+
 const inputBase =
   "w-full h-[52px] bg-[#F0F0F0] text-[#3B3B3B] font-[Quicksand] text-[16px] font-normal leading-none rounded-lg px-3 outline-none focus:bg-white border transition-colors placeholder:text-[#3B3B3B] placeholder:font-normal placeholder:opacity-70 flex items-center";
 const inputOk = "border-transparent focus:border-blue-500";
@@ -174,13 +177,17 @@ export default function CheckoutPage() {
     }
   }, [currentUserData]);
 
-  const [paymentInfo, setPaymentInfo] = useState({
-    method: "CLOVER",
-    cardHolderName: "",
-    cardNumber: "",
-    expiredDate: "",
-    cvv: "",
-  });
+  const [paymentPayload, setPaymentPayload] = useState<{ cloverToken?: string; savedCardId?: string; cardHolderName?: string; isReady: boolean }>({ isReady: false });
+  const cloverInstanceRef = useRef<any>(null);
+  
+  const [showSaveCardModal, setShowSaveCardModal] = useState(false);
+  const [pendingCheckoutPayload, setPendingCheckoutPayload] = useState<any>(null);
+  
+  const [createPaymentCard] = useCreatePaymentCardMutation();
+
+  const handleMethodChange = (data: { cloverToken?: string; savedCardId?: string; cardHolderName?: string; isReady: boolean }) => {
+    setPaymentPayload(data);
+  };
 
   const [complianceConfirmation, setComplianceConfirmation] = useState({
     agreedToTermsAndPrivacy: true,
@@ -223,16 +230,6 @@ export default function CheckoutPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const applyExpiryFromPicker = (month: number, year: number) => {
-    const mm = String(month).padStart(2, "0");
-    const yy = String(year).slice(-2);
-    const formatted = `${mm}/${yy}`;
-    setPaymentInfo((p) => ({ ...p, expiredDate: formatted }));
-    setFieldError("expiredDate", validateExpiry(formatted));
-    markTouched("expiredDate");
-    setExpiryPickerOpen(false);
-  };
-
   /* ──────────────────────────────────────────────────────────
      Field change handlers — format as you type, validate live
      ────────────────────────────────────────────────────────── */
@@ -247,31 +244,6 @@ export default function CheckoutPage() {
     const value = val || "";
     setShippingInfo((s) => ({ ...s, contactNumber: value }));
     if (touched.contactNumber) setFieldError("contactNumber", validatePhone(value));
-  };
-
-  const handleCardHolderChange = (val: string) => {
-    setPaymentInfo((p) => ({ ...p, cardHolderName: val }));
-    if (touched.cardHolderName)
-      setFieldError("cardHolderName", validateCardHolderName(val));
-  };
-
-  const handleCardNumberChange = (val: string) => {
-    const formatted = formatCardNumber(val);
-    setPaymentInfo((p) => ({ ...p, cardNumber: formatted }));
-    if (touched.cardNumber) setFieldError("cardNumber", validateCardNumber(formatted));
-  };
-
-  const handleExpiryChange = (val: string) => {
-    const formatted = formatExpiry(val);
-    setPaymentInfo((p) => ({ ...p, expiredDate: formatted }));
-    if (touched.expiredDate) setFieldError("expiredDate", validateExpiry(formatted));
-  };
-
-  const handleCVVChange = (val: string) => {
-    const formatted = formatCVV(val);
-    setPaymentInfo((p) => ({ ...p, cvv: formatted }));
-    if (touched.cvv)
-      setFieldError("cvv", validateCVV(formatted, stripNonDigits(paymentInfo.cardNumber).length));
   };
 
   /* ──────────────────────────────────────────────────────────
@@ -304,21 +276,6 @@ export default function CheckoutPage() {
         break;
       case "zip":
         setFieldError("zip", validateZip(shippingInfo.zip));
-        break;
-      case "cardHolderName":
-        setFieldError("cardHolderName", validateCardHolderName(paymentInfo.cardHolderName));
-        break;
-      case "cardNumber":
-        setFieldError("cardNumber", validateCardNumber(paymentInfo.cardNumber));
-        break;
-      case "expiredDate":
-        setFieldError("expiredDate", validateExpiry(paymentInfo.expiredDate));
-        break;
-      case "cvv":
-        setFieldError(
-          "cvv",
-          validateCVV(paymentInfo.cvv, stripNonDigits(paymentInfo.cardNumber).length)
-        );
         break;
     }
   };
@@ -412,10 +369,6 @@ export default function CheckoutPage() {
       city: shippingInfo.city.trim() ? "" : "City is required.",
       state: shippingInfo.state.trim() ? "" : "State is required.",
       zip: validateZip(shippingInfo.zip),
-      cardHolderName: validateCardHolderName(paymentInfo.cardHolderName),
-      cardNumber: validateCardNumber(paymentInfo.cardNumber),
-      expiredDate: validateExpiry(paymentInfo.expiredDate),
-      cvv: validateCVV(paymentInfo.cvv, stripNonDigits(paymentInfo.cardNumber).length),
     };
 
     setErrors(newErrors);
@@ -426,16 +379,12 @@ export default function CheckoutPage() {
       city: true,
       state: true,
       zip: true,
-      cardHolderName: true,
-      cardNumber: true,
-      expiredDate: true,
-      cvv: true,
     });
 
     return Object.values(newErrors).every((msg) => !msg);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateAll()) {
       toast.error("Please fix the highlighted fields before continuing.");
       return;
@@ -447,24 +396,92 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!paymentPayload.isReady) {
+        toast.error("Please complete your payment details.");
+        return;
+    }
+
     const submissionId = localStorage.getItem("submissionId");
     if (!submissionId) {
       toast.error("Valid assessment submission not found. Please complete the assessment.");
       return;
     }
 
-    const checkoutPayload = {
-      submissionId,
-      shippingInfo,
-      paymentInfo,
-      complianceConfirmation,
-      discountCode: couponApplied ? couponInput.trim() : undefined,
-      isRecurring: recurring,
-      billingCycle: summary?.serviceDuration || "MONTHLY",
-    };
+    if (!paymentPayload.savedCardId && cloverInstanceRef.current) {
+        // Needs tokenization
+        try {
+            const result = await cloverInstanceRef.current.createToken({
+               name: paymentPayload.cardHolderName || shippingInfo.fullName
+            });
+            
+            if (result.errors || result.error) {
+                toast.error("Invalid card details. Please check and try again.");
+                return;
+            }
+            
+            const payload = {
+              submissionId,
+              shippingInfo,
+              paymentInfo: { method: "CLOVER", cloverToken: result.token, cardHolderName: paymentPayload.cardHolderName || shippingInfo.fullName },
+              complianceConfirmation,
+              discountCode: couponApplied ? couponInput.trim() : undefined,
+              isRecurring: recurring,
+              billingCycle: summary?.serviceDuration || "MONTHLY",
+            };
 
-    localStorage.setItem("checkoutPayload", JSON.stringify(checkoutPayload));
-    router.push("/previewdetails");
+            const cardDetails = {
+                last4: result.last4 || result.card?.last4 || "****",
+                brand: result.brand || result.card?.brand || "Card",
+                expMonth: result.exp_month || result.card?.exp_month || 0,
+                expYear: result.exp_year || result.card?.exp_year || 0
+            };
+            
+            setPendingCheckoutPayload({ payload, token: result.token, cardDetails });
+            setShowSaveCardModal(true);
+            return;
+        } catch (e) {
+            toast.error("Failed to generate payment token.");
+            return;
+        }
+    } else if (paymentPayload.savedCardId) {
+       const payload = {
+          submissionId,
+          shippingInfo,
+          paymentInfo: { method: "CLOVER", savedCardId: paymentPayload.savedCardId },
+          complianceConfirmation,
+          discountCode: couponApplied ? couponInput.trim() : undefined,
+          isRecurring: recurring,
+          billingCycle: summary?.serviceDuration || "MONTHLY",
+       };
+       localStorage.setItem("checkoutPayload", JSON.stringify(payload));
+       router.push("/previewdetails");
+    }
+  };
+
+  const finalizeCheckout = async (saveCard: boolean) => {
+      setShowSaveCardModal(false);
+      if (!pendingCheckoutPayload) return;
+      
+      const { payload, token, cardDetails } = pendingCheckoutPayload;
+      
+      if (saveCard) {
+          try {
+              await createPaymentCard({ 
+                  cloverToken: token, 
+                  isDefault: true,
+                  cardHolderName: payload.paymentInfo.cardHolderName,
+                  last4: cardDetails?.last4,
+                  brand: cardDetails?.brand,
+                  expMonth: Number(cardDetails?.expMonth || 0),
+                  expYear: Number(cardDetails?.expYear || 0)
+              }).unwrap();
+          } catch (e) {
+              console.error("Failed to save card", e);
+          }
+      }
+      
+      localStorage.setItem("checkoutPayload", JSON.stringify(payload));
+      router.push("/previewdetails");
   };
 
   return (
@@ -475,7 +492,7 @@ export default function CheckoutPage() {
       <div className="pt-32 pb-16 max-w-[1520px] mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row gap-10 items-start">
           {/* LEFT: Checkout Form */}
-          <div className="flex-1 min-w-0 w-full">
+          <div className="flex-1 min-w-0 w-full lg:pr-4">
             <button
               onClick={() => router.back()}
               className="relative z-50 flex items-center gap-1.5 text-gray-500 hover:text-blue-600 transition-colors text-[14px] font-medium mb-6 group w-fit cursor-pointer"
@@ -668,175 +685,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
-                    Payment Method
-                  </label>
-                  <div className="w-full bg-[#F3F4F6] text-gray-700 font-medium text-[14px] rounded-lg px-4 py-3 border border-transparent">
-                    Clover
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
-                    Card Holder Name
-                  </label>
-                  <input
-                    type="text"
-                    autoComplete="cc-name"
-                    value={paymentInfo.cardHolderName}
-                    onChange={(e) => handleCardHolderChange(e.target.value)}
-                    onBlur={() => handleBlurValidate("cardHolderName")}
-                    placeholder="e.g. John Doe"
-                    className={`${inputBase} ${errors.cardHolderName && touched.cardHolderName ? inputErr : inputOk
-                      }`}
-                  />
-                  <FieldError
-                    message={touched.cardHolderName ? errors.cardHolderName : undefined}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
-                    Card Number
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="cc-number"
-                    value={paymentInfo.cardNumber}
-                    onChange={(e) => handleCardNumberChange(e.target.value)}
-                    onBlur={() => handleBlurValidate("cardNumber")}
-                    placeholder="e.g. 4111 1111 1111 1111"
-                    className={`${inputBase} ${errors.cardNumber && touched.cardNumber ? inputErr : inputOk
-                      }`}
-                  />
-                  <FieldError message={touched.cardNumber ? errors.cardNumber : undefined} />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Expiry Date */}
-                  <div className="flex-1 relative" ref={expiryPickerRef}>
-                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
-                      Expired Date
-                    </label>
-
-                    <div
-                      className={`flex items-center ${inputBase} ${errors.expiredDate && touched.expiredDate ? inputErr : inputOk
-                        } px-0 py-0`}
-                    >
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="cc-exp"
-                        value={paymentInfo.expiredDate}
-                        onChange={(e) => handleExpiryChange(e.target.value)}
-                        onBlur={() => handleBlurValidate("expiredDate")}
-                        placeholder="MM/YY"
-                        className="flex-1 h-full bg-transparent outline-none px-4 min-w-0 placeholder:text-[#3B3B3B] placeholder:font-normal placeholder:opacity-70"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => setExpiryPickerOpen((v) => !v)}
-                        aria-label="Open expiry date picker"
-                        className="h-full px-3 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors shrink-0"
-                      >
-                        <CalendarDays className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <FieldError
-                      message={touched.expiredDate ? errors.expiredDate : undefined}
-                    />
-
-                    {expiryPickerOpen && (
-                      <div className="absolute z-20 top-full left-0 mt-2 w-full sm:w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-3">
-                        <p className="text-[12px] font-semibold text-gray-500 mb-2 px-1">
-                          Select expiry month &amp; year
-                        </p>
-
-                        <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto mb-2">
-                          {EXPIRY_MONTH_OPTIONS.map(
-                            (m: { value: number; label: string }) => {
-                              const currentYear =
-                                parseInt(paymentInfo.expiredDate.split("/")[1], 10) ||
-                                yearOptions[0];
-
-                              const fullYear =
-                                currentYear < 100 ? 2000 + currentYear : currentYear;
-
-                              const isPast =
-                                new Date(fullYear, m.value, 0) < new Date();
-
-                              return (
-                                <button
-                                  key={m.value}
-                                  type="button"
-                                  disabled={isPast}
-                                  onClick={() =>
-                                    applyExpiryFromPicker(m.value, fullYear)
-                                  }
-                                  className="text-gray-800 text-[12px] py-1.5 rounded-md border border-gray-200 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                >
-                                  {String(m.value).padStart(2, "0")}
-                                </button>
-                              );
-                            }
-                          )}
-                        </div>
-
-                        <div className="flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
-                          {yearOptions.map((y: number) => {
-                            const currentMonth =
-                              parseInt(paymentInfo.expiredDate.split("/")[0], 10) || 1;
-
-                            const isSelectedYear =
-                              String(y).slice(-2) ===
-                              paymentInfo.expiredDate.split("/")[1];
-
-                            return (
-                              <button
-                                key={y}
-                                type="button"
-                                onClick={() =>
-                                  applyExpiryFromPicker(currentMonth, y)
-                                }
-                                className={`text-[12px] px-2.5 py-1 rounded-md border transition-colors ${isSelectedYear
-                                  ? "bg-blue-600 text-white border-blue-600"
-                                  : "text-gray-800 border-gray-200 hover:bg-blue-50 hover:border-blue-300"
-                                  }`}
-                              >
-                                {y}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CVV */}
-                  <div className="flex-1">
-                    <label className="block text-[#2B2922] font-[Quicksand] text-[16px] font-semibold leading-[1.2] mb-1.5">
-                      CVV
-                    </label>
-
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                      value={paymentInfo.cvv}
-                      onChange={(e) => handleCVVChange(e.target.value)}
-                      onBlur={() => handleBlurValidate("cvv")}
-                      placeholder="123"
-                      className={`${inputBase} ${errors.cvv && touched.cvv ? inputErr : inputOk
-                        }`}
-                    />
-
-                    <FieldError message={touched.cvv ? errors.cvv : undefined} />
-                  </div>
-                </div>
+                <CloverCheckoutPayment onPaymentReady={handleMethodChange} cloverInstanceRef={cloverInstanceRef} />
               </div>
             </div>
 
@@ -954,7 +803,7 @@ export default function CheckoutPage() {
 
           {/* RIGHT: Order Summary Panel */}
           <div
-            className="w-full lg:w-[450px] lg:sticky lg:top-[100px] flex-shrink-0 self-start"
+            className="w-full lg:w-[450px] lg:sticky lg:top-[120px] flex-shrink-0 self-start z-10"
           >
             <div className="rounded-2xl p-7 shadow-sm" style={{ background: "#EAF3FF", fontFamily: "Quicksand, sans-serif" }}>
               {/* Header */}
@@ -1297,8 +1146,53 @@ export default function CheckoutPage() {
         .checkout-phone-input .PhoneInputCountrySelect {
           font-size: 16px;
         }
+        .checkout-phone-input .PhoneInputInput:focus {
+          outline: none;
+        }
+        
+        .custom-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
       `}</style>
       </div>
+      {/* Save Card Modal */}
+      {showSaveCardModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all">
+            <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                Save Payment Card
+              </h3>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-600">
+                Would you like to save this card as your default payment method for future subscriptions and purchases?
+              </p>
+            </div>
+            
+            <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50/50">
+              <button
+                onClick={() => finalizeCheckout(false)}
+                className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                No, just checkout
+              </button>
+              <button
+                onClick={() => finalizeCheckout(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                Yes, save it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </ProtectedRoute>
   );
 }
