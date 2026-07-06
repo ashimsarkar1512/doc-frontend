@@ -215,7 +215,7 @@ function ProductsInner() {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* ══ LEFT — Product Grid ══ */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 w-full">
             {selectedProduct ? (
               <>
                 <div className="mb-8 flex items-center gap-2">

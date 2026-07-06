@@ -35,9 +35,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased overflow-x-hidden`}
+      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased overflow-x-clip`}
     >
-      <body className=" font-sans min-h-full flex flex-col overflow-x-hidden" suppressHydrationWarning>
+      <body className=" font-sans min-h-full flex flex-col overflow-x-clip" suppressHydrationWarning>
         <ReduxProvider>
           <SocketProvider>
             <E2EEProvider>
@@ -70,6 +70,16 @@ export default function RootLayout({
             LiveChat
           </a>
         </noscript>
+        {/* Clover Payment SDK */}
+        <Script
+          src={
+            process.env.NEXT_PUBLIC_CLOVER_ENV === "production"
+              ? "https://checkout.clover.com/sdk.js"
+              : "https://checkout.sandbox.dev.clover.com/sdk.js"
+          }
+          strategy="lazyOnload"
+          id="clover-sdk"
+        />
         {/* Live chat widget end */}
         <Toaster richColors position="top-right" />
       </body>

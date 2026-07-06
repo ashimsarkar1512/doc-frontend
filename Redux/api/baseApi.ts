@@ -56,7 +56,7 @@ export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Auth', 'User', 'Chat', 'Message', 'Consultation', 'ContactLead','Categories','Products','DoctorDashboard','Consultations','Patient', 
-    'Dashboard','Orders','Cart','HomepageContent','WebsiteSettings','Notifications','Doctors', 'Testimonials', 'Discounts', 'HeroSections', 'CtaSections', 'CoverageSection', 'Faq', 'Eligibility', 'ShippingInfo', 'BillingCancellation'],
+    'Dashboard','Orders','Cart','HomepageContent','WebsiteSettings','Notifications','Doctors', 'Testimonials', 'Discounts', 'HeroSections', 'CtaSections', 'CoverageSection', 'Faq', 'Eligibility', 'ShippingInfo', 'BillingCancellation', 'PaymentCards'],
   endpoints: () => ({}),
 })
 
