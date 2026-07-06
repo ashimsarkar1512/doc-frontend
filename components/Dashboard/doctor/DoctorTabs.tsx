@@ -322,15 +322,19 @@ const formatStatus = (status: string): string => {
 const getStatusClass = (status: string) => {
   switch (status) {
     case "Pending":
+      return "bg-green-600"; // Green
     case "Refill Requested":
-      return "bg-[#eab308]/90"; // Yellow
+      return "bg-yellow-500/90"; // Yellow
     case "Declined":
       return "bg-red-500/90"; // Red
     case "Accepted":
+      return "bg-teal-500/90"; // Teal
     case "Reviewed":
-      return "bg-[#10b981]/90"; // Green
+      return "bg-purple-500/90"; // Purple
+    case "Draft":
+      return "bg-blue-500/90"; // Blue for Draft
     default:
-      return "bg-gray-500/90"; // Gray for others like Draft
+      return "bg-gray-500/90"; // Gray for others like Unknown
   }
 };
 
