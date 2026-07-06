@@ -28,9 +28,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const inputClassName =
-  "h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 text-sm text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+  "h-10 w-full rounded-lg border border-gray-300 bg-[#f0f0f0] px-4 py-2.5 xl:lg:text-[20px] md:text-[18px] text-[16px] text-gray-700 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
 
-const labelClassName = "mb-2 block text-sm font-semibold text-gray-900";
+const labelClassName = "mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900";
 
 const ToggleSwitch = ({
   enabled,
@@ -66,7 +66,7 @@ const ToggleSwitch = ({
 export default function DoctorSettings() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
 
-  console.log(currentUserData);
+  // console.log("=== BACKEND USER DATA ===", currentUserData?.data?.profile);
 
   const user = currentUserData?.data;
 
@@ -272,14 +272,14 @@ export default function DoctorSettings() {
       {/* Account Information */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <div className="mb-6 flex items-center gap-3">
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-bold text-gray-900">
             Account Information
           </h2>
         </div>
 
         {/* Profile Picture */}
         <div className="mb-6">
-          <p className="mb-4 text-sm font-semibold text-gray-700">
+          <p className="mb-4 xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700">
             Profile Picture
           </p>
 
@@ -435,7 +435,7 @@ export default function DoctorSettings() {
         <button
           onClick={handleSaveProfile}
           disabled={isUpdatingProfile || isUploadingImage}
-          className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          className="mt-6 rounded-full bg-[#2563eb] px-6 py-2.5 xl:lg:text-[22px] md:text-[20x] text-[18px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
         >
           {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
         </button>
@@ -531,7 +531,7 @@ export default function DoctorSettings() {
         </div>
 
         <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
-          <p className="mb-3 flex items-center gap-2 text-[20px] font-semibold text-[#C46A0A]">
+          <p className="mb-3 flex items-center gap-2 text-[20px] font-semibold text-[#973C00]">
             <span>⚠️</span>
             Password Requirements:
           </p>
@@ -560,7 +560,7 @@ export default function DoctorSettings() {
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-semibold text-gray-900">
               Security & Device
             </h2>
             <p className="text-sm text-gray-500">
@@ -572,8 +572,8 @@ export default function DoctorSettings() {
         {/* 2 Step Verification */}
         <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
           <div>
-            <p className="font-medium text-gray-900">2 Step Verification</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-semibold xl:lg:text-[20px] md:text-[18px] text-[16px] text-gray-900">2 Step Verification</p>
+            <p className="xl:lg:text-[18px] md:text-[16px] text-[14px] text-gray-500">
               {twoFactorVerification ? "Enabled" : "Disabled"}
             </p>
           </div>
@@ -617,38 +617,38 @@ export default function DoctorSettings() {
                     <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
                   </div>
                 </summary>
-                <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
+                <div className="mt-4 flex flex-col gap-y-6 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
                   {device.sessions.map((session, sIdx) => {
                     const d = new Date(session.lastLogin);
                     const formattedDate = `${d.toLocaleString("en-US", { month: "short" })} ${d.getDate()} - ${d.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).toLowerCase()}`;
 
                     return (
-                      <React.Fragment key={`${idx}-${sIdx}`}>
-                        <div className="flex items-center gap-2 ">
-                          <p className="text-[18px] font-medium ">
+                      <div key={`${idx}-${sIdx}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-b border-[#F1D38A]/30 pb-4 last:border-0 last:pb-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <p className="text-[16px] lg:text-[18px] font-medium">
                             Last login:
                           </p>
-                          <p className="text-[20px] font-semibold">
+                          <p className="text-[18px] lg:text-[20px] font-semibold">
                             {formattedDate}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-[18px] font-medium ">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <p className="text-[16px] lg:text-[18px] font-medium">
                             IP Address:
                           </p>
-                          <p className="text-[20px] font-semibold">
+                          <p className="text-[18px] lg:text-[20px] font-semibold">
                             {session.ipAddress}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-[18px] font-medium ">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <p className="text-[16px] lg:text-[18px] font-medium">
                             Session Due:
                           </p>
-                          <p className="text-[20px] font-semibold">
+                          <p className="text-[18px] lg:text-[20px] font-semibold">
                             {session.sessionDue}
                           </p>
                         </div>
-                      </React.Fragment>
+                      </div>
                     );
                   })}
                 </div>
@@ -665,10 +665,10 @@ export default function DoctorSettings() {
             <MessageSquare className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-bold text-gray-900">
               Communication Preferences
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="xl:lg:text-[18px] md:text-[16px] text-[14px] text-gray-500">
               Manage your communication preferences
             </p>
           </div>

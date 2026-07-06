@@ -179,6 +179,18 @@ export const messageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Message'],
     }),
+    getPatientSubscriptions: builder.query<any, void>({
+      query: () => '/patient/subscriptions',
+      providesTags: ['Subscriptions'] as any, // Cast to any because Subscriptions might not be in the global tag list of baseApi yet
+    }),
+    toggleSubscriptionRecurring: builder.mutation<any, { id: string; isRecurring: boolean }>({
+      query: ({ id, isRecurring }) => ({
+        url: `/patient/subscriptions/${id}/toggle-recurring`,
+        method: 'PATCH',
+        body: { isRecurring },
+      }),
+      invalidatesTags: ['Subscriptions'] as any,
+    }),
   }),
 });
 
@@ -194,4 +206,6 @@ export const {
   useGetConversationFilesQuery,
   useAcceptProposalMutation,
   useRejectProposalMutation,
+  useGetPatientSubscriptionsQuery,
+  useToggleSubscriptionRecurringMutation,
 } = messageApi;

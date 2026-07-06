@@ -338,8 +338,8 @@ export default function PaymentCardManagement() {
           <CreditCard className="h-5 w-5" />
         </div>
         <div>
-          <h4 className="text-lg font-semibold text-gray-900">Payment Method</h4>
-          <p className="text-sm text-gray-500">Manage your saved payment cards</p>
+          <h4 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-bold text-gray-900">Payment Method</h4>
+          <p className="xl:lg:text-[20px] md:text-[18px] text-[16px] text-gray-500">Manage your saved payment cards</p>
         </div>
       </div>
 
@@ -363,7 +363,7 @@ export default function PaymentCardManagement() {
               <div key={card.id} className="rounded-xl border border-gray-200 p-5 space-y-4">
                 {/* Card Holder */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  <label className="block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700 mb-1.5">
                     Card Holder Name
                   </label>
                   {isEditing ? (
@@ -382,7 +382,7 @@ export default function PaymentCardManagement() {
 
                 {/* Card Number */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  <label className="block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700 mb-1.5">
                     Card Number
                   </label>
                   <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-2.5">
@@ -398,7 +398,7 @@ export default function PaymentCardManagement() {
                 {/* Expiry + CVV */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    <label className="block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700 mb-1.5">
                       Expiry Date
                     </label>
                     {isEditing ? (
@@ -438,7 +438,7 @@ export default function PaymentCardManagement() {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    <label className="block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700 mb-1.5">
                       CVV
                     </label>
                     <div className="rounded-lg bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-500">
@@ -450,7 +450,7 @@ export default function PaymentCardManagement() {
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-800">Default</span>
+                    <span className="xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-800">Default</span>
                     <button
                       onClick={() => handleSetDefault(card.id, card.isDefault)}
                       disabled={isSettingDefault || card.isDefault || isEditing}

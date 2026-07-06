@@ -1,7 +1,4 @@
-
-
 "use client";
-
 
 import {
   useChangePasswordMutation,
@@ -22,17 +19,15 @@ import {
   Eye,
   EyeOff,
   ChevronRight,
-  Laptop
+  Laptop,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import PaymentCardManagement from "./PaymentCardManagement";
 
-
 export default function SettingsCenter() {
   const { data: currentUserData, refetch } = useGetCurrentUserQuery();
   const user = currentUserData?.data;
-
 
   const [updateProfile, { isLoading: isUpdatingProfile }] =
     useUpdateProfileMutation();
@@ -46,9 +41,7 @@ export default function SettingsCenter() {
     useUpdateCommunicationPreferencesMutation();
   const { data: sessionsData } = useGetSessionsQuery();
 
-
   const fileInputRef = useRef<HTMLInputElement>(null);
-
 
   // Profile form state
   const [fullName, setFullName] = useState("");
@@ -60,7 +53,6 @@ export default function SettingsCenter() {
   const [phone, setPhone] = useState("");
   const [avatarId, setAvatarId] = useState<string | undefined>();
 
-
   // Password form state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -69,16 +61,13 @@ export default function SettingsCenter() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
   // Preferences state
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
 
-
   // MFA state
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-
 
   useEffect(() => {
     if (user) {
@@ -103,7 +92,6 @@ export default function SettingsCenter() {
     }
   }, [user]);
 
-
   useEffect(() => {
     if (preferencesData?.data) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -115,13 +103,11 @@ export default function SettingsCenter() {
     }
   }, [preferencesData]);
 
-
   const getDisplayName = () => {
     if (user?.profile?.name) return user.profile.name;
     if (user?.email) return user.email.split("@")[0];
     return "User";
   };
-
 
   const getInitials = () => {
     const name = getDisplayName();
@@ -133,16 +119,13 @@ export default function SettingsCenter() {
       .slice(0, 2);
   };
 
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-
     const formData = new FormData();
     formData.append("context", "PROFILE_PICTURE");
     formData.append("files", file);
-
 
     try {
       const result = await uploadAttachment(formData).unwrap();
@@ -156,7 +139,6 @@ export default function SettingsCenter() {
       toast.error("Failed to upload image");
     }
   };
-
 
   const handleSaveProfile = async () => {
     try {
@@ -186,13 +168,11 @@ export default function SettingsCenter() {
     }
   };
 
-
   const handleUpdatePassword = async () => {
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-
 
     try {
       await changePassword({
@@ -209,7 +189,6 @@ export default function SettingsCenter() {
     }
   };
 
-
   const handleToggleMfa = async () => {
     try {
       await toggleMfa().unwrap();
@@ -220,7 +199,6 @@ export default function SettingsCenter() {
       toast.error("Failed to update two-factor authentication");
     }
   };
-
 
   const handleSavePreferences = async () => {
     try {
@@ -235,7 +213,6 @@ export default function SettingsCenter() {
     }
   };
 
-
   return (
     <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200 mb-12">
       {/* Title */}
@@ -245,20 +222,18 @@ export default function SettingsCenter() {
         </h3>
       </div>
 
-
       {/* Main Stack */}
       <div className="flex flex-col gap-6">
         {/* 1. Account Information */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
           <div className="mb-6 flex items-center gap-3">
-            <h4 className="text-lg font-bold text-gray-900">
+            <h4 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-bold text-gray-900">
               Account Information
             </h4>
           </div>
 
-
           <div className="mb-6">
-            <p className="mb-4 text-sm font-semibold text-gray-700">
+            <p className="mb-4 xl:lg:text-[20px] md:text-[text-18px] text-[16px] font-semibold text-gray-700">
               Profile Picture
             </p>
             <div className="relative inline-block">
@@ -298,11 +273,10 @@ export default function SettingsCenter() {
             </div>
           </div>
 
-
           {/* Core Inputs Form */}
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-900">
+              <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-700">
                 Full Name
               </label>
               <input
@@ -313,10 +287,9 @@ export default function SettingsCenter() {
               />
             </div>
 
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   Email
                 </label>
                 <input
@@ -327,7 +300,7 @@ export default function SettingsCenter() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   Contact Number
                 </label>
                 <input
@@ -339,9 +312,8 @@ export default function SettingsCenter() {
               </div>
             </div>
 
-
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-900">
+              <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                 Address
               </label>
               <input
@@ -352,10 +324,9 @@ export default function SettingsCenter() {
               />
             </div>
 
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   City
                 </label>
                 <input
@@ -366,7 +337,7 @@ export default function SettingsCenter() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   State
                 </label>
                 <input
@@ -377,7 +348,7 @@ export default function SettingsCenter() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   Zip
                 </label>
                 <input
@@ -389,9 +360,8 @@ export default function SettingsCenter() {
               </div>
             </div>
 
-
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-900">
+              <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                 About
               </label>
               <textarea
@@ -403,16 +373,17 @@ export default function SettingsCenter() {
             </div>
           </div>
 
-
           <button
             onClick={handleSaveProfile}
             disabled={isUpdatingProfile || isUploadingImage}
-            className="mt-6 rounded-full  bg-[#2563eb] w-fit px-3 py-2.5 text-lg font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            className="mt-6 rounded-full  bg-[#2563eb] w-fit px-3 py-2.5 xl:lg:text-[22px] md:text-[18px] text-[16px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
           </button>
         </div>
 
+        {/* 3. Payment Method */}
+        <PaymentCardManagement />
 
         {/* 2. Password Management */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
@@ -421,17 +392,18 @@ export default function SettingsCenter() {
               <Lock className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-lg font-bold text-gray-900">
+              <h4 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-bold text-gray-900">
                 Password Management
               </h4>
-              <p className="text-sm text-gray-500">Update your password</p>
+              <p className="xl:lg:text-[20px] md:text-[18px] text-[16px] text-gray-500">
+                Update your password
+              </p>
             </div>
           </div>
 
-
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-900">
+              <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                 Current Password
               </label>
               <div className="relative">
@@ -456,10 +428,9 @@ export default function SettingsCenter() {
               </div>
             </div>
 
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   New Password
                 </label>
                 <div className="relative">
@@ -484,7 +455,7 @@ export default function SettingsCenter() {
                 </div>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">
+                <label className="mb-2 block xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-gray-900">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -511,20 +482,18 @@ export default function SettingsCenter() {
             </div>
           </div>
 
-
           <div className="mt-5 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-4">
-            <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-700">
+            <p className="mb-3 flex items-center gap-2 xl:lg:text-[20px] md:text-[18px] text-[16px] font-semibold text-yellow-700">
               <span>⚠️</span>
               Password Requirements:
             </p>
-            <ul className="space-y-2 text-xs text-yellow-700">
+            <ul className="space-y-2 xl:lg:text-[20px] md:text-[18px] text-[16px] text-yellow-700">
               <li>• At least 8 characters long</li>
               <li>• Include uppercase and lowercase letters</li>
               <li>• Include at least one number</li>
               <li>• Include at least one special character</li>
             </ul>
           </div>
-
 
           <button
             onClick={handleUpdatePassword}
@@ -535,11 +504,6 @@ export default function SettingsCenter() {
           </button>
         </div>
 
-
-        {/* 3. Payment Method */}
-        <PaymentCardManagement />
-
-
         {/* 4. Security & Device */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
           <div className="mb-5 flex items-start gap-3">
@@ -547,15 +511,14 @@ export default function SettingsCenter() {
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">
+              <h4 className="xl:lg:text-[24px] md:text-[20px] text-[18px] font-semibold text-gray-900">
                 Security & Device
               </h4>
-              <p className="text-sm text-gray-500">
+              <p className="xl:lg:text-[20px] md:text-[18px] text-[16px] text-gray-500">
                 The security checkup of your account
               </p>
             </div>
           </div>
-
 
           {/* 2 Step Verification */}
           <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 px-4 py-4">
@@ -570,16 +533,17 @@ export default function SettingsCenter() {
             <button
               onClick={handleToggleMfa}
               disabled={isTogglingMfa}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${twoFactorAuth ? "bg-[#2563eb]" : "bg-gray-200"
-                }`}
+              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${
+                twoFactorAuth ? "bg-[#2563eb]" : "bg-gray-200"
+              }`}
             >
               <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${twoFactorAuth ? "translate-x-7" : "translate-x-1"
-                  }`}
+                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                  twoFactorAuth ? "translate-x-7" : "translate-x-1"
+                }`}
               />
             </button>
           </div>
-
 
           {/* Device Sessions */}
           {sessionsData?.data && sessionsData.data.length > 0 && (
@@ -588,7 +552,10 @@ export default function SettingsCenter() {
                 Your Device & active sessions
               </h3>
               {sessionsData.data.map((device, idx) => {
-                const isDesktop = device.deviceName.toLowerCase().includes("windows") || device.deviceName.toLowerCase().includes("mac") || device.deviceName.toLowerCase().includes("desktop");
+                const isDesktop =
+                  device.deviceName.toLowerCase().includes("windows") ||
+                  device.deviceName.toLowerCase().includes("mac") ||
+                  device.deviceName.toLowerCase().includes("desktop");
                 return (
                   <details
                     key={idx}
@@ -612,37 +579,35 @@ export default function SettingsCenter() {
                         <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
                       </div>
                     </summary>
-                    <div className="mt-4 grid grid-cols-3 gap-y-4 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
+                    <div className="mt-4 flex flex-col gap-y-6 text-sm text-[#A95600] border-t border-[#F1D38A]/50 pt-4">
                       {device.sessions.map((session, sIdx) => {
                         const d = new Date(session.lastLogin);
-                        const formattedDate = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()} - ${d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`;
-
+                        const formattedDate = `${d.toLocaleString("en-US", { month: "short" })} ${d.getDate()} - ${d.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).toLowerCase()}`;
 
                         return (
-                          <React.Fragment key={`${idx}-${sIdx}`}>
-                            <div className="flex items-center gap-2">
-                              <p>Last login:</p>
-                              <p>{formattedDate}</p>
+                          <div key={`${idx}-${sIdx}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-b border-[#F1D38A]/30 pb-4 last:border-0 last:pb-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                              <p className="text-[14px] lg:text-[16px] font-medium">Last login:</p>
+                              <p className="text-[15px] lg:text-[17px] font-semibold">{formattedDate}</p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <p>IP Address:</p>
-                              <p>{session.ipAddress}</p>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                              <p className="text-[14px] lg:text-[16px] font-medium">IP Address:</p>
+                              <p className="text-[15px] lg:text-[17px] font-semibold">{session.ipAddress}</p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <p>Session Due:</p>
-                              <p>{session.sessionDue}</p>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                              <p className="text-[14px] lg:text-[16px] font-medium">Session Due:</p>
+                              <p className="text-[15px] lg:text-[17px] font-semibold">{session.sessionDue}</p>
                             </div>
-                          </React.Fragment>
-                        )
+                          </div>
+                        );
                       })}
                     </div>
                   </details>
-                )
+                );
               })}
             </div>
           )}
         </div>
-
 
         {/* 4. Communication Preferences */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex flex-col gap-5">
@@ -660,7 +625,6 @@ export default function SettingsCenter() {
             </div>
           </div>
 
-
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -673,16 +637,17 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setEmailNotifications(!emailNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${emailNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                  }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  emailNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${emailNotifications ? "translate-x-7" : "translate-x-1"
-                    }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    emailNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
                 />
               </button>
             </div>
-
 
             <div className="flex items-center justify-between">
               <div>
@@ -693,16 +658,17 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setSmsNotifications(!smsNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${smsNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                  }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  smsNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${smsNotifications ? "translate-x-7" : "translate-x-1"
-                    }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    smsNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
                 />
               </button>
             </div>
-
 
             <div className="flex items-center justify-between">
               <div>
@@ -715,17 +681,18 @@ export default function SettingsCenter() {
               </div>
               <button
                 onClick={() => setPushNotifications(!pushNotifications)}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${pushNotifications ? "bg-[#2563eb]" : "bg-gray-200"
-                  }`}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 ${
+                  pushNotifications ? "bg-[#2563eb]" : "bg-gray-200"
+                }`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${pushNotifications ? "translate-x-7" : "translate-x-1"
-                    }`}
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-all duration-300 ease-in-out ${
+                    pushNotifications ? "translate-x-7" : "translate-x-1"
+                  }`}
                 />
               </button>
             </div>
           </div>
-
 
           <button
             onClick={handleSavePreferences}
@@ -739,6 +706,3 @@ export default function SettingsCenter() {
     </div>
   );
 }
-
-
-
