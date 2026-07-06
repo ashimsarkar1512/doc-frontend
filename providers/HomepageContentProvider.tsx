@@ -14,10 +14,24 @@ const HomepageContext = createContext<HomepageContextValue>({
   isLoading: true,
 })
 
-export const HomepageContentProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data, isLoading } = useGetHomepageContentQuery(undefined, { refetchOnFocus: true, refetchOnMountOrArgChange: true })
+export const HomepageContentProvider = ({ 
+  children,
+  initialData 
+}: { 
+  children: React.ReactNode;
+  initialData?: HomepageContent 
+}) => {
+  const { data, isLoading } = useGetHomepageContentQuery(undefined, { 
+    refetchOnFocus: true, 
+    refetchOnMountOrArgChange: true 
+  })
+
+  // Use initialData instantly while client-side fetch happens in background
+  const content = data || initialData;
+  const loading = !content && isLoading;
+
   return (
-    <HomepageContext.Provider value={{ content: data, isLoading }}>
+    <HomepageContext.Provider value={{ content, isLoading: loading }}>
       {children}
     </HomepageContext.Provider>
   )
