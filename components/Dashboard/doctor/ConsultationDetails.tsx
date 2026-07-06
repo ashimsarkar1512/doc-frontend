@@ -547,9 +547,9 @@ export default function ConsultationDetails() {
       {/* Back Link — text now comes from assessment.title instead of being hardcoded */}
       <Link
         href="/doctor"
-        className="inline-flex items-center gap-2 text-xl font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
+        className="inline-flex items-center gap-2 text-2xl font-semibold text-gray-800 mb-6 hover:text-blue-600 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-6 h-6" />
         {assessment?.title || "Back to Dashboard"}
       </Link>
 
@@ -575,7 +575,7 @@ export default function ConsultationDetails() {
               <h2 className="text-base md:text-2xl font-bold text-gray-900">
                 Patient: {patientName || " "}
               </h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base md:text-xl text-gray-500 mt-0.5">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base md:text-xl text-[#272628] mt-0.5">
                 <span>
                   Consultation ID: #{detailesData?.submissionCode || "N/A"}
                 </span>
