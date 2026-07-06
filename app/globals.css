@@ -272,3 +272,16 @@ a,
 .product-description .ql-font-monospace {
   font-family: Monaco, 'Courier New', monospace;
 }
+
+/* Hide Clover Injected Footer */
+body > iframe[src*="clover"],
+div[id^="clover-footer"],
+iframe[id^="clover-footer"],
+.clover-footer {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+

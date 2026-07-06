@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAcceptProposalMutation } from '@/Redux/api/messageApi';
+import CloverCheckoutPayment from '../checkout/CloverCheckoutPayment';
 
 interface AcceptProposalPaymentModalProps {
   isOpen: boolean;
@@ -17,43 +18,70 @@ export default function AcceptProposalPaymentModal({
   onSuccess
 }: AcceptProposalPaymentModalProps) {
   const [acceptProposal, { isLoading }] = useAcceptProposalMutation();
+  
+  const [paymentPayload, setPaymentPayload] = useState<{ cloverToken?: string; savedCardId?: string; cardHolderName?: string; isReady: boolean }>({ isReady: false });
+  const cloverInstanceRef = useRef<any>(null);
 
   const [formData, setFormData] = useState({
-    paymentMethod: 'CARD',
-    cardHolderName: 'Alan Cattach',
-    cardNumber: '4111111111111111',
-    expiryDate: '12/26',
-    cvv: '123',
     agreed: true
   });
 
+  const [isTokenizing, setIsTokenizing] = useState(false);
+
   if (!isOpen || !proposal) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target as any;
-    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-    setFormData(prev => ({ ...prev, [name]: val }));
+  const handleMethodChange = (data: { cloverToken?: string; savedCardId?: string; cardHolderName?: string; isReady: boolean }) => {
+    setPaymentPayload(data);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!formData.agreed) {
       toast.error('You must agree to the privacy policy and terms of service.');
       return;
     }
 
+    if (!paymentPayload.isReady) {
+        toast.error("Please complete your payment details.");
+        return;
+    }
+
     try {
-      const paymentData = {
-        paymentMethod: formData.paymentMethod,
-        cardholderName: formData.cardHolderName,
-        cardNumber: formData.cardNumber.replace(/\s+/g, ''),
-        expiryDate: formData.expiryDate,
-        cvv: formData.cvv
+      setIsTokenizing(true);
+      let payloadToSubmit: any = {
+        paymentMethod: 'CLOVER',
       };
+
+      if (!paymentPayload.savedCardId && cloverInstanceRef.current) {
+          const result = await cloverInstanceRef.current.createToken({
+             name: paymentPayload.cardHolderName || ""
+          });
+          
+          if (result.errors || result.error) {
+              toast.error("Invalid card details. Please check and try again.");
+              setIsTokenizing(false);
+              return;
+          }
+          
+          payloadToSubmit.cloverToken = result.token;
+          payloadToSubmit.cardholderName = paymentPayload.cardHolderName;
+      } else if (paymentPayload.savedCardId) {
+          payloadToSubmit.savedCardId = paymentPayload.savedCardId;
+      } else {
+          toast.error("Please provide valid payment details.");
+          setIsTokenizing(false);
+          return;
+      }
 
       await acceptProposal({
         proposalId: proposal.id,
-        paymentData
+        paymentData: payloadToSubmit
       }).unwrap();
 
       toast.success('Proposal accepted and payment successful!');
@@ -61,6 +89,8 @@ export default function AcceptProposalPaymentModal({
       onClose();
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to process payment. Please try again.');
+    } finally {
+      setIsTokenizing(false);
     }
   };
 
@@ -94,73 +124,9 @@ export default function AcceptProposalPaymentModal({
         <div className="flex flex-col md:flex-row border-t border-gray-100">
           
           {/* Left: Form */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 h-[500px] overflow-y-auto custom-scrollbar">
             <form id="payment-form" onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-1.5 font-[Quicksand]">Payment Method</label>
-                <select 
-                  name="paymentMethod"
-                  value={formData.paymentMethod}
-                  onChange={handleChange}
-                  className="w-full bg-[#f4f4f4] border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-lg px-4 py-2.5 text-gray-700 outline-none transition-colors"
-                >
-                  <option value="CARD">Default card</option>
-                  <option value="BANK">Bank Transfer</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-1.5 font-[Quicksand]">Card Holder Name</label>
-                <input 
-                  type="text" 
-                  name="cardHolderName"
-                  value={formData.cardHolderName}
-                  onChange={handleChange}
-                  placeholder="Alan Cattach"
-                  className="w-full bg-[#f4f4f4] border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-lg px-4 py-2.5 text-gray-700 outline-none transition-colors"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-1.5 font-[Quicksand]">Card Number</label>
-                <input 
-                  type="text" 
-                  name="cardNumber"
-                  value={formData.cardNumber}
-                  onChange={handleChange}
-                  placeholder="**** **** **** 3456"
-                  className="w-full bg-[#f4f4f4] border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-lg px-4 py-2.5 text-gray-700 outline-none transition-colors"
-                  required
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-medium mb-1.5 font-[Quicksand]">Expired Date</label>
-                  <input 
-                    type="text" 
-                    name="expiryDate"
-                    value={formData.expiryDate}
-                    onChange={handleChange}
-                    placeholder="12/26"
-                    className="w-full bg-[#f4f4f4] border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-lg px-4 py-2.5 text-gray-700 outline-none transition-colors"
-                    required
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-medium mb-1.5 font-[Quicksand]">CVV</label>
-                  <input 
-                    type="text" 
-                    name="cvv"
-                    value={formData.cvv}
-                    onChange={handleChange}
-                    placeholder="123"
-                    className="w-full bg-[#f4f4f4] border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-lg px-4 py-2.5 text-gray-700 outline-none transition-colors"
-                    required
-                  />
-                </div>
-              </div>
+               <CloverCheckoutPayment onPaymentReady={handleMethodChange} cloverInstanceRef={cloverInstanceRef} />
 
               <div className="flex items-center gap-2 mt-4 pt-2">
                 <input 
@@ -169,10 +135,10 @@ export default function AcceptProposalPaymentModal({
                   name="agreed"
                   checked={formData.agreed}
                   onChange={handleChange}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
                 />
-                <label htmlFor="agreed" className="text-sm text-gray-600 font-[Quicksand]">
-                  I agree to the <span className="underline cursor-pointer hover:text-gray-900">privacy policy</span> & <span className="underline cursor-pointer hover:text-gray-900">terms of service</span>.
+                <label htmlFor="agreed" className="text-sm text-gray-600 font-[Quicksand] cursor-pointer">
+                  I agree to the <span className="underline hover:text-gray-900">privacy policy</span> & <span className="underline hover:text-gray-900">terms of service</span>.
                 </label>
               </div>
             </form>
@@ -212,10 +178,10 @@ export default function AcceptProposalPaymentModal({
               <button 
                 type="submit"
                 form="payment-form"
-                disabled={isLoading}
+                disabled={isLoading || isTokenizing}
                 className="px-6 py-2.5 rounded-lg bg-[#2563eb] hover:bg-blue-700 text-white font-medium font-[Quicksand] shadow-sm transition-colors disabled:opacity-70 flex items-center gap-2"
               >
-                {isLoading ? 'Processing...' : 'Confirm'}
+                {isLoading || isTokenizing ? 'Processing...' : 'Confirm'}
               </button>
             </div>
           </div>

@@ -240,10 +240,10 @@ export default function PaymentCardManagement() {
         throw new Error("No token received from Clover. Please try again.");
       }
 
-      const last4: string = result.card?.last4 || "****";
-      const brand: string = result.card?.brand || "Card";
-      const expMonth: number = parseInt(result.card?.exp_month || "0", 10);
-      const expYear: number = parseInt(result.card?.exp_year || "0", 10);
+      const last4: string = result.last4 || result.card?.last4 || "****";
+      const brand: string = result.brand || result.card?.brand || "Card";
+      const expMonth: number = parseInt(result.exp_month || result.card?.exp_month || "0", 10);
+      const expYear: number = parseInt(result.exp_year || result.card?.exp_year || "0", 10);
 
       await createCard({
         cloverToken,
@@ -364,8 +364,8 @@ export default function PaymentCardManagement() {
               <div key={card.id} className="rounded-xl border border-gray-200 p-5 space-y-4">
                 {/* Card Holder */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
-                    Card Holder
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Card Holder Name
                   </label>
                   {isEditing ? (
                     <input
@@ -383,7 +383,7 @@ export default function PaymentCardManagement() {
 
                 {/* Card Number */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Card Number
                   </label>
                   <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-2.5">
@@ -399,8 +399,8 @@ export default function PaymentCardManagement() {
                 {/* Expiry + CVV */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
-                      Expiry (MM/YY)
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Expiry Date
                     </label>
                     {isEditing ? (
                       <input
@@ -416,10 +416,10 @@ export default function PaymentCardManagement() {
                           const parts = val.split('/');
                           let mm = parts[0] || "";
                           let yy = parts[1] || "";
-                          
+
                           // Auto format MM/YY
                           if (mm.length === 2 && !val.includes('/') && e.target.value.length === 3) {
-                              yy = e.target.value[2];
+                            yy = e.target.value[2];
                           }
 
                           setEditData(prev => ({
@@ -439,7 +439,7 @@ export default function PaymentCardManagement() {
                     )}
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                       CVV
                     </label>
                     <div className="rounded-lg bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-500">
@@ -464,7 +464,7 @@ export default function PaymentCardManagement() {
                       />
                     </button>
                     {card.isDefault && (
-                      <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                      <span className="hidden md:block text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                         Active
                       </span>
                     )}
@@ -497,7 +497,7 @@ export default function PaymentCardManagement() {
                           className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
                           <Edit2 className="w-4 h-4" />
-                          Edit
+                          <span className="hidden md:block">Edit</span>
                         </button>
                         <button
                           onClick={() => handleDelete(card.id)}
@@ -505,7 +505,7 @@ export default function PaymentCardManagement() {
                           className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
                           <Trash2 className="w-4 h-4" />
-                          Delete
+                          <span className="hidden md:block">Delete</span>
                         </button>
                       </>
                     )}
