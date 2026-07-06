@@ -30,7 +30,7 @@ export default function NewsLetter() {
   return (
     <form
       onSubmit={handleSubscribe}
-      className="mt-6 flex items-center justify-between w-full max-w-[420px] bg-[#313e40] rounded-[14px] p-[6px] border border-white/5"
+      className="flex items-center justify-between w-full max-w-[456px] h-[58px] bg-[#313e40] rounded-[14px] pl-[16px] pr-[8px] border border-white/5"
     >
       <input
         type="email"
@@ -39,18 +39,17 @@ export default function NewsLetter() {
         placeholder="Enter your mail"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 bg-transparent text-white placeholder-white/50 text-[16px] font-normal font-[Quicksand] px-3 outline-none border-none disabled:opacity-50"
+        className="flex-1 min-w-0 bg-transparent text-white placeholder-white text-[20px] leading-[150%] font-normal outline-none border-none disabled:opacity-50"
+        style={{ fontFamily: 'Quicksand, sans-serif' }}
       />
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium text-[16px] px-6 py-2.5 rounded-[10px] transition-all duration-300 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap font-[Quicksand]"
+        className="w-[120px] h-[42px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium text-[20px] leading-[150%] rounded-[10px] transition-all duration-300 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
+        style={{ fontFamily: 'Quicksand, sans-serif' }}
       >
         {isLoading ? (
-          <>
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span>Subscribing...</span>
-          </>
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
           "Subscribe"
         )}

@@ -12,6 +12,8 @@ interface AssessmentDeclineModalProps {
   patientName: string;
   consultationId: string;
   submittedDate: string;
+
+  statusUpdatedId:string
 }
 
 export default function AssessmentDeclineModal({
@@ -20,6 +22,7 @@ export default function AssessmentDeclineModal({
   patientName,
   consultationId,
   submittedDate,
+  statusUpdatedId
 }: AssessmentDeclineModalProps) {
   const [reason, setReason] = useState("");
 
@@ -39,7 +42,7 @@ export default function AssessmentDeclineModal({
   const handleSubmit = async () => {
     try {
       const res = await updateConsultationStatus({
-        id: consultationId,
+        id: statusUpdatedId,
         body: {
           status: "REJECTED",
           doctorNotes: reason,

@@ -36,9 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${quicksand.variable} h-full antialiased overflow-x-hidden`}
     >
-      <body className=" font-sans min-h-full flex flex-col" suppressHydrationWarning>
+      <body className=" font-sans min-h-full flex flex-col overflow-x-hidden" suppressHydrationWarning>
         <ReduxProvider>
           <SocketProvider>
             <E2EEProvider>

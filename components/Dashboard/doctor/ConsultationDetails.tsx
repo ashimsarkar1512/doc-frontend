@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-
 //* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -97,14 +96,38 @@ function computeBmiSnapshot(options: any[], values: string[]) {
 
   if (heightIdx === -1 || weightIdx === -1) return null;
 
-  const heightFeet = parseFloat(values[heightIdx]);
+  const rawHeight = values[heightIdx];
   const weightLbs = parseFloat(values[weightIdx]);
 
-  if (!heightFeet || !weightLbs || heightFeet <= 0 || weightLbs <= 0) {
-    return null;
+  if (!rawHeight || !weightLbs || weightLbs <= 0) return null;
+
+  let heightInches: number;
+
+  // Format: 5'10" or 5' 10"
+  const feetInchesMatch = rawHeight.match(/(\d+)\s*'\s*(\d+)?/);
+  if (feetInchesMatch) {
+    const ft = parseInt(feetInchesMatch[1], 10);
+    const inches = parseInt(feetInchesMatch[2] || "0", 10);
+    heightInches = ft * 12 + inches;
+  } else {
+    const num = parseFloat(rawHeight);
+    if (!num || num <= 0) return null;
+
+    if (num <= 9) {
+      // Decimal feet, e.g. "5.9" -> 5 ft 9 in style is ambiguous,
+      // treat as pure feet decimal (5.9 ft)
+      heightInches = num * 12;
+    } else if (num > 9 && num < 96) {
+      // Already in inches (e.g. 67)
+      heightInches = num;
+    } else {
+      // Likely centimeters (e.g. 178)
+      heightInches = num / 2.54;
+    }
   }
 
-  const heightInches = heightFeet * 12;
+  if (!heightInches || heightInches <= 0) return null;
+
   const bmi = (703 * weightLbs) / (heightInches * heightInches);
 
   let category = "Normal";
@@ -137,7 +160,7 @@ function QuestionRenderer({ question }: { question: any }) {
     switch (type) {
       case "INFORMATION_ONLY":
         return (
-           <div
+          <div
             className="text-base md:text-xl text-gray-700"
             dangerouslySetInnerHTML={{ __html: description }}
           />
@@ -300,7 +323,9 @@ function QuestionRenderer({ question }: { question: any }) {
   return (
     <div className="border border-gray-200 rounded-xl p-5 hover:border-gray-200 transition-colors bg-white">
       {heading && (
-        <h3 className="text-[#2B2922] font-[Quicksand] text-base  md:text-[24px] font-bold leading-[1.5] mb-2">{heading}</h3>
+        <h3 className="text-[#2B2922] font-[Quicksand] text-base  md:text-[24px] font-bold leading-[1.5] mb-2">
+          {heading}
+        </h3>
       )}
       {questionText && (
         <h4 className="text-[#2B2922] font-[Quicksand] text-base  md:text-[24px] font-bold leading-[1.5] mb-3">
@@ -408,7 +433,7 @@ function ComplianceConfirmationSection({
         <span className="break-words">Compliance Confirmation:</span>
       </h3>
 
-      <div className="space-y-2 sm:space-y-3 overflow-x-scroll">
+      <div className="space-y-2 sm:space-y-3 overflow-x-auto sm:overflow-x-visible">
         {items.map((item) => (
           <div key={item.key} className="flex items-start gap-2 sm:gap-3">
             <div className="mt-1 shrink-0">
@@ -423,6 +448,24 @@ function ComplianceConfirmationSection({
     </div>
   );
 }
+const getStatusStyle = (status?: string) => {
+  switch (status) {
+    case "DRAFT":
+      return "bg-gray-200 text-gray-700";
+    case "PENDING":
+      return "bg-yellow-100 text-yellow-700";
+    case "REVIEWED":
+      return "bg-blue-100 text-blue-700";
+    case "ACCEPTED":
+      return "bg-green-100 text-green-700";
+    case "REFIL_REQUESTED":
+      return "bg-purple-100 text-purple-700";
+    case "REJECTED":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-600";
+  }
+};
 // ====================================================================
 // Main Consultation Details Component
 // ====================================================================
@@ -434,13 +477,14 @@ export default function ConsultationDetails() {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("consultationId");
+  console.log(id);
 
   const { data, isLoading, isError } = useGetConsultationByIdQuery(id);
 
-  
   const detailesData = data?.data;
-  console.log("iam the detaiddd",detailesData);
-  console.log(detailesData?.assesment)
+  console.log("iam the detaiddd", detailesData);
+  const statusUpdatedId = detailesData?.submissionId;
+  console.log(statusUpdatedId);
   const user = useAppSelector((state) => state.auth.user);
   console.log(user);
   if (isLoading)
@@ -479,14 +523,14 @@ export default function ConsultationDetails() {
 
   const answeredQuestions = questions.filter(isQuestionAnswered);
 
-  // date formate 
+  // date formate
   const formattedDate = detailesData?.submissionDate
-  ? new Date(detailesData.submissionDate).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    })
-  : "N/A";
+    ? new Date(detailesData.submissionDate).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "N/A";
   // Backend doesn't send a dedicated `patientName` field yet.
   // We fall back to whichever question's text contains "name" (matches your
   // "Your name?" question) and use its typed answer as the patient's name.
@@ -513,9 +557,11 @@ export default function ConsultationDetails() {
       <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 sm:w-12 sm:h-12 
+            <div
+              className="relative w-12 h-12 sm:w-12 sm:h-12 
                 min-w-[48px] min-h-[48px] 
-                shrink-0 rounded-full overflow-hidden border border-gray-100">
+                shrink-0 rounded-full overflow-hidden border border-gray-100"
+            >
               {/* Using a placeholder as patient image is not in the data */}
               <Image
                 src={patientImage || notFoundImag}
@@ -527,28 +573,38 @@ export default function ConsultationDetails() {
             </div>
             <div>
               <h2 className="text-base md:text-2xl font-bold text-gray-900">
-                Patient: {patientName || ' '}
+                Patient: {patientName || " "}
               </h2>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-base md:text-xl text-gray-500 mt-0.5">
                 <span>
                   Consultation ID: #{detailesData?.submissionCode || "N/A"}
                 </span>
                 {/* Add submitted date if available in API */}
-                 <span>
-                  Submitted: {formattedDate}
-                </span>
+                <span>Submitted: {formattedDate}</span>
               </div>
             </div>
           </div>
-          {assessment?.category && (
-            <div className="bg-[#EAF3FF] text-black text-sm md:text-base font-semibold px-6 py-3 rounded-full w-fit">
-              {assessment.category}
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            {assessment?.category && (
+              <div className="bg-[#EAF3FF] text-black text-xs md:text-sm font-semibold px-4 md:px-6 py-2 md:py-3 rounded-full w-fit">
+                {assessment.category}
+              </div>
+            )}
+
+            {detailesData?.status && (
+              <div
+                className={`text-xs md:text-sm font-semibold px-4 md:px-6 py-2 md:py-3 rounded-full w-fit ${getStatusStyle(
+                  detailesData.status,
+                )}`}
+              >
+                {detailesData.status.replace(/_/g, " ")}
+              </div>
+            )}
+          </div>
         </div>
 
         {assessment?.thumbnail && (
-          <div className="relative w-full h-[240px] md:h-[330px]  p-2 rounded-xl overflow-hidden mb-5">
+          <div className="relative w-full h-[240px] md:h-[450px]  p-2 rounded-xl overflow-hidden mb-5">
             <Image
               src={assessment.thumbnail}
               alt={assessment.title || "Assessment"}
@@ -557,12 +613,11 @@ export default function ConsultationDetails() {
               className="object-cover"
             />
           </div>
-          
         )}
 
         {assessment?.description && (
           <p className="text-gray-600 text-sm leading-relaxed">
-            {assessment.description}
+            {assessment.description || 'fdff'} 
           </p>
         )}
       </div>
@@ -731,7 +786,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
-        
+        statusUpdatedId={statusUpdatedId}
       />
       <RequestRefillModal
         isOpen={isRefillModalOpen}
@@ -739,6 +794,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
+        statusUpdatedId={statusUpdatedId}
       />
       <AssessmentDeclineModal
         isOpen={isDeclineModalOpen}
@@ -746,6 +802,7 @@ export default function ConsultationDetails() {
         patientName={patientName}
         consultationId={detailesData?.submissionCode ?? ""}
         submittedDate={detailesData?.submissionDate}
+        statusUpdatedId={statusUpdatedId}
       />
     </div>
   );
