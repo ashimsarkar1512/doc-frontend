@@ -132,9 +132,8 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
 
       {/* Blue Sidebar Box */}
       <div
-        className="flex flex-col items-start self-stretch shrink-0"
+        className="flex flex-col items-start self-stretch shrink-0 w-full lg:w-[350px]"
         style={{
-          width: '350px',
           padding: '16px',
           gap: '16px',
           borderRadius: '16px',

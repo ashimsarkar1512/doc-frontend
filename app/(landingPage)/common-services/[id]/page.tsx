@@ -135,11 +135,11 @@ export default function CommonServicesPage() {
       </section>
 
       {/* ── INTRO TEXT ── */}
-      <section className="max-w-[1168px] mx-auto px-4 sm:px-6 mt-16 text-center flex flex-col items-center">
-        <h2 className="font-[Quicksand] text-[22px] font-semibold text-[#272628] text-center leading-[100%] mb-6">
+      <section className="max-w-[1168px] mx-auto px-4 sm:px-6 mt-[100px] text-center flex flex-col items-center">
+        <h2 className="font-[Quicksand] text-[36px] md:text-[54px] font-semibold text-[#272628] text-center leading-[110%] mb-[50px]">
           {servicePageData?.secondSection?.sectionTitle || `${detailesData?.[0]?.categoryName || "Weight Loss"} at WLMD`}
         </h2>
-        <p className="text-center text-[#3B3B3B] font-[Quicksand] text-[16px] md:text-[20px] font-normal leading-[150%] mb-12">
+        <p className="text-center text-[#3B3B3B] font-[Quicksand] text-[16px] md:text-[20px] font-normal leading-[150%] mb-[80px]">
           {servicePageData?.secondSection?.sectionDescription || (
             `We provide medical ${detailesData?.[0]?.categoryName?.toLowerCase() || "weight loss"} plans for our patients in Colorado. We offer programs customized to fit your specific needs, focusing on steady, consistent results over time. Your customized program may include a combination of FDA-approved medications, supplements, and B12/Lipotropic injections. Results may vary depending based on strict compliance. All treatments are supervised carefully with WLMD and state regulations. Results usually are often directly correlated with keeping up with care. For more details on individual outcomes, ask to see our medical providers.`
           )}
@@ -151,19 +151,18 @@ export default function CommonServicesPage() {
               servicePageData?.secondSection?.buttonTarget ? "_blank" : "_self"
             )
           }
-          className="flex items-center justify-center gap-[15px] border-[1.5px] border-[#272628] text-[#3B3B3B] font-[Quicksand] text-[20px] font-normal leading-[150%] px-[32px] py-[22px] rounded-[46px] hover:bg-gray-50 transition-colors"
+          className="flex items-center justify-center gap-[15px] border-[1.5px] border-[#272628] text-[#3B3B3B] font-[Quicksand] text-[20px] font-normal leading-[150%] px-[32px] py-[22px] rounded-[46px] hover:bg-gray-50 transition-colors mb-[80px]"
         >
           {servicePageData?.secondSection?.ctaButtonText || "Book Appointment"}
         </button>
       </section>
-
+ 
       {/* ── SERVICE-2 IMAGE ── */}
-      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 w-full">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 w-full">
         <div className="relative w-full h-[300px] md:h-[450px] rounded-[32px] overflow-hidden">
           <Image
-            // src="/service-2.png"
-            src={image}
-            alt="Fitness and wellness"
+            src={servicePageData?.secondSection?.featuredMedia?.fileUrl || image}
+            alt={servicePageData?.secondSection?.sectionTitle || "Fitness and wellness"}
             fill
             className="object-cover object-center"
           />
