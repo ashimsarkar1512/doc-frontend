@@ -13,12 +13,18 @@ services:
         - NODE_ENV=production
         - NEXT_TELEMETRY_DISABLED=1
         - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
+        - NEXT_PUBLIC_CLOVER_PAKMS_KEY=${NEXT_PUBLIC_CLOVER_PAKMS_KEY:-dbbe599d5dbe806a9809adc246f3270f}
+        - NEXT_PUBLIC_CLOVER_MERCHANT_ID=${NEXT_PUBLIC_CLOVER_MERCHANT_ID:-C233HRQ3TW7N1}
+        - NEXT_PUBLIC_CLOVER_ENV=${NEXT_PUBLIC_CLOVER_ENV:-development}
 
     # Keep environment for runtime (in case the app reads them again at runtime)
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - NEXT_PUBLIC_API_BASE_URL=https://prod.weightlossmdcherrycreek.com
+      - NEXT_PUBLIC_CLOVER_PAKMS_KEY=${NEXT_PUBLIC_CLOVER_PAKMS_KEY:-dbbe599d5dbe806a9809adc246f3270f}
+      - NEXT_PUBLIC_CLOVER_MERCHANT_ID=${NEXT_PUBLIC_CLOVER_MERCHANT_ID:-C233HRQ3TW7N1}
+      - NEXT_PUBLIC_CLOVER_ENV=${NEXT_PUBLIC_CLOVER_ENV:-development}
       - API_BASE_URL=https://prod.weightlossmdcherrycreek.com/api/v1 # Change 'server' and '5000' to your backend service name and port if needed
 
     ports:
