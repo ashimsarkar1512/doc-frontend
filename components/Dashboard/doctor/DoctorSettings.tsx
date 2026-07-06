@@ -165,14 +165,20 @@ export default function DoctorSettings() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("context", "PROFILE_PICTURE");
+    formData.append("files", file);
 
     try {
       const result = await uploadAttachment(formData).unwrap();
-      setAvatarId(result.data.id);
+      const newAvatarId = result.data.id;
+      setAvatarId(newAvatarId);
+      
+      await updateProfile({ avatarId: newAvatarId }).unwrap();
+
       const nextImage = URL.createObjectURL(file);
       setProfileImage(nextImage);
       toast.success("Profile picture updated");
+      refetch();
     } catch (error) {
       toast.error("Failed to upload image");
     }
@@ -619,16 +625,28 @@ export default function DoctorSettings() {
                     return (
                       <React.Fragment key={`${idx}-${sIdx}`}>
                         <div className="flex items-center gap-2 ">
-                          <p className="text-[18px] font-medium ">Last login:</p>
-                          <p className="text-[20px] font-semibold">{formattedDate}</p>
+                          <p className="text-[18px] font-medium ">
+                            Last login:
+                          </p>
+                          <p className="text-[20px] font-semibold">
+                            {formattedDate}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className="text-[18px] font-medium ">IP Address:</p>
-                          <p className="text-[20px] font-semibold">{session.ipAddress}</p>
+                          <p className="text-[18px] font-medium ">
+                            IP Address:
+                          </p>
+                          <p className="text-[20px] font-semibold">
+                            {session.ipAddress}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className="text-[18px] font-medium ">Session Due:</p>
-                          <p className="text-[20px] font-semibold">{session.sessionDue}</p>
+                          <p className="text-[18px] font-medium ">
+                            Session Due:
+                          </p>
+                          <p className="text-[20px] font-semibold">
+                            {session.sessionDue}
+                          </p>
                         </div>
                       </React.Fragment>
                     );
