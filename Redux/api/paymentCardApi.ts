@@ -24,6 +24,14 @@ export const paymentCardApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["PaymentCards"],
     }),
+    updatePaymentCard: builder.mutation<any, { id: string; data: any }>({
+      query: ({ id, data }) => ({
+        url: `/payment-cards/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["PaymentCards"],
+    }),
     deletePaymentCard: builder.mutation<any, string>({
       query: (id) => ({
         url: `/payment-cards/${id}`,
@@ -38,5 +46,6 @@ export const {
   useGetPaymentCardsQuery,
   useCreatePaymentCardMutation,
   useSetDefaultPaymentCardMutation,
+  useUpdatePaymentCardMutation,
   useDeletePaymentCardMutation,
 } = paymentCardApi;
