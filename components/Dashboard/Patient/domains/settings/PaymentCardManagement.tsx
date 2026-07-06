@@ -145,7 +145,6 @@ export default function PaymentCardManagement() {
         if (e.origin.includes('clover.com') && e.data) {
           try {
             const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-            if (data.type === 'clover_error' || data.error) console.log("[Clover PostMessage Error]", data);
           } catch (_) { }
         }
       };
