@@ -26,6 +26,7 @@ export default function MedicalTeamPage() {
   const [selectedDoctor, setSelectedDoctor] = React.useState<Doctor | null>(
     null,
   );
+  
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -224,3 +225,5 @@ export default function MedicalTeamPage() {
     </div>
   );
 }
+
+

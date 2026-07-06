@@ -54,10 +54,10 @@ export default function HowItWorksPage() {
           </div>
         ) : (
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-3">
+            <h2 className="text-2xl md:text-[54px] font-bold text-[#3B3B3B] tracking-tight mb-3">
               {pageData?.sectionTitle || "Your Patient Journey"}
             </h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-xl">
               {pageData?.sectionDescription || "Six structured steps from assessment to ongoing care"}
             </p>
           </div>
@@ -69,8 +69,8 @@ export default function HowItWorksPage() {
               {/* Step number block — floats outside the card */}
               <div className="flex flex-col items-center flex-shrink-0 pt-1">
                 <div className="w-14 h-14 bg-[#2563eb] rounded-[14px] flex flex-col items-center justify-center shadow-md text-white leading-tight">
-                  <span className="text-[13px] font-normal tracking-wide">Step</span>
-                  <span className="text-[18px] font-medium">{index + 1}</span>
+                  <span className="text-base font-normal tracking-wide">Step</span>
+                  <span className="text-base font-medium">{index + 1}</span>
                 </div>
               </div>
 
@@ -81,17 +81,17 @@ export default function HowItWorksPage() {
               >
                 {/* Title + Duration */}
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className="text-[15.5px] font-semibold text-gray-900 leading-snug">
+                  <h3 className="text-2xl font-semibold text-[#2B2922] leading-snug">
                     {step.title}
                   </h3>
-                  <span className="inline-flex items-center gap-1 bg-[#dce8fb] text-[#3b7ddd] text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
-                    <Clock className="w-3 h-3 stroke-[2.5]" />
+                  <span className="inline-flex items-center gap-1 bg-[#dce8fb] text-[#3b7ddd] text-lg font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+                    <Clock className="w-4 h-4 stroke-[2.5]" />
                     {step.timeline}
                   </span>
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-500 text-[13px] leading-relaxed mb-3">
+                <p className="text-gray-500 text-xl leading-relaxed mb-3">
                   {step.description}
                 </p>
               </div>
@@ -101,8 +101,8 @@ export default function HowItWorksPage() {
 
         {/* ── DISCLAIMER ── */}
         <div className="bg-[#fff5f5] border  rounded-2xl p-5 mt-5 flex items-start gap-3">
-          <ShieldAlert className="w-[22px] h-[22px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
-          <p className="text-gray-700 text-sm leading-relaxed">
+          <ShieldAlert className="w-[24px] h-[24px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
+          <p className="text-gray-700 text-xl leading-relaxed">
             <strong className="text-[#dc2626]">
               {pageData?.disclaimerTitle || "Provider Review Disclaimer"}
             </strong>
@@ -113,7 +113,7 @@ export default function HowItWorksPage() {
 
       {/* ── PROCESS QUESTIONS / FAQ ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4 mb-20 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-8 text-center">
+        <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-8 text-center">
           {pageData?.faqSectionTitle || "Process Questions"}
         </h2>
 
@@ -127,16 +127,16 @@ export default function HowItWorksPage() {
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
-                <span className="text-[13.5px] font-semibold text-gray-800 pr-4">
+                <span className="text-xl font-semibold text-gray-800 pr-4">
                   {faq.question}
                 </span>
-                <span className="flex-shrink-0 text-gray-400 text-xl font-light leading-none select-none">
+                <span className="flex-shrink-0 text-gray-800 text-xl font-light leading-none select-none">
                   {openFaq === index ? "−" : "+"}
                 </span>
               </button>
 
               {openFaq === index && (
-                <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                <div className="px-5 pb-4 text-xl text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
                   {faq.answer}
                 </div>
               )}
