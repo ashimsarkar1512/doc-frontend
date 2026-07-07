@@ -64,7 +64,7 @@ const BlogList = () => {
   const displayedPosts = filteredPosts.slice(0, visibleCount);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-2 mb-20">
+    <section className="w-full max-w-[1520px] mx-auto px-4 md:px-8 py-2 mb-20">
       {/* Category Filter */}
       <FadeIn className="flex flex-wrap items-center justify-start gap-2 mb-10">
         {categories.map((cat) => (

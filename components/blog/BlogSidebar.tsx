@@ -36,20 +36,26 @@ const BlogSidebar = () => {
 
         {/* Action Button */}
     <div className="absolute bottom-5 z-20 flex justify-center w-full">
-  <div className="relative z-10 inline-block p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
-    <button
-      onClick={() =>
-        window.open(
-          "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-          "_blank"
-        )
-      }
-      className="bg-[#1D4ED8] hover:bg-[#143499] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
-    >
-      Book a consultation
-    </button>
-  </div>
-</div>
+      <div className="relative z-10 inline-flex flex-col items-center justify-center p-[8px] gap-[10px] rounded-[50px] border-[1.5px] border-white/30 bg-[#1D1D1D]/30 backdrop-blur-sm">
+        <button
+          onClick={() =>
+            window.open(
+              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+              "_blank"
+            )
+          }
+          className="bg-[#1D4ED8] hover:bg-[#143499] text-white px-[32px] py-[12px] rounded-[50px] transition-colors whitespace-nowrap"
+          style={{
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "20px",
+            fontWeight: 600,
+            lineHeight: "100%",
+          }}
+        >
+          Book a consultation
+        </button>
+      </div>
+    </div>
       </div>
     </div>
   );
