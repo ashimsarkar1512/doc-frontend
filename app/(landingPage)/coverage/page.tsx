@@ -91,7 +91,7 @@ export default function CoveragePage() {
               Check Availability
             </h2>
 
-          <div className="max-w-lg mx-auto flex flex-col items-center gap-5">
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-5">
             {/* State dropdown */}
             <div className="w-full relative">
               <select
@@ -99,7 +99,7 @@ export default function CoveragePage() {
                 onChange={(e) => {
                   handleCategoryChange(e.target.value);
                 }}
-                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
+                className="w-full appearance-none bg-[#F0F0F0] border-0 rounded-[10px] px-4 py-3.5 text-lg text-[#272628] focus:outline-none cursor-pointer"
               >
                 <option value="">Select Service</option>
                 {categories.map((category) => (
@@ -108,7 +108,7 @@ export default function CoveragePage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-800">
                 <ChevronDown className="w-4 h-4 stroke-[2]" />
               </span>
             </div>
@@ -118,7 +118,7 @@ export default function CoveragePage() {
                 onChange={(e) => {
                   setSelectedStateId(e.target.value);
                 }}
-                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
+                className="w-full appearance-none bg-[#F0F0F0] border-0 rounded-[10px] px-4 py-3.5 text-lg text-[#272628]  focus:outline-none cursor-pointer "
               >
                 <option value="">Select your state</option>
                 {stateOptions.map((state) => (
@@ -127,7 +127,7 @@ export default function CoveragePage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-800">
                 <ChevronDown className="w-4 h-4 stroke-[2]" />
               </span>
             </div>
@@ -163,7 +163,7 @@ export default function CoveragePage() {
             <button
               onClick={handleCheck}
               disabled={!selectedCategoryId && !selectedStateId}
-              className="text-white font-semibold px-10 py-3 text-[14px] transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+              className="text-white font-semibold px-10 py-3 text-base transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 borderRadius: "46px",
                 background: "#1D4ED8",
