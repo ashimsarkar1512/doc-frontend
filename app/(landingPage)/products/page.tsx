@@ -229,7 +229,14 @@ function ProductsInner() {
                 </div>
                 
                 <div className="w-[348px] h-[246px] rounded-[20px] overflow-hidden flex items-center justify-center p-4 mb-6 shadow-sm flex-shrink-0" style={{ backgroundColor: "#292C2D" }}>
-                  <Image src={displayProduct?.image?.fileUrl || displayProduct?.image || "/medicine-1.png"} alt={displayProduct?.title || displayProduct?.name || "Product"} width={300} height={300} unoptimized className="w-full h-full object-contain p-6 drop-shadow-xl" />
+                  <Image 
+                    src={displayProduct?.image?.fileUrl || displayProduct?.image || "/medicine-1.png"} 
+                    alt={displayProduct?.title || displayProduct?.name || "Product"} 
+                    width={300} 
+                    height={300} 
+                    unoptimized 
+                    className="w-full h-full object-contain p-6 drop-shadow-xl" 
+                  />
                 </div>
 
                 <div className="mb-8 text-[#3B3B3B] font-[Quicksand] text-[20px] font-semibold leading-none">
@@ -241,49 +248,12 @@ function ProductsInner() {
                   </span>
                 </div>
 
-                <style>{`
-                  .quill-content h1, .quill-content h2, .quill-content h3, .quill-content h4, .quill-content h5, .quill-content h6 {
-                    color: #212121 !important;
-                    font-family: Quicksand, sans-serif !important;
-                    font-size: 26px !important;
-                    font-style: normal !important;
-                    font-weight: 600 !important;
-                    line-height: 30px !important;
-                    margin-bottom: 1rem;
-                    margin-top: 1.5rem;
-                  }
-                  .quill-content p, .quill-content li {
-                    color: #3B3B3B !important;
-                    font-family: Quicksand, sans-serif !important;
-                    font-size: 20px !important;
-                    font-style: normal !important;
-                    font-weight: 400 !important;
-                    line-height: 150% !important; /* 30px */
-                    margin-bottom: 1rem;
-                  }
-                  .quill-content ul { list-style-type: disc !important; margin-left: 1.5rem !important; margin-bottom: 1rem; }
-                  .quill-content ol { list-style-type: decimal !important; margin-left: 1.5rem !important; margin-bottom: 1rem; }
-                  .quill-content a { color: #2563EB !important; text-decoration: underline !important; }
-                  .quill-content strong, .quill-content b { font-weight: 700 !important; color: #272628; }
-                  .quill-content em, .quill-content i { font-style: italic !important; }
-                  .quill-content u { text-decoration: underline !important; }
-                  .quill-content s, .quill-content strike { text-decoration: line-through !important; }
-                  
-                  /* React Quill specific classes */
-                  .quill-content .ql-size-small { font-size: 0.75em !important; }
-                  .quill-content .ql-size-large { font-size: 1.5em !important; }
-                  .quill-content .ql-size-huge { font-size: 2.5em !important; }
-                  .quill-content .ql-align-center { text-align: center !important; }
-                  .quill-content .ql-align-right { text-align: right !important; }
-                  .quill-content .ql-align-justify { text-align: justify !important; }
-                  
-                  .quill-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
-                  .quill-content iframe { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
-                `}</style>
-                <div 
-                  className="flex flex-col font-[Quicksand] quill-content overflow-hidden break-words" 
-                  dangerouslySetInnerHTML={{ __html: (displayProduct?.description || "").replace(/&nbsp;/g, " ") }} 
-                />
+                <div className="w-full">
+                  <div 
+                    className="product-description quill-content" 
+                    dangerouslySetInnerHTML={{ __html: (displayProduct?.description || "").replace(/&nbsp;/g, " ") }} 
+                  />
+                </div>
               </>
             ) : (
               <>

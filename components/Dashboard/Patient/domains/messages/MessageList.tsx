@@ -160,7 +160,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
             {/* ACTIVE SERVICE */}
             {activeConversations.length > 0 && (
               <div className="flex flex-col w-full">
-                <h4 
+                <h4
                   className="mb-[16px]"
                   style={{
                     color: 'var(--White, #FFF)',
@@ -183,7 +183,7 @@ export default function MessageList({ onSelectChat, selectedChatId, onBack }: Me
             {/* PAUSED SERVICE */}
             {pausedConversations.length > 0 && (
               <div className="w-full flex flex-col mt-[16px]">
-                <h4 
+                <h4
                   className="mb-[16px]"
                   style={{
                     color: 'var(--White, #FFF)',

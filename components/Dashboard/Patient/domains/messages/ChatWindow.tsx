@@ -160,7 +160,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
           lastLoadedChatIdRef.current = chatId;
           return decrypted;
         }
-        
+
         // Smart merge to prevent wiping out live/optimistic messages
         const newMap = new Map(prev.map(m => [m.id, m]));
         decrypted.forEach(m => {
@@ -171,7 +171,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
             newMap.set(m.id, { ...m, decryptedText: newMap.get(m.id).decryptedText });
           }
         });
-        
+
         return Array.from(newMap.values()).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       });
     };
@@ -357,7 +357,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
       toast.error('Service information missing.');
       return;
     }
-    
+
     // Find matching active subscription
     const activeSub = subscriptionsRes?.data?.find(
       (sub: any) => sub.category?.id === conversation.serviceID && sub.status === 'ACTIVE'
@@ -370,7 +370,7 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
 
     const isCurrentlyRecurring = activeSub.isRecurring;
     const newRecurringState = !isCurrentlyRecurring;
-    
+
     const actionName = newRecurringState ? 'Activating' : 'Pausing';
     const successName = newRecurringState ? 'Treatment activated' : 'Treatment paused';
 
@@ -883,8 +883,8 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 onClick={handlePauseTreatment}
                 className="w-full h-[48px] bg-[#F2994A] hover:bg-[#e08940] transition-colors text-[#F8F9FA] font-[Quicksand] text-[20px] font-semibold leading-[22px] rounded-[10px] shadow-sm flex items-center justify-center"
               >
-                {subscriptionsRes?.data?.find((sub: any) => sub.category?.id === conversation?.serviceID && sub.status === 'ACTIVE')?.isRecurring === false 
-                  ? 'Active treatment' 
+                {subscriptionsRes?.data?.find((sub: any) => sub.category?.id === conversation?.serviceID && sub.status === 'ACTIVE')?.isRecurring === false
+                  ? 'Active treatment'
                   : 'Pause treatment'}
               </button>
               <button
@@ -958,9 +958,9 @@ export default function ChatWindow({ chatId, onBack, onTriggerPayment, onViewDet
                 if (m.id === proposalMsgId && m.messageType === 'PROPOSAL') {
                   return {
                     ...m,
-                    proposals: m.proposals.map((p: any) => 
-                      p.id === pendingProposalForPayment.id 
-                        ? { ...p, status: 'ACCEPTED' } 
+                    proposals: m.proposals.map((p: any) =>
+                      p.id === pendingProposalForPayment.id
+                        ? { ...p, status: 'ACCEPTED' }
                         : p
                     )
                   };
