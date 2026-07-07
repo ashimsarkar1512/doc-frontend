@@ -8,6 +8,7 @@ import CommonHero from "@/components/shared/CommonHero";
 import FallbackImage from "@/components/shared/FallbackImage";
 import RichTextRenderer from "@/components/shared/RichTextRenderer";
 import QNA, { FAQItem } from "@/components/home/QNA";
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 export default function TermsOfServicePage() {
   const [pageData, setPageData] = useState<any>(null);
@@ -100,12 +101,14 @@ export default function TermsOfServicePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
           {/* LEFT: Main Content */}
           <div className="lg:col-span-2 min-w-0">
-            <RichTextRenderer content={content} />
+            <FadeIn>
+              <RichTextRenderer content={content} />
+            </FadeIn>
           </div>
 
           {/* RIGHT: Sticky Doctor Card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-28">
+            <FadeIn className="sticky top-28" delay={0.2}>
               <div
                 className="rounded-[28px] overflow-hidden relative w-full"
                 style={{ background: "#dce8f4", aspectRatio: "4/5" }}
@@ -152,7 +155,7 @@ export default function TermsOfServicePage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>

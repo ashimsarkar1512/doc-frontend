@@ -71,7 +71,13 @@ const TestiMonial: React.FC = () => {
       
       <div className="max-w-380 mx-auto flex flex-col items-center px-4 md:px-8">
         {/* Google Header Logo & Stars Group */}
-        <div className="flex flex-col items-center gap-1 mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+          className="flex flex-col items-center gap-1 mb-4"
+        >
           <div className="flex items-center font-bold text-5xl tracking-tight select-none">
             <span className="text-[#4285F4]">G</span>
             <span className="text-[#EA4335]">o</span>
@@ -90,21 +96,33 @@ const TestiMonial: React.FC = () => {
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Title Section */}
         {isLoading ? (
           <div className="h-10 w-1/2 bg-[#222426]/60 animate-pulse rounded-xl mb-16" />
         ) : (
-          <h2 className="text-4xl md:text-[40px] font-semibold text-center mb-16 tracking-tight max-w-3xl">
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 1.0, ease: "easeOut", delay: 0.1 }}
+            className="text-4xl md:text-[40px] font-semibold text-center mb-16 tracking-tight max-w-3xl"
+          >
             {title}
-          </h2>
+          </motion.h2>
         )}
 
         {/* Grid Structure: Fixed Callout Card + Carousel Slider */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch">
           {/* Static Intro Card with Modern Radial Glow Effect */}
-          <div className="w-full lg:w-[362px] flex-shrink-0 bg-[#292C2D] rounded-[2rem] p-8 flex flex-col justify-between min-h-[316px] relative overflow-hidden group border border-gray-800/40">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+            className="w-full lg:w-[362px] flex-shrink-0 bg-[#292C2D] rounded-[2rem] p-8 flex flex-col justify-between min-h-[316px] relative overflow-hidden group border border-gray-800/40"
+          >
             {/* Soft Radial Blue Mesh Gradient inside the box corner */}
             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-gradient-to-tr from-blue-600 via-blue-500/90 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-700" />
 
@@ -115,15 +133,21 @@ const TestiMonial: React.FC = () => {
               </p>
             </div>
 
-            <Link
-              href={buttonLink}
-              target={buttonNewTab ? "_blank" : "_self"}
-              rel={buttonNewTab ? "noopener noreferrer" : undefined}
-              className="relative z-10 w-fit bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10 text-center mb-10"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative z-10 w-fit mt-8 lg:mt-auto lg:mb-15"
             >
-              Book intake session
-            </Link>
-          </div>
+              <Link
+                href={buttonLink}
+                target={buttonNewTab ? "_blank" : "_self"}
+                rel={buttonNewTab ? "noopener noreferrer" : undefined}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-md shadow-blue-600/10 text-center block"
+              >
+                Book intake session
+              </Link>
+            </motion.div>
+          </motion.div>
 
           {/* Dynamic Carousel Slide Viewport */}
           <div className="flex-1 relative w-full flex items-stretch min-h-102.5">

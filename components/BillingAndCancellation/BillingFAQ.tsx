@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 import { useGetBillingCancellationQuery } from '@/Redux/features/billing/billingApi';
+import FadeIn from '@/components/shared/animations/FadeIn';
 
 const BillingFAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -18,12 +19,14 @@ const BillingFAQ = () => {
 
   return (
     <section className="w-full max-w-[1520px] mx-auto px-4 mt-16 mb-16">
+      <FadeIn>
       <h2
         className="text-[54px] font-semibold text-center text-[#272628] mb-10"
         style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
       >
         {faqTitle}
       </h2>
+      </FadeIn>
 
       {isLoading ? (
         <div className="flex flex-col gap-3 animate-pulse">
@@ -36,8 +39,8 @@ const BillingFAQ = () => {
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
+              <FadeIn key={index} delay={index * 0.1} yOffset={20}>
               <div
-                key={index}
                 className="bg-[#F1F5F9] rounded-[16px] overflow-hidden border border-[#E2E8F0] transition-colors hover:bg-slate-200/60"
               >
                 <button
@@ -73,6 +76,7 @@ const BillingFAQ = () => {
                   )}
                 </AnimatePresence>
               </div>
+              </FadeIn>
             );
           })}
         </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import BlogCard, { BlogPost } from "./BlogCard";
 import BlogSidebar from "./BlogSidebar";
 import fallBackImg from "@/public/p-image-fallback.jpg";
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 const BlogList = () => {
   const [activeCategory, setActiveCategory] = useState("All Blogs");
@@ -63,9 +64,9 @@ const BlogList = () => {
   const displayedPosts = filteredPosts.slice(0, visibleCount);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-2 mb-20">
+    <section className="w-full max-w-[1520px] mx-auto px-4 md:px-8 py-2 mb-20">
       {/* Category Filter */}
-      <div className="flex flex-wrap items-center justify-start gap-2 mb-10">
+      <FadeIn className="flex flex-wrap items-center justify-start gap-2 mb-10">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -81,7 +82,7 @@ const BlogList = () => {
             {cat}
           </button>
         ))}
-      </div>
+      </FadeIn>
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -95,8 +96,10 @@ const BlogList = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {displayedPosts.map((post) => (
-                  <BlogCard key={post.id} post={post} />
+                {displayedPosts.map((post, index) => (
+                  <FadeIn key={post.id} delay={index * 0.1}>
+                    <BlogCard post={post} />
+                  </FadeIn>
                 ))}
               </div>
 

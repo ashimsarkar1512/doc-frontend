@@ -18,7 +18,7 @@ const CommonHero: React.FC<CommonHeroProps> = ({
 }) => {
   return (
     <div className="w-full px-4 md:px-6  pb-6 md:pb-12 lg:pb-20 flex justify-center">
-      <div className="max-w-[1520px] mx-auto mt-35 w-full relative rounded-[2.5rem] overflow-hidden bg-[#F2F4F7] py-16 md:py-28 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[300px] md:min-h-[400px]">
+      <div className="max-w-[1520px] mx-auto mt-[140px] w-full relative rounded-[2.5rem] overflow-hidden bg-[#F2F4F7] py-16 md:py-28 px-6 md:px-16 flex flex-col items-center justify-center text-center min-h-[300px] md:min-h-[400px]">
         {/* Watermark - PNG Image */}
         {watermarkImage && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden p-5">

@@ -617,13 +617,17 @@ export default function AssessmentSteps() {
             <>
               <button
                 onClick={() => {
-                  setCurrentStep(AUTH_STEP);
-                  if (
-                    authChoice === "No, I don't have an account. Create one."
-                  ) {
-                    setShippingMode(true);
+                  if (isAuthenticated) {
+                    setCurrentStep(AUTH_STEP - 1);
                   } else {
-                    setOtpVerifyMode(true);
+                    setCurrentStep(AUTH_STEP);
+                    if (
+                      authChoice === "No, I don't have an account. Create one."
+                    ) {
+                      setShippingMode(true);
+                    } else {
+                      setOtpVerifyMode(true);
+                    }
                   }
                 }}
                 className="flex items-center justify-center gap-[15px] px-[32px] py-[9px] rounded-[46px] bg-[#EFEFEF] hover:bg-gray-300 text-[#2B2922] text-[20px] font-semibold leading-[150%] transition-all duration-200"

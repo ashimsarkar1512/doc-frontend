@@ -109,7 +109,7 @@ export default function MessagesPanel() {
           <div className="w-full flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
             {conversations.length > 0 && (
               <div className="flex flex-col w-full">
-                <h4 
+                <h4
                   className="mb-[16px]"
                   style={{
                     color: 'var(--White, #FFF)',
@@ -125,53 +125,53 @@ export default function MessagesPanel() {
                 </h4>
                 <div className="flex flex-col w-full gap-[16px]">
                   {conversations.map((thread) => {
-                  const patient = thread.patient || {};
-                  const isOnline = thread.isPatientOnline;
-                  const isSelected = activeChatId === thread.id;
+                    const patient = thread.patient || {};
+                    const isOnline = thread.isPatientOnline;
+                    const isSelected = activeChatId === thread.id;
 
-                  return (
-                    <Link
-                      key={thread.id}
-                      href={`/doctor?view=messages&chatId=${thread.id}`}
-                      className={`w-full flex items-center gap-[12px] p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
-                    >
-                      <div className="relative flex-shrink-0">
-                        <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border border-white/20 bg-white">
-                          {patient?.avatar ? (
-                            <img
-                              src={patient.avatar}
-                              alt={patient.name || 'Patient'}
-                              className="object-cover w-full h-full"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-blue-50 text-[#1D4ED8]">
-                              <User className="h-5 w-5" />
-                            </div>
+                    return (
+                      <Link
+                        key={thread.id}
+                        href={`/doctor?view=messages&chatId=${thread.id}`}
+                        className={`w-full flex items-center gap-[12px] p-3 rounded-xl text-left transition-all duration-150 group ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                      >
+                        <div className="relative flex-shrink-0">
+                          <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border border-white/20 bg-white">
+                            {patient?.avatar ? (
+                              <img
+                                src={patient.avatar}
+                                alt={patient.name || 'Patient'}
+                                className="object-cover w-full h-full"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-blue-50 text-[#1D4ED8]">
+                                <User className="h-5 w-5" />
+                              </div>
+                            )}
+                          </div>
+                          {isOnline && (
+                            <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]"></span>
                           )}
                         </div>
-                        {isOnline && (
-                          <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#1D4ED8]"></span>
-                        )}
-                      </div>
 
-                      <div className="min-w-0 flex-1 flex flex-col justify-center gap-[4px]">
-                        <div className="flex justify-between items-center w-full">
-                          <h4 className="font-[Quicksand] text-[20px] font-semibold leading-[100%] text-white truncate pr-2">
-                            {patient?.name || 'Unknown Patient'}
-                          </h4>
-                          <span className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white text-center whitespace-nowrap">
-                            {formatTimeAgo(thread.updatedAt || thread.createdAt)}
-                          </span>
+                        <div className="min-w-0 flex-1 flex flex-col justify-center gap-[4px]">
+                          <div className="flex justify-between items-center w-full">
+                            <h4 className="font-[Quicksand] text-[20px] font-semibold leading-[100%] text-white truncate pr-2">
+                              {patient?.name || 'Unknown Patient'}
+                            </h4>
+                            <span className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white text-center whitespace-nowrap">
+                              {formatTimeAgo(thread.updatedAt || thread.createdAt)}
+                            </span>
+                          </div>
+                          <p className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white truncate">
+                            {thread.service?.name || 'Weight Loss'} - CID: #{thread.id.substring(0, 6)}
+                          </p>
                         </div>
-                        <p className="font-[Quicksand] text-[14px] font-normal leading-[100%] text-white truncate">
-                          {thread.service?.name || 'Weight Loss'} - CID: #{thread.id.substring(0, 6)}
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
             )}
             {conversations.length === 0 && (
               <p className="text-sm text-white/70 text-center py-8 w-full">No patients found.</p>

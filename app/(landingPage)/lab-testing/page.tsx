@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/shared/Navbar";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { useGetLabTestingDataQuery } from "@/Redux/api/labTestingApi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const defaultPanelServices = [
   {
@@ -185,7 +186,10 @@ export default function LabTestingPage() {
           />
 
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center px-5 sm:px-6 pb-8 sm:pb-10 pt-20 sm:pt-24 md:pt-28">
-            <h1
+            <motion.h1
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 color: "#FFF",
                 textAlign: "center",
@@ -197,8 +201,11 @@ export default function LabTestingPage() {
               className="mb-6 sm:mb-8 drop-shadow-md"
             >
               {heroTitle}
-            </h1>
-            <button
+            </motion.h1>
+            <motion.button
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
               onClick={() =>
                 window.open(heroButtonUrl, heroIsBlank ? "_blank" : "_self")
               }
@@ -218,33 +225,43 @@ export default function LabTestingPage() {
                 textAlign: "center",
                 transition: "background 0.2s",
               }}
-              onMouseEnter={(e) =>
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) =>
                 (e.currentTarget.style.background = "#1a40b3")
               }
-              onMouseLeave={(e) =>
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) =>
                 (e.currentTarget.style.background = "#1D4ED8")
               }
             >
               {heroButtonText}
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
 
       {/* ── PANEL SECTION ── */}
-      <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12 md:mt-16 mb-12 w-full">
-        <div className="mb-10 sm:mb-14 md:mb-16">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12 md:mt-16 mb-12 w-full">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+          className="mb-10 sm:mb-14 md:mb-16"
+        >
           <h2 className="text-[28px] sm:text-[36px] lg:text-[54px] font-bold text-[#111827] mb-4 sm:mb-5 tracking-tight">
             {sectionTitle}
           </h2>
-          <p className="text-[14px] sm:text-[16px] lg:text-lg text-[#272628] leading-[1.85] max-w-[780px] whitespace-pre-wrap">
+          <p className="text-[14px] sm:text-[16px] lg:text-[20px] text-[#272628] leading-[1.85] max-w-[780px] whitespace-pre-wrap">
             {sectionDescription}
           </p>
-        </div>
+        </motion.div>
 
         <div>
           {services.map((service, index) => (
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 1.0, ease: "easeOut", delay: index * 0.1 }}
               key={index}
               className={`py-8 sm:py-10 md:py-14 ${
                 index !== services.length - 1 ? "border-b border-gray-200" : ""
@@ -297,32 +314,47 @@ export default function LabTestingPage() {
                             <span className="flex items-center justify-center text-[12px] sm:text-[14px] lg:text-[16px] text-[#272628] bg-[#f3f4f6] rounded-full px-3 sm:px-3.5 py-1.5 whitespace-nowrap">
                               {test.duration}
                             </span>
-                            {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-gray-400" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4 text-gray-300" />
-                            )}
+                            <motion.div
+                              animate={{ rotate: isExpanded ? 90 : 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <ChevronRight className="w-4 h-4 text-gray-400" />
+                            </motion.div>
                           </div>
                         </div>
                         {/* Expanded Description */}
-                        {isExpanded && test.description && (
-                          <div className="mt-3 text-[13px] sm:text-[15px] lg:text-[16px] text-[#6b7280] leading-relaxed pr-8">
-                            {test.description}
-                          </div>
-                        )}
+                        <AnimatePresence initial={false}>
+                          {isExpanded && test.description && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                              animate={{ height: "auto", opacity: 1, marginTop: 12 }}
+                              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div className="text-[13px] sm:text-[15px] lg:text-[16px] text-[#6b7280] leading-relaxed pr-8 pb-2">
+                                {test.description}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     );
                   })}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       {/* ── CTA BANNER ── */}
       <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
-        <div
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
           className="w-full rounded-[20px] sm:rounded-[24px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:px-14 md:py-12 shadow-xl relative overflow-hidden text-center md:text-left"
           style={{
             background:
@@ -344,16 +376,18 @@ export default function LabTestingPage() {
           </div>
 
           <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() =>
                 window.open(ctaButtonUrl, ctaIsBlank ? "_blank" : "_self")
               }
               className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-6 sm:px-9 py-2.5 sm:py-3 rounded-full transition-colors text-[13px] sm:text-[15px] whitespace-nowrap"
             >
               {ctaButtonText}
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

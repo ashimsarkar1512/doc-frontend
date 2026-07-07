@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React from "react";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { motion } from "framer-motion";
 
 const defaultSteps = [
   {
@@ -62,18 +63,24 @@ const HowItsWork: React.FC = () => {
     <section className="w-full bg-white pt-[90px] pb-[120px] px-4 md:px-8 font-sans">
       <div className="max-w-[1520px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-[60px] items-stretch">
         {/* Left Side: Split Image Banner */}
-        <div className="xl:col-span-6 w-full h-full">
-          <div className="w-full h-full aspect-[4/3] md:aspect-[1.22] xl:aspect-auto relative rounded-[2rem] overflow-hidden shadow-sm">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="xl:col-span-6 w-full h-full"
+        >
+          <div className="w-full h-full aspect-[4/3] md:aspect-[1.22] xl:aspect-auto relative rounded-[2rem] overflow-hidden shadow-sm group">
             {/* Using an Unsplash placeholder of transformation tracking to match Figma layout */}
             <Image
               src="/howItsWork.png"
               alt="Before and after progress illustration"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Side: Content & List Steps */}
         <div className="xl:col-span-6 flex flex-col justify-start">
@@ -81,24 +88,47 @@ const HowItsWork: React.FC = () => {
           {isLoading ? (
             <div className="h-10 w-2/3 bg-gray-200 animate-pulse rounded-xl mb-8" />
           ) : (
-            <h2
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.8 }}
+              transition={{ duration: 1.0, ease: "easeOut" }}
               className="uppercase mb-[40px] lg:mb-[80px] text-[36px] lg:text-[54px] font-semibold text-left font-[Quicksand] leading-[110%] text-[#272628]"
             >
               {title}
-            </h2>
+            </motion.h2>
           )}
 
           {/* Process Rows Stack */}
-          <div className="flex flex-col gap-[20px] w-full">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.4,
+                },
+              },
+            }}
+            className="flex flex-col gap-[20px] w-full"
+          >
             {isLoading ? (
               [1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-2xl w-full" />
               ))
             ) : (
               stepsToDisplay.map((step) => (
-                <div
+                <motion.div
                   key={step.number}
-                  className="w-full bg-[#EAF3FF] rounded-[19px] px-[23px] py-[20px] flex items-center gap-[20px] border border-blue-50/10 hover:bg-blue-50 transition-colors duration-200"
+                  variants={{
+                    hidden: { opacity: 0, x: 50 },
+                    visible: { opacity: 1, x: 0, transition: { duration: 1.0, ease: "easeOut" } },
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full bg-[#EAF3FF] rounded-[19px] px-[23px] py-[20px] flex items-center gap-[20px] border border-blue-50/10 hover:bg-blue-50 transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer"
                 >
                   {/* Number Badge */}
                   <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-semibold text-xs flex items-center justify-center shadow-sm shadow-blue-600/20">
@@ -114,10 +144,10 @@ const HowItsWork: React.FC = () => {
                       {step.description}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

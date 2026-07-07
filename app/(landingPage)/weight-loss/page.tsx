@@ -6,6 +6,8 @@ import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
+import FadeIn from "@/components/shared/animations/FadeIn";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function WeightLossPage() {
   const [openFaq, setOpenFaq] = useState<number>(0);
@@ -113,59 +115,78 @@ export default function WeightLossPage() {
           <div className="absolute inset-0 bg-black/10 z-10" />
 
           <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-10">
-            <p className="text-white text-[15px] font-light tracking-wide mb-8 flex items-center gap-1.5 drop-shadow-md">
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0 }}
+              className="text-white text-[15px] font-light tracking-wide mb-8 flex items-center gap-1.5 drop-shadow-md"
+            >
               Services <ChevronRight className="w-4 h-4" /> Weight Loss
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white max-w-[1000px] leading-[1.15] mb-12 drop-shadow-lg tracking-tight">
+            </motion.p>
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white max-w-[1000px] leading-[1.15] mb-12 drop-shadow-lg tracking-tight"
+            >
               Take control of your body with <br className="hidden md:block" />{" "}
               our weight loss service
-            </h1>
-            <button className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full transition-all duration-300 shadow-md text-[16px] tracking-wide">
+            </motion.h1>
+            <motion.button 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, delay: 0.2 }}
+              className="bg-[#2563eb] hover:bg-blue-700 text-white font-medium px-8 py-3.5 rounded-full transition-all duration-300 shadow-md text-[16px] tracking-wide"
+            >
               Start Assessment
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
 
       {/* ── INTRO TEXT ── */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 mt-16 text-center">
-        <h2 className="text-[28px] md:text-[32px] font-bold text-gray-900 mb-6 tracking-tight">
-          Weight Loss Shots at WLMD
-        </h2>
-        <p className="text-[14px] md:text-[15px] text-gray-500 leading-[1.8] mb-8 font-light">
-          We provide medical weight loss plans for our patients in Colorado. We
-          offer programs customized to fit your specific needs, focusing on
-          steady, consistent weight loss over time. Your customized program may
-          include a combination of FDA-approved weight loss medications,
-          supplements, and B12/Lipotropic injections. Weight loss results may
-          vary depending based on strict compliance. All treatments are
-          supervised carefully with WLMD and state regulations. Results usually
-          are often directly correlated with keeping up with care. For more
-          details on individual outcomes, ask to see our medical providers.
-        </p>
-        <button
-          onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank",
-            )
-          }
-          className="border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-8 py-3 rounded-full transition-colors text-[14px]"
-        >
-          Book Appointment
-        </button>
+        <FadeIn>
+          <h2 className="text-[28px] md:text-[32px] font-bold text-gray-900 mb-6 tracking-tight">
+            Weight Loss Shots at WLMD
+          </h2>
+          <p className="text-[14px] md:text-[15px] text-gray-500 leading-[1.8] mb-8 font-light">
+            We provide medical weight loss plans for our patients in Colorado. We
+            offer programs customized to fit your specific needs, focusing on
+            steady, consistent weight loss over time. Your customized program may
+            include a combination of FDA-approved weight loss medications,
+            supplements, and B12/Lipotropic injections. Weight loss results may
+            vary depending based on strict compliance. All treatments are
+            supervised carefully with WLMD and state regulations. Results usually
+            are often directly correlated with keeping up with care. For more
+            details on individual outcomes, ask to see our medical providers.
+          </p>
+          <button
+            onClick={() =>
+              window.open(
+                "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                "_blank",
+              )
+            }
+            className="border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-8 py-3 rounded-full transition-colors text-[14px]"
+          >
+            Book Appointment
+          </button>
+        </FadeIn>
       </section>
 
       {/* ── SERVICE-2 IMAGE ── */}
       <section className="max-w-[1300px] mx-auto px-4 sm:px-6 mt-16 w-full">
-        <div className="relative w-full h-[300px] md:h-[450px] rounded-[32px] overflow-hidden">
-          <Image
-            src="/service-2.png"
-            alt="Fitness and wellness"
-            fill
-            className="object-cover object-center"
-          />
-        </div>
+        <FadeIn>
+          <div className="relative w-full h-[300px] md:h-[450px] rounded-[32px] overflow-hidden">
+            <Image
+              src="/service-2.png"
+              alt="Fitness and wellness"
+              fill
+              className="object-cover object-center"
+            />
+          </div>
+        </FadeIn>
       </section>
 
       {/* ── SERVICES GRID ── */}
@@ -176,56 +197,58 @@ export default function WeightLossPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
           {services.map((service, index) => (
-            <div key={index} className="flex flex-col h-full">
-              {/* Image Container Card with Perfect Gradient Match */}
-              <div
-                className={`w-full relative flex items-end justify-center overflow-hidden rounded-[32px] mb-5 aspect-[4/3] sm:h-[320px] ${
-                  service.fullBleed ? "bg-[#1a4a8a]" : ""
-                }`}
-                style={
-                  service.fullBleed
-                    ? {}
-                    : {
-                        // Deep clean studio blue fading directly into white at the bottom baseline
-                        background:
-                          "linear-gradient(180deg, #164095 0%, #3886FF 55%, #A3C7FF 85%, #FFFFFF 100%)",
-                      }
-                }
-              >
-                {service.fullBleed ? (
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  /* Product Image Wrapper */
-                  <div className="relative w-full h-[88%] flex items-end justify-center px-6 pb-2">
+            <FadeIn key={index} delay={index * 0.1}>
+              <div className="flex flex-col h-full">
+                {/* Image Container Card with Perfect Gradient Match */}
+                <div
+                  className={`w-full relative flex items-end justify-center overflow-hidden rounded-[32px] mb-5 aspect-[4/3] sm:h-[320px] ${
+                    service.fullBleed ? "bg-[#1a4a8a]" : ""
+                  }`}
+                  style={
+                    service.fullBleed
+                      ? {}
+                      : {
+                          // Deep clean studio blue fading directly into white at the bottom baseline
+                          background:
+                            "linear-gradient(180deg, #164095 0%, #3886FF 55%, #A3C7FF 85%, #FFFFFF 100%)",
+                        }
+                  }
+                >
+                  {service.fullBleed ? (
                     <img
                       src={service.image}
                       alt={service.title}
-                      className="object-contain max-h-full w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.15)]"
+                      className="object-cover w-full h-full"
                     />
+                  ) : (
+                    /* Product Image Wrapper */
+                    <div className="relative w-full h-[88%] flex items-end justify-center px-6 pb-2">
+                      <img
+                        src={service.image}
+                        alt={service.title}
+                        className="object-contain max-h-full w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.15)]"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Typography & Actions */}
+                <div className="flex flex-col flex-1 px-1">
+                  <h3 className="text-[17px] font-bold text-[#111827] mb-2 tracking-tight">
+                    {service.title}
+                  </h3>
+                  <p className="text-[13.5px] text-[#6B7280] leading-[1.5] flex-grow mb-5 font-normal">
+                    {service.desc}
+                  </p>
+
+                  <div>
+                    <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] active:scale-95 text-white text-[14px] font-medium px-6 py-2.5 rounded-full transition-all duration-150 shadow-sm">
+                      Get Started
+                    </button>
                   </div>
-                )}
-              </div>
-
-              {/* Typography & Actions */}
-              <div className="flex flex-col flex-1 px-1">
-                <h3 className="text-[17px] font-bold text-[#111827] mb-2 tracking-tight">
-                  {service.title}
-                </h3>
-                <p className="text-[13.5px] text-[#6B7280] leading-[1.5] flex-grow mb-5 font-normal">
-                  {service.desc}
-                </p>
-
-                <div>
-                  <button className="bg-[#1D4ED8] hover:bg-[#1E40AF] active:scale-95 text-white text-[14px] font-medium px-6 py-2.5 rounded-full transition-all duration-150 shadow-sm">
-                    Get Started
-                  </button>
                 </div>
               </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
       </section>
@@ -264,7 +287,7 @@ export default function WeightLossPage() {
         </div>
 
         {/* Accordion */}
-        <div className="space-y-3">
+        <FadeIn delay={0.2} className="space-y-3">
           {faqs.map((faq, index) => (
             <div
               key={index}
@@ -279,65 +302,71 @@ export default function WeightLossPage() {
                 <span className="text-[14px] font-semibold text-gray-800">
                   {faq.q}
                 </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openFaq === index ? "rotate-180" : ""}`}
-                />
+                <motion.div animate={{ rotate: openFaq === index ? 180 : 0 }}>
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                </motion.div>
               </button>
 
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  openFaq === index
-                    ? "max-h-96 opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <div className="p-5 pt-0 text-[14px] text-gray-500 leading-relaxed font-light">
-                  {faq.a}
-                </div>
-              </div>
+              <AnimatePresence initial={false}>
+                {openFaq === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-5 pt-0 text-[14px] text-gray-500 leading-relaxed font-light">
+                      {faq.a}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── CTA BANNER ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <div
-          className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
-          }}
-        >
-          <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
-            <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
-              <Image
-                src="/weight-loss.png"
-                alt="Weight Loss MD Logo"
-                fill
-                className="object-contain"
-              />
+        <FadeIn>
+          <div
+            className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+            }}
+          >
+            <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
+              <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
+                <Image
+                  src="/weight-loss.png"
+                  alt="Weight Loss MD Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+                Contact Us at Weight Loss MD
+                <br className="hidden md:block" /> Today
+              </h2>
             </div>
-            <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              Contact Us at Weight Loss MD
-              <br className="hidden md:block" /> Today
-            </h2>
-          </div>
 
-          <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <button
-              onClick={() =>
-                window.open(
-                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  "_blank",
-                )
-              }
-              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
-            >
-              Book a consultation
-            </button>
+            <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              <button
+                onClick={() =>
+                  window.open(
+                    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    "_blank",
+                  )
+                }
+                className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
+              >
+                Book a consultation
+              </button>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       <Footer />

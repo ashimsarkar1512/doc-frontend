@@ -9,6 +9,7 @@ import ContactForm from "./_components/ContactForm";
 import OfficeHoursCard from "./_components/OfficeHoursCard";
 import PartnerPharmacies from "./_components/PartnerPharmacies";
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
+import FadeIn from "@/components/shared/animations/FadeIn";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormState {
@@ -72,8 +73,12 @@ export default function ContactPage() {
 
       {/* ── FORM + OFFICE HOURS ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-        <ContactForm />
-        <OfficeHoursCard />
+        <FadeIn delay={0.1} className="lg:col-span-2">
+          <ContactForm />
+        </FadeIn>
+        <FadeIn delay={0.2} className="lg:col-span-1">
+          <OfficeHoursCard />
+        </FadeIn>
       </section>
 
       {/* ── MEET OUR EXPERT PROVIDERS ── */}
@@ -82,7 +87,9 @@ export default function ContactPage() {
       </section>
 
       {/* ── PARTNER PHARMACIES ── */}
-      <PartnerPharmacies />
+      <FadeIn delay={0.1}>
+        <PartnerPharmacies />
+      </FadeIn>
     </main>
   );
 }

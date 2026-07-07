@@ -55,11 +55,30 @@ const AboutUs = () => {
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full lg:px-[80px] mb-16">
+      <motion.div 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.3,
+            },
+          },
+        }}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full lg:px-[80px] mb-16"
+      >
         {services.map((service) => (
-          <div
+          <motion.div
             key={service.id}
-            className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-3 hover:shadow-md transition-all duration-300 min-h-[130px] h-full"
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: "easeOut" } },
+            }}
+            whileHover={{ scale: 1.05 }}
+            className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-3 shadow-sm hover:shadow-lg transition-all duration-300 min-h-[130px] h-full cursor-pointer"
           >
             <div className="flex items-center justify-center">
               {service.icon}
@@ -67,11 +86,18 @@ const AboutUs = () => {
             <span className="text-[13px] sm:text-[14px] font-semibold text-[#1F2937] tracking-wider uppercase">
               {service.title}
             </span>
-          </div>
+          </motion.div>
         ))}
 
         {/* CTA Card */}
-        <div className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-all duration-300 min-h-[130px] h-full">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: "easeOut" } },
+          }}
+          whileHover={{ scale: 1.05 }}
+          className="bg-[#F4F8FF] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 shadow-sm hover:shadow-lg transition-all duration-300 min-h-[130px] h-full"
+        >
           <span className="text-[14px] font-semibold text-[#1F2937]">
             20+ More Services
           </span>
@@ -85,11 +111,17 @@ const AboutUs = () => {
           >
             {content?.aboutButtonText || "Learn More"}
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Video/Media Banner */}
-      <div className="w-full relative group overflow-hidden rounded-2xl">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="w-full relative group overflow-hidden rounded-2xl shadow-xl"
+      >
         {content?.aboutMedia?.fileType?.startsWith("image/") ? (
           <img
             src={content.aboutMedia.fileUrl}
@@ -128,7 +160,7 @@ const AboutUs = () => {
               "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
           }}
         />
-      </div>
+      </motion.div>
     </section>
   );
 };

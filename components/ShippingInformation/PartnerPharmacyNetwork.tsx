@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Building2 } from 'lucide-react';
 import { useGetShippingInfoQuery } from '@/Redux/features/shipping/shippingApi';
+import FadeIn from '@/components/shared/animations/FadeIn';
 
 // ─── Known logos map  (key = lowercase fragment of partner name) ──────────────
 // Only include files that physically exist in /public
@@ -98,6 +99,7 @@ const PartnerPharmacyNetwork = () => {
   return (
     <section className="w-full max-w-[1520px] mx-auto px-4 mt-16 mb-4 flex flex-col items-center">
       {/* Heading */}
+      <FadeIn>
       <h2
         className="text-[54px] font-semibold text-[#272628] text-center mb-3"
         style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
@@ -110,21 +112,22 @@ const PartnerPharmacyNetwork = () => {
       >
         {description}
       </p>
+      </FadeIn>
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[16px] w-full">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : partners.map((partner) => {
+          : partners.map((partner, i) => {
               // Prefer API logo URL, then known static file, then default placeholder
               const apiLogoUrl = partner.logo?.url ?? null;
               const knownPath = getLogoPath(partner.name);
               const logoSrc = apiLogoUrl ?? knownPath;
 
               return (
+                <FadeIn key={partner.id} delay={i * 0.1} yOffset={20}>
                 <div
-                  key={partner.id}
-                  className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] px-[24px] py-[24px] flex flex-col transition hover:shadow-sm"
+                  className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] px-[24px] py-[24px] flex flex-col transition hover:shadow-sm h-full"
                 >
                   {/* Logo area — 55px tall */}
                   <div className="h-[55px] flex items-center mb-[16px]">
@@ -151,6 +154,7 @@ const PartnerPharmacyNetwork = () => {
                     {partner.address}
                   </p>
                 </div>
+                </FadeIn>
               );
             })}
       </div>

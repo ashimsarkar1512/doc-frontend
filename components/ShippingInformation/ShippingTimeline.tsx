@@ -3,6 +3,7 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
 import { useGetShippingInfoQuery } from '@/Redux/features/shipping/shippingApi';
+import FadeIn from '@/components/shared/animations/FadeIn';
 
 // Colors for the step bars cycling through
 const STEP_COLORS = [
@@ -26,6 +27,7 @@ const ShippingTimeline = () => {
   return (
     <section className="w-full max-w-[1520px] mx-auto px-4 mt-10 mb-6 flex flex-col items-center">
       {/* ── Shipping Timeline ── */}
+      <FadeIn>
       <h2
         className="text-[54px] font-semibold text-center text-[#272628] mb-3"
         style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
@@ -38,6 +40,7 @@ const ShippingTimeline = () => {
       >
         {timelineSection?.description ?? 'Timelines are estimates. Expedited options may be available. Cold-chain medications may require signature.'}
       </p>
+      </FadeIn>
 
       {/* Step bars */}
       <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-[16px] px-8 py-8 mb-6 w-full">
@@ -54,7 +57,7 @@ const ShippingTimeline = () => {
         ) : (
           <div className="flex gap-4 items-start w-full">
             {steps.map((step, index) => (
-              <div key={step.id} className="flex-1 flex flex-col items-center gap-4">
+              <FadeIn key={step.id} delay={index * 0.1} yOffset={20} className="flex-1 flex flex-col items-center gap-4">
                 <div className={`w-full h-[6px] rounded-full ${STEP_COLORS[index % STEP_COLORS.length]}`} />
                 <div className="flex flex-col items-center gap-1 mt-1">
                   <p
@@ -70,7 +73,7 @@ const ShippingTimeline = () => {
                     {step.description}
                   </p>
                 </div>
-              </div>
+              </FadeIn>
             ))}
           </div>
         )}
@@ -78,12 +81,14 @@ const ShippingTimeline = () => {
 
       {/* ── Shipping Policy ── */}
       <div className="mt-10 mb-4 w-full flex flex-col items-center">
+        <FadeIn>
         <h2
           className="text-[54px] font-semibold text-[#272628] mb-6 text-center"
           style={{ fontFamily: 'Quicksand, sans-serif', lineHeight: '110%' }}
         >
           {policySection?.title ?? 'Shipping Policy'}
         </h2>
+        </FadeIn>
 
         {isLoading ? (
           <div className="flex flex-col gap-3 w-full animate-pulse">
@@ -93,9 +98,9 @@ const ShippingTimeline = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-3 w-full">
-            {policies.map((policy) => (
+            {policies.map((policy, index) => (
+              <FadeIn key={policy.id} delay={index * 0.1}>
               <div
-                key={policy.id}
                 className="flex items-center gap-[12px] p-[24px] rounded-[16px] border border-[#E2E8F0] bg-[#F8FAFC]"
               >
                 <div className="w-2 h-2 rounded-full bg-[#22A87A] shrink-0" />
@@ -106,6 +111,7 @@ const ShippingTimeline = () => {
                   {policy.text}
                 </span>
               </div>
+              </FadeIn>
             ))}
           </div>
         )}
@@ -113,6 +119,7 @@ const ShippingTimeline = () => {
 
       {/* ── Disclaimer ── */}
       {(disclaimerTitle || disclaimerDescription) && (
+        <FadeIn delay={0.2} yOffset={20} className="w-full">
         <div className="bg-[#FFF5F5] rounded-[16px] px-[20px] py-[30px] mt-[40px] mb-[60px] flex items-start gap-[12px] w-full border border-[#FF778E]/20">
           <Shield className="w-6 h-6 text-[#FF173E] flex-shrink-0 mt-0.5 stroke-[1.8]" />
           <p className="leading-[1.5] m-0" style={{ fontFamily: 'Quicksand, sans-serif' }}>
@@ -128,6 +135,7 @@ const ShippingTimeline = () => {
             )}
           </p>
         </div>
+        </FadeIn>
       )}
     </section>
   );

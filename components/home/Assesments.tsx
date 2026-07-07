@@ -11,6 +11,7 @@ import {
   type Assessment,
 } from "@/Redux/features/patient/assesmentcategory";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { motion } from "framer-motion";
 
 //  Constants
 
@@ -145,37 +146,39 @@ const AssessmentCard = ({
 
       <div className="flex-1 w-full" />
 
-      {/* Description */}
-      <p style={{ color: "#FFF", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 400, lineHeight: "25.2px" }} className="mb-[28px] line-clamp-3 w-full">
+      {/* Description — always at the bottom */}
+      <p style={{ color: "#FFF", fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 400, lineHeight: "25.2px" }} className="line-clamp-3 w-full">
         {assessment.description}
       </p>
 
-      {/* Button — visible on hover */}
-      <Link
-        href={`/assessment/${assessment.id}`}
-        prefetch={true}
-        onClick={(e) => e.stopPropagation()}
-        className="
-          flex justify-center items-center gap-[15px] self-start
-          opacity-0 translate-y-2
-          group-hover:opacity-100 group-hover:translate-y-0
-          bg-[#1D4ED8] hover:bg-blue-800 active:scale-95
-          px-[32px] py-[16px] rounded-[46px] shadow-lg
-          transition-all duration-300 ease-out
-          focus:outline-none focus:ring-2 focus:ring-blue-400
-        "
-        style={{
-          color: "#FFF",
-          textAlign: "center",
-          fontFamily: "Quicksand, sans-serif",
-          fontSize: "20px",
-          fontStyle: "normal",
-          fontWeight: 600,
-          lineHeight: "100%"
-        }}
-      >
-        Start Assessment
-      </Link>
+      {/* Button — takes no space when hidden, slides in below description on hover */}
+      <div className="overflow-hidden max-h-0 group-hover:max-h-[80px] transition-all duration-300 ease-out w-full">
+        <div className="pt-[14px]">
+          <Link
+            href={`/assessment/${assessment.id}`}
+            prefetch={true}
+            onClick={(e) => e.stopPropagation()}
+            className="
+              inline-flex justify-center items-center gap-[15px] self-start
+              bg-[#1D4ED8] hover:bg-blue-800 active:scale-95
+              px-[32px] py-[16px] rounded-[46px] shadow-lg
+              transition-colors duration-200
+              focus:outline-none focus:ring-2 focus:ring-blue-400
+            "
+            style={{
+              color: "#FFF",
+              textAlign: "center",
+              fontFamily: "Quicksand, sans-serif",
+              fontSize: "20px",
+              fontStyle: "normal",
+              fontWeight: 600,
+              lineHeight: "100%"
+            }}
+          >
+            Start Assessment
+          </Link>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -279,7 +282,13 @@ export default function Assessments() {
     >
       <div className="max-w-[1520px] mx-auto">
         {/* Header with modern gradient text */}
-        <div className="text-center mb-[80px]">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+          className="text-center mb-[80px]"
+        >
           <h2 style={{
             color: "#272628",
             textAlign: "center",
@@ -303,7 +312,7 @@ export default function Assessments() {
             {content?.assessmentDescription ||
               "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters with scroll into view on filter change */}
         <div className="flex overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible gap-3 mb-12 py-2">
