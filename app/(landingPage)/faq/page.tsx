@@ -255,13 +255,10 @@ export default function FaqPage() {
       </CommonHero>
 
       {/* ── CATEGORY PILLS ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-10 mb-6 w-full">
-        <FadeIn className="flex flex-wrap gap-2">
-          {categories.map((cat, index) => (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.02 }}
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-10 mb-6 w-full ">
+        {/* <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <button
               key={cat}
               onClick={() => {
                 setActiveCategory(cat);
@@ -277,16 +274,30 @@ export default function FaqPage() {
               {cat}
             </motion.button>
           ))}
-        </FadeIn>
+        </div> */}
       </section>
 
       {/* ── FAQ LIST ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-20 w-full">
-        <FadeIn delay={0.1} className="flex flex-col gap-1.5">
-          {filtered.length === 0 && (
-            <p className="text-center text-gray-400 text-sm py-10">
-              No questions found.
-            </p>
+        <div className="relative w-full mb-8">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-700 stroke-[2]" />
+          <input
+            type="text"
+            placeholder="Search from questions..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setOpenIndex(null);
+            }}
+            className="w-full bg-[#F0F0F0] border-0 rounded-[10px] pl-12 pr-4 py-3 text-lg text-gray-900 placeholder-gray-400 focus:outline-none shadow-sm"
+          />
+        </div>
+        <FadeIn>
+          <div className="flex flex-col gap-1.5">
+            {filtered.length === 0 && (
+              <p className="text-center text-gray-400 text-sm py-10">
+                No questions found.
+              </p>
           )}
           {filtered.map((faq: any, index: number) => (
             <div
@@ -306,23 +317,14 @@ export default function FaqPage() {
                 </span>
               </button>
 
-              <AnimatePresence initial={false}>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {openIndex === index && (
+                <div className="px-5 pb-4 text-lg text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
+                  {faq.answer}
+                </div>
+              )}
             </div>
           ))}
+        </div>
         </FadeIn>
       </section>
 
