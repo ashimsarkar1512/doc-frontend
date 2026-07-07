@@ -136,7 +136,7 @@ const TestiMonial: React.FC = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative z-10 w-fit mb-10"
+              className="relative z-10 w-fit mt-8 lg:mt-auto lg:mb-15"
             >
               <Link
                 href={buttonLink}

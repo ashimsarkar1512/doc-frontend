@@ -327,19 +327,7 @@ export default function Assessments() {
         </div>
 
         {/* Cards Grid */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.3,
-              },
-            },
-          }}
+        <div
           className={`cards-grid gap-[30px] ${visibleCards.length > 0 && visibleCards.length < 4
             ? "flex flex-wrap justify-start"
             : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -353,11 +341,7 @@ export default function Assessments() {
               />
             ))
             : visibleCards.map((assessment, i) => (
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, scale: 0.95, y: 20 },
-                  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 1.0, ease: "easeOut" } },
-                }}
+              <div
                 key={assessment.id}
                 className={
                   visibleCards.length > 0 && visibleCards.length < 4
@@ -369,9 +353,9 @@ export default function Assessments() {
                   assessment={assessment}
                   index={currentPage * PAGE_SIZE + i}
                 />
-              </motion.div>
+              </div>
             ))}
-        </motion.div>
+        </div>
 
         {/* Empty State */}
         {visibleCards.length === 0 && !isLoading && (
