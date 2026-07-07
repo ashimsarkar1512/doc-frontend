@@ -84,11 +84,11 @@ export default function CoveragePage() {
       {/* ── CHECK AVAILABILITY ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-12 mb-8 w-full">
         <div className="border border-gray-200 rounded-[20px] p-8 md:p-10 bg-white">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-6 text-center">
+          <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-6 text-center">
             Check Availability
           </h2>
 
-          <div className="max-w-lg mx-auto flex flex-col items-center gap-5">
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-5">
             {/* State dropdown */}
             <div className="w-full relative">
               <select
@@ -96,7 +96,7 @@ export default function CoveragePage() {
                 onChange={(e) => {
                   handleCategoryChange(e.target.value);
                 }}
-                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
+                className="w-full appearance-none bg-[#F0F0F0] border-0 rounded-[10px] px-4 py-3.5 text-lg text-[#272628] focus:outline-none cursor-pointer"
               >
                 <option value="">Select Service</option>
                 {categories.map((category) => (
@@ -105,7 +105,7 @@ export default function CoveragePage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-800">
                 <ChevronDown className="w-4 h-4 stroke-[2]" />
               </span>
             </div>
@@ -115,7 +115,7 @@ export default function CoveragePage() {
                 onChange={(e) => {
                   setSelectedStateId(e.target.value);
                 }}
-                className="w-full appearance-none bg-[#f2f3f5] border-0 rounded-[10px] px-4 py-3.5 text-[13.5px] text-gray-500 focus:outline-none cursor-pointer"
+                className="w-full appearance-none bg-[#F0F0F0] border-0 rounded-[10px] px-4 py-3.5 text-lg text-[#272628]  focus:outline-none cursor-pointer "
               >
                 <option value="">Select your state</option>
                 {stateOptions.map((state) => (
@@ -124,7 +124,7 @@ export default function CoveragePage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-800">
                 <ChevronDown className="w-4 h-4 stroke-[2]" />
               </span>
             </div>
@@ -160,7 +160,7 @@ export default function CoveragePage() {
             <button
               onClick={handleCheck}
               disabled={!selectedCategoryId && !selectedStateId}
-              className="text-white font-semibold px-10 py-3 text-[14px] transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+              className="text-white font-semibold px-10 py-3 text-base transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 borderRadius: "46px",
                 background: "#1D4ED8",
@@ -176,11 +176,11 @@ export default function CoveragePage() {
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-2 mb-10 w-full">
         {/* Legend */}
         <div className="flex items-center justify-center gap-6 mb-6">
-          <span className="inline-flex items-center gap-1.5 text-[12.5px] text-gray-600">
+          <span className="inline-flex items-center gap-1.5 text-lg text-gray-600">
             <CircleCheckBig className="w-[15px] h-[15px] text-[#22c55e] stroke-[2]" />
             Available ({availableCount})
           </span>
-          <span className="inline-flex items-center gap-1.5 text-[12.5px] text-gray-600">
+          <span className="inline-flex items-center gap-1.5 text-lg text-gray-600">
             <Clock className="w-[15px] h-[15px] text-[#f59e0b] stroke-[2]" />
             Coming Soon ({soonCount})
           </span>
@@ -198,7 +198,7 @@ export default function CoveragePage() {
               }`}
             >
               {state.isComingSoon ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-[#f59e0b]">
+                <span className="inline-flex items-center gap-1 text-base font-semibold text-[#f59e0b]">
                   <Clock className="w-3 h-3 stroke-[2.5]" />
                   Soon
                 </span>
@@ -206,7 +206,7 @@ export default function CoveragePage() {
                 <CircleCheckBig className="w-[15px] h-[15px] text-[#22c55e] stroke-[2]" />
               )}
               <span
-                className={`text-[12.5px] font-medium leading-tight ${
+                className={`text-base font-medium leading-tight ${
                   state.isComingSoon ? "text-[#92400e]" : "text-gray-700"
                 }`}
               >
@@ -221,8 +221,8 @@ export default function CoveragePage() {
           className="flex items-start gap-3 rounded-[14px] px-4 py-3.5 mt-6"
           style={{ background: "#e8f0fb" }}
         >
-          <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#3b82f6] stroke-[2]" />
-          <p className="text-gray-600 text-[12.5px] leading-relaxed">
+          <Info className="w-6 h-6 flex-shrink-0 mt-0.5 text-[#3b82f6] stroke-[2]" />
+          <p className="text-gray-600 text-base leading-relaxed">
             <strong className="text-[#2563eb]">Licensing Disclaimer:</strong>{" "}
             Care through WeightLossMD is only available in states where our
             providers are licensed to practice medicine. State licensing

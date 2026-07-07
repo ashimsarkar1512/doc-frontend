@@ -171,9 +171,6 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -207,13 +204,14 @@ const categories: HeroSectionPageType[] = [
 ];
 
 export default function FaqPage() {
-  const [activeCategory, setActiveCategory] = useState<HeroSectionPageType>("Faq");
+  const [activeCategory, setActiveCategory] =
+    useState<HeroSectionPageType>("Faq");
   const [search, setSearch] = useState("");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const { data: faqSection } = useGetFaqByPageTypeQuery(activeCategory);
 
   const faqs = faqSection?.faqs ?? [];
-  console.log(faqs)
+  console.log(faqs);
 
   const filtered = useMemo(() => {
     return faqs.filter((f) => {
@@ -239,7 +237,7 @@ export default function FaqPage() {
         }
         watermarkImage={faqImage}
       >
-        <div className="relative w-full max-w-md">
+        {/* <div className="relative w-full max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 stroke-[2]" />
           <input
             type="text"
@@ -251,7 +249,7 @@ export default function FaqPage() {
             }}
             className="w-full bg-white border-0 rounded-[10px] pl-9 pr-4 py-2.5 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm"
           />
-        </div>
+        </div> */}
       </CommonHero>
 
       {/* ── CATEGORY PILLS ── */}
@@ -289,7 +287,7 @@ export default function FaqPage() {
               setSearch(e.target.value);
               setOpenIndex(null);
             }}
-            className="w-full bg-[#F0F0F0] border-0 rounded-[10px] pl-9 pr-4 py-3 text-lg text-gray-900 placeholder-gray-400 focus:outline-none shadow-sm"
+            className="w-full bg-[#F0F0F0] border-0 rounded-[10px] pl-12 pr-4 py-3 text-lg text-gray-900 placeholder-gray-400 focus:outline-none shadow-sm"
           />
         </div>
         <div className="flex flex-col gap-1.5">
