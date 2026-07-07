@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import ProductCard from "./ProductCard";
 import { useGetPublicProductsQuery, useGetPublicCategoriesQuery } from "@/Redux/api/publicProductApi";
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 const ProductsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +71,7 @@ const ProductsList = () => {
   return (
     <div className="w-full max-w-[1520px] mx-auto px-4 md:px-6 2xl:px-0! mb-[150px]">
       {/* Filters & Search Bar */}
-      <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-10">
+      <FadeIn className="flex flex-row justify-between items-start sm:items-center gap-4 mb-10">
         {/* Search */}
         <div className="relative w-full sm:w-[320px] md:w-[400px]">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -125,7 +126,7 @@ const ProductsList = () => {
             </>
           )}
         </div>
-      </div>
+      </FadeIn>
 
       {/* Product Grid */}
       {isLoading ? (
@@ -138,15 +139,16 @@ const ProductsList = () => {
         </div>
       ) : products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-[30px]">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              image={product.image}
-              assessments={product.assessments}
-            />
+          {products.map((product, index) => (
+            <FadeIn key={product.id} delay={index * 0.1}>
+              <ProductCard
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                image={product.image}
+                assessments={product.assessments}
+              />
+            </FadeIn>
           ))}
         </div>
       ) : (

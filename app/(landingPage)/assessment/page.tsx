@@ -1,6 +1,6 @@
 import AssessmentSteps from "@/components/assessment/AssessmentSteps";
 import Navbar from "@/components/shared/Navbar";
-
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 export default function AssessmentPage() {
   return (
@@ -9,9 +9,9 @@ export default function AssessmentPage() {
         <Navbar variant="dark" initialPadding="py-5" scrolledPadding="py-4" />
       </div>
 
-      <div className="pt-24">
+      <FadeIn className="pt-24">
         <AssessmentSteps />
-      </div>
+      </FadeIn>
     </div>
   );
 }

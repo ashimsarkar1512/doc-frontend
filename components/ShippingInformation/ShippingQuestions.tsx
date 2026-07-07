@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
+import FadeIn from '@/components/shared/animations/FadeIn';
 
 const questions = [
   {
@@ -32,19 +33,21 @@ const ShippingQuestions = () => {
 
   return (
     <section className="w-full max-w-[1520px] mx-auto px-4 mt-16 mb-20 flex flex-col items-center">
+      <FadeIn>
       <h2 
         className="text-[30px] font-semibold text-center text-slate-900 mb-10"
         style={{ fontFamily: 'Quicksand, sans-serif' }}
       >
         Shipping Questions
       </h2>
+      </FadeIn>
       
       <div className="flex flex-col gap-3 w-full">
         {questions.map((q, index) => {
           const isOpen = openIndex === index;
           return (
+            <FadeIn key={index} delay={index * 0.1} yOffset={20}>
             <div 
-              key={index} 
               className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-[16px] overflow-hidden transition-colors hover:bg-slate-100"
             >
               <button
@@ -80,6 +83,7 @@ const ShippingQuestions = () => {
                 )}
               </AnimatePresence>
             </div>
+            </FadeIn>
           );
         })}
       </div>

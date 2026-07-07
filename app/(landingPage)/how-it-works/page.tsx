@@ -14,6 +14,8 @@ import {
 import { useGetHeroSectionByPageQuery } from "@/Redux/features/heroSection/heroSectionApi";
 import { useGetHowItWorksContentQuery } from "@/Redux/features/howItWorks/howItWorksApi";
 import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
+import FadeIn from "@/components/shared/animations/FadeIn";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -53,72 +55,78 @@ export default function HowItWorksPage() {
             <div className="w-96 h-4 bg-gray-200 animate-pulse rounded mt-2"></div>
           </div>
         ) : (
-          <div className="text-center mb-12">
+          <FadeIn className="text-center mb-12">
             <h2 className="text-2xl md:text-[54px] font-bold text-[#3B3B3B] tracking-tight mb-3">
               {pageData?.sectionTitle || "Your Patient Journey"}
             </h2>
             <p className="text-gray-500 text-xl">
               {pageData?.sectionDescription || "Six structured steps from assessment to ongoing care"}
             </p>
-          </div>
+          </FadeIn>
         )}
 
         <div className="flex flex-col gap-4">
-          {journeySteps.map((step, index) => (
-            <div key={index} className="flex items-start gap-4">
-              {/* Step number block — floats outside the card */}
-              <div className="flex flex-col items-center flex-shrink-0 pt-1">
-                <div className="w-14 h-14 bg-[#2563eb] rounded-[14px] flex flex-col items-center justify-center shadow-md text-white leading-tight">
-                  <span className="text-base font-normal tracking-wide">Step</span>
-                  <span className="text-base font-medium">{index + 1}</span>
-                </div>
-              </div>
-
-              {/* Card */}
-              <div
-                className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5"
-                style={{ background: "#F0F4FB" }}
-              >
-                {/* Title + Duration */}
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className="text-2xl font-semibold text-[#2B2922] leading-snug">
-                    {step.title}
-                  </h3>
-                  <span className="inline-flex items-center gap-1 bg-[#dce8fb] text-[#3b7ddd] text-lg font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
-                    <Clock className="w-4 h-4 stroke-[2.5]" />
-                    {step.timeline}
-                  </span>
+          {journeySteps.map((step: any, index: number) => (
+            <FadeIn key={index} delay={index * 0.1}>
+              <div className="flex items-start gap-4">
+                {/* Step number block — floats outside the card */}
+                <div className="flex flex-col items-center flex-shrink-0 pt-1">
+                  <div className="w-14 h-14 bg-[#2563eb] rounded-[14px] flex flex-col items-center justify-center shadow-md text-white leading-tight">
+                    <span className="text-base font-normal tracking-wide">Step</span>
+                    <span className="text-base font-medium">{index + 1}</span>
+                  </div>
                 </div>
 
-                {/* Description */}
-                <p className="text-gray-500 text-xl leading-relaxed mb-3">
-                  {step.description}
-                </p>
+                {/* Card */}
+                <div
+                  className="flex-1 rounded-[18px] px-5 py-4 md:px-6 md:py-5"
+                  style={{ background: "#F0F4FB" }}
+                >
+                  {/* Title + Duration */}
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-2xl font-semibold text-[#2B2922] leading-snug">
+                      {step.title}
+                    </h3>
+                    <span className="inline-flex items-center gap-1 bg-[#dce8fb] text-[#3b7ddd] text-lg font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+                      <Clock className="w-4 h-4 stroke-[2.5]" />
+                      {step.timeline}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-500 text-xl leading-relaxed mb-3">
+                    {step.description}
+                  </p>
+                </div>
               </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
 
         {/* ── DISCLAIMER ── */}
-        <div className="bg-[#fff5f5] border  rounded-2xl p-5 mt-5 flex items-start gap-3">
-          <ShieldAlert className="w-[24px] h-[24px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
-          <p className="text-gray-700 text-xl leading-relaxed">
-            <strong className="text-[#dc2626]">
-              {pageData?.disclaimerTitle || "Provider Review Disclaimer"}
-            </strong>
-            : {pageData?.disclaimerDescription || "All treatment decisions are made exclusively by licensed healthcare providers. Payment of any membership fee does not guarantee a prescription or approval for treatment. Providers may deny treatment if it is not medically appropriate."}
-          </p>
-        </div>
+        <FadeIn delay={0.2}>
+          <div className="bg-[#fff5f5] border  rounded-2xl p-5 mt-5 flex items-start gap-3">
+            <ShieldAlert className="w-[24px] h-[24px] text-[#dc2626] flex-shrink-0 mt-0.5 stroke-[2]" />
+            <p className="text-gray-700 text-xl leading-relaxed">
+              <strong className="text-[#dc2626]">
+                {pageData?.disclaimerTitle || "Provider Review Disclaimer"}
+              </strong>
+              : {pageData?.disclaimerDescription || "All treatment decisions are made exclusively by licensed healthcare providers. Payment of any membership fee does not guarantee a prescription or approval for treatment. Providers may deny treatment if it is not medically appropriate."}
+            </p>
+          </div>
+        </FadeIn>
       </section>
 
       {/* ── PROCESS QUESTIONS / FAQ ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4 mb-20 w-full">
-        <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-8 text-center">
-          {pageData?.faqSectionTitle || "Process Questions"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-8 text-center">
+            {pageData?.faqSectionTitle || "Process Questions"}
+          </h2>
+        </FadeIn>
 
-        <div className="flex flex-col gap-3">
-          {faqs.map((faq, index) => (
+        <FadeIn delay={0.2} className="flex flex-col gap-3">
+          {faqs.map((faq: any, index: number) => (
             <div
               key={index}
               className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
@@ -135,68 +143,80 @@ export default function HowItWorksPage() {
                 </span>
               </button>
 
-              {openFaq === index && (
-                <div className="px-5 pb-4 text-xl text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
-                  {faq.answer}
-                </div>
-              )}
+              <AnimatePresence initial={false}>
+                {openFaq === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-4 text-xl text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── CTA BANNER ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <div
-          className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
-          }}
-        >
-          <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
-            <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
-              <Image
-                src="/weight-loss.png"
-                alt="Weight Loss MD Logo"
-                fill
-                className="object-contain"
-              />
+        <FadeIn>
+          <div
+            className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+            }}
+          >
+            <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
+              <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
+                <Image
+                  src="/weight-loss.png"
+                  alt="Weight Loss MD Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              {isCtaLoading ? (
+                <div className="h-8 w-64 bg-white/20 animate-pulse rounded-md" />
+              ) : (
+                <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+                  {ctaData?.sectionTitle ? (
+                    ctaData.sectionTitle
+                  ) : (
+                    <>
+                      Contact Us at Weight Loss MD
+                      <br className="hidden md:block" /> Today
+                    </>
+                  )}
+                </h2>
+              )}
             </div>
-            {isCtaLoading ? (
-              <div className="h-8 w-64 bg-white/20 animate-pulse rounded-md" />
-            ) : (
-              <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-                {ctaData?.sectionTitle ? (
-                  ctaData.sectionTitle
-                ) : (
-                  <>
-                    Contact Us at Weight Loss MD
-                    <br className="hidden md:block" /> Today
-                  </>
-                )}
-              </h2>
-            )}
-          </div>
 
-          <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            {isCtaLoading ? (
-              <div className="w-32 h-10 bg-white/20 animate-pulse rounded-full" />
-            ) : (
-              <button
-                onClick={() =>
-                  window.open(
-                    ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                    ctaData?.openInNewTab ? "_blank" : "_self",
-                  )
-                }
-                className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
-              >
-                {ctaData?.ctaButtonText || "Book a consultation"}
-              </button>
-            )}
+            <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              {isCtaLoading ? (
+                <div className="w-32 h-10 bg-white/20 animate-pulse rounded-full" />
+              ) : (
+                <button
+                  onClick={() =>
+                    window.open(
+                      ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                      ctaData?.openInNewTab ? "_blank" : "_self",
+                    )
+                  }
+                  className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
+                >
+                  {ctaData?.ctaButtonText || "Book a consultation"}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
     </div>
   );

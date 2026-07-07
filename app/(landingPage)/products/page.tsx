@@ -6,6 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
 import { Trash2, ShoppingCart, Tag, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import FadeIn from "@/components/shared/animations/FadeIn";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -216,6 +217,7 @@ function ProductsInner() {
 
           {/* ══ LEFT — Product Grid ══ */}
           <div className="flex-1 min-w-0 w-full">
+            <FadeIn>
             {selectedProduct ? (
               <>
                 <div className="mb-8 flex items-center gap-2">
@@ -376,12 +378,15 @@ function ProductsInner() {
                 })}
               </div>
             )}
+
             </>
             )}
+            </FadeIn>
           </div>
 
           {/* ══ RIGHT — Order Cart Panel ══ */}
           <div className="w-full lg:w-[450px] lg:sticky lg:top-[140px] flex-shrink-0 self-start">
+            <FadeIn delay={0.2} yOffset={20}>
             <div className="rounded-2xl p-7 shadow-sm" style={{ background: "#EAF3FF", fontFamily: "Quicksand, sans-serif" }}>
               {/* Header */}
               <div className="flex items-center justify-between mb-3">
@@ -701,6 +706,7 @@ function ProductsInner() {
                 Proceed to Submission
               </Link>
             </div>
+            </FadeIn>
           </div>
         </div>
       </div>

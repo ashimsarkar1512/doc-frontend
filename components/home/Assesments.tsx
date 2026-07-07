@@ -11,6 +11,7 @@ import {
   type Assessment,
 } from "@/Redux/features/patient/assesmentcategory";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
+import { motion } from "framer-motion";
 
 //  Constants
 
@@ -279,7 +280,13 @@ export default function Assessments() {
     >
       <div className="max-w-[1520px] mx-auto">
         {/* Header with modern gradient text */}
-        <div className="text-center mb-[80px]">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+          className="text-center mb-[80px]"
+        >
           <h2 style={{
             color: "#272628",
             textAlign: "center",
@@ -303,7 +310,7 @@ export default function Assessments() {
             {content?.assessmentDescription ||
               "Comprehensive care for a wide range of everyday conditions, managed safely from home."}
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters with scroll into view on filter change */}
         <div className="flex overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible gap-3 mb-12 py-2">
@@ -320,7 +327,19 @@ export default function Assessments() {
         </div>
 
         {/* Cards Grid */}
-        <div
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.3,
+              },
+            },
+          }}
           className={`cards-grid gap-[30px] ${visibleCards.length > 0 && visibleCards.length < 4
             ? "flex flex-wrap justify-start"
             : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -334,7 +353,11 @@ export default function Assessments() {
               />
             ))
             : visibleCards.map((assessment, i) => (
-              <div
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 20 },
+                  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 1.0, ease: "easeOut" } },
+                }}
                 key={assessment.id}
                 className={
                   visibleCards.length > 0 && visibleCards.length < 4
@@ -346,9 +369,9 @@ export default function Assessments() {
                   assessment={assessment}
                   index={currentPage * PAGE_SIZE + i}
                 />
-              </div>
+              </motion.div>
             ))}
-        </div>
+        </motion.div>
 
         {/* Empty State */}
         {visibleCards.length === 0 && !isLoading && (

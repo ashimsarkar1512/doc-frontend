@@ -3,6 +3,7 @@ import Navbar from '@/components/shared/Navbar';
 import CommonHero from '@/components/shared/CommonHero';
 import ReportForm from '@/components/ReportSideEffect/ReportForm';
 import ContactInfoCards from '@/components/ReportSideEffect/ContactInfoCards';
+import FadeIn from '@/components/shared/animations/FadeIn';
 
 export const metadata = {
   title: "Report a Side Effect - Weight Loss MD",
@@ -26,10 +27,14 @@ const ReportSideEffectPage = () => {
 
       <div className="max-w-[1520px] mx-auto w-full px-4 md:px-6 pb-16 flex flex-col md:flex-row gap-8 items-start">
         <div className="flex-1 min-w-0">
-          <ReportForm />
+          <FadeIn>
+            <ReportForm />
+          </FadeIn>
         </div>
         <div className="w-full md:w-[480px] shrink-0 sticky top-24 self-start">
-          <ContactInfoCards />
+          <FadeIn delay={0.2} yOffset={20}>
+            <ContactInfoCards />
+          </FadeIn>
         </div>
       </div>
     </main>

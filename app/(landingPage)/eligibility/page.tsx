@@ -11,6 +11,8 @@ import {
   useGetHeroSectionsQuery,
 } from "@/Redux/features/common/heroSectionApi";
 import eligiblityImage from "@/app/eligiblity.png";
+import FadeIn from "@/components/shared/animations/FadeIn";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EligibilityPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -123,135 +125,154 @@ export default function EligibilityPage() {
 
       {/* ── GENERAL ELIGIBILITY CRITERIA ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-16 mb-10 w-full">
-        <h2 className="text-2xl md:text-[54px] font-bold text-[#272628] tracking-tight mb-8 text-center">
-          {eligibilityContent?.generalTitle || "General Eligibility Criteria"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-bold text-[#272628] tracking-tight mb-8 text-center">
+            {eligibilityContent?.generalTitle || "General Eligibility Criteria"}
+          </h2>
+        </FadeIn>
 
         {/* 2-col grid of light blue-gray cards with lucide CircleCheckBig */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          {generalPoints.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-3 rounded-[14px] px-4 py-6"
-              style={{ background: "#E8F4FD" }}
-            >
-              {item.status ? (
-                <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
-              ) : (
-                <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-              )}
-              <span className="text-[#3B3B3B] text-lg leading-snug">{item.point}</span>
-            </div>
+          {generalPoints.map((item: any, index: number) => (
+            <FadeIn key={index} delay={index * 0.05}>
+              <div
+                className="flex items-start gap-3 rounded-[14px] px-4 py-6"
+                style={{ background: "#E8F4FD" }}
+              >
+                {item.status ? (
+                  <CircleCheckBig className="w-[17px] h-[17px] text-[#22A87A] flex-shrink-0 mt-0.5 stroke-[2]" />
+                ) : (
+                  <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+                )}
+                <span className="text-[#3B3B3B] text-lg leading-snug">{item.point}</span>
+              </div>
+            </FadeIn>
           ))}
         </div>
 
         {/* Blue info note — full width */}
-        <div
-          className="flex items-start gap-3 rounded-[14px] px-4 py-6"
-          style={{ background: "#e8f0fb" }}
-        >
-          <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#1A5C8A] stroke-[2]" />
-          <p className="text-gray-600 text-[14px] leading-relaxed">
-            {eligibilityContent?.generalBottomDesc ||
-              "Final eligibility is determined solely by your licensed provider after reviewing your complete health history. Meeting these general criteria does not guarantee approval."}
-          </p>
-        </div>
+        <FadeIn delay={0.2}>
+          <div
+            className="flex items-start gap-3 rounded-[14px] px-4 py-6"
+            style={{ background: "#e8f0fb" }}
+          >
+            <Info className="w-[16px] h-[16px] flex-shrink-0 mt-0.5 text-[#1A5C8A] stroke-[2]" />
+            <p className="text-gray-600 text-[14px] leading-relaxed">
+              {eligibilityContent?.generalBottomDesc ||
+                "Final eligibility is determined solely by your licensed provider after reviewing your complete health history. Meeting these general criteria does not guarantee approval."}
+            </p>
+          </div>
+        </FadeIn>
       </section>
 
       {/* ── BMI QUALIFICATION ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-[54px] font-bold text-[#0D2137] tracking-tight mb-8 text-center">
-          {eligibilityContent?.qualificationTitle || "BMI Qualification"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-bold text-[#0D2137] tracking-tight mb-8 text-center">
+            {eligibilityContent?.qualificationTitle || "BMI Qualification"}
+          </h2>
+        </FadeIn>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* BMI 27–29.9 */}
-          <div className="rounded-[16px] p-5 bg-white border border-gray-200">
-            <div className="flex items-center gap-2 mb-3 text-[22px]">
-              <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
-                ≥27
-              </span>
-              <span className="text-[22px] font-bold text-[#0D2137]">
-                {eligibilityContent?.qualificationbmi27Text || "BMI 27–29.9"}
-              </span>
+          <FadeIn delay={0.1}>
+            <div className="rounded-[16px] p-5 bg-white border border-gray-200 h-full">
+              <div className="flex items-center gap-2 mb-3 text-[22px]">
+                <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                  ≥27
+                </span>
+                <span className="text-[22px] font-bold text-[#0D2137]">
+                  {eligibilityContent?.qualificationbmi27Text || "BMI 27–29.9"}
+                </span>
+              </div>
+              <p className="text-[#3B3B3B] text-lg leading-relaxed">
+                {eligibilityContent?.qualification27Description ||
+                  "Eligible if accompanied by at least one weight-related health condition such as hypertension, type 2 diabetes, dyslipidemia, or sleep apnea."}
+              </p>
             </div>
-            <p className="text-[#3B3B3B] text-lg leading-relaxed">
-              {eligibilityContent?.qualification27Description ||
-                "Eligible if accompanied by at least one weight-related health condition such as hypertension, type 2 diabetes, dyslipidemia, or sleep apnea."}
-            </p>
-          </div>
+          </FadeIn>
 
           {/* BMI 30+ */}
-          <div className="rounded-[16px] p-5 bg-white border border-gray-200">
-            <div className="flex items-center gap-2 mb-3 text-[22px]">
-              <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
-                ≥30
-              </span>
-              <span className="text-[22px] font-bold text-gray-900">
-                {eligibilityContent?.qualificationbmi30Text || "BMI 30+"}
-              </span>
+          <FadeIn delay={0.2}>
+            <div className="rounded-[16px] p-5 bg-white border border-gray-200 h-full">
+              <div className="flex items-center gap-2 mb-3 text-[22px]">
+                <span className="bg-[#dbeafe] text-[#2563eb] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                  ≥30
+                </span>
+                <span className="text-[22px] font-bold text-gray-900">
+                  {eligibilityContent?.qualificationbmi30Text || "BMI 30+"}
+                </span>
+              </div>
+              <p className="text-[#3B3B3B] text-lg leading-relaxed">
+                {eligibilityContent?.qualification30Description ||
+                  "Eligible for treatment regardless of presence of comorbid conditions. GLP-1 medications are FDA-approved for this BMI category."}
+              </p>
             </div>
-            <p className="text-[#3B3B3B] text-lg leading-relaxed">
-              {eligibilityContent?.qualification30Description ||
-                "Eligible for treatment regardless of presence of comorbid conditions. GLP-1 medications are FDA-approved for this BMI category."}
-            </p>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ── WEIGHT-RELATED CONDITIONS ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          {eligibilityContent?.weightConditionSecTitle || "Weight-Related Conditions Considered"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
+            {eligibilityContent?.weightConditionSecTitle || "Weight-Related Conditions Considered"}
+          </h2>
+        </FadeIn>
 
         <div className="flex flex-wrap justify-center gap-2.5">
-          {weightConditions.map((condition, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-lg text-[#272628]"
-            >
-              <CircleCheckBig className="w-[14px] h-[14px] text-[#1D4ED8] flex-shrink-0 stroke-[2]" />
-              {condition}
-            </span>
+          {weightConditions.map((condition: string, index: number) => (
+            <FadeIn key={index} delay={index * 0.05} yOffset={20}>
+              <span
+                className="inline-flex items-center gap-2 bg-[#E6E6E6] border border-gray-200 text-gray-700 px-3.5 py-1.5 rounded-full text-lg text-[#272628]"
+              >
+                <CircleCheckBig className="w-[14px] h-[14px] text-[#1D4ED8] flex-shrink-0 stroke-[2]" />
+                {condition}
+              </span>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* ── CONTRAINDICATIONS ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
-        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          {eligibilityContent?.contraindicationsSectionTitle || "Contraindications"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
+            {eligibilityContent?.contraindicationsSectionTitle || "Contraindications"}
+          </h2>
+        </FadeIn>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {contraindicationItems.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-3 rounded-[14px] px-4 py-6 bg-white border border-gray-200"
-            >
-              <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-              <span className="text-[#3B3B3B] text-lg leading-snug">{item}</span>
-            </div>
+          {contraindicationItems.map((item: string, index: number) => (
+            <FadeIn key={index} delay={index * 0.05}>
+              <div
+                className="flex items-start gap-3 rounded-[14px] px-4 py-6 bg-white border border-gray-200 h-full"
+              >
+                <XCircle className="w-[17px] h-[17px] text-[#C0392B] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+                <span className="text-[#3B3B3B] text-lg leading-snug">{item}</span>
+              </div>
+            </FadeIn>
           ))}
         </div>
 
-        <p className="text-center text-[#3B3B3B] text-lg mt-5">
-          This list is not exhaustive. Your provider will conduct a full
-          clinical review.
-        </p>
+        <FadeIn delay={0.2}>
+          <p className="text-center text-[#3B3B3B] text-lg mt-5">
+            This list is not exhaustive. Your provider will conduct a full
+            clinical review.
+          </p>
+        </FadeIn>
       </section>
 
       {/* ── REQUIRED LAB WORK + ONGOING MONITORING ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-10 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Required Lab Work */}
-          <div>
+          <FadeIn>
             <h2 className="text-xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-5">
               {eligibilityContent?.requiredlabWorkSectionTitle || "Required Lab Work"}
             </h2>
             <div className="flex flex-col gap-2.5">
-              {requiredLabItems.map((item, index) => (
+              {requiredLabItems.map((item: string, index: number) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
@@ -261,15 +282,15 @@ export default function EligibilityPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </FadeIn>
 
           {/* Ongoing Monitoring */}
-          <div>
+          <FadeIn delay={0.1}>
             <h2 className="text-xl md:text-[54px] font-semibold text-gray-900 tracking-tight mb-5">
               {eligibilityContent?.ongoingMonitoringSectionTitle || "Ongoing Monitoring"}
             </h2>
             <div className="flex flex-col gap-2.5">
-              {ongoingMonitoringItems.map((item, index) => (
+              {ongoingMonitoringItems.map((item: string, index: number) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 rounded-[12px] px-4 py-4 bg-white border border-gray-200"
@@ -279,36 +300,40 @@ export default function EligibilityPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </FadeIn>
         </div>
 
-        <p className="text-[#3B3B3B] text-lg mt-5">
-          {eligibilityContent?.disclaimerSectionDes ||
-            "Labs from within 90 days may be accepted. Your provider will specify requirements."}
-        </p>
-
-        {/* Provider Review Disclaimer — pink bg, red shield icon */}
-        <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 text-lg flex items-start gap-3">
-          <Shield className="w-[30px] h-[30px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
-          <p className="text-gray-700 text-lg leading-relaxed">
-            <strong className="text-red-500 ">
-              {eligibilityContent?.disclaimerSectionTitle || "Provider Review Disclaimer"}
-            </strong>
-            :{" "}
+        <FadeIn delay={0.2}>
+          <p className="text-[#3B3B3B] text-lg mt-5">
             {eligibilityContent?.disclaimerSectionDes ||
-              "Eligibility criteria presented here are general guidelines. All final treatment decisions are made exclusively by licensed healthcare providers. Meeting criteria on this page does not guarantee prescription approval."}
+              "Labs from within 90 days may be accepted. Your provider will specify requirements."}
           </p>
-        </div>
+
+          {/* Provider Review Disclaimer — pink bg, red shield icon */}
+          <div className="bg-[#fff5f5]  rounded-[16px] p-5 mt-5 text-lg flex items-start gap-3">
+            <Shield className="w-[30px] h-[30px] text-[#ef4444] flex-shrink-0 mt-0.5 stroke-[1.8]" />
+            <p className="text-gray-700 text-lg leading-relaxed">
+              <strong className="text-red-500 ">
+                {eligibilityContent?.disclaimerSectionTitle || "Provider Review Disclaimer"}
+              </strong>
+              :{" "}
+              {eligibilityContent?.disclaimerSectionDes ||
+                "Eligibility criteria presented here are general guidelines. All final treatment decisions are made exclusively by licensed healthcare providers. Meeting criteria on this page does not guarantee prescription approval."}
+            </p>
+          </div>
+        </FadeIn>
       </section>
 
       {/* ── ELIGIBILITY QUESTIONS / FAQ ── */}
       <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-6 mb-20 w-full">
-        <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
-          {eligibilityContent?.faqTitle || "Eligibility Questions"}
-        </h2>
+        <FadeIn>
+          <h2 className="text-2xl md:text-[54px] font-semibold text-[#272628] tracking-tight mb-8 text-center">
+            {eligibilityContent?.faqTitle || "Eligibility Questions"}
+          </h2>
+        </FadeIn>
 
-        <div className="flex flex-col gap-3">
-          {eligibilityFaqs.map((faq, index) => (
+        <FadeIn delay={0.2} className="flex flex-col gap-3">
+          {eligibilityFaqs.map((faq: any, index: number) => (
             <div
               key={index}
               className="bg-[#EBEEF2] border border-gray-200 rounded-[16px] overflow-hidden"
@@ -325,58 +350,70 @@ export default function EligibilityPage() {
                 </span>
               </button>
 
-              {openFaq === index && (
-                <div className="px-5 pb-4 text-lg text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
-                  {faq.answer}
-                </div>
-              )}
+              <AnimatePresence initial={false}>
+                {openFaq === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-4 text-lg text-[#272628] leading-relaxed border-t border-gray-100 pt-3">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── CTA BANNER ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <div
-          className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
-          }}
-        >
-          <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
-            <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
-              <Image
-                src="/weight-loss.png"
-                alt="Weight Loss MD Logo"
-                fill
-                className="object-contain"
-              />
+        <FadeIn>
+          <div
+            className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+            }}
+          >
+            <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
+              <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
+                <Image
+                  src="/weight-loss.png"
+                  alt="Weight Loss MD Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+                {ctaSection?.sectionTitle || (
+                  <>
+                    Contact Us at Weight Loss MD
+                    <br className="hidden md:block" /> Today
+                  </>
+                )}
+              </h2>
             </div>
-            <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              {ctaSection?.sectionTitle || (
-                <>
-                  Contact Us at Weight Loss MD
-                  <br className="hidden md:block" /> Today
-                </>
-              )}
-            </h2>
-          </div>
 
-          <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <button
-              onClick={() =>
-                window.open(
-                  ctaSection?.url ||
-                    "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                  ctaSection?.openInNewTab ? "_blank" : "_self",
-                )
-              }
-             className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
-              {ctaSection?.ctaButtonText || "Book a consultation"}
-            </button>
+            <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              <button
+                onClick={() =>
+                  window.open(
+                    ctaSection?.url ||
+                      "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                    ctaSection?.openInNewTab ? "_blank" : "_self",
+                  )
+                }
+              className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+                {ctaSection?.ctaButtonText || "Book a consultation"}
+              </button>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
     </div>
   );

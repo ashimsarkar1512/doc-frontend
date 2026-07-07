@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useGetHomepageContentQuery } from "@/Redux/features/homepageContent/homepageContentApi";
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface FAQItem {
   id: string;
@@ -98,15 +99,35 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
       <div className="max-w-[1400px] mx-auto">
 
         {/* Title */}
-        <h2 className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight">
+        <motion.h2 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-3xl md:text-[40px] font-normal text-center mb-16 tracking-tight"
+        >
           {title || content?.faqTitle || "Frequently asked questions"}
-        </h2>
+        </motion.h2>
 
         {/* Two Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* Left Column: Interactive Accordion Stack */}
-          <div className="lg:col-span-7 flex flex-col gap-3 w-full">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15,
+                },
+              },
+            }}
+            className="lg:col-span-7 flex flex-col gap-3 w-full"
+          >
             {isLoading ? (
               [1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="h-16 bg-[#222426]/60 animate-pulse rounded-xl" />
@@ -116,44 +137,67 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
                 const isOpen = openId === item.id;
 
                 return (
-                  <div
+                  <motion.div
                     key={item.id}
+                    variants={{
+                      hidden: { opacity: 0, x: -30 },
+                      visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
+                    }}
                     className="bg-[#222426]/60 rounded-xl overflow-hidden border border-gray-800/30 transition-colors duration-300"
                   >
                     {/* Trigger Banner */}
                     <button
                       onClick={() => toggleFAQ(item.id)}
-                      className="w-full flex items-center justify-between p-5 text-left transition-colors duration-200 hover:bg-gray-800/20 group"
+                      className="w-full flex items-center justify-between p-5 text-left transition-colors duration-200 hover:bg-gray-800/20 group focus:outline-none"
                       aria-expanded={isOpen}
                     >
                       <span className="text-xl md:text-semibold font-medium text-gray-100 group-hover:text-white tracking-tight transition-colors">
                         {item.question}
                       </span>
                       {/* State Symbol Indicator */}
-                      <span className="text-xl font-light text-gray-400 select-none ml-4 flex-shrink-0">
+                      <motion.span 
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-2xl font-light text-gray-400 select-none ml-4 flex-shrink-0"
+                      >
                         {isOpen ? '−' : '+'}
-                      </span>
+                      </motion.span>
                     </button>
 
                     {/* Clean Hardware-Accelerated Dynamic Expanding Wrap */}
-                    <div
-                      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                        }`}
-                    >
-                      <div className="overflow-hidden">
-                        <p className="px-5 pb-5 text-sm md:text-lg text-[#FFFFFF] leading-relaxed font-base whitespace-pre-wrap">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          key="content"
+                          initial="collapsed"
+                          animate="open"
+                          exit="collapsed"
+                          variants={{
+                            open: { opacity: 1, height: "auto", marginTop: 0 },
+                            collapsed: { opacity: 0, height: 0, marginTop: 0 }
+                          }}
+                          transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+                        >
+                          <div className="px-5 pb-5 text-sm md:text-lg text-[#FFFFFF] leading-relaxed font-base whitespace-pre-wrap">
+                            {item.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 );
               })
             )}
-          </div>
+          </motion.div>
 
           {/* Right Column: Featured Callout Action Frame */}
-          <div className="lg:col-span-5 w-full h-[460px] lg:h-[665px] relative group rounded-[2rem] overflow-hidden flex flex-col justify-end p-8 md:px-[40px] md:py-[50px] border border-gray-800/20 shadow-2xl">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            className="lg:col-span-5 w-full h-[460px] lg:h-[665px] relative group rounded-[2rem] overflow-hidden flex flex-col justify-end p-8 md:px-[40px] md:py-[50px] border border-gray-800/20 shadow-2xl"
+          >
             {/* Background Medical Art Vector Frame */}
             <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-103">
               <Image
@@ -176,7 +220,9 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
                 {cardDescription || content?.faqCardDescription || "Everything you need to know before getting started."}
               </p>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   const link = buttonLink || content?.faqButtonLink || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434";
                   const target = buttonNewTab ?? (content?.faqButtonNewTab ?? true) ? "_blank" : "_self";
@@ -184,9 +230,9 @@ const QNA: React.FC<QNAProps> = ({ faqData, title, isLoading: propIsLoading, car
                 }}
                 className="w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-7 py-3.5 rounded-full transition-all duration-200 active:scale-97 shadow-lg shadow-blue-600/10">
                 {buttonText || content?.faqButtonText || "Book An Appointment"}
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

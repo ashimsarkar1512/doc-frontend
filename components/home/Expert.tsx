@@ -6,8 +6,7 @@ import { useGetAllFeaturesDoctorQuery } from "@/Redux/features/homePageDoctor/ho
 import fallBackImg from "@/public/fallback-man.jpeg";
 import { useHomepageContent } from "@/providers/HomepageContentProvider";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-
+import { motion } from "framer-motion";
 const Expert: React.FC = () => {
   const { content } = useHomepageContent();
   const { data } = useGetAllFeaturesDoctorQuery();
@@ -41,14 +40,24 @@ const Expert: React.FC = () => {
     <section className="w-full mt-0 pt-[120px] pb-[90px] relative font-sans overflow-hidden">
       <div className="max-w-[1520px] mx-auto flex flex-col items-center">
         {/* Title */}
-        <h2
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
           className="mb-[40px] lg:mb-[80px] text-center text-[36px] lg:text-[54px] font-semibold text-[#272628] font-[Quicksand] leading-[110%]"
         >
           {providersTitle}
-        </h2>
+        </motion.h2>
 
         {/* Carousel Container Wrapper */}
-        <div className="w-full relative px-12 mb-[80px]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 1.0, ease: "easeOut", delay: 0.1 }}
+          className="w-full relative px-12 mb-[80px]"
+        >
           {/* Navigation Arrow: Left */}
           <button
             onClick={scrollPrev}
@@ -69,7 +78,7 @@ const Expert: React.FC = () => {
                   {/* Card Structure */}
                   <div className="flex flex-col gap-[14px]">
                     {/* Image Container with the exact soft blue tint fill background */}
-                    <div className="w-full aspect-[480/523] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group">
+                    <div className="w-full aspect-[480/523] bg-[#dbe8ff] rounded-[2rem] overflow-hidden relative group cursor-pointer">
                       <img
                         src={provider?.thumbnail || fallBackImg.src}
                         onError={(e) => {
@@ -103,20 +112,29 @@ const Expert: React.FC = () => {
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
           </button>
-        </div>
+        </motion.div>
 
         {/* CTA Consultation Button */}
-        <button
-          onClick={() =>
-            window.open(
-              buttonLink,
-              buttonNewTab ? "_blank" : "_self"
-            )
-          }
-          className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[24px] py-[16px] lg:px-[32px] lg:py-[22px] rounded-[46px] transition-all duration-200 shadow-md active:scale-98 text-center text-[18px] lg:text-[22px] text-white font-semibold font-[Quicksand] leading-[100%]"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 1.0, ease: "easeOut", delay: 0.2 }}
         >
-          {buttonText}
-        </button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() =>
+              window.open(
+                buttonLink,
+                buttonNewTab ? "_blank" : "_self"
+              )
+            }
+            className="flex justify-center items-center gap-[15px] bg-[#1D4ED8] hover:bg-blue-800 px-[24px] py-[16px] lg:px-[32px] lg:py-[22px] rounded-[46px] transition-all duration-200 shadow-md active:scale-98 text-center text-[18px] lg:text-[22px] text-white font-semibold font-[Quicksand] leading-[100%]"
+          >
+            {buttonText}
+          </motion.button>
+        </motion.div>
         {/* best for SEO  */}
         {/* <a
           href="https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434"

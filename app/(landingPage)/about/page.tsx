@@ -8,6 +8,7 @@ import QNA from "@/components/home/QNA";
 import { useGetAboutUsDataQuery } from "@/Redux/api/aboutUsApi";
 import { ScrollRevealText } from "@/components/shared/ScrollRevealText";
 import CommonHero from "@/components/shared/CommonHero";
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 export default function AboutPage() {
   const { data: response, isLoading } = useGetAboutUsDataQuery();
@@ -92,7 +93,8 @@ export default function AboutPage() {
           className="text-center max-w-[1520px] text-3xl font-bold md:text-4xl lg:text-[40px] text-gray-900 leading-snug tracking-tight mb-12"
         />
 
-        <div className="w-full relative group overflow-hidden rounded-[2.5rem] h-[300px] md:h-[500px] lg:h-[600px]">
+        <FadeIn delay={0.1}>
+          <div className="w-full relative group overflow-hidden rounded-[2.5rem] h-[300px] md:h-[500px] lg:h-[600px]">
           {data?.bodySection1Image?.fileType?.startsWith("video/") ? (
             <video
               src={getMediaUrl(data.bodySection1Image.fileUrl)}
@@ -127,14 +129,15 @@ export default function AboutPage() {
               clipPath:
                 "polygon(0 0, 50% 4%, 100% 0, 100% 100%, 50% 96%, 0 100%)",
             }}
-          />
-        </div>
+            />
+          </div>
+        </FadeIn>
       </section>
 
       {/* INCORPORATE & OVERSEE */}
       <section className="w-full pt-16 md:pt-24 pb-8 md:pb-12 px-4 md:px-8">
         <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2  items-center">
-          <div className="flex flex-col items-start pr-0 lg:pr-12 ">
+          <FadeIn className="flex flex-col items-start pr-0 lg:pr-12 ">
             <span className="text-[54px] font-bold  w-full">
               {data?.bodySection2Tag || "Our Mission"}
             </span>
@@ -158,10 +161,10 @@ export default function AboutPage() {
             >
               {data?.bodySection2ButtonText || "Contact us"}
             </button>
-          </div>
+          </FadeIn>
 
           {/* Right: Image */}
-          <div className="flex justify-end items-center overflow-visible">
+          <FadeIn delay={0.2} className="flex justify-end items-center overflow-visible">
             {data?.bodySection2Image?.fileUrl ? (
               <div className="relative  w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
                 {/* doctorShape.png as background (blue blob) */}
@@ -197,7 +200,7 @@ export default function AboutPage() {
                 />
               </div>
             )}
-          </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -205,7 +208,7 @@ export default function AboutPage() {
       <section className="w-full pt-8 md:pt-12 pb-16 md:pb-24 px-4 md:px-8 bg-white">
         <div className="max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left: Image */}
-          <div className="flex justify-start items-center overflow-visible">
+          <FadeIn className="flex justify-start items-center overflow-visible">
             {data?.bodySection3Image?.fileUrl ? (
               <div className="relative w-full max-w-[460px] h-[460px] md:h-[520px] flex items-center justify-center">
                 {/* doctorShape.png as background (blue blob) */}
@@ -241,9 +244,9 @@ export default function AboutPage() {
                 />
               </div>
             )}
-          </div>
+          </FadeIn>
 
-          <div className="flex flex-col items-start">
+          <FadeIn delay={0.2} className="flex flex-col items-start">
             <span className="text-[54px] font-bold">
               {data?.bodySection3Tag || "Why WLMD"}
             </span>
@@ -296,7 +299,7 @@ export default function AboutPage() {
             >
               {data?.bodySection3ButtonText || "Book a consultation"}
             </button>
-          </div>
+          </FadeIn>
         </div>
       </section>
 

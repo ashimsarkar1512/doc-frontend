@@ -16,6 +16,7 @@ import {
   useCheckoutMutation,
 } from "@/Redux/features/patient/assesmentcategory";
 import { useUploadAttachmentMutation } from "@/Redux/api/authApi";
+import FadeIn from "@/components/shared/animations/FadeIn";
 
 const isFileInput = (inputType: string | null | undefined) => {
   if (!inputType) return false;
@@ -252,10 +253,12 @@ export default function PreviewDetailsPage() {
   const { assessment, questions, complianceConfirmation, paymentSummary } = submissionData;
 
   // Reusable components matching exactly the original design
-  const Card = ({ children }: { children: React.ReactNode }) => (
-    <div className="border border-gray-200 rounded-xl p-5 mb-4 bg-white">
-      {children}
-    </div>
+  const Card = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+    <FadeIn delay={delay}>
+      <div className="border border-gray-200 rounded-xl p-5 mb-4 bg-white">
+        {children}
+      </div>
+    </FadeIn>
   );
 
   const Question = ({ text }: { text: string }) => (
@@ -324,18 +327,7 @@ export default function PreviewDetailsPage() {
         <div className="flex flex-col">
 
           {/* Card 1: Patient info & image */}
-          <div
-            className="border border-gray-200 rounded-xl bg-white mb-4 shadow-sm"
-            style={{
-              display: "flex",
-              height: "613px",
-              padding: "30px",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: "28px",
-              alignSelf: "stretch"
-            }}
-          >
+          <Card>
             <div className="flex items-center gap-4 w-full">
               <div className="relative w-12 h-12 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
                 {user?.profile?.avatar ? (
@@ -367,7 +359,7 @@ export default function PreviewDetailsPage() {
                 {assessment.description}
               </p>
             )}
-          </div>
+          </Card>
 
           {/* Dynamic Questions */}
           {questions.map((q: any) => {
@@ -735,7 +727,7 @@ export default function PreviewDetailsPage() {
             };
 
             return (
-              <Card key={q.id}>
+              <Card key={q.id} delay={0.1}>
                 {renderQ(q)}
               </Card>
             );
@@ -774,6 +766,7 @@ export default function PreviewDetailsPage() {
           </Card>
 
           {/* Payment Summary - matches reference design */}
+          <FadeIn delay={0.2}>
           <div className="border border-gray-200 rounded-xl bg-white shadow-sm w-full flex flex-col" style={{ padding: '30px' }}>
             {/* Title */}
             <h3 className="text-[#191B1C] font-[Quicksand] text-[26px] font-bold leading-[1.2] m-0" style={{ marginBottom: '17px' }}>Payment Summary</h3>
@@ -886,6 +879,7 @@ export default function PreviewDetailsPage() {
               </div>
             </div>
           </div>
+          </FadeIn>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">

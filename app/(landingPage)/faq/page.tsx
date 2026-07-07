@@ -8,6 +8,8 @@ import { Search } from "lucide-react";
 import { useGetFaqByPageTypeQuery } from "@/Redux/features/common/faqApi";
 import type { HeroSectionPageType } from "@/Redux/features/common/heroSectionApi";
 import faqImage from "@/app/faq.png";
+import FadeIn from "@/components/shared/animations/FadeIn";
+import { motion, AnimatePresence } from "framer-motion";
 
 const categories: HeroSectionPageType[] = [
   "ServiceCategory",
@@ -79,9 +81,12 @@ export default function FaqPage() {
 
       {/* ── CATEGORY PILLS ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-10 mb-6 w-full">
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
+        <FadeIn className="flex flex-wrap gap-2">
+          {categories.map((cat, index) => (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.02 }}
               key={cat}
               onClick={() => {
                 setActiveCategory(cat);
@@ -95,20 +100,20 @@ export default function FaqPage() {
               }`}
             >
               {cat}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── FAQ LIST ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-20 w-full">
-        <div className="flex flex-col gap-1.5">
+        <FadeIn delay={0.1} className="flex flex-col gap-1.5">
           {filtered.length === 0 && (
             <p className="text-center text-gray-400 text-sm py-10">
               No questions found.
             </p>
           )}
-          {filtered.map((faq, index) => (
+          {filtered.map((faq: any, index: number) => (
             <div
               key={faq.id}
               className="rounded-[12px] overflow-hidden"
@@ -126,46 +131,58 @@ export default function FaqPage() {
                 </span>
               </button>
 
-              {openIndex === index && (
-                <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
-                  {faq.answer}
-                </div>
-              )}
+              <AnimatePresence initial={false}>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-4 text-[13px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── CTA BANNER ── */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <div
-          className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
-          }}
-        >
-          <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
-            <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
-              <Image
-                src="/weight-loss.png"
-                alt="Weight Loss MD Logo"
-                fill
-                className="object-contain"
-              />
+        <FadeIn>
+          <div
+            className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
+            }}
+          >
+            <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
+              <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
+                <Image
+                  src="/weight-loss.png"
+                  alt="Weight Loss MD Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
+                Contact Us at Weight Loss MD
+                <br className="hidden md:block" /> Today
+              </h2>
             </div>
-            <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-              Contact Us at Weight Loss MD
-              <br className="hidden md:block" /> Today
-            </h2>
-          </div>
 
-          <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <button className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
-              Book a consultation
-            </button>
+            <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              <button className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap">
+                Book a consultation
+              </button>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
     </div>
   );
