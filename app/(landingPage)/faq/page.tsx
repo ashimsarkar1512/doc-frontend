@@ -294,11 +294,12 @@ export default function FaqPage() {
             className="w-full bg-[#F0F0F0] border-0 rounded-[10px] pl-9 pr-4 py-3 text-lg text-gray-900 placeholder-gray-400 focus:outline-none shadow-sm"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          {filtered.length === 0 && (
-            <p className="text-center text-gray-400 text-sm py-10">
-              No questions found.
-            </p>
+        <FadeIn>
+          <div className="flex flex-col gap-1.5">
+            {filtered.length === 0 && (
+              <p className="text-center text-gray-400 text-sm py-10">
+                No questions found.
+              </p>
           )}
           {filtered.map((faq: any, index: number) => (
             <div
@@ -325,6 +326,7 @@ export default function FaqPage() {
               )}
             </div>
           ))}
+        </div>
         </FadeIn>
       </section>
 
