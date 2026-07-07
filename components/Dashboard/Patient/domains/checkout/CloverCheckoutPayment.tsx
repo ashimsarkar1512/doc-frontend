@@ -71,6 +71,7 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
       if ((window as any)._cloverMessageHandler) {
         window.removeEventListener("message", (window as any)._cloverMessageHandler);
       }
+      
       const clover = new (window as any).Clover(pakmsKey, { merchantId: merchantId || "" });
       cloverInstanceRef.current = clover;
 
@@ -95,6 +96,17 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
       const cardDate = elements.create("CARD_DATE", styles);
       const cardCvv = elements.create("CARD_CVV", styles);
       const cardPostal = elements.create("CARD_POSTAL_CODE", styles);
+
+      // CRITICAL FIX: Check if elements exist in DOM before mounting
+      const numberEl = document.getElementById("checkout-clover-card-number");
+      const dateEl = document.getElementById("checkout-clover-card-date");
+      const cvvEl = document.getElementById("checkout-clover-card-cvv");
+      const postalEl = document.getElementById("checkout-clover-card-postal");
+
+      if (!numberEl || !dateEl || !cvvEl || !postalEl) {
+        // If the elements are not found, the form has likely been unmounted.
+        return; 
+      }
 
       const ids = ["checkout-clover-card-number", "checkout-clover-card-date", "checkout-clover-card-cvv", "checkout-clover-card-postal"];
       ids.forEach(id => {
@@ -130,7 +142,6 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
     }
   }, [cloverInstanceRef]);
 
-  
   const waitForCloverAndInit = useCallback(() => {
     let attempts = 0;
     const maxAttempts = 40; 
@@ -150,15 +161,18 @@ export default function CloverCheckoutPayment({ onPaymentReady, cloverInstanceRe
   }, [initCloverElements]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     if (selectedMethod === "new") {
         if ((window as any).Clover) {
-            setTimeout(initCloverElements, 100);
+            timeoutId = setTimeout(initCloverElements, 100);
         } else {
             waitForCloverAndInit();
         }
     }
     
     return () => {
+      if (timeoutId) clearTimeout(timeoutId);
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
     };
   }, [selectedMethod, initCloverElements, waitForCloverAndInit]);
