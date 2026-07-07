@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "@/components/shared/Navbar";
 import CommonHero from "@/components/shared/CommonHero";
 import BlogList from "@/components/blog/BlogList";
-import BlogCTA from "@/components/blog/BlogCTA";
+import ContactCTA from "@/components/shared/ContactCTA";
 
 export const metadata = {
   title: "Blog - Weight Loss MD & Wellness",
@@ -23,16 +23,13 @@ const Blogpage = () => {
         title="Read our insights"
         description={
           <>
-            Our medical weight management program is designed to support
-            individuals seeking
-            <br className="hidden md:block" /> a structured, provider-guided
-            approach to weight loss. Each
+            Our medical weight management program is designed to support individuals seeking a structured, provider-guided approach to weight loss. Each
           </>
         }
         watermarkImage="/BLOGS.png"
       />
       <BlogList />
-      <BlogCTA />
+      <ContactCTA />
     </main>
   );
 };

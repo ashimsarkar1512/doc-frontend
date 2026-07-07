@@ -6,7 +6,7 @@ import FadeIn from "@/components/shared/animations/FadeIn";
 
 const BlogCTA = () => {
   return (
-    <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
+    <section className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
       <FadeIn>
         <div
           className="w-full rounded-[20px] sm:rounded-[24px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:px-14 md:py-12 shadow-xl relative overflow-hidden text-center md:text-left"
