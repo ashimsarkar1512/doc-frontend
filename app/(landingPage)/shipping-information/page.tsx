@@ -30,7 +30,7 @@ const ShippingInformationPage = () => {
         <PartnerPharmacyNetwork />
         <ShippingTimeline />
         <ShippingQuestions />
-        <ContactCTA/>
+        <ContactCTA pageType="ShippingInfo" />
       </div>
     </main>
   );

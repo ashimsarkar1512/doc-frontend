@@ -329,7 +329,7 @@ export default function CommonServicesPage() {
         </div>
       </section>
 
-      <ContactCTA />
+      <ContactCTA pageType="ServiceCategory" />
 
       {/* <Footer />   */}
     </div>
