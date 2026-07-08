@@ -6,6 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { useGetLabTestingDataQuery } from "@/Redux/api/labTestingApi";
 import { motion, AnimatePresence } from "framer-motion";
+import ContactCTA from "@/components/shared/ContactCTA";
 
 const defaultPanelServices = [
   {
@@ -349,7 +350,7 @@ export default function LabTestingPage() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
+      {/* <section className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 md:mb-28 w-full">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -388,7 +389,9 @@ export default function LabTestingPage() {
             </motion.button>
           </div>
         </motion.div>
-      </section>
+      </section> */}
+
+      <ContactCTA pageType="LabTest" />
     </div>
   );
 }

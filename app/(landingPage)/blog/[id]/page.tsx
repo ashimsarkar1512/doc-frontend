@@ -1,10 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import FallbackImage from "@/components/shared/FallbackImage";
 import Navbar from "@/components/shared/Navbar";
 import BlogSidebar from "@/components/blog/BlogSidebar";
 import BlogCTA from "@/components/blog/BlogCTA";
 import { notFound } from "next/navigation";
-import fallBackImg from "@/public/p-image-fallback.jpg";
+import fallBackImg from "@/public/BLOGS.png";
+import ContactCTA from "@/components/shared/ContactCTA";
 
 function getApiUrl(slug: string): string {
   let baseUrl =
@@ -81,7 +83,7 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
       })
     : "";
 
-  const imageUrl = blog.featuredImage?.fileUrl || fallBackImg.src;
+  const imageUrl = blog?.bannerImage?.fileUrl || blog?.featuredImage?.fileUrl || fallBackImg.src;
 
   return (
     <main className="w-full bg-white min-h-screen">
@@ -93,10 +95,11 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
       <div className="xl:lg:pt-20 p-9" />
 
       {/* Hero Image Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mb-12">
+      <section className="w-full max-w-[1520px] mx-auto px-4 md:px-8 mb-12">
         <div className="relative w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden bg-gray-100">
-          <Image
+          <FallbackImage
             src={imageUrl}
+            fallbackSrc={fallBackImg.src}
             alt={blog.title || "Blog Image"}
             fill
             unoptimized
@@ -106,7 +109,7 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
       </section>
 
       {/* Main Content Layout */}
-      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-12">
+      <section className="w-full max-w-[1520px] mx-auto px-4 md:px-8 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Article Content */}
           <div className="lg:col-span-2 flex flex-col min-w-0 overflow-hidden">
@@ -145,8 +148,7 @@ export default async function BlogDetailsPage({ params }: { params: any }) {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <BlogCTA />
+      <ContactCTA pageType="BlogDetail" />
     </main>
   );
 }

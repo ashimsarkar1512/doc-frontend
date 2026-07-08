@@ -29,7 +29,7 @@ const Blogpage = () => {
         watermarkImage="/BLOGS.png"
       />
       <BlogList />
-      <ContactCTA />
+      <ContactCTA pageType="Blog" />
     </main>
   );
 };
