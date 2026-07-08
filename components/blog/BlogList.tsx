@@ -66,7 +66,7 @@ const BlogList = () => {
   return (
     <section className="w-full max-w-[1520px] mx-auto px-4 md:px-8 py-2 mb-20">
       {/* Category Filter */}
-      <FadeIn className="flex flex-wrap items-center justify-start gap-2 mb-10">
+      <FadeIn className="flex overflow-x-auto md:flex-wrap items-center justify-start gap-2 mb-10 pb-2 md:pb-0 md:overflow-visible scrollbar-hide">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -74,7 +74,7 @@ const BlogList = () => {
               setActiveCategory(cat);
               setVisibleCount(10);
             }}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${activeCategory === cat
+            className={`shrink-0 whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${activeCategory === cat
                 ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
                 : "bg-[#E5E7EB] text-gray-700 hover:bg-gray-300"
               }`}

@@ -10,23 +10,23 @@ const BlogSidebar = () => {
       <h3 className="text-[28px] md:text-[34px] font-bold text-black leading-[1.2] pb-4  uppercase text-center px-6">
         Medical Weight<br />Management<br />Program
       </h3>
-      
+
       <div className="relative w-full h-[350px] flex justify-center mt-auto">
-        
+
         {/* WLMD Watermark */}
-<div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 px-4 pb-6 -translate-y-14">
-  <Image
-    src="/WLMD.png"
-    alt="WLMD Watermark"
-    fill
-    className="object-contain"
-  />
-</div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 px-4 pb-6 -translate-y-14">
+          <Image
+            src="/WLMD.png"
+            alt="WLMD Watermark"
+            fill
+            className="object-contain"
+          />
+        </div>
         {/* Doctor image (fixed) */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-end">
           <div className="absolute inset-x-0 bottom-0 top-0">
             <Image
-              src={fallbackDoctorImg} 
+              src={fallbackDoctorImg}
               alt="Doctor"
               fill
               className="object-contain object-bottom drop-shadow-2xl"
@@ -35,27 +35,27 @@ const BlogSidebar = () => {
         </div>
 
         {/* Action Button */}
-    <div className="absolute bottom-5 z-20 flex justify-center w-full">
-      <div className="relative z-10 inline-flex flex-col items-center justify-center p-[8px] gap-[10px] rounded-[50px] border-[1.5px] border-white/30 bg-[#1D1D1D]/30 backdrop-blur-sm">
-        <button
-          onClick={() =>
-            window.open(
-              "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-              "_blank"
-            )
-          }
-          className="bg-[#1D4ED8] hover:bg-[#143499] text-white px-[32px] py-[12px] rounded-[50px] transition-colors whitespace-nowrap"
-          style={{
-            fontFamily: "Quicksand, sans-serif",
-            fontSize: "20px",
-            fontWeight: 600,
-            lineHeight: "100%",
-          }}
-        >
-          Book a consultation
-        </button>
-      </div>
-    </div>
+        <div className="absolute bottom-5 z-20 flex justify-center w-full">
+          <div className="relative z-10 inline-flex flex-col items-center justify-center p-[8px] gap-[10px] rounded-[50px] border-[1.5px] border-white/30 bg-[#1D1D1D]/30 backdrop-blur-sm">
+            <button
+              onClick={() =>
+                window.open(
+                  "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
+                  "_blank"
+                )
+              }
+              className="bg-[#1D4ED8] hover:bg-[#143499] text-white px-[32px] py-[12px] rounded-[50px] transition-colors whitespace-nowrap"
+              style={{
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: "20px",
+                fontWeight: 600,
+                lineHeight: "100%",
+              }}
+            >
+              Book a consultation
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import {
 import eligiblityImage from "@/app/eligiblity.png";
 import FadeIn from "@/components/shared/animations/FadeIn";
 import { motion, AnimatePresence } from "framer-motion";
+import ContactCTA from "@/components/shared/ContactCTA";
 
 export default function EligibilityPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -371,7 +372,7 @@ export default function EligibilityPage() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
+      {/* <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
         <FadeIn>
           <div
             className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
@@ -414,7 +415,9 @@ export default function EligibilityPage() {
             </div>
           </div>
         </FadeIn>
-      </section>
+      </section> */}
+      <ContactCTA pageType="Eligiblity" />
     </div>
   );
 }
+    
