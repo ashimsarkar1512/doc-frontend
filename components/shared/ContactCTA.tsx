@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
 
 interface ContactCTAProps {
+  pageType?: string;
   sectionTitle?: string;
   ctaButtonText?: string;
   url?: string;
@@ -10,11 +12,21 @@ interface ContactCTAProps {
 }
 
 const ContactCTA = ({
+  pageType,
   sectionTitle = "Contact Us at Weight Loss MD Today",
   ctaButtonText = "Book a consultation",
   url = "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
   openInNewTab = true
 }: ContactCTAProps) => {
+  const { data: ctaData } = useGetCtaSectionByPageQuery(pageType as string, {
+    skip: !pageType,
+  });
+
+  const finalSectionTitle = ctaData?.sectionTitle || sectionTitle;
+  const finalCtaButtonText = ctaData?.ctaButtonText || ctaButtonText;
+  const finalUrl = ctaData?.url || url;
+  const finalOpenInNewTab = ctaData !== undefined && ctaData !== null ? ctaData.openInNewTab : openInNewTab;
+
   return (
     <section className="w-full self-stretch max-w-[1520px] mx-auto px-4 lg:px-0 mt-[120px] mb-[120px] rounded-[40px] bg-[#8cb5f0]">
       <div 
@@ -31,18 +43,18 @@ const ContactCTA = ({
             />
           </div>
           <h2 className="text-[32px] md:text-[54px] font-semibold text-white font-[Quicksand] leading-[110%] w-full md:w-[684px] shrink-0">
-            {sectionTitle}
+            {finalSectionTitle}
           </h2>
         </div>
 
         <div className="relative z-10 p-[12px] rounded-[60px] border border-[rgba(255,255,255,0.43)] bg-[rgba(255,255,255,0.32)] shrink-0">
           <a
-            href={url}
-            target={openInNewTab ? "_blank" : "_self"}
-            rel={openInNewTab ? "noopener noreferrer" : undefined}
+            href={finalUrl}
+            target={finalOpenInNewTab ? "_blank" : "_self"}
+            rel={finalOpenInNewTab ? "noopener noreferrer" : undefined}
             className="inline-flex items-center justify-center gap-[15px] px-[44px] py-[36px] bg-[#1D4ED8] hover:bg-[#1e40af] text-white font-[Quicksand] font-semibold text-[24px] leading-[100%] text-center rounded-[50px] transition-all shadow-[0_0_20px_-3px_rgba(37,99,235,0.5)] whitespace-nowrap"
           >
-            {ctaButtonText}
+            {finalCtaButtonText}
           </a>
         </div>
       </div>

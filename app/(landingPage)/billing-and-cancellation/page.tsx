@@ -30,7 +30,7 @@ const BillingAndCancellationPage = () => {
         <BillingTimeline />
         <CancellationProcess />
         <BillingFAQ />
-        <ContactCTA />
+        <ContactCTA pageType="BillingCancellation" />
       </div>
     </main>
   );
