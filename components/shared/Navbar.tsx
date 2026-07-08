@@ -188,12 +188,38 @@ const Navbar = ({
   const toggleServices = () => setIsServicesOpen((p) => !p);
   const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
 
+  // const getLinkClass = (path: string) => {
+  //   const isActive = pathname === path || (path !== '/' && pathname?.startsWith(path));
+  //   // if (isActive) {
+  //   //   return isDark ? "text-[#1D4ED8] font-semibold" : "text-[#1D4ED8] font-semibold";
+  //   // }
+  //   return `${textColor} font-medium transition-colors`;
+  // };
+
+  const noActiveStylePaths = ["/", "/lab-testing"];
+
   const getLinkClass = (path: string) => {
-    const isActive = pathname === path || (path !== '/' && pathname?.startsWith(path));
-    // if (isActive) {
-    //   return isDark ? "text-[#1D4ED8] font-semibold" : "text-[#1D4ED8] font-semibold";
-    // }
-    return `${textColor} font-medium transition-colors`;
+    const isActive =
+      pathname === path || (path !== "/" && pathname?.startsWith(path));
+
+    if (!isScrolled && noActiveStylePaths.includes(path)) {
+      return `${textColor} font-normal transition-colors hover:text-[#000103]`;
+    }
+
+    return isActive
+      ? "font-semibold transition-colors"
+      : `${textColor} font-normal transition-colors hover:text-[#000103]`;
+  };
+
+  const getLinkStyle = (path: string): React.CSSProperties => {
+    const isActive =
+      pathname === path || (path !== "/" && pathname?.startsWith(path));
+
+    if (!isScrolled && noActiveStylePaths.includes(path)) {
+      return {};
+    }
+
+    return isActive ? { color: "#000103", fontFamily: "Quicksand" } : {};
   };
 
   const handleServicesMouseEnter = () => {
@@ -219,15 +245,14 @@ const Navbar = ({
   return (
     <nav
       style={{ top: isScrolled ? "0px" : "var(--banner-height, 0px)" }}
-      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${
-        isScrolled || alwaysSolidBg
+      className={`${navPosition} left-0 w-full z-50 px-5 sm:px-6 md:px-8 transition-all duration-300 ${isScrolled || alwaysSolidBg
           ? `bg-white/95 backdrop-blur-2xl backdrop-saturate-150 transform-gpu shadow-sm ${alwaysSolidBg && !isScrolled ? initialPadding : scrolledPadding} border-b border-black/5`
           : overlay && !isDark
             ? `bg-gradient-to-b from-black via-black/15 to-transparent ${initialPadding}`
             : overlay && isDark
               ? `bg-gradient-to-b from-white/80 via-white/40 to-transparent ${initialPadding}`
               : `bg-transparent ${initialPadding}`
-      } ${className}`}
+        } ${className}`}
     >
       <div className="max-w-[1604px] mx-auto flex items-center justify-between min-h-[44px] sm:min-h-[48px]">
         {/* Logo */}
@@ -241,8 +266,8 @@ const Navbar = ({
         <div className="xl:hidden relative z-[60] flex items-center gap-2 ml-3 flex-shrink-0">
           {isMounted && isAuthenticated && user && (
             <div className="flex items-center">
-              <NotificationDropdown 
-                iconColor={textColor} 
+              <NotificationDropdown
+                iconColor={textColor}
                 hoverBgClass={mobileMenuBtnClass}
               />
             </div>
@@ -269,7 +294,7 @@ const Navbar = ({
             fixed xl:static top-0 left-0 w-full xl:w-auto h-screen xl:h-auto
             ${mobileBg}  xl:bg-transparent
             px-8 pt-40 xl:pt-0 xl:px-0
-            flex-col xl:flex-row items-start xl:items-center gap-4 xl:gap-3 2xl:gap-6
+            flex-col xl:flex-row items-start xl:items-center gap-4 lg:gap-6 xl:gap-8 2xl:gap-10
             transition-transform duration-300 ease-in-out z-[50]
             overflow-y-auto xl:overflow-visible
             ${isMobileMenuOpen ? "flex translate-x-0" : "hidden xl:flex translate-x-full xl:translate-x-0"}
@@ -277,7 +302,8 @@ const Navbar = ({
         >
           <Link
             href="/"
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/")}`}
+            style={getLinkStyle("/")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
@@ -291,14 +317,22 @@ const Navbar = ({
             onMouseLeave={handleServicesMouseLeave}
           >
             <div
-              className={`${textColor} flex items-center gap-1 cursor-pointer transition-colors font-medium text-xl xl:text-[14px] 2xl:text-base`}
+              className={`${
+                pathname?.startsWith("/common-services")
+                  ? "font-semibold transition-colors"
+                  : `${textColor} font-medium transition-colors hover:text-[#000103]`
+              } flex items-center gap-1 cursor-pointer text-xl xl:text-[16px] 2xl:text-[20px]`}
+              style={
+                pathname?.startsWith("/common-services")
+                  ? { color: "#000103", fontFamily: "Quicksand" }
+                  : {}
+              }
               onClick={toggleServices}
             >
               <span>Our Services</span>
               <ChevronDown
-                className={`h-5 w-5 transition-transform ${
-                  isServicesOpen ? "rotate-180" : ""
-                }`}
+                className={`h-5 w-5 transition-transform ${isServicesOpen ? "rotate-180" : ""
+                  }`}
               />
             </div>
 
@@ -319,7 +353,8 @@ const Navbar = ({
           <Link
             href="/lab-testing"
             prefetch={true}
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/lab-testing")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/lab-testing")}`}
+            style={getLinkStyle("/lab-testing")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Lab Testing
@@ -328,7 +363,8 @@ const Navbar = ({
           <Link
             href="/supplements"
             prefetch={true}
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/supplements")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/supplements")}`}
+            style={getLinkStyle("/supplements")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Supplements
@@ -337,23 +373,25 @@ const Navbar = ({
           <Link
             href="/blog"
             prefetch={true}
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/blog")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/blog")}`}
+            style={getLinkStyle("/blog")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Blog
           </Link>
 
-          <Link
+          {/* <Link
             href="/eligibility"
             className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/eligibility")}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Eligibility
-          </Link>
+          </Link> */}
 
           <Link
             href="/about"
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/about")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/about")}`}
+            style={getLinkStyle("/about")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             About
@@ -361,7 +399,8 @@ const Navbar = ({
 
           <Link
             href="/contact"
-            className={`text-xl xl:text-[14px] 2xl:text-base ${getLinkClass("/contact")}`}
+            className={`text-xl xl:text-[16px] 2xl:text-[20px] ${getLinkClass("/contact")}`}
+            style={getLinkStyle("/contact")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Contact
@@ -458,134 +497,134 @@ const Navbar = ({
             <>
               {/* Notification Bell */}
               <div className="flex items-center">
-                <NotificationDropdown 
-                  iconColor={textColor} 
+                <NotificationDropdown
+                  iconColor={textColor}
                   hoverBgClass={isDark ? "hover:bg-black/5" : "hover:bg-white/10"}
                 />
               </div>
 
               {/* ── Profile Widget ── */}
               <div ref={profileRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setIsProfileOpen((p) => !p)}
-                aria-label="Open profile menu"
-                aria-expanded={isProfileOpen}
-                className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors hover:bg-white/10 focus:outline-none"
-              >
-                {/* Avatar or Icon */}
-                <div className="relative w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/40 shadow-sm">
-                  {user.profile?.avatar ? (
-                    <Image
-                      src={user.profile.avatar}
-                      alt={getDisplayName()}
-                      fill
-                      sizes="36px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
-                      {getInitials()}
-                    </div>
-                  )}
-                </div>
-
-                {/* Name */}
-                <span
-                  className={`text-sm font-semibold max-w-[120px] truncate ${isDark ? "text-gray-900" : "text-white"}`}
+                <button
+                  type="button"
+                  onClick={() => setIsProfileOpen((p) => !p)}
+                  aria-label="Open profile menu"
+                  aria-expanded={isProfileOpen}
+                  className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors hover:bg-white/10 focus:outline-none"
                 >
-                  {getDisplayName()}
-                </span>
-
-                <motion.div
-                  animate={{ rotate: isProfileOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 ${isDark ? "text-gray-500" : "text-white/70"}`}
-                  />
-                </motion.div>
-              </button>
-
-              {/* Dropdown */}
-              <AnimatePresence>
-                {isProfileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -8 }}
-                    transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="absolute right-0 top-[calc(100%+12px)] w-60 rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-300/40 overflow-hidden"
-                    style={{ transformOrigin: "top right" }}
-                  >
-                    {/* Header — email */}
-                    <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex items-start gap-3">
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
-                        {user.profile?.avatar ? (
-                          <Image
-                            src={user.profile.avatar}
-                            alt={getDisplayName()}
-                            fill
-                            sizes="40px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
-                            {getInitials()}
-                          </div>
-                        )}
+                  {/* Avatar or Icon */}
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/40 shadow-sm">
+                    {user.profile?.avatar ? (
+                      <Image
+                        src={user.profile.avatar}
+                        alt={getDisplayName()}
+                        fill
+                        sizes="36px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                        {getInitials()}
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-gray-900 truncate">
-                          {getDisplayName()}
-                        </p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <Mail className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                          <p className="text-xs text-gray-500 truncate">
-                            {user.email}
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <span
+                    className={`text-sm font-semibold max-w-[120px] truncate ${isDark ? "text-gray-900" : "text-white"}`}
+                  >
+                    {getDisplayName()}
+                  </span>
+
+                  <motion.div
+                    animate={{ rotate: isProfileOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                  >
+                    <ChevronDown
+                      className={`h-4 w-4 ${isDark ? "text-gray-500" : "text-white/70"}`}
+                    />
+                  </motion.div>
+                </button>
+
+                {/* Dropdown */}
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="absolute right-0 top-[calc(100%+12px)] w-60 rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-gray-300/40 overflow-hidden"
+                      style={{ transformOrigin: "top right" }}
+                    >
+                      {/* Header — email */}
+                      <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex items-start gap-3">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
+                          {user.profile?.avatar ? (
+                            <Image
+                              src={user.profile.avatar}
+                              alt={getDisplayName()}
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm">
+                              {getInitials()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-gray-900 truncate">
+                            {getDisplayName()}
                           </p>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Mail className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                            <p className="text-xs text-gray-500 truncate">
+                              {user.email}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Dashboard */}
-                    <div className="py-2">
-                      <Link
-                        href={getDashboardHref()}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-                      >
-                        <LayoutDashboard className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span>My Portal</span>
-                      </Link>
-                      <Link
-                        href={`${getDashboardHref()}?domain=settings`}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-                      >
-                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span>My Profile</span>
-                      </Link>
-                    </div>
+                      {/* Dashboard */}
+                      <div className="py-2">
+                        <Link
+                          href={getDashboardHref()}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                        >
+                          <LayoutDashboard className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span>My Portal</span>
+                        </Link>
+                        <Link
+                          href={`${getDashboardHref()}?domain=settings`}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                        >
+                          <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span>My Profile</span>
+                        </Link>
+                      </div>
 
-                    {/* Logout */}
-                    <div className="border-t border-gray-100 py-2">
-                      <button
-                        disabled={isLoggingOut}
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          logout();
-                        }}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <LogOut className="h-4 w-4 flex-shrink-0" />
-                        <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      {/* Logout */}
+                      <div className="border-t border-gray-100 py-2">
+                        <button
+                          disabled={isLoggingOut}
+                          onClick={() => {
+                            setIsProfileOpen(false);
+                            logout();
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <LogOut className="h-4 w-4 flex-shrink-0" />
+                          <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </>
           ) : (
             /* ── Guest: Login ── */
