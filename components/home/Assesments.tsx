@@ -66,11 +66,7 @@ const FilterButton = ({ label, isActive, onClick }: FilterButtonProps) => (
   <button
     onClick={onClick}
     className={`
-<<<<<<< HEAD
-      flex justify-center items-center gap-[15px] px-[32px] py-[9px] rounded-full transition-all duration-200
-=======
-      shrink-0 whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200
->>>>>>> 63d6dac1929175cefd97b0e3ee1bc96b524425fc
+      flex justify-center items-center shrink-0 whitespace-nowrap gap-[15px] px-[32px] py-[9px] rounded-full transition-all duration-200
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
       ${isActive
         ? "bg-[#2563EB] shadow-md shadow-blue-500/20"

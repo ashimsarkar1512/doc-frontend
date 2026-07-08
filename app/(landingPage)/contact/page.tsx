@@ -53,7 +53,11 @@ export default function ContactPage() {
 
   return (
     <main className="w-full bg-white pb-20">
-      <Navbar variant="dark" />
+      <Navbar 
+        variant="dark"
+        initialPadding="pt-5 pb-4"
+        scrolledPadding="py-2"
+      />
 
       {/* ── HERO BANNER ── */}
       <CommonHero

@@ -9,18 +9,14 @@ interface FallbackImageProps extends Omit<ImageProps, "onError" | "src"> {
 }
 
 export default function FallbackImage({ src, fallbackSrc, ...rest }: FallbackImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>(src || fallbackSrc);
-
-  useEffect(() => {
-    setImgSrc(src || fallbackSrc);
-  }, [src, fallbackSrc]);
+  const [errorSrc, setErrorSrc] = useState<string | null>(null);
 
   return (
     <Image
       {...rest}
-      src={imgSrc}
+      src={errorSrc === src ? fallbackSrc : (src || fallbackSrc)}
       onError={() => {
-        setImgSrc(fallbackSrc);
+        setErrorSrc(src);
       }}
     />
   );

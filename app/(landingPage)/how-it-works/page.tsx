@@ -16,6 +16,7 @@ import { useGetHowItWorksContentQuery } from "@/Redux/features/howItWorks/howItW
 import { useGetCtaSectionByPageQuery } from "@/Redux/features/ctaSection/ctaSectionApi";
 import FadeIn from "@/components/shared/animations/FadeIn";
 import { motion, AnimatePresence } from "framer-motion";
+import ContactCTA from "@/components/shared/ContactCTA";
 
 export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -48,7 +49,7 @@ export default function HowItWorksPage() {
       />
 
       {/* ── PATIENT JOURNEY ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-16 mb-16 w-full">
+      <section className="max-w-[1240px] mx-auto px-4 sm:px-6 mt-16 mb-16 w-full">
         {isPageLoading ? (
           <div className="flex flex-col items-center gap-3 mb-12">
             <div className="w-64 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -118,7 +119,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* ── PROCESS QUESTIONS / FAQ ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4 mb-20 w-full">
+      <section className="max-w-[1520px] mx-auto px-4 sm:px-6 mt-4 mb-20 w-full">
         <FadeIn>
           <h2 className="text-2xl md:text-[54px] font-bold text-gray-900 tracking-tight mb-8 text-center">
             {pageData?.faqSectionTitle || "Process Questions"}
@@ -163,61 +164,7 @@ export default function HowItWorksPage() {
         </FadeIn>
       </section>
 
-      {/* ── CTA BANNER ── */}
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-24 w-full">
-        <FadeIn>
-          <div
-            className="w-full rounded-[24px] flex flex-col md:flex-row items-center justify-between p-8 md:px-12 md:py-10 shadow-xl relative overflow-hidden"
-            style={{
-              background:
-                "linear-gradient(to right, #292929 0%, #292929 40%, #27457a 60%, #3e70d6 85%, #8cb5f0 100%)",
-            }}
-          >
-            <div className="flex items-center gap-5 md:gap-7 mb-6 md:mb-0 relative z-10">
-              <div className="relative w-[50px] h-[50px] md:w-[70px] md:h-[70px] flex-shrink-0">
-                <Image
-                  src="/weight-loss.png"
-                  alt="Weight Loss MD Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              {isCtaLoading ? (
-                <div className="h-8 w-64 bg-white/20 animate-pulse rounded-md" />
-              ) : (
-                <h2 className="text-[24px] md:text-[32px] font-medium text-white tracking-wide leading-[1.25]">
-                  {ctaData?.sectionTitle ? (
-                    ctaData.sectionTitle
-                  ) : (
-                    <>
-                      Contact Us at Weight Loss MD
-                      <br className="hidden md:block" /> Today
-                    </>
-                  )}
-                </h2>
-              )}
-            </div>
-
-            <div className="relative z-10 p-[5px] rounded-full border-[1.5px] border-white/30 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-              {isCtaLoading ? (
-                <div className="w-32 h-10 bg-white/20 animate-pulse rounded-full" />
-              ) : (
-                <button
-                  onClick={() =>
-                    window.open(
-                      ctaData?.url || "https://d2oe0ra32qx05a.cloudfront.net/?practiceKey=k_1_100434",
-                      ctaData?.openInNewTab ? "_blank" : "_self",
-                    )
-                  }
-                  className="bg-[#214cc7] hover:bg-[#1a3ca0] text-white font-medium px-8 py-3 rounded-full transition-colors text-[14px] md:text-[15px] whitespace-nowrap"
-                >
-                  {ctaData?.ctaButtonText || "Book a consultation"}
-                </button>
-              )}
-            </div>
-          </div>
-        </FadeIn>
-      </section>
+      <ContactCTA pageType="HowItWorks" />
     </div>
   );
 }
