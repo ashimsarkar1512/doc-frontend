@@ -10,7 +10,7 @@ import type { RootState } from '../store/store'
 // ─── Base query ───────────────────────────────────────────────────────────────
 
 const getBaseUrl = () => {
-  let envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://prod.weightlossmdcherrycreek.com";
+  let envUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://doc-backend-li6e.onrender.com";
   envUrl = envUrl.replace(/\/$/, "");
   if (!envUrl.includes("/api/v1")) {
     envUrl = `${envUrl}/api/v1`;
