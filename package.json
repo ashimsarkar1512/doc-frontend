@@ -3,10 +3,10 @@
   "version": "0.1.2",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:https": "next dev --experimental-https --experimental-https-key ./localhost-key.pem --experimental-https-cert ./localhost.pem",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node api.js && next dev",
+    "dev:https": "node api.js && next dev --experimental-https --experimental-https-key ./localhost-key.pem --experimental-https-cert ./localhost.pem",
+    "build": "node api.js && next build",
+    "start": "node api.js && next start",
     "lint": "eslint"
   },
   "dependencies": {
